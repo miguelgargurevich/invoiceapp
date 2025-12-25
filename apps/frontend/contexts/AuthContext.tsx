@@ -9,9 +9,12 @@ export interface Empresa {
   id: string;
   nombre: string;
   ruc: string;
+  razonSocial?: string;
+  nombreComercial?: string;
   direccion?: string;
   telefono?: string;
   email?: string;
+  web?: string;
   logoUrl?: string;
   moneda: string;
   serieFactura: string;

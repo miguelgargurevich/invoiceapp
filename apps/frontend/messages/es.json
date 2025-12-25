@@ -63,6 +63,12 @@
     "testimonialAuthor": "María González, Gerente de Ventas",
     "allRightsReserved": "Todos los derechos reservados"
   },
+  "header": {
+    "search": "Buscar",
+    "notifications": "Notificaciones",
+    "profile": "Perfil",
+    "logout": "Cerrar sesión"
+  },
   "navigation": {
     "dashboard": "Dashboard",
     "invoices": "Facturas",

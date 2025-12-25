@@ -63,6 +63,12 @@
     "testimonialAuthor": "María González, Sales Manager",
     "allRightsReserved": "All rights reserved"
   },
+  "header": {
+    "search": "Search",
+    "notifications": "Notifications",
+    "profile": "Profile",
+    "logout": "Log out"
+  },
   "navigation": {
     "dashboard": "Dashboard",
     "invoices": "Invoices",

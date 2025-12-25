@@ -448,13 +448,15 @@ export default function ConfiguracionPage({
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input
-                    label={t('igvRate')}
-                    type="number"
-                    value={invoiceConfig.igv.toString()}
-                    onChange={(e) => setInvoiceConfig({ ...invoiceConfig, igv: parseInt(e.target.value) || 18 })}
-                    suffix="%"
-                  />
+                  <div>
+                    <Input
+                      label={t('igvRate')}
+                      type="number"
+                      value={invoiceConfig.igv.toString()}
+                      onChange={(e) => setInvoiceConfig({ ...invoiceConfig, igv: parseInt(e.target.value) || 18 })}
+                    />
+                    <span className="text-xs text-gray-500 mt-1">%</span>
+                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       {t('currency')}
