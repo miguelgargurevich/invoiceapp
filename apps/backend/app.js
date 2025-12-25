@@ -32,30 +32,55 @@ const limiter = rateLimit({
 // Middlewares
 app.use(helmet());
 
-// CORS configuration
+// CORS configuration - Supports multiple domains and patterns
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://localhost:3001',
   process.env.FRONTEND_URL,
   'https://invoiceapp.vercel.app',
-  'https://*.vercel.app'
+  'https://invoice-app.vercel.app',
 ].filter(Boolean);
+
+// Patterns to match (regex)
+const allowedPatterns = [
+  /^https:\/\/.*\.vercel\.app$/, // Any Vercel subdomain
+  /^https:\/\/invoiceapp.*\.vercel\.app$/, // Any invoiceapp-* Vercel deployment
+];
+
+// Optional: Allow additional domains from environment variable (comma-separated)
+if (process.env.ALLOWED_ORIGINS) {
+  const extraOrigins = process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim());
+  allowedOrigins.push(...extraOrigins);
+}
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Permitir requests sin origin (como apps móviles o curl)
+    // Allow requests with no origin (like mobile apps, curl, or Postman)
     if (!origin) return callback(null, true);
     
-    // Verificar si el origin está en la lista o coincide con el patrón de Vercel
-    if (allowedOrigins.some(allowed => 
-      origin === allowed || 
-      (allowed.includes('*') && origin.includes('vercel.app'))
-    )) {
-      callback(null, true);
-    } else {
-      callback(new Error('No permitido por CORS'));
+    // Check if origin is in allowed list
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
     }
+    
+    // Check if origin matches any allowed pattern
+    if (allowedPatterns.some(pattern => pattern.test(origin))) {
+      return callback(null, true);
+    }
+    
+    // Development mode: allow all localhost origins
+    if (process.env.NODE_ENV === 'development' && origin.includes('localhost')) {
+      return callback(null, true);
+    }
+    
+    console.warn(`CORS blocked origin: ${origin}`);
+    callback(new Error('Not allowed by CORS'));
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400, // 24 hours
 }));
 
 app.use(morgan('dev'));
