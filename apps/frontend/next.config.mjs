@@ -12,6 +12,20 @@ const nextConfig = {
     // Disable type checking during production builds
     ignoreBuildErrors: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '*.supabase.co',
+        pathname: '/storage/v1/object/public/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cqvcauymipatkmckekrv.supabase.co',
+        pathname: '/**',
+      },
+    ],
+  },
 };
 
 export default withNextIntl(nextConfig);

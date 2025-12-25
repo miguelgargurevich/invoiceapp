@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,8 +16,11 @@ import {
   HelpCircle,
   ChevronLeft,
   X,
+  Building2,
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, getInitials } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
+import { useState } from 'react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -38,9 +42,47 @@ const menuItems = [
 export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: SidebarProps) {
   const pathname = usePathname();
   const t = useTranslations('navigation');
+  const { empresa } = useAuth();
 
   // Extraer la parte de la ruta sin el locale
   const currentPath = '/' + pathname.split('/').slice(2).join('/');
+
+  // Componente Logo de la empresa con fallback
+  // Estado para manejar error de imagen
+  const [imageError, setImageError] = useState(false);
+
+  const CompanyLogo = () => {
+    if (empresa?.logoUrl && !imageError) {
+      return (
+        <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-700">
+          <Image
+            src={empresa.logoUrl}
+            alt={empresa.nombre || 'Logo'}
+            width={32}
+            height={32}
+            className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+          />
+        </div>
+      );
+    }
+
+    // Fallback: iniciales de la empresa o ícono genérico
+    if (empresa?.nombre) {
+      return (
+        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-white text-sm font-bold">
+          {getInitials(empresa.nombre)}
+        </div>
+      );
+    }
+
+    // Fallback por defecto
+    return (
+      <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+        <Building2 className="w-5 h-5 text-white" />
+      </div>
+    );
+  };
 
   return (
     <>
@@ -74,10 +116,15 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
         <div className="flex items-center justify-between h-16 px-4 border-b border-gray-800">
           {!isCollapsed && (
             <Link href="/dashboard" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                <FileText className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-bold text-lg">Factura</span>
+              <CompanyLogo />
+              <span className="font-bold text-lg truncate max-w-[140px]">
+                {empresa?.nombre || 'Factura'}
+              </span>
+            </Link>
+          )}
+          {isCollapsed && (
+            <Link href="/dashboard" className="mx-auto">
+              <CompanyLogo />
             </Link>
           )}
           

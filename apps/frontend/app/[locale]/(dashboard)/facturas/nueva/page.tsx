@@ -97,10 +97,12 @@ export default function NuevaFacturaPage({
   const loadClientes = async () => {
     try {
       setLoadingClientes(true);
-      const response = await api.get('/clientes', {
-        params: { empresaId: empresa?.id, limit: 100 },
+      const params = new URLSearchParams({
+        empresaId: empresa?.id || '',
+        limit: '100',
       });
-      setClientes(response.data.data || []);
+      const response: any = await api.get(`/clientes?${params}`);
+      setClientes(response.data || []);
     } catch (error) {
       console.error('Error loading clientes:', error);
       // Mock data
@@ -128,10 +130,12 @@ export default function NuevaFacturaPage({
   const loadProductos = async () => {
     try {
       setLoadingProductos(true);
-      const response = await api.get('/productos', {
-        params: { empresaId: empresa?.id, limit: 100 },
+      const params = new URLSearchParams({
+        empresaId: empresa?.id || '',
+        limit: '100',
       });
-      setProductos(response.data.data || []);
+      const response: any = await api.get(`/productos?${params}`);
+      setProductos(response.data || []);
     } catch (error) {
       console.error('Error loading productos:', error);
       // Mock data

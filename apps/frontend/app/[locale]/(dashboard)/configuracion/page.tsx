@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import {
   Building2,
   User,
@@ -12,6 +13,8 @@ import {
   Save,
   Upload,
   Globe,
+  X,
+  ImageIcon,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -33,6 +36,9 @@ export default function ConfiguracionPage({
   const [activeTab, setActiveTab] = useState<Tab>('empresa');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Company form
   const [empresaForm, setEmpresaForm] = useState({
@@ -85,6 +91,10 @@ export default function ConfiguracionPage({
         email: empresa.email || '',
         web: empresa.web || '',
       });
+      // Establecer el logo actual si existe
+      if (empresa.logoUrl) {
+        setLogoPreview(empresa.logoUrl);
+      }
     }
     if (user) {
       setUserForm((prev) => ({
@@ -106,6 +116,79 @@ export default function ConfiguracionPage({
       console.error('Error saving empresa:', error);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleLogoSelect = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleLogoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validar tipo de archivo
+    if (!file.type.startsWith('image/')) {
+      setMessage(t('invalidFileType'));
+      setTimeout(() => setMessage(''), 3000);
+      return;
+    }
+
+    // Validar tamaño (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setMessage(t('fileTooLarge'));
+      setTimeout(() => setMessage(''), 3000);
+      return;
+    }
+
+    try {
+      setUploadingLogo(true);
+
+      // Crear preview local
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setLogoPreview(event.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+
+      // Subir al servidor
+      const formData = new FormData();
+      formData.append('logo', file);
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/empresas/logo`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Error uploading logo');
+      }
+
+      const data = await response.json();
+      setLogoPreview(data.logoUrl);
+      refreshEmpresa?.();
+      setMessage(t('logoUploaded'));
+      setTimeout(() => setMessage(''), 3000);
+    } catch (error) {
+      console.error('Error uploading logo:', error);
+      setMessage(t('errorUploadingLogo'));
+      setTimeout(() => setMessage(''), 3000);
+    } finally {
+      setUploadingLogo(false);
+      // Reset input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    setLogoPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -257,13 +340,65 @@ export default function ConfiguracionPage({
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {t('logo')}
                   </label>
-                  <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
-                    <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-500">{t('dragDropLogo')}</p>
-                    <Button variant="outline" size="sm" className="mt-2">
-                      {t('selectFile')}
-                    </Button>
-                  </div>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoChange}
+                    className="hidden"
+                  />
+                  
+                  {logoPreview ? (
+                    <div className="relative inline-block">
+                      <div className="relative w-32 h-32 border-2 border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
+                        <Image
+                          src={logoPreview}
+                          alt="Logo"
+                          fill
+                          className="object-contain p-2"
+                          unoptimized
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleRemoveLogo}
+                        className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-3 w-full"
+                        onClick={handleLogoSelect}
+                        disabled={uploadingLogo}
+                      >
+                        {uploadingLogo ? (
+                          <LoadingSpinner size="sm" className="mr-2" />
+                        ) : (
+                          <Upload className="w-4 h-4 mr-2" />
+                        )}
+                        {t('changeLogo')}
+                      </Button>
+                    </div>
+                  ) : (
+                    <div
+                      onClick={handleLogoSelect}
+                      className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-primary-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      {uploadingLogo ? (
+                        <LoadingSpinner size="md" className="mx-auto mb-2" />
+                      ) : (
+                        <ImageIcon className="w-12 h-12 mx-auto text-gray-400 mb-2" />
+                      )}
+                      <p className="text-sm text-gray-500 mb-1">{t('dragDropLogo')}</p>
+                      <p className="text-xs text-gray-400">{t('maxFileSize')}</p>
+                      <Button variant="outline" size="sm" className="mt-3" disabled={uploadingLogo}>
+                        <Upload className="w-4 h-4 mr-2" />
+                        {t('selectFile')}
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
