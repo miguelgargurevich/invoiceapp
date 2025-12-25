@@ -2,10 +2,6 @@
   "name": "invoiceapp",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "apps/frontend",
-    "apps/backend"
-  ],
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" --names \"backend,frontend\" --prefix-colors \"blue,magenta\"",
     "dev:backend": "cd apps/backend && npm run dev",
