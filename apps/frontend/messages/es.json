@@ -340,7 +340,16 @@
     "language": "Idioma",
     "spanish": "Español",
     "english": "Inglés",
-    "email:": "Correo electrónico",
+    "email": "Correo electrónico",
+    "notificationSettings": "Configuración de Notificaciones",
+    "notificationSettingsDesc": "Configura las notificaciones por correo",
+    "emailOnInvoice": "Correo al Crear Factura",
+    "emailOnInvoiceDesc": "Enviar correo cuando se crea una nueva factura",
+    "emailOnDue": "Correo en Fecha de Vencimiento",
+    "emailOnDueDesc": "Enviar recordatorio antes de la fecha de vencimiento",
+    "emailOnPayment": "Correo al Recibir Pago",
+    "emailOnPaymentDesc": "Enviar confirmación cuando se recibe un pago",
+    "daysBeforeDue": "Días Antes del Vencimiento",
     "messages": {
       "saved": "Configuración guardada exitosamente",
       "logoUploaded": "Logo subido exitosamente"

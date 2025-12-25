@@ -356,7 +356,16 @@
     "language": "Language",
     "spanish": "Spanish",
     "english": "English",
-    "email:": "Email",
+    "email": "Email",
+    "notificationSettings": "Notification Settings",
+    "notificationSettingsDesc": "Configure email notifications",
+    "emailOnInvoice": "Email on Invoice Creation",
+    "emailOnInvoiceDesc": "Send email when a new invoice is created",
+    "emailOnDue": "Email on Due Date",
+    "emailOnDueDesc": "Send email reminder before invoice due date",
+    "emailOnPayment": "Email on Payment",
+    "emailOnPaymentDesc": "Send email confirmation when payment is received",
+    "daysBeforeDue": "Days Before Due Date",
     "messages": {
       "saved": "Settings successfully saved",
       "logoUploaded": "Logo successfully uploaded"
