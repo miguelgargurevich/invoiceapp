@@ -90,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loadEmpresa = async () => {
     try {
-      const response = await apiClient.get<Empresa>('/api/empresas/mi-empresa');
+      const response = await apiClient.get<Empresa>('/empresas/mi-empresa');
       setEmpresa(response);
     } catch (error) {
       console.log('[AuthContext] No empresa found or error:', error);
