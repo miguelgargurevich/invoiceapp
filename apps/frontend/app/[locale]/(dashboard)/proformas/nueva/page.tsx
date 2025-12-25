@@ -1,0 +1,473 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
+import {
+  ArrowLeft,
+  Save,
+  Plus,
+  Trash2,
+  Calculator,
+  Search,
+} from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  Button,
+  Card,
+  Input,
+  Select,
+  Textarea,
+  DatePicker,
+  LoadingPage,
+} from '@/components/common';
+import { formatCurrency } from '@/lib/utils';
+import api from '@/lib/api';
+
+interface Cliente {
+  id: string;
+  nombre: string;
+  documento: string;
+  tipoDocumento: string;
+  direccion: string;
+  email?: string;
+}
+
+interface Producto {
+  id: string;
+  codigo: string;
+  nombre: string;
+  descripcion?: string;
+  precioVenta: number;
+  unidadMedida: string;
+  afectoIgv: boolean;
+}
+
+interface LineaDetalle {
+  id: string;
+  productoId: string;
+  producto?: Producto;
+  descripcion: string;
+  cantidad: number;
+  precioUnitario: number;
+  descuento: number;
+  subtotal: number;
+  igv: number;
+  total: number;
+}
+
+const IGV_RATE = 0.18;
+
+export default function NuevaProformaPage({
+  params: { locale },
+}: {
+  params: { locale: string };
+}) {
+  const t = useTranslations('quotes');
+  const router = useRouter();
+  const { empresa } = useAuth();
+
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [productos, setProductos] = useState<Producto[]>([]);
+
+  // Form state
+  const [clienteId, setClienteId] = useState('');
+  const [fechaEmision, setFechaEmision] = useState<Date | null>(new Date());
+  const [fechaVencimiento, setFechaVencimiento] = useState<Date | null>(
+    new Date(Date.now() + 30 * 86400000)
+  );
+  const [observaciones, setObservaciones] = useState('');
+  const [lineas, setLineas] = useState<LineaDetalle[]>([]);
+
+  // Load data
+  useEffect(() => {
+    if (empresa?.id) {
+      loadClientes();
+      loadProductos();
+    }
+  }, [empresa?.id]);
+
+  const loadClientes = async () => {
+    try {
+      const params = new URLSearchParams({
+        empresaId: empresa?.id || '',
+        limit: '100',
+      });
+      const response: any = await api.get(`/clientes?${params}`);
+      setClientes(response.data.data || []);
+    } catch (error) {
+      console.error('Error loading clientes:', error);
+      setClientes([]);
+    }
+  };
+
+  const loadProductos = async () => {
+    try {
+      const params = new URLSearchParams({
+        empresaId: empresa?.id || '',
+        limit: '100',
+      });
+      const response: any = await api.get(`/productos?${params}`);
+      setProductos(response.data.data || []);
+    } catch (error) {
+      console.error('Error loading productos:', error);
+      setProductos([]);
+    }
+  };
+
+  // Line item management
+  const addLinea = () => {
+    const newLinea: LineaDetalle = {
+      id: `temp-${Date.now()}`,
+      productoId: '',
+      descripcion: '',
+      cantidad: 1,
+      precioUnitario: 0,
+      descuento: 0,
+      subtotal: 0,
+      igv: 0,
+      total: 0,
+    };
+    setLineas([...lineas, newLinea]);
+  };
+
+  const removeLinea = (id: string) => {
+    setLineas(lineas.filter((l) => l.id !== id));
+  };
+
+  const updateLinea = (id: string, updates: Partial<LineaDetalle>) => {
+    setLineas(
+      lineas.map((linea) => {
+        if (linea.id !== id) return linea;
+
+        const updated = { ...linea, ...updates };
+
+        // If producto changed, update related fields
+        if (updates.productoId) {
+          const producto = productos.find((p) => p.id === updates.productoId);
+          if (producto) {
+            updated.producto = producto;
+            updated.descripcion = producto.nombre;
+            updated.precioUnitario = producto.precioVenta;
+          }
+        }
+
+        // Recalculate totals
+        const baseAmount = updated.cantidad * updated.precioUnitario;
+        updated.subtotal = baseAmount - updated.descuento;
+        updated.igv = updated.producto?.afectoIgv !== false ? updated.subtotal * IGV_RATE : 0;
+        updated.total = updated.subtotal + updated.igv;
+
+        return updated;
+      })
+    );
+  };
+
+  // Calculate totals
+  const totals = lineas.reduce(
+    (acc, linea) => ({
+      subtotal: acc.subtotal + linea.subtotal,
+      igv: acc.igv + linea.igv,
+      total: acc.total + linea.total,
+      descuento: acc.descuento + linea.descuento,
+    }),
+    { subtotal: 0, igv: 0, total: 0, descuento: 0 }
+  );
+
+  const selectedCliente = clientes.find((c) => c.id === clienteId);
+
+  const handleSave = async () => {
+    if (!clienteId || lineas.length === 0) {
+      alert('Por favor complete todos los campos requeridos');
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      const payload = {
+        empresaId: empresa?.id,
+        clienteId,
+        fechaEmision: fechaEmision?.toISOString(),
+        fechaVencimiento: fechaVencimiento?.toISOString(),
+        observaciones,
+        detalles: lineas.map((linea) => ({
+          productoId: linea.productoId || null,
+          descripcion: linea.descripcion,
+          cantidad: linea.cantidad,
+          precioUnitario: linea.precioUnitario,
+          descuento: linea.descuento,
+        })),
+      };
+
+      await api.post('/proformas', payload);
+      router.push(`/${locale}/proformas`);
+    } catch (error) {
+      console.error('Error saving proforma:', error);
+      alert('Error al guardar la proforma');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return <LoadingPage />;
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => router.back()}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {t('newQuote')}
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400">
+              {t('description')}
+            </p>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => router.back()}>
+            Cancelar
+          </Button>
+          <Button onClick={handleSave} disabled={saving}>
+            <Save className="w-4 h-4 mr-2" />
+            {saving ? 'Guardando...' : 'Guardar'}
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main content */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Client selection */}
+          <Card>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              {t('client')}
+            </h2>
+            <select
+              value={clienteId}
+              onChange={(e) => setClienteId(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              required
+            >
+              <option value="">Seleccionar cliente...</option>
+              {clientes.map((cliente) => (
+                <option key={cliente.id} value={cliente.id}>
+                  {cliente.nombre} - {cliente.documento}
+                </option>
+              ))}
+            </select>
+            {selectedCliente && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                className="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg"
+              >
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-500 dark:text-gray-400">Documento:</span>
+                    <p className="font-medium">{selectedCliente.tipoDocumento}: {selectedCliente.documento}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 dark:text-gray-400">Dirección:</span>
+                    <p className="font-medium">{selectedCliente.direccion || '-'}</p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </Card>
+
+          {/* Line items */}
+          <Card>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Productos/Servicios
+              </h2>
+              <Button size="sm" onClick={addLinea}>
+                <Plus className="w-4 h-4 mr-1" />
+                Agregar ítem
+              </Button>
+            </div>
+
+            {lineas.length === 0 ? (
+              <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+                <Calculator className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>No hay ítems agregados</p>
+                <Button className="mt-4" variant="outline" onClick={addLinea}>
+                  <Plus className="w-4 h-4 mr-1" />
+                  Agregar primer ítem
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {lineas.map((linea, index) => (
+                  <div
+                    key={linea.id}
+                    className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 space-y-3"
+                  >
+                    <div className="flex items-start justify-between">
+                      <span className="text-sm font-medium text-gray-500">
+                        Ítem #{index + 1}
+                      </span>
+                      <button
+                        onClick={() => removeLinea(linea.id)}
+                        className="p-1 text-red-500"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <select
+                      value={linea.productoId}
+                      onChange={(e) => updateLinea(linea.id, { productoId: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+                    >
+                      <option value="">Seleccionar producto...</option>
+                      {productos.map((producto) => (
+                        <option key={producto.id} value={producto.id}>
+                          {producto.codigo} - {producto.nombre}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="grid grid-cols-3 gap-2">
+                      <div>
+                        <label className="text-xs text-gray-500">Cantidad</label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={linea.cantidad}
+                          onChange={(e) =>
+                            updateLinea(linea.id, { cantidad: parseInt(e.target.value) || 1 })
+                          }
+                          className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs text-gray-500">Precio</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={linea.precioUnitario}
+                          onChange={(e) =>
+                            updateLinea(linea.id, { precioUnitario: parseFloat(e.target.value) || 0 })
+                          }
+                          className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs text-gray-500">Descuento</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={linea.descuento}
+                          onChange={(e) =>
+                            updateLinea(linea.id, { descuento: parseFloat(e.target.value) || 0 })
+                          }
+                          className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex justify-between text-sm font-medium">
+                      <span>Subtotal:</span>
+                      <span>{formatCurrency(linea.subtotal)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Card>
+
+          {/* Observations */}
+          <Card>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              Observaciones
+            </h2>
+            <Textarea
+              value={observaciones}
+              onChange={(e) => setObservaciones(e.target.value)}
+              placeholder="Condiciones, términos u otras observaciones..."
+              rows={3}
+            />
+          </Card>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Dates */}
+          <Card>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              {t('issueDate')}
+            </h2>
+            <div className="space-y-4">
+              <DatePicker
+                label={t('issueDate')}
+                value={fechaEmision}
+                onChange={setFechaEmision}
+                locale={locale as 'es' | 'en'}
+              />
+              <DatePicker
+                label={t('validUntil')}
+                value={fechaVencimiento}
+                onChange={setFechaVencimiento}
+                minDate={fechaEmision || undefined}
+                locale={locale as 'es' | 'en'}
+              />
+            </div>
+          </Card>
+
+          {/* Totals */}
+          <Card>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              {t('total')}
+            </h2>
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500 dark:text-gray-400">Subtotal</span>
+                <span>{formatCurrency(totals.subtotal)}</span>
+              </div>
+              {totals.descuento > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500 dark:text-gray-400">Descuento</span>
+                  <span className="text-red-500">-{formatCurrency(totals.descuento)}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500 dark:text-gray-400">IGV (18%)</span>
+                <span>{formatCurrency(totals.igv)}</span>
+              </div>
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
+                <div className="flex justify-between">
+                  <span className="font-semibold text-gray-900 dark:text-gray-100">
+                    {t('total')}
+                  </span>
+                  <span className="text-xl font-bold text-primary-600">
+                    {formatCurrency(totals.total)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Quick actions */}
+          <Card className="!p-4">
+            <Button className="w-full" onClick={handleSave} disabled={saving || lineas.length === 0}>
+              <Save className="w-4 h-4 mr-2" />
+              {saving ? 'Guardando...' : 'Guardar Proforma'}
+            </Button>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}

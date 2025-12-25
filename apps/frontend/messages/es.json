@@ -340,6 +340,7 @@
     "language": "Idioma",
     "spanish": "Español",
     "english": "Inglés",
+    "email:": "Correo electrónico",
     "messages": {
       "saved": "Configuración guardada exitosamente",
       "logoUploaded": "Logo subido exitosamente"

@@ -356,6 +356,7 @@
     "language": "Language",
     "spanish": "Spanish",
     "english": "English",
+    "email:": "Email",
     "messages": {
       "saved": "Settings successfully saved",
       "logoUploaded": "Logo successfully uploaded"
