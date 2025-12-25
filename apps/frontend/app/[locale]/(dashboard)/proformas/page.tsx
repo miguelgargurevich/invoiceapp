@@ -121,7 +121,7 @@ export default function ProformasPage({
       header: t('status'),
       render: (proforma) => (
         <Badge variant={getEstadoBadge(proforma.estado)}>
-          {t(`status.${proforma.estado}`)}
+          {t(`statuses.${proforma.estado}`)}
         </Badge>
       ),
     },
@@ -176,44 +176,51 @@ export default function ProformasPage({
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
-          <p className="text-gray-600 mt-1">{t('description')}</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {t('title')}
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
+            {t('description')}
+          </p>
         </div>
         <Button onClick={() => router.push(`/${locale}/proformas/nueva`)}>
-          <Plus className="h-5 w-5 mr-2" />
+          <Plus className="h-4 w-4 mr-2" />
           {t('create')}
         </Button>
       </div>
 
-      <Card>
-        <div className="p-4 border-b border-gray-200">
-          <div className="flex gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-              <input
-                type="text"
-                placeholder={t('searchPlaceholder')}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              />
-            </div>
-            <select
-              value={filterEstado}
-              onChange={(e) => setFilterEstado(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            >
-              <option value="">{t('allStatuses')}</option>
-              <option value="pendiente">{t('status.pendiente')}</option>
-              <option value="aprobada">{t('status.aprobada')}</option>
-              <option value="rechazada">{t('status.rechazada')}</option>
-              <option value="convertida">{t('status.convertida')}</option>
-            </select>
+      {/* Filters */}
+      <Card className="!p-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <input
+              type="text"
+              placeholder={t('searchPlaceholder')}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            />
           </div>
+          <select
+            value={filterEstado}
+            onChange={(e) => setFilterEstado(e.target.value)}
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          >
+            <option value="">{t('allStatuses')}</option>
+            <option value="pendiente">{t('statuses.pendiente')}</option>
+            <option value="aprobada">{t('statuses.aprobada')}</option>
+            <option value="rechazada">{t('statuses.rechazada')}</option>
+            <option value="convertida">{t('statuses.convertida')}</option>
+          </select>
         </div>
+      </Card>
 
+      {/* Table */}
+      <Card>
         {proformas.length === 0 ? (
           <EmptyState
             title={t('noProformas')}
