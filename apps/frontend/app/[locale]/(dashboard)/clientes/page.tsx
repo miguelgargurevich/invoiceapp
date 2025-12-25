@@ -56,13 +56,11 @@ export default function ClientesPage({
     
     try {
       setLoading(true);
-      const response = await api.get('/clientes', {
-        params: {
-          empresaId: empresa.id,
-          search,
-          page: currentPage,
-          limit: 10,
-        },
+      const response = await api.get<{ data: { data: Cliente[], totalPages: number } }>('/clientes', {
+        empresaId: empresa.id,
+        search,
+        page: currentPage.toString(),
+        limit: '10',
       });
       setClientes(response.data.data || []);
       setTotalPages(response.data.totalPages || 1);

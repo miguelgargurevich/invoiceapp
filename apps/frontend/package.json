@@ -41,6 +41,7 @@
     "typescript": "^5"
   },
   "optionalDependencies": {
-    "@parcel/watcher": "^2.5.1"
+    "@parcel/watcher": "^2.5.1",
+    "@swc/core": "^1.15.7"
   }
 }
