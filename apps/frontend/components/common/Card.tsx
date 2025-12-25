@@ -44,7 +44,7 @@ export function Card({
 interface MetricCardProps {
   title: string;
   value: string | number;
-  icon: LucideIcon | ReactNode;
+  icon: LucideIcon;
   change?: string;
   changeType?: 'positive' | 'negative' | 'neutral';
   subtitle?: string;
@@ -54,7 +54,7 @@ interface MetricCardProps {
 export function MetricCard({
   title,
   value,
-  icon,
+  icon: Icon,
   change,
   changeType,
   subtitle,
@@ -74,10 +74,6 @@ export function MetricCard({
     neutral: 'text-gray-500',
   };
 
-  // Check if icon is a component or an element
-  const isIconComponent = typeof icon === 'function';
-  const IconComponent = isIconComponent ? (icon as LucideIcon) : null;
-
   return (
     <Card>
       <div className="flex items-start justify-between">
@@ -94,7 +90,7 @@ export function MetricCard({
           )}
         </div>
         <div className={cn('p-3 rounded-lg', colorClasses[color])}>
-          {IconComponent ? <IconComponent className="w-6 h-6" /> : (icon as ReactNode)}
+          <Icon className="w-6 h-6" />
         </div>
       </div>
     </Card>
