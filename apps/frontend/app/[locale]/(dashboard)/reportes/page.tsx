@@ -176,8 +176,8 @@ export default function ReportesPage({
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
             {t('monthlySales')}
           </h2>
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-72 w-full">
+            <ResponsiveContainer width="100%" height={288}>
               <BarChart data={ventasMensuales}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
                 <XAxis dataKey="mes" tick={{ fontSize: 12 }} />
@@ -202,8 +202,8 @@ export default function ReportesPage({
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
             {t('invoiceStatus')}
           </h2>
-          <div className="h-48">
-            <ResponsiveContainer width="100%" height="100%">
+          <div className="h-72 w-full">
+            <ResponsiveContainer width="100%" height={288}>
               <PieChart>
                 <Pie
                   data={estadoFacturas}
@@ -306,8 +306,8 @@ export default function ReportesPage({
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
           {t('salesTrend')}
         </h2>
-        <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
+          <div className="h-72 w-full min-h-[288px]">
+            <ResponsiveContainer width="100%" height={288}>
             <LineChart data={ventasMensuales}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
               <XAxis dataKey="mes" tick={{ fontSize: 12 }} />
