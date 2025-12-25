@@ -44,7 +44,7 @@ export function Card({
 interface MetricCardProps {
   title: string;
   value: string | number;
-  icon: LucideIcon;
+  icon: ReactNode;
   change?: string;
   changeType?: 'positive' | 'negative' | 'neutral';
   subtitle?: string;
@@ -54,7 +54,7 @@ interface MetricCardProps {
 export function MetricCard({
   title,
   value,
-  icon: Icon,
+  icon,
   change,
   changeType,
   subtitle,
@@ -90,7 +90,7 @@ export function MetricCard({
           )}
         </div>
         <div className={cn('p-3 rounded-lg', colorClasses[color])}>
-          <Icon className="w-6 h-6" />
+          {icon}
         </div>
       </div>
     </Card>

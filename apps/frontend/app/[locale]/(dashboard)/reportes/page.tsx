@@ -146,25 +146,25 @@ export default function ReportesPage({
         <MetricCard
           title={t('totalInvoiced')}
           value={formatCurrency(totales.totalFacturado)}
-          icon={BarChart3}
+          icon={<BarChart3 className="w-6 h-6" />}
           color="blue"
         />
         <MetricCard
           title={t('totalCollected')}
           value={formatCurrency(totales.totalCobrado)}
-          icon={TrendingUp}
+          icon={<TrendingUp className="w-6 h-6" />}
           color="green"
         />
         <MetricCard
           title={t('totalPending')}
           value={formatCurrency(totales.totalPendiente)}
-          icon={FileText}
+          icon={<FileText className="w-6 h-6" />}
           color="yellow"
         />
         <MetricCard
           title={t('totalInvoices')}
           value={totales.facturas.toString()}
-          icon={FileText}
+          icon={<FileText className="w-6 h-6" />}
           color="purple"
         />
       </div>
