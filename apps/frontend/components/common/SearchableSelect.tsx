@@ -163,7 +163,7 @@ export function SearchableSelect({
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute z-50 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
+        <div className="absolute z-[100] mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
           {/* Search input */}
           <div className="p-2 border-b border-gray-200 dark:border-gray-700">
             <div className="relative">
@@ -319,7 +319,7 @@ export function ProductSelect({
   products,
   value,
   onChange,
-  label = 'Producto',
+  label,
   placeholder = 'Seleccionar producto...',
   error,
   disabled,

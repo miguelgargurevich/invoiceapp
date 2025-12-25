@@ -289,8 +289,8 @@ export default function DashboardPage() {
                 <option value="12">{t('last12Months')}</option>
               </select>
             </div>
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
+            <div className="h-72 w-full min-h-[288px]">
+              <ResponsiveContainer width="100%" height={288}>
                 <AreaChart data={monthlyRevenue}>
                   <defs>
                     <linearGradient id="colorIngresos" x1="0" y1="0" x2="0" y2="1">
@@ -342,8 +342,8 @@ export default function DashboardPage() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
               {t('invoiceStatus')}
             </h2>
-            <div className="h-48">
-              <ResponsiveContainer width="100%" height="100%">
+            <div className="h-48 w-full min-h-[192px]">
+              <ResponsiveContainer width="100%" height={192}>
                 <PieChart>
                   <Pie
                     data={pieData}

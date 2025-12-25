@@ -347,32 +347,32 @@ export default function NuevaFacturaPage({
             ) : (
               <div className="space-y-4">
                 {/* Desktop table */}
-                <div className="hidden md:block overflow-x-auto">
-                  <table className="w-full">
+                <div className="hidden md:block">
+                  <table className="w-full table-fixed">
                     <thead>
                       <tr className="border-b border-gray-200 dark:border-gray-700">
-                        <th className="text-left py-2 text-xs font-medium text-gray-500 uppercase w-1/3">
+                        <th className="text-left py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '40%' }}>
                           {t('product')}
                         </th>
-                        <th className="text-center py-2 text-xs font-medium text-gray-500 uppercase w-20">
+                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '10%' }}>
                           {t('qty')}
                         </th>
-                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase w-28">
+                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '15%' }}>
                           {t('price')}
                         </th>
-                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase w-24">
+                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '12%' }}>
                           {t('discount')}
                         </th>
-                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase w-28">
+                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '15%' }}>
                           {t('subtotal')}
                         </th>
-                        <th className="w-10"></th>
+                        <th style={{ width: '8%' }}></th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                       {lineas.map((linea) => (
                         <tr key={linea.id}>
-                          <td className="py-2">
+                          <td className="py-2 pr-2">
                             <ProductSelect
                               products={productos}
                               value={linea.productoId}
@@ -381,7 +381,7 @@ export default function NuevaFacturaPage({
                               placeholder={t('selectProduct')}
                             />
                           </td>
-                          <td className="py-2">
+                          <td className="py-2 px-1">
                             <input
                               type="number"
                               min="1"
@@ -389,10 +389,10 @@ export default function NuevaFacturaPage({
                               onChange={(e) =>
                                 updateLinea(linea.id, { cantidad: parseInt(e.target.value) || 1 })
                               }
-                              className="w-20 px-2 py-1 text-center border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                              className="w-full px-2 py-1.5 text-right border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm"
                             />
                           </td>
-                          <td className="py-2">
+                          <td className="py-2 px-1">
                             <input
                               type="number"
                               step="0.01"
@@ -401,10 +401,10 @@ export default function NuevaFacturaPage({
                               onChange={(e) =>
                                 updateLinea(linea.id, { precioUnitario: parseFloat(e.target.value) || 0 })
                               }
-                              className="w-28 px-2 py-1 text-right border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                              className="w-full px-2 py-1.5 text-right border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm"
                             />
                           </td>
-                          <td className="py-2">
+                          <td className="py-2 px-1">
                             <input
                               type="number"
                               step="0.01"
@@ -413,13 +413,13 @@ export default function NuevaFacturaPage({
                               onChange={(e) =>
                                 updateLinea(linea.id, { descuento: parseFloat(e.target.value) || 0 })
                               }
-                              className="w-24 px-2 py-1 text-right border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                              className="w-full px-2 py-1.5 text-right border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm"
                             />
                           </td>
-                          <td className="py-2 text-right font-medium">
+                          <td className="py-2 px-1 text-right font-medium text-sm">
                             {formatCurrency(linea.subtotal)}
                           </td>
-                          <td className="py-2">
+                          <td className="py-2 text-center">
                             <button
                               onClick={() => removeLinea(linea.id)}
                               className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"

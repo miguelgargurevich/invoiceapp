@@ -20,6 +20,8 @@ import {
   Select,
   Textarea,
   DatePicker,
+  ClientSelect,
+  ProductSelect,
   LoadingPage,
 } from '@/components/common';
 import { formatCurrency } from '@/lib/utils';
@@ -72,6 +74,8 @@ export default function NuevaProformaPage({
   const [saving, setSaving] = useState(false);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [productos, setProductos] = useState<Producto[]>([]);
+  const [loadingClientes, setLoadingClientes] = useState(true);
+  const [loadingProductos, setLoadingProductos] = useState(true);
 
   // Form state
   const [clienteId, setClienteId] = useState('');
@@ -92,6 +96,7 @@ export default function NuevaProformaPage({
 
   const loadClientes = async () => {
     try {
+      setLoadingClientes(true);
       const params = new URLSearchParams({
         empresaId: empresa?.id || '',
         limit: '100',
@@ -101,11 +106,14 @@ export default function NuevaProformaPage({
     } catch (error) {
       console.error('Error loading clientes:', error);
       setClientes([]);
+    } finally {
+      setLoadingClientes(false);
     }
   };
 
   const loadProductos = async () => {
     try {
+      setLoadingProductos(true);
       const params = new URLSearchParams({
         empresaId: empresa?.id || '',
         limit: '100',
@@ -115,6 +123,8 @@ export default function NuevaProformaPage({
     } catch (error) {
       console.error('Error loading productos:', error);
       setProductos([]);
+    } finally {
+      setLoadingProductos(false);
     }
   };
 
@@ -239,11 +249,11 @@ export default function NuevaProformaPage({
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => router.back()}>
-            Cancelar
+            {t('cancel')}
           </Button>
           <Button onClick={handleSave} disabled={saving}>
             <Save className="w-4 h-4 mr-2" />
-            {saving ? 'Guardando...' : 'Guardar'}
+            {saving ? t('save') + '...' : t('save')}
           </Button>
         </div>
       </div>
@@ -254,21 +264,15 @@ export default function NuevaProformaPage({
           {/* Client selection */}
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              {t('client')}
+              {t('client')}*
             </h2>
-            <select
+            <ClientSelect
+              clients={clientes}
               value={clienteId}
-              onChange={(e) => setClienteId(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-              required
-            >
-              <option value="">Seleccionar cliente...</option>
-              {clientes.map((cliente) => (
-                <option key={cliente.id} value={cliente.id}>
-                  {cliente.nombre} - {cliente.documento}
-                </option>
-              ))}
-            </select>
+              onChange={setClienteId}
+              loading={loadingClientes}
+              placeholder={t('selectClient')}
+            />
             {selectedCliente && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
@@ -277,11 +281,11 @@ export default function NuevaProformaPage({
               >
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-500 dark:text-gray-400">Documento:</span>
+                    <span className="text-gray-500 dark:text-gray-400">{t('document')}:</span>
                     <p className="font-medium">{selectedCliente.tipoDocumento}: {selectedCliente.documento}</p>
                   </div>
                   <div>
-                    <span className="text-gray-500 dark:text-gray-400">Dirección:</span>
+                    <span className="text-gray-500 dark:text-gray-400">{t('address')}:</span>
                     <p className="font-medium">{selectedCliente.direccion || '-'}</p>
                   </div>
                 </div>
@@ -293,105 +297,190 @@ export default function NuevaProformaPage({
           <Card>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                Productos/Servicios
+                {t('items')}
               </h2>
               <Button size="sm" onClick={addLinea}>
                 <Plus className="w-4 h-4 mr-1" />
-                Agregar ítem
+                {t('addItem')}
               </Button>
             </div>
 
             {lineas.length === 0 ? (
               <div className="text-center py-12 text-gray-500 dark:text-gray-400">
                 <Calculator className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>No hay ítems agregados</p>
+                <p>{t('noItems')}</p>
                 <Button className="mt-4" variant="outline" onClick={addLinea}>
                   <Plus className="w-4 h-4 mr-1" />
-                  Agregar primer ítem
+                  {t('addFirstItem')}
                 </Button>
               </div>
             ) : (
-              <div className="space-y-4">
-                {lineas.map((linea, index) => (
-                  <div
-                    key={linea.id}
-                    className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 space-y-3"
-                  >
-                    <div className="flex items-start justify-between">
-                      <span className="text-sm font-medium text-gray-500">
-                        Ítem #{index + 1}
-                      </span>
-                      <button
-                        onClick={() => removeLinea(linea.id)}
-                        className="p-1 text-red-500"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                    <select
-                      value={linea.productoId}
-                      onChange={(e) => updateLinea(linea.id, { productoId: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
-                    >
-                      <option value="">Seleccionar producto...</option>
-                      {productos.map((producto) => (
-                        <option key={producto.id} value={producto.id}>
-                          {producto.codigo} - {producto.nombre}
-                        </option>
+              <>
+                {/* Desktop table */}
+                <div className="hidden md:block">
+                  <table className="w-full table-fixed">
+                    <thead>
+                      <tr className="border-b border-gray-200 dark:border-gray-700">
+                        <th className="text-left py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '40%' }}>
+                          {t('product')}
+                        </th>
+                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '10%' }}>
+                          {t('qty')}
+                        </th>
+                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '15%' }}>
+                          {t('price')}
+                        </th>
+                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '12%' }}>
+                          {t('discount')}
+                        </th>
+                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '15%' }}>
+                          {t('subtotal')}
+                        </th>
+                        <th style={{ width: '8%' }}></th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                      {lineas.map((linea) => (
+                        <tr key={linea.id}>
+                          <td className="py-2 pr-2">
+                            <ProductSelect
+                              products={productos}
+                              value={linea.productoId}
+                              onChange={(value) => updateLinea(linea.id, { productoId: value })}
+                              loading={loadingProductos}
+                              placeholder={t('selectProduct')}
+                            />
+                          </td>
+                          <td className="py-2 px-1">
+                            <input
+                              type="number"
+                              min="1"
+                              value={linea.cantidad}
+                              onChange={(e) =>
+                                updateLinea(linea.id, { cantidad: parseInt(e.target.value) || 1 })
+                              }
+                              className="w-full px-2 py-1.5 text-right border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm"
+                            />
+                          </td>
+                          <td className="py-2 px-1">
+                            <input
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              value={linea.precioUnitario}
+                              onChange={(e) =>
+                                updateLinea(linea.id, { precioUnitario: parseFloat(e.target.value) || 0 })
+                              }
+                              className="w-full px-2 py-1.5 text-right border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm"
+                            />
+                          </td>
+                          <td className="py-2 px-1">
+                            <input
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              value={linea.descuento}
+                              onChange={(e) =>
+                                updateLinea(linea.id, { descuento: parseFloat(e.target.value) || 0 })
+                              }
+                              className="w-full px-2 py-1.5 text-right border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm"
+                            />
+                          </td>
+                          <td className="py-2 px-1 text-right font-medium text-sm">
+                            {formatCurrency(linea.subtotal)}
+                          </td>
+                          <td className="py-2 text-center">
+                            <button
+                              onClick={() => removeLinea(linea.id)}
+                              className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
                       ))}
-                    </select>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div>
-                        <label className="text-xs text-gray-500">Cantidad</label>
-                        <input
-                          type="number"
-                          min="1"
-                          value={linea.cantidad}
-                          onChange={(e) =>
-                            updateLinea(linea.id, { cantidad: parseInt(e.target.value) || 1 })
-                          }
-                          className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
-                        />
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Mobile cards */}
+                <div className="md:hidden space-y-4">
+                  {lineas.map((linea, index) => (
+                    <div
+                      key={linea.id}
+                      className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 space-y-3"
+                    >
+                      <div className="flex items-start justify-between">
+                        <span className="text-sm font-medium text-gray-500">
+                          {t('item')} #{index + 1}
+                        </span>
+                        <button
+                          onClick={() => removeLinea(linea.id)}
+                          className="p-1 text-red-500"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
-                      <div>
-                        <label className="text-xs text-gray-500">Precio</label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={linea.precioUnitario}
-                          onChange={(e) =>
-                            updateLinea(linea.id, { precioUnitario: parseFloat(e.target.value) || 0 })
-                          }
-                          className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
-                        />
+                      <ProductSelect
+                        products={productos}
+                        value={linea.productoId}
+                        onChange={(value) => updateLinea(linea.id, { productoId: value })}
+                        loading={loadingProductos}
+                        placeholder={t('selectProduct')}
+                      />
+                      <div className="grid grid-cols-3 gap-2">
+                        <div>
+                          <label className="text-xs text-gray-500">{t('quantity')}</label>
+                          <input
+                            type="number"
+                            min="1"
+                            value={linea.cantidad}
+                            onChange={(e) =>
+                              updateLinea(linea.id, { cantidad: parseInt(e.target.value) || 1 })
+                            }
+                            className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-500">{t('price')}</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={linea.precioUnitario}
+                            onChange={(e) =>
+                              updateLinea(linea.id, { precioUnitario: parseFloat(e.target.value) || 0 })
+                            }
+                            className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-500">{t('discount')}</label>
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={linea.descuento}
+                            onChange={(e) =>
+                              updateLinea(linea.id, { descuento: parseFloat(e.target.value) || 0 })
+                            }
+                            className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <label className="text-xs text-gray-500">Descuento</label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          value={linea.descuento}
-                          onChange={(e) =>
-                            updateLinea(linea.id, { descuento: parseFloat(e.target.value) || 0 })
-                          }
-                          className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
-                        />
+                      <div className="flex justify-between text-sm font-medium">
+                        <span>{t('subtotal')}:</span>
+                        <span>{formatCurrency(linea.subtotal)}</span>
                       </div>
                     </div>
-                    <div className="flex justify-between text-sm font-medium">
-                      <span>Subtotal:</span>
-                      <span>{formatCurrency(linea.subtotal)}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </>
             )}
           </Card>
 
           {/* Observations */}
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              Observaciones
+              {t('observations')}
             </h2>
             <Textarea
               value={observaciones}
@@ -407,7 +496,7 @@ export default function NuevaProformaPage({
           {/* Dates */}
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              {t('issueDate')}
+              {t('dates')}
             </h2>
             <div className="space-y-4">
               <DatePicker
@@ -429,21 +518,21 @@ export default function NuevaProformaPage({
           {/* Totals */}
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              {t('total')}
+              {t('totals')}
             </h2>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">Subtotal</span>
+                <span className="text-gray-500 dark:text-gray-400">{t('subtotal')}</span>
                 <span>{formatCurrency(totals.subtotal)}</span>
               </div>
               {totals.descuento > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500 dark:text-gray-400">Descuento</span>
+                  <span className="text-gray-500 dark:text-gray-400">{t('discount')}</span>
                   <span className="text-red-500">-{formatCurrency(totals.descuento)}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">IGV (18%)</span>
+                <span className="text-gray-500 dark:text-gray-400">{t('tax')}</span>
                 <span>{formatCurrency(totals.igv)}</span>
               </div>
               <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
@@ -463,7 +552,7 @@ export default function NuevaProformaPage({
           <Card className="!p-4">
             <Button className="w-full" onClick={handleSave} disabled={saving || lineas.length === 0}>
               <Save className="w-4 h-4 mr-2" />
-              {saving ? 'Guardando...' : 'Guardar Proforma'}
+              {saving ? t('save') + '...' : t('saveQuote')}
             </Button>
           </Card>
         </div>
