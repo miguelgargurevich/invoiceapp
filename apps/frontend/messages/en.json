@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Invoicing System",
+    "appName": "Billing System",
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
@@ -41,11 +41,11 @@
     "signInDescription": "Enter your credentials to access the system",
     "signingIn": "Signing in...",
     "logout": "Log out",
-    "register": "Sign up",
-    "signUp": "Sign up",
+    "register": "Register",
+    "signUp": "Sign Up",
     "noAccount": "Don't have an account?",
     "email": "Email",
-    "emailPlaceholder": "your@email.com",
+    "emailPlaceholder": "you@email.com",
     "password": "Password",
     "passwordPlaceholder": "Enter your password",
     "confirmPassword": "Confirm password",
@@ -55,18 +55,18 @@
     "createAccount": "Create an account",
     "alreadyHaveAccount": "Already have an account?",
     "dontHaveAccount": "Don't have an account?",
-    "loginSuccess": "Logged in successfully",
-    "tagline": "Manage your invoices and quotes professionally",
-    "testimonial": "This system has completely transformed the way we handle our billing. Simple, fast and reliable.",
-    "testimonialAuthor": "Maria Gonzalez, Sales Manager",
-    "allRightsReserved": "All rights reserved",
-    "logoutSuccess": "Logged out successfully",
-    "invalidCredentials": "Invalid credentials"
+    "loginSuccess": "Successfully logged in",
+    "logoutSuccess": "Successfully logged out",
+    "invalidCredentials": "Invalid credentials",
+    "tagline": "Manage your invoices and proformas professionally",
+    "testimonial": "This system has completely transformed the way we handle our billing. Simple, fast, and reliable.",
+    "testimonialAuthor": "María González, Sales Manager",
+    "allRightsReserved": "All rights reserved"
   },
   "navigation": {
     "dashboard": "Dashboard",
     "invoices": "Invoices",
-    "quotes": "Quotes",
+    "quotes": "Proposal",
     "clients": "Clients",
     "products": "Products",
     "reports": "Reports",
@@ -75,18 +75,32 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "welcome": "Welcome",
-    "monthSales": "Month Sales",
-    "yearSales": "Year Sales",
-    "invoicesIssued": "Invoices Issued",
+    "welcome": "Welcome, {name}",
+    "monthSales": "Monthly Sales",
+    "monthlySales": "Monthly Sales",
+    "yearSales": "Yearly Sales",
+    "totalInvoices": "Total Invoices",
+    "invoicesIssued": "Issued Invoices",
+    "pendingInvoices": "Pending Invoices",
     "pendingCollection": "Pending Collection",
     "collected": "Collected",
+    "totalClients": "Total Clients",
     "activeClients": "Active Clients",
     "overdueInvoices": "Overdue Invoices",
-    "pendingQuotes": "Pending Quotes",
+    "overdue": "overdue",
+    "pendingQuotes": "Pending Proposals",
     "salesByMonth": "Sales by Month",
+    "revenueOverview": "Revenue Overview",
+    "invoiceStatus": "Invoice Status",
+    "last6Months": "Last 6 Months",
+    "last12Months": "Last 12 Months",
     "topClients": "Top Clients",
     "recentInvoices": "Recent Invoices",
+    "invoiceNumber": "Invoice No.",
+    "client": "Client",
+    "date": "Date",
+    "amount": "Amount",
+    "status": "Status",
     "viewAll": "View all"
   },
   "invoices": {
@@ -101,11 +115,11 @@
     "client": "Client",
     "subtotal": "Subtotal",
     "discount": "Discount",
-    "tax": "Tax (18%)",
+    "tax": "VAT (18%)",
     "total": "Total",
     "status": "Status",
     "paymentMethod": "Payment Method",
-    "observations": "Observations",
+    "observations": "Notes",
     "items": "Items",
     "addItem": "Add item",
     "product": "Product/Service",
@@ -118,7 +132,7 @@
     "sendEmail": "Send by Email",
     "registerPayment": "Register Payment",
     "voidInvoice": "Void Invoice",
-    "convertFromQuote": "Convert from Quote",
+    "convertFromQuote": "Convert from Proposal",
     "statuses": {
       "issued": "Issued",
       "paid": "Paid",
@@ -127,41 +141,57 @@
     },
     "paymentMethods": {
       "cash": "Cash",
-      "credit30": "Credit 30 days",
-      "credit60": "Credit 60 days",
-      "credit90": "Credit 90 days"
+      "credit30": "30-day Credit",
+      "credit60": "60-day Credit",
+      "credit90": "90-day Credit"
     },
     "messages": {
-      "created": "Invoice created successfully",
-      "updated": "Invoice updated successfully",
-      "voided": "Invoice voided successfully",
-      "paymentRegistered": "Payment registered successfully",
+      "created": "Invoice successfully created",
+      "updated": "Invoice successfully updated",
+      "voided": "Invoice successfully voided",
+      "paymentRegistered": "Payment successfully registered",
       "confirmVoid": "Are you sure you want to void this invoice?"
     }
   },
   "quotes": {
-    "title": "Quotes / Proposals",
-    "newQuote": "New Quote",
-    "editQuote": "Edit Quote",
-    "quoteDetails": "Quote Details",
+    "title": "Proposals",
+    "description": "Manage your proposals and quotes",
+    "create": "New Proposal",
+    "createFirst": "Create your first proposal",
+    "newQuote": "New Proposal",
+    "editQuote": "Edit Proposal",
+    "quoteDetails": "Proposal Details",
     "quoteNumber": "Number",
+    "number": "Number",
+    "client": "Client",
+    "issueDate": "Issue Date",
     "validUntil": "Valid until",
-    "conditions": "Terms & Conditions",
+    "total": "Total",
+    "status": "Status",
+    "conditions": "Conditions",
     "convertToInvoice": "Convert to Invoice",
+    "searchPlaceholder": "Search by number or client...",
+    "allStatuses": "All statuses",
+    "noProformas": "No proposals found",
+    "noProformasDescription": "Start creating proposals to quote your services",
     "statuses": {
+      "pendiente": "Pending",
       "pending": "Pending",
+      "aprobada": "Approved",
       "accepted": "Accepted",
+      "rechazada": "Rejected",
       "rejected": "Rejected",
+      "convertida": "Converted",
       "expired": "Expired",
       "invoiced": "Invoiced"
     },
     "messages": {
-      "created": "Quote created successfully",
-      "updated": "Quote updated successfully",
-      "deleted": "Quote deleted successfully",
-      "converted": "Quote converted to invoice successfully",
-      "confirmDelete": "Are you sure you want to delete this quote?",
-      "confirmConvert": "Are you sure you want to convert this quote to an invoice?"
+      "created": "Proposal successfully created",
+      "updated": "Proposal successfully updated",
+      "deleted": "Proposal successfully deleted",
+      "converted": "Proposal successfully converted to invoice",
+      "confirmDelete": "Are you sure you want to delete this proposal?",
+      "confirmConvert": "Are you sure you want to convert this proposal to an invoice?"
     }
   },
   "clients": {
@@ -171,7 +201,7 @@
     "clientDetails": "Client Details",
     "documentType": "Document Type",
     "documentNumber": "Document Number",
-    "businessName": "Business Name",
+    "businessName": "Legal Name",
     "tradeName": "Trade Name",
     "address": "Address",
     "phone": "Phone",
@@ -180,20 +210,20 @@
     "purchaseHistory": "Purchase History",
     "searchRuc": "Search by Tax ID",
     "documentTypes": {
-      "RUC": "Tax ID (RUC)",
-      "DNI": "National ID (DNI)",
-      "CE": "Foreign ID"
+      "RUC": "Tax ID",
+      "DNI": "National ID",
+      "CE": "Foreigner ID"
     },
     "messages": {
-      "created": "Client created successfully",
-      "updated": "Client updated successfully",
-      "deleted": "Client deleted successfully",
+      "created": "Client successfully created",
+      "updated": "Client successfully updated",
+      "deleted": "Client successfully deleted",
       "confirmDelete": "Are you sure you want to delete this client?",
       "duplicateDocument": "A client with this document number already exists"
     }
   },
   "products": {
-    "title": "Products & Services",
+    "title": "Products and Services",
     "newProduct": "New Product",
     "editProduct": "Edit Product",
     "productDetails": "Product Details",
@@ -202,7 +232,7 @@
     "category": "Category",
     "unitMeasure": "Unit of Measure",
     "unitPrice": "Unit Price",
-    "priceWithTax": "Price includes Tax",
+    "priceWithTax": "Price includes VAT",
     "currentStock": "Current Stock",
     "minStock": "Minimum Stock",
     "lowStock": "Low Stock",
@@ -219,10 +249,10 @@
       "HRA": "Hour"
     },
     "messages": {
-      "created": "Product created successfully",
-      "updated": "Product updated successfully",
-      "deleted": "Product deleted successfully",
-      "imported": "Products imported successfully",
+      "created": "Product successfully created",
+      "updated": "Product successfully updated",
+      "deleted": "Product successfully deleted",
+      "imported": "Products successfully imported",
       "confirmDelete": "Are you sure you want to delete this product?",
       "duplicateCode": "A product with this code already exists"
     }
@@ -231,7 +261,7 @@
     "title": "Reports",
     "salesReport": "Sales Report",
     "clientReport": "Client Report",
-    "productReport": "Top Selling Products",
+    "productReport": "Best Selling Products",
     "receivablesReport": "Accounts Receivable",
     "dateRange": "Date Range",
     "from": "From",
@@ -252,7 +282,7 @@
     "title": "Settings",
     "company": "Company",
     "companyName": "Company Name",
-    "companyRuc": "Tax ID (RUC)",
+    "companyRuc": "Tax ID",
     "companyAddress": "Address",
     "companyPhone": "Phone",
     "companyEmail": "Email",
@@ -260,7 +290,7 @@
     "uploadLogo": "Upload Logo",
     "currency": "Currency",
     "invoiceSeries": "Invoice Series",
-    "quoteSeries": "Quote Series",
+    "quoteSeries": "Proforma Series",
     "appearance": "Appearance",
     "theme": "Theme",
     "lightTheme": "Light",
@@ -270,8 +300,8 @@
     "spanish": "Spanish",
     "english": "English",
     "messages": {
-      "saved": "Settings saved successfully",
-      "logoUploaded": "Logo uploaded successfully"
+      "saved": "Settings successfully saved",
+      "logoUploaded": "Logo successfully uploaded"
     }
   },
   "payments": {
@@ -285,7 +315,7 @@
     "methods": {
       "cash": "Cash",
       "transfer": "Bank Transfer",
-      "card": "Credit/Debit Card",
+      "card": "Card",
       "check": "Check"
     }
   },
@@ -295,7 +325,7 @@
     "commands": {
       "goToDashboard": "Go to Dashboard",
       "newInvoice": "New Invoice",
-      "newQuote": "New Quote",
+      "newQuote": "New Proforma",
       "newClient": "New Client",
       "newProduct": "New Product",
       "searchInvoice": "Search Invoice",
@@ -315,11 +345,84 @@
     "invalidFormat": "Invalid format"
   },
   "errors": {
-    "general": "An error occurred",
+    "general": "An error has occurred",
     "network": "Connection error",
     "unauthorized": "Unauthorized",
     "notFound": "Not found",
     "serverError": "Server error",
     "tryAgain": "Please try again"
+  },
+  "workLog": {
+    "title": "Work Log",
+    "addEntry": "Add Entry",
+    "date": "Date",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe the work performed...",
+    "hoursWorked": "Hours Worked",
+    "worker": "Worker",
+    "workerPlaceholder": "Technician/worker name",
+    "notes": "Notes",
+    "notesPlaceholder": "Additional notes...",
+    "noEntries": "No work log entries available"
+  },
+  "jobPhotos": {
+    "title": "Job Photos",
+    "upload": "Upload Photo",
+    "description": "Description",
+    "descriptionPlaceholder": "Photo description...",
+    "noPhotos": "No photos uploaded",
+    "uploading": "Uploading...",
+    "dragAndDrop": "Drag an image or click to select",
+    "maxSize": "Maximum size: 10MB"
+  },
+  "jobReceipts": {
+    "title": "Receipts and Expenses",
+    "addReceipt": "Add Receipt",
+    "date": "Date",
+    "description": "Description",
+    "amount": "Amount",
+    "category": "Category",
+    "supplier": "Supplier",
+    "receiptNumber": "Receipt No.",
+    "attachFile": "Attach File",
+    "noReceipts": "No receipts recorded",
+    "totalExpenses": "Total Expenses",
+    "categories": {
+      "materiales": "Materials",
+      "mano_obra": "Labor",
+      "transporte": "Transportation",
+      "equipos": "Equipment",
+      "otros": "Other"
+    }
+  },
+  "jobDetails": {
+    "title": "Job Details",
+    "jobName": "Job Name",
+    "jobNamePlaceholder": "e.g. Electrical installation office 402",
+    "jobLocation": "Location",
+    "jobLocationPlaceholder": "Job address",
+    "orderType": "Order Type",
+    "workDescription": "Work Description",
+    "workDescriptionPlaceholder": "Complete description of the work to be performed...",
+    "paymentTerms": "Payment Terms",
+    "paymentTermsPlaceholder": "Agreed payment conditions...",
+    "orderTypes": {
+      "day_work": "Day Work",
+      "contract": "Contract",
+      "extra": "Extra"
+    }
+  },
+  "jobSummary": {
+    "title": "Complete Job Summary",
+    "proposal": "Proposal",
+    "workLog": "Work Log",
+    "photos": "Photos",
+    "receipts": "Expenses",
+    "finalInvoice": "Final Invoice",
+    "timeline": "Timeline",
+    "comparison": "Proforma vs Invoice Comparison",
+    "estimated": "Estimated",
+    "actual": "Actual",
+    "difference": "Difference"
   }
 }
