@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Modal } from './Modal';
 import { Button } from './Button';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, AlertCircle, Info } from 'lucide-react';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -30,33 +30,62 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   const t = useTranslations('common');
 
-  const iconColors = {
-    danger: 'text-red-500 bg-red-100 dark:bg-red-900/30',
-    warning: 'text-yellow-500 bg-yellow-100 dark:bg-yellow-900/30',
-    info: 'text-blue-500 bg-blue-100 dark:bg-blue-900/30',
+  const variantStyles = {
+    danger: {
+      icon: AlertCircle,
+      iconBg: 'bg-red-100 dark:bg-red-900/30',
+      iconColor: 'text-red-600 dark:text-red-400',
+      buttonVariant: 'danger' as const,
+    },
+    warning: {
+      icon: AlertTriangle,
+      iconBg: 'bg-yellow-100 dark:bg-yellow-900/30',
+      iconColor: 'text-yellow-600 dark:text-yellow-400',
+      buttonVariant: 'warning' as const,
+    },
+    info: {
+      icon: Info,
+      iconBg: 'bg-blue-100 dark:bg-blue-900/30',
+      iconColor: 'text-blue-600 dark:text-blue-400',
+      buttonVariant: 'primary' as const,
+    },
   };
 
-  const confirmVariants = {
-    danger: 'danger' as const,
-    warning: 'warning' as const,
-    info: 'primary' as const,
-  };
+  const { icon: Icon, iconBg, iconColor, buttonVariant } = variantStyles[variant];
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
-      <div className="flex flex-col items-center text-center">
+    <Modal 
+      isOpen={isOpen} 
+      onClose={onClose} 
+      title={title} 
+      size="sm"
+      showCloseButton={!loading}
+    >
+      <div className="flex flex-col items-center text-center py-4">
+        {/* Icon with pulse animation */}
         <div
-          className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${iconColors[variant]}`}
+          className={`w-16 h-16 rounded-full flex items-center justify-center mb-5 ${iconBg} animate-pulse-slow`}
         >
-          <AlertTriangle className="w-6 h-6" />
+          <Icon className={`w-8 h-8 ${iconColor}`} />
         </div>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">{message}</p>
+
+        {/* Message */}
+        <p className="text-base text-gray-700 dark:text-gray-300 mb-8 leading-relaxed max-w-sm">
+          {message}
+        </p>
+
+        {/* Action Buttons */}
         <div className="flex gap-3 w-full">
-          <Button variant="ghost" onClick={onClose} className="flex-1">
+          <Button 
+            variant="outline" 
+            onClick={onClose} 
+            className="flex-1"
+            disabled={loading}
+          >
             {cancelLabel || t('cancel')}
           </Button>
           <Button
-            variant={confirmVariants[variant]}
+            variant={buttonVariant}
             onClick={onConfirm}
             loading={loading}
             className="flex-1"
@@ -65,6 +94,20 @@ export function ConfirmDialog({
           </Button>
         </div>
       </div>
+
+      <style jsx global>{`
+        @keyframes pulse-slow {
+          0%, 100% {
+            opacity: 1;
+          }
+          50% {
+            opacity: 0.8;
+          }
+        }
+        .animate-pulse-slow {
+          animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+      `}</style>
     </Modal>
   );
 }
