@@ -104,7 +104,7 @@ export default function FacturaDetailPage({
   const loadFactura = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/facturas/${id}`);
+      const response: any = await api.get(`/facturas/${id}`);
       setFactura(response.data);
     } catch (error) {
       console.error('Error loading factura:', error);
@@ -244,9 +244,11 @@ export default function FacturaDetailPage({
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {factura.serie}-{factura.numero}
               </h1>
-              <Badge variant={statusConfig.variant} className="flex items-center gap-1">
-                {statusConfig.icon}
-                {factura.estado}
+              <Badge variant={statusConfig.variant}>
+                <span className="flex items-center gap-1">
+                  {statusConfig.icon}
+                  {factura.estado}
+                </span>
               </Badge>
             </div>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
@@ -580,7 +582,7 @@ export default function FacturaDetailPage({
         onConfirm={handleCancelInvoice}
         title={t('cancelInvoiceTitle')}
         message={t('cancelInvoiceMessage')}
-        confirmText={t('confirm')}
+        confirmLabel={t('confirm')}
         variant="danger"
       />
     </div>
