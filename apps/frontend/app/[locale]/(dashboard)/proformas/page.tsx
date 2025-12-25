@@ -57,7 +57,7 @@ export default function ProformasPage({
         ...(filterEstado && { estado: filterEstado }),
       });
 
-      const response = await api.get(`/proformas?${params}`);
+      const response: any = await api.get(`/proformas?${params}`);
       setProformas(response.data.proformas || []);
       setTotalPages(response.data.totalPages || 1);
     } catch (error) {
@@ -75,7 +75,7 @@ export default function ProformasPage({
     const variants = {
       pendiente: 'warning' as const,
       aprobada: 'success' as const,
-      rechazada: 'error' as const,
+      rechazada: 'danger' as const,
       convertida: 'info' as const,
     };
     return variants[estado as keyof typeof variants] || 'default' as const;
@@ -84,14 +84,14 @@ export default function ProformasPage({
   const columns: Column<Proforma>[] = [
     {
       key: 'numero',
-      label: t('number'),
+      header: t('number'),
       render: (proforma) => (
         <span className="font-medium">{`${proforma.serie}-${proforma.numero}`}</span>
       ),
     },
     {
       key: 'cliente',
-      label: t('client'),
+      header: t('client'),
       render: (proforma) => (
         <div>
           <div className="font-medium">{proforma.cliente.nombre}</div>
@@ -101,24 +101,24 @@ export default function ProformasPage({
     },
     {
       key: 'fechaEmision',
-      label: t('issueDate'),
+      header: t('issueDate'),
       render: (proforma) => formatDate(proforma.fechaEmision),
     },
     {
       key: 'fechaVencimiento',
-      label: t('validUntil'),
+      header: t('validUntil'),
       render: (proforma) => formatDate(proforma.fechaVencimiento),
     },
     {
       key: 'total',
-      label: t('total'),
+      header: t('total'),
       render: (proforma) => (
         <span className="font-semibold">{formatCurrency(proforma.total)}</span>
       ),
     },
     {
       key: 'estado',
-      label: t('status'),
+      header: t('status'),
       render: (proforma) => (
         <Badge variant={getEstadoBadge(proforma.estado)}>
           {t(`status.${proforma.estado}`)}
@@ -127,7 +127,7 @@ export default function ProformasPage({
     },
     {
       key: 'actions',
-      label: '',
+      header: '',
       render: (proforma) => (
         <div className="flex gap-2">
           <Button
@@ -151,7 +151,7 @@ export default function ProformasPage({
 
   const handleDownload = async (id: string) => {
     try {
-      const response = await api.get(`/proformas/${id}/pdf`, {
+      const response: any = await api.get(`/proformas/${id}/pdf`, {
         responseType: 'blob',
       });
       const url = window.URL.createObjectURL(new Blob([response.data]));
@@ -216,7 +216,6 @@ export default function ProformasPage({
 
         {proformas.length === 0 ? (
           <EmptyState
-            icon={Filter}
             title={t('noProformas')}
             description={t('noProformasDescription')}
             action={
@@ -230,6 +229,7 @@ export default function ProformasPage({
           <DataTable
             data={proformas}
             columns={columns}
+            keyExtractor={(proforma) => proforma.id}
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}

@@ -51,15 +51,14 @@ export default function FacturasPage({
     
     try {
       setLoading(true);
-      const response = await api.get('/facturas', {
-        params: {
-          empresaId: empresa.id,
-          search,
-          estado: filterEstado || undefined,
-          page: currentPage,
-          limit: 10,
-        },
+      const params = new URLSearchParams({
+        empresaId: empresa.id,
+        search,
+        page: currentPage.toString(),
+        limit: '10',
+        ...(filterEstado && { estado: filterEstado }),
       });
+      const response: any = await api.get(`/facturas?${params}`);
       setFacturas(response.data.data || []);
       setTotalPages(response.data.totalPages || 1);
     } catch (error) {
