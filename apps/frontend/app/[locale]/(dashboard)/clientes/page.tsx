@@ -2,24 +2,18 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
-import { Plus, Search, Filter, Download, MoreHorizontal, Edit, Trash2, Eye } from 'lucide-react';
+import { Plus, Search, Filter, Download, Edit, Trash2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
   DataTable,
-  Badge,
   Card,
   Modal,
   ConfirmDialog,
   Input,
   EmptyClients,
-  LoadingPage,
-  getInvoiceStatusBadge,
   type Column,
 } from '@/components/common';
-import { formatCurrency, formatDate } from '@/lib/utils';
 import api from '@/lib/api';
 
 interface Cliente {
@@ -33,13 +27,8 @@ interface Cliente {
   createdAt: string;
 }
 
-export default function ClientesPage({
-  params: { locale },
-}: {
-  params: { locale: string };
-}) {
+export default function ClientesPage() {
   const t = useTranslations('clients');
-  const router = useRouter();
   const { empresa } = useAuth();
   
   const [clientes, setClientes] = useState<Cliente[]>([]);
@@ -319,7 +308,6 @@ export default function ClientesPage({
           setSelectedCliente(null);
           loadClientes();
         }}
-        locale={locale}
       />
 
       {/* Delete Confirmation */}
@@ -328,8 +316,7 @@ export default function ClientesPage({
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={confirmDelete}
         title={t('deleteTitle')}
-        message={t('deleteMessage', { name: selectedCliente?.nombre })}
-        confirmText={t('delete')}
+        message={t('deleteMessage', { name: selectedCliente?.nombre || '' })}
         variant="danger"
       />
     </div>
@@ -342,10 +329,9 @@ interface ClientModalProps {
   onClose: () => void;
   cliente: Cliente | null;
   onSave: () => void;
-  locale: string;
 }
 
-function ClientModal({ isOpen, onClose, cliente, onSave, locale }: ClientModalProps) {
+function ClientModal({ isOpen, onClose, cliente, onSave }: ClientModalProps) {
   const t = useTranslations('clients');
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
