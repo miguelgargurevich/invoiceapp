@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: invoiceapp-backend
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: apps/backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+    autoDeploy: true
