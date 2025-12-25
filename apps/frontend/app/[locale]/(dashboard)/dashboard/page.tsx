@@ -310,7 +310,7 @@ export default function DashboardPage() {
                     tickFormatter={(value) => `S/${(value / 1000).toFixed(0)}k`}
                   />
                   <Tooltip
-                    formatter={(value: number) => [formatCurrency(value), 'Ingresos']}
+                    formatter={(value: number | undefined) => [formatCurrency(value || 0), 'Ingresos']}
                     contentStyle={{
                       backgroundColor: 'var(--tooltip-bg)',
                       border: 'none',
