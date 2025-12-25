@@ -8,29 +8,31 @@ import {
   Printer,
   Download,
   Mail,
-  CreditCard,
-  MoreHorizontal,
+  FileText,
   CheckCircle,
   XCircle,
   Clock,
+  AlertTriangle,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
   Card,
   Badge,
-  Modal,
-  Input,
   LoadingPage,
   ConfirmDialog,
 } from '@/components/common';
-import { PrintPreviewModal, SendEmailModal, InvoicePreview } from '@/components/invoice';
+import {
+  ProformaPrintPreviewModal,
+  ProformaSendEmailModal,
+  ProformaPreview,
+} from '@/components/proforma';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import api from '@/lib/api';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
-interface DetalleFactura {
+interface DetalleProforma {
   id: string;
   descripcion: string;
   cantidad: number;
@@ -45,16 +47,7 @@ interface DetalleFactura {
   };
 }
 
-interface PagoFactura {
-  id: string;
-  fecha: string;
-  monto: number;
-  metodoPago: string;
-  referencia?: string;
-  notas?: string;
-}
-
-interface Factura {
+interface Proforma {
   id: string;
   numero: string;
   serie: string;
@@ -67,148 +60,116 @@ interface Factura {
     email?: string;
   };
   fechaEmision: string;
-  fechaVencimiento: string;
+  fechaValidez: string;
   subtotal: number;
   igv: number;
   total: number;
   descuento: number;
   estado: string;
-  montoPendiente: number;
   observaciones?: string;
-  detalles: DetalleFactura[];
-  pagos: PagoFactura[];
+  condiciones?: string;
+  detalles: DetalleProforma[];
 }
 
-export default function FacturaDetailPage({
+export default function ProformaDetailPage({
   params: { locale, id },
 }: {
   params: { locale: string; id: string };
 }) {
-  const t = useTranslations('invoices');
+  const t = useTranslations('quotes');
+  const tCommon = useTranslations('common');
   const router = useRouter();
   const { empresa } = useAuth();
 
-  const [factura, setFactura] = useState<Factura | null>(null);
+  const [proforma, setProforma] = useState<Proforma | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [isSendEmailOpen, setIsSendEmailOpen] = useState(false);
+  const [isConvertDialogOpen, setIsConvertDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [converting, setConverting] = useState(false);
   const pdfRef = useRef<HTMLDivElement>(null);
-  const [paymentData, setPaymentData] = useState({
-    monto: '',
-    metodoPago: 'TRANSFERENCIA',
-    referencia: '',
-    notas: '',
-  });
-  const [savingPayment, setSavingPayment] = useState(false);
 
   useEffect(() => {
-    loadFactura();
+    loadProforma();
   }, [id]);
 
-  const loadFactura = async () => {
+  const loadProforma = async () => {
     try {
       setLoading(true);
-      const response: any = await api.get(`/facturas/${id}`);
-      setFactura(response.data);
+      const response: any = await api.get(`/proformas/${id}`);
+      
+      // Map API response to our interface
+      const data = response.data || response;
+      setProforma({
+        ...data,
+        cliente: {
+          id: data.cliente?.id,
+          nombre: data.cliente?.razonSocial || data.cliente?.nombreComercial || data.cliente?.nombre,
+          documento: data.cliente?.numeroDocumento || data.cliente?.documento,
+          tipoDocumento: data.cliente?.tipoDocumento || 'RUC',
+          direccion: data.cliente?.direccion,
+          email: data.cliente?.email,
+        },
+        fechaValidez: data.fechaValidez || data.fechaVencimiento,
+      });
     } catch (error) {
-      console.error('Error loading factura:', error);
+      console.error('Error loading proforma:', error);
       // Mock data for development
-      setFactura({
+      setProforma({
         id: '1',
-        numero: '000156',
-        serie: 'F001',
+        numero: '000042',
+        serie: 'P001',
         cliente: {
           id: '1',
-          nombre: 'Empresa ABC S.A.C.',
+          nombre: 'Empresa Demo S.A.C.',
           documento: '20123456789',
           tipoDocumento: 'RUC',
           direccion: 'Av. Principal 123, Lima',
-          email: 'contacto@empresaabc.com',
+          email: 'contacto@empresademo.com',
         },
         fechaEmision: new Date().toISOString(),
-        fechaVencimiento: new Date(Date.now() + 30 * 86400000).toISOString(),
-        subtotal: 2076.27,
-        igv: 373.73,
-        total: 2450.00,
+        fechaValidez: new Date(Date.now() + 30 * 86400000).toISOString(),
+        subtotal: 1694.92,
+        igv: 305.08,
+        total: 2000.00,
         descuento: 0,
-        estado: 'EMITIDA',
-        montoPendiente: 2450.00,
-        observaciones: 'Factura por servicios de consultoría',
+        estado: 'pendiente',
+        observaciones: 'Cotización por servicios de consultoría',
+        condiciones: 'Pago a 30 días después de la aprobación.\nPrecios válidos por 30 días.',
         detalles: [
           {
             id: '1',
-            descripcion: 'Servicio de Consultoría',
-            cantidad: 10,
+            descripcion: 'Servicio de Consultoría - Fase 1',
+            cantidad: 8,
             precioUnitario: 150.00,
             descuento: 0,
-            subtotal: 1271.19,
-            igv: 228.81,
-            total: 1500.00,
-            producto: { codigo: 'PROD001', nombre: 'Servicio de Consultoría' },
+            subtotal: 1016.95,
+            igv: 183.05,
+            total: 1200.00,
+            producto: { codigo: 'CONS001', nombre: 'Consultoría' },
           },
           {
             id: '2',
-            descripcion: 'Capacitación',
-            cantidad: 5,
-            precioUnitario: 190.00,
+            descripcion: 'Capacitación al Personal',
+            cantidad: 4,
+            precioUnitario: 200.00,
             descuento: 0,
-            subtotal: 805.08,
-            igv: 144.92,
-            total: 950.00,
-            producto: { codigo: 'PROD003', nombre: 'Capacitación' },
+            subtotal: 677.97,
+            igv: 122.03,
+            total: 800.00,
+            producto: { codigo: 'CAP001', nombre: 'Capacitación' },
           },
         ],
-        pagos: [],
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRegisterPayment = async () => {
-    if (!factura || !paymentData.monto) return;
-
-    try {
-      setSavingPayment(true);
-      await api.post(`/facturas/${factura.id}/pagos`, {
-        monto: parseFloat(paymentData.monto),
-        metodoPago: paymentData.metodoPago,
-        referencia: paymentData.referencia || null,
-        notas: paymentData.notas || null,
-      });
-      
-      setIsPaymentModalOpen(false);
-      setPaymentData({
-        monto: '',
-        metodoPago: 'TRANSFERENCIA',
-        referencia: '',
-        notas: '',
-      });
-      loadFactura();
-    } catch (error) {
-      console.error('Error registering payment:', error);
-    } finally {
-      setSavingPayment(false);
-    }
-  };
-
-  const handleCancelInvoice = async () => {
-    if (!factura) return;
-
-    try {
-      await api.put(`/facturas/${factura.id}/anular`);
-      setIsCancelDialogOpen(false);
-      loadFactura();
-    } catch (error) {
-      console.error('Error cancelling invoice:', error);
-    }
-  };
-
   const handleDirectDownloadPDF = async () => {
-    if (!pdfRef.current || !factura) return;
+    if (!pdfRef.current || !proforma) return;
 
     try {
       setDownloadingPdf(true);
@@ -243,7 +204,7 @@ export default function FacturaDetailPage({
         imgHeight * ratio
       );
 
-      pdf.save(`Factura-${factura.serie}-${factura.numero}.pdf`);
+      pdf.save(`Proforma-${proforma.serie}-${proforma.numero}.pdf`);
     } catch (error) {
       console.error('Error generating PDF:', error);
     } finally {
@@ -251,13 +212,41 @@ export default function FacturaDetailPage({
     }
   };
 
+  const handleConvertToInvoice = async () => {
+    if (!proforma) return;
+
+    try {
+      setConverting(true);
+      const response: any = await api.post(`/proformas/${proforma.id}/convertir-factura`);
+      setIsConvertDialogOpen(false);
+      router.push(`/${locale}/facturas/${response.factura?.id || response.data?.factura?.id}`);
+    } catch (error) {
+      console.error('Error converting to invoice:', error);
+    } finally {
+      setConverting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!proforma) return;
+
+    try {
+      await api.delete(`/proformas/${proforma.id}`);
+      setIsDeleteDialogOpen(false);
+      router.push(`/${locale}/proformas`);
+    } catch (error) {
+      console.error('Error deleting proforma:', error);
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     const config: Record<string, { variant: 'success' | 'warning' | 'danger' | 'info' | 'neutral'; icon: React.ReactNode }> = {
-      PAGADA: { variant: 'success', icon: <CheckCircle className="w-4 h-4" /> },
-      EMITIDA: { variant: 'info', icon: <Clock className="w-4 h-4" /> },
-      PENDIENTE: { variant: 'warning', icon: <Clock className="w-4 h-4" /> },
-      VENCIDA: { variant: 'danger', icon: <XCircle className="w-4 h-4" /> },
-      ANULADA: { variant: 'neutral', icon: <XCircle className="w-4 h-4" /> },
+      aprobada: { variant: 'success', icon: <CheckCircle className="w-4 h-4" /> },
+      pendiente: { variant: 'warning', icon: <Clock className="w-4 h-4" /> },
+      rechazada: { variant: 'danger', icon: <XCircle className="w-4 h-4" /> },
+      convertida: { variant: 'info', icon: <FileText className="w-4 h-4" /> },
+      facturada: { variant: 'info', icon: <FileText className="w-4 h-4" /> },
+      vencida: { variant: 'neutral', icon: <AlertTriangle className="w-4 h-4" /> },
     };
     return config[status] || { variant: 'neutral' as const, icon: null };
   };
@@ -266,18 +255,19 @@ export default function FacturaDetailPage({
     return <LoadingPage />;
   }
 
-  if (!factura) {
+  if (!proforma) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">{t('notFound')}</p>
         <Button className="mt-4" onClick={() => router.back()}>
-          {t('goBack')}
+          {tCommon('back')}
         </Button>
       </div>
     );
   }
 
-  const statusConfig = getStatusBadge(factura.estado);
+  const statusConfig = getStatusBadge(proforma.estado);
+  const canConvert = proforma.estado === 'pendiente' || proforma.estado === 'aprobada';
 
   return (
     <div className="space-y-6">
@@ -293,17 +283,17 @@ export default function FacturaDetailPage({
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {factura.serie}-{factura.numero}
+                {proforma.serie}-{proforma.numero}
               </h1>
               <Badge variant={statusConfig.variant}>
                 <span className="flex items-center gap-1">
                   {statusConfig.icon}
-                  {factura.estado}
+                  {t(`statuses.${proforma.estado}`)}
                 </span>
               </Badge>
             </div>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
-              {t('issuedOn', { date: formatDate(factura.fechaEmision) })}
+              {t('issuedOn')} {formatDate(proforma.fechaEmision)}
             </p>
           </div>
         </div>
@@ -320,13 +310,10 @@ export default function FacturaDetailPage({
             <Mail className="w-4 h-4 mr-1" />
             {t('send')}
           </Button>
-          {factura.estado !== 'PAGADA' && factura.estado !== 'ANULADA' && (
-            <Button size="sm" onClick={() => {
-              setPaymentData({ ...paymentData, monto: factura.montoPendiente.toString() });
-              setIsPaymentModalOpen(true);
-            }}>
-              <CreditCard className="w-4 h-4 mr-1" />
-              {t('registerPayment')}
+          {canConvert && (
+            <Button size="sm" onClick={() => setIsConvertDialogOpen(true)}>
+              <FileText className="w-4 h-4 mr-1" />
+              {t('convertToInvoice')}
             </Button>
           )}
         </div>
@@ -338,34 +325,34 @@ export default function FacturaDetailPage({
           {/* Client info */}
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              {t('clientInfo')}
+              {t('client')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <span className="text-sm text-gray-500 dark:text-gray-400">{t('client')}</span>
                 <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {factura.cliente.nombre}
+                  {proforma.cliente.nombre}
                 </p>
               </div>
               <div>
                 <span className="text-sm text-gray-500 dark:text-gray-400">{t('document')}</span>
                 <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {factura.cliente.tipoDocumento}: {factura.cliente.documento}
+                  {proforma.cliente.tipoDocumento}: {proforma.cliente.documento}
                 </p>
               </div>
-              {factura.cliente.direccion && (
+              {proforma.cliente.direccion && (
                 <div>
                   <span className="text-sm text-gray-500 dark:text-gray-400">{t('address')}</span>
                   <p className="font-medium text-gray-900 dark:text-gray-100">
-                    {factura.cliente.direccion}
+                    {proforma.cliente.direccion}
                   </p>
                 </div>
               )}
-              {factura.cliente.email && (
+              {proforma.cliente.email && (
                 <div>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">{t('email')}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Email</span>
                   <p className="font-medium text-gray-900 dark:text-gray-100">
-                    {factura.cliente.email}
+                    {proforma.cliente.email}
                   </p>
                 </div>
               )}
@@ -383,7 +370,7 @@ export default function FacturaDetailPage({
                 <thead>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <th className="text-left py-3 text-xs font-medium text-gray-500 uppercase">
-                      {t('description')}
+                      {t('product')}
                     </th>
                     <th className="text-center py-3 text-xs font-medium text-gray-500 uppercase w-20">
                       {t('qty')}
@@ -397,7 +384,7 @@ export default function FacturaDetailPage({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                  {factura.detalles.map((detalle) => (
+                  {proforma.detalles.map((detalle) => (
                     <tr key={detalle.id}>
                       <td className="py-3">
                         <div>
@@ -428,7 +415,7 @@ export default function FacturaDetailPage({
 
             {/* Mobile cards */}
             <div className="md:hidden space-y-3">
-              {factura.detalles.map((detalle) => (
+              {proforma.detalles.map((detalle) => (
                 <div
                   key={detalle.id}
                   className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3"
@@ -449,41 +436,23 @@ export default function FacturaDetailPage({
             </div>
           </Card>
 
-          {/* Payments */}
-          {factura.pagos.length > 0 && (
+          {/* Conditions */}
+          {proforma.condiciones && (
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                {t('payments')}
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                {t('conditions')}
               </h2>
-              <div className="space-y-3">
-                {factura.pagos.map((pago) => (
-                  <div
-                    key={pago.id}
-                    className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg"
-                  >
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-gray-100">
-                        {formatCurrency(pago.monto)}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {formatDate(pago.fecha)} • {pago.metodoPago}
-                        {pago.referencia && ` • ${pago.referencia}`}
-                      </p>
-                    </div>
-                    <CheckCircle className="w-5 h-5 text-green-500" />
-                  </div>
-                ))}
-              </div>
+              <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{proforma.condiciones}</p>
             </Card>
           )}
 
           {/* Observations */}
-          {factura.observaciones && (
+          {proforma.observaciones && (
             <Card>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 {t('observations')}
               </h2>
-              <p className="text-gray-600 dark:text-gray-400">{factura.observaciones}</p>
+              <p className="text-gray-600 dark:text-gray-400">{proforma.observaciones}</p>
             </Card>
           )}
         </div>
@@ -493,37 +462,31 @@ export default function FacturaDetailPage({
           {/* Summary */}
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              {t('summary')}
+              {t('totals')}
             </h2>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">{t('subtotal')}</span>
-                <span>{formatCurrency(factura.subtotal)}</span>
+                <span>{formatCurrency(proforma.subtotal)}</span>
               </div>
-              {factura.descuento > 0 && (
+              {proforma.descuento > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">{t('discount')}</span>
-                  <span className="text-red-500">-{formatCurrency(factura.descuento)}</span>
+                  <span className="text-red-500">-{formatCurrency(proforma.descuento)}</span>
                 </div>
               )}
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">IGV (18%)</span>
-                <span>{formatCurrency(factura.igv)}</span>
+                <span className="text-gray-500">{t('tax')}</span>
+                <span>{formatCurrency(proforma.igv)}</span>
               </div>
               <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
                 <div className="flex justify-between">
                   <span className="font-semibold">{t('total')}</span>
                   <span className="text-xl font-bold text-primary-600">
-                    {formatCurrency(factura.total)}
+                    {formatCurrency(proforma.total)}
                   </span>
                 </div>
               </div>
-              {factura.montoPendiente > 0 && factura.estado !== 'ANULADA' && (
-                <div className="flex justify-between text-orange-600 pt-2">
-                  <span className="font-medium">{t('pending')}</span>
-                  <span className="font-bold">{formatCurrency(factura.montoPendiente)}</span>
-                </div>
-              )}
             </div>
           </Card>
 
@@ -535,126 +498,81 @@ export default function FacturaDetailPage({
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">{t('issueDate')}</span>
-                <span>{formatDate(factura.fechaEmision)}</span>
+                <span>{formatDate(proforma.fechaEmision)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">{t('dueDate')}</span>
-                <span>{formatDate(factura.fechaVencimiento)}</span>
+                <span className="text-gray-500">{t('validUntil')}</span>
+                <span>{formatDate(proforma.fechaValidez)}</span>
               </div>
             </div>
           </Card>
 
           {/* Actions */}
-          {factura.estado !== 'ANULADA' && (
-            <Card className="!p-4">
-              <div className="space-y-2">
-                {factura.montoPendiente > 0 && (
-                  <Button
-                    className="w-full"
-                    onClick={() => {
-                      setPaymentData({ ...paymentData, monto: factura.montoPendiente.toString() });
-                      setIsPaymentModalOpen(true);
-                    }}
-                  >
-                    <CreditCard className="w-4 h-4 mr-2" />
-                    {t('registerPayment')}
-                  </Button>
-                )}
+          <Card className="!p-4">
+            <div className="space-y-2">
+              {canConvert && (
                 <Button
-                  variant="outline"
-                  className="w-full text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                  onClick={() => setIsCancelDialogOpen(true)}
+                  className="w-full"
+                  onClick={() => setIsConvertDialogOpen(true)}
+                  disabled={converting}
                 >
-                  <XCircle className="w-4 h-4 mr-2" />
-                  {t('cancelInvoice')}
+                  <FileText className="w-4 h-4 mr-2" />
+                  {converting ? tCommon('loading') : t('convertToInvoice')}
                 </Button>
-              </div>
-            </Card>
-          )}
+              )}
+              <Button
+                variant="outline"
+                className="w-full text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                onClick={() => setIsDeleteDialogOpen(true)}
+              >
+                <XCircle className="w-4 h-4 mr-2" />
+                {tCommon('delete')}
+              </Button>
+            </div>
+          </Card>
         </div>
       </div>
 
-      {/* Payment Modal */}
-      <Modal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        title={t('registerPayment')}
-      >
-        <div className="space-y-4">
-          <Input
-            label={t('amount')}
-            type="number"
-            step="0.01"
-            value={paymentData.monto}
-            onChange={(e) => setPaymentData({ ...paymentData, monto: e.target.value })}
-            required
-          />
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('paymentMethod')}
-            </label>
-            <select
-              value={paymentData.metodoPago}
-              onChange={(e) => setPaymentData({ ...paymentData, metodoPago: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
-            >
-              <option value="TRANSFERENCIA">{t('transfer')}</option>
-              <option value="EFECTIVO">{t('cash')}</option>
-              <option value="TARJETA">{t('card')}</option>
-              <option value="CHEQUE">{t('check')}</option>
-            </select>
-          </div>
-          <Input
-            label={t('reference')}
-            value={paymentData.referencia}
-            onChange={(e) => setPaymentData({ ...paymentData, referencia: e.target.value })}
-            placeholder={t('referencePlaceholder')}
-          />
-          <Input
-            label={t('notes')}
-            value={paymentData.notas}
-            onChange={(e) => setPaymentData({ ...paymentData, notas: e.target.value })}
-          />
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button variant="outline" onClick={() => setIsPaymentModalOpen(false)}>
-              {t('cancel')}
-            </Button>
-            <Button onClick={handleRegisterPayment} disabled={savingPayment}>
-              {savingPayment ? t('saving') : t('save')}
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* Cancel Confirmation */}
-      <ConfirmDialog
-        isOpen={isCancelDialogOpen}
-        onClose={() => setIsCancelDialogOpen(false)}
-        onConfirm={handleCancelInvoice}
-        title={t('cancelInvoiceTitle')}
-        message={t('cancelInvoiceMessage')}
-        confirmLabel={t('confirm')}
-        variant="danger"
-      />
-
       {/* Print Preview Modal */}
-      <PrintPreviewModal
+      <ProformaPrintPreviewModal
         isOpen={isPrintPreviewOpen}
         onClose={() => setIsPrintPreviewOpen(false)}
-        factura={factura}
+        proforma={proforma}
         empresa={empresa}
       />
 
       {/* Send Email Modal */}
-      <SendEmailModal
+      <ProformaSendEmailModal
         isOpen={isSendEmailOpen}
         onClose={() => setIsSendEmailOpen(false)}
-        factura={factura}
+        proforma={proforma}
+      />
+
+      {/* Convert to Invoice Confirmation */}
+      <ConfirmDialog
+        isOpen={isConvertDialogOpen}
+        onClose={() => setIsConvertDialogOpen(false)}
+        onConfirm={handleConvertToInvoice}
+        title={t('convertToInvoice')}
+        message={t('messages.confirmConvert')}
+        confirmLabel={t('convertToInvoice')}
+        variant="info"
+      />
+
+      {/* Delete Confirmation */}
+      <ConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleDelete}
+        title={tCommon('delete')}
+        message={t('messages.confirmDelete')}
+        confirmLabel={tCommon('delete')}
+        variant="danger"
       />
 
       {/* Hidden PDF Generator */}
       <div className="fixed -left-[9999px] -top-[9999px]">
-        <InvoicePreview ref={pdfRef} factura={factura} empresa={empresa} />
+        <ProformaPreview ref={pdfRef} proforma={proforma} empresa={empresa} />
       </div>
     </div>
   );

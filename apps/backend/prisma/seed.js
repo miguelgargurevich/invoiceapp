@@ -21,7 +21,7 @@ async function main() {
   // await prisma.empresa.deleteMany();
 
   // Usuario de prueba (esto debe venir de Supabase Auth)
-  const userId = '00000000-0000-0000-0000-000000000001'; // ID de ejemplo
+  const userId = '63d8dead-c546-49ff-90f2-826c7a5cb3f1';
 
   // Crear empresa de prueba
   const empresa = await prisma.empresa.upsert({
@@ -195,8 +195,19 @@ async function main() {
 
   console.log('✅ Clientes creados:', clientes.length);
 
-  // Crear proforma de ejemplo
-  const proforma = await prisma.proforma.create({
+  // Limpiar proformas existentes de prueba
+  await prisma.detalleProforma.deleteMany({
+    where: { proforma: { empresaId: empresa.id, serie: 'P001' } }
+  });
+  await prisma.proforma.deleteMany({
+    where: { empresaId: empresa.id, serie: 'P001' }
+  });
+
+  // Crear proformas de ejemplo
+  const proformas = [];
+
+  // Proforma 1: Desarrollo Web (pendiente)
+  const proforma1 = await prisma.proforma.create({
     data: {
       empresaId: empresa.id,
       clienteId: clientes[0].id,
@@ -210,8 +221,8 @@ async function main() {
       total: 5000.00,
       moneda: 'PEN',
       estado: 'pendiente',
-      condiciones: 'Pago al contado con entrega',
-      observaciones: 'Cotización válida por 30 días',
+      condiciones: 'Pago 50% adelantado, 50% al finalizar',
+      observaciones: 'Incluye hosting por 1 año',
       userId: userId,
     },
   });
@@ -219,7 +230,7 @@ async function main() {
   await prisma.detalleProforma.createMany({
     data: [
       {
-        proformaId: proforma.id,
+        proformaId: proforma1.id,
         productoId: productos[2].id,
         descripcion: productos[2].nombre,
         cantidad: 1,
@@ -233,10 +244,204 @@ async function main() {
       },
     ],
   });
+  proformas.push(proforma1);
 
-  console.log('✅ Proforma creada: P001-1');
+  // Proforma 2: Equipos tecnológicos (aprobada)
+  const proforma2 = await prisma.proforma.create({
+    data: {
+      empresaId: empresa.id,
+      clienteId: clientes[1].id,
+      serie: 'P001',
+      numero: 2,
+      fechaEmision: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // Hace 5 días
+      fechaValidez: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
+      subtotal: 13288.14,
+      descuento: 200.00,
+      igv: 2391.86,
+      total: 15680.00,
+      moneda: 'PEN',
+      estado: 'aprobada',
+      condiciones: 'Pago al contado con entrega',
+      observaciones: 'Garantía de 2 años en equipos',
+      userId: userId,
+    },
+  });
 
-  // Crear factura de ejemplo
+  await prisma.detalleProforma.createMany({
+    data: [
+      {
+        proformaId: proforma2.id,
+        productoId: productos[1].id,
+        descripcion: productos[1].nombre + ' - Configuración empresarial',
+        cantidad: 5,
+        unidadMedida: 'UND',
+        precioUnitario: 3500.00,
+        descuento: 200.00,
+        subtotal: 13288.14,
+        igv: 2391.86,
+        total: 15680.00,
+        orden: 1,
+      },
+    ],
+  });
+  proformas.push(proforma2);
+
+  // Proforma 3: Consultoría y licencias (pendiente)
+  const proforma3 = await prisma.proforma.create({
+    data: {
+      empresaId: empresa.id,
+      clienteId: clientes[2].id,
+      serie: 'P001',
+      numero: 3,
+      fechaEmision: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // Hace 2 días
+      fechaValidez: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000),
+      subtotal: 2033.90,
+      descuento: 50.00,
+      igv: 366.10,
+      total: 2400.00,
+      moneda: 'PEN',
+      estado: 'pendiente',
+      condiciones: 'Pago contra entrega',
+      observaciones: 'Renovación automática anual',
+      userId: userId,
+    },
+  });
+
+  await prisma.detalleProforma.createMany({
+    data: [
+      {
+        proformaId: proforma3.id,
+        productoId: productos[0].id,
+        descripcion: productos[0].nombre + ' - 8 horas',
+        cantidad: 8,
+        unidadMedida: 'HORA',
+        precioUnitario: 150.00,
+        descuento: 0,
+        subtotal: 1016.95,
+        igv: 183.05,
+        total: 1200.00,
+        orden: 1,
+      },
+      {
+        proformaId: proforma3.id,
+        productoId: productos[3].id,
+        descripcion: productos[3].nombre + ' - Pack 5 usuarios',
+        cantidad: 5,
+        unidadMedida: 'UND',
+        precioUnitario: 280.00,
+        descuento: 50.00,
+        subtotal: 1016.95,
+        igv: 183.05,
+        total: 1200.00,
+        orden: 2,
+      },
+    ],
+  });
+  proformas.push(proforma3);
+
+  // Proforma 4: Proyecto rechazado
+  const proforma4 = await prisma.proforma.create({
+    data: {
+      empresaId: empresa.id,
+      clienteId: clientes[0].id,
+      serie: 'P001',
+      numero: 4,
+      fechaEmision: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // Hace 15 días
+      fechaValidez: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+      subtotal: 2542.37,
+      descuento: 0,
+      igv: 457.63,
+      total: 3000.00,
+      moneda: 'PEN',
+      estado: 'rechazada',
+      condiciones: 'Pago al contado',
+      observaciones: 'Cliente decidió otra alternativa',
+      userId: userId,
+    },
+  });
+
+  await prisma.detalleProforma.createMany({
+    data: [
+      {
+        proformaId: proforma4.id,
+        productoId: productos[0].id,
+        descripcion: productos[0].nombre + ' - 20 horas',
+        cantidad: 20,
+        unidadMedida: 'HORA',
+        precioUnitario: 150.00,
+        descuento: 0,
+        subtotal: 2542.37,
+        igv: 457.63,
+        total: 3000.00,
+        orden: 1,
+      },
+    ],
+  });
+  proformas.push(proforma4);
+
+  // Proforma 5: Vencida
+  const proforma5 = await prisma.proforma.create({
+    data: {
+      empresaId: empresa.id,
+      clienteId: clientes[1].id,
+      serie: 'P001',
+      numero: 5,
+      fechaEmision: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000), // Hace 45 días
+      fechaValidez: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000), // Venció hace 15 días
+      subtotal: 6779.66,
+      descuento: 0,
+      igv: 1220.34,
+      total: 8000.00,
+      moneda: 'PEN',
+      estado: 'vencida',
+      condiciones: 'Pago a 15 días',
+      observaciones: 'Propuesta no respondida',
+      userId: userId,
+    },
+  });
+
+  await prisma.detalleProforma.createMany({
+    data: [
+      {
+        proformaId: proforma5.id,
+        productoId: productos[1].id,
+        descripcion: productos[1].nombre + ' - Promoción limitada',
+        cantidad: 2,
+        unidadMedida: 'UND',
+        precioUnitario: 3500.00,
+        descuento: 0,
+        subtotal: 5932.20,
+        igv: 1067.80,
+        total: 7000.00,
+        orden: 1,
+      },
+      {
+        proformaId: proforma5.id,
+        productoId: productos[3].id,
+        descripcion: productos[3].nombre + ' - 4 licencias',
+        cantidad: 4,
+        unidadMedida: 'UND',
+        precioUnitario: 280.00,
+        descuento: 0,
+        subtotal: 847.46,
+        igv: 152.54,
+        total: 1000.00,
+        orden: 2,
+      },
+    ],
+  });
+  proformas.push(proforma5);
+
+  console.log('✅ Proformas creadas:', proformas.length);
+
+  // Limpiar y crear factura de ejemplo
+  await prisma.detalleFactura.deleteMany({
+    where: { factura: { empresaId: empresa.id, serie: 'F001', numero: 1 } }
+  });
+  await prisma.factura.deleteMany({
+    where: { empresaId: empresa.id, serie: 'F001', numero: 1 }
+  });
+
   const factura = await prisma.factura.create({
     data: {
       empresaId: empresa.id,
@@ -283,8 +488,14 @@ async function main() {
   console.log(`   - ${categorias.length} Categorías`);
   console.log(`   - ${productos.length} Productos`);
   console.log(`   - ${clientes.length} Clientes`);
-  console.log(`   - 1 Proforma`);
+  console.log(`   - ${proformas.length} Proformas`);
   console.log(`   - 1 Factura`);
+  console.log('\n📋 Proformas creadas:');
+  console.log('   1. P001-1 - Desarrollo Web (pendiente)');
+  console.log('   2. P001-2 - Equipos tecnológicos (aprobada)');
+  console.log('   3. P001-3 - Consultoría y licencias (pendiente)');
+  console.log('   4. P001-4 - Proyecto rechazado (rechazada)');
+  console.log('   5. P001-5 - Propuesta vencida (vencida)');
   console.log('\n👤 Para probar el sistema:');
   console.log(`   - RUC Empresa: ${empresa.ruc}`);
   console.log(`   - Debes crear un usuario en Supabase Auth y vincularlo con este userId: ${userId}`);

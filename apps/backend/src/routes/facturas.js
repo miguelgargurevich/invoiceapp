@@ -3,6 +3,7 @@ const router = express.Router();
 const { authenticateToken, getEmpresaFromUser } = require('../middleware/auth');
 const prisma = require('../utils/prisma');
 const { z } = require('zod');
+const { sendInvoiceEmail } = require('../services/emailService');
 
 // Esquema de validación para detalle
 const detalleSchema = z.object({
@@ -428,6 +429,78 @@ router.get('/:id/pdf', authenticateToken, getEmpresaFromUser, async (req, res) =
   } catch (error) {
     console.error('Error generando PDF:', error);
     res.status(500).json({ error: 'Error generando PDF' });
+  }
+});
+
+// POST /api/facturas/:id/send-email - Enviar factura por email
+router.post('/:id/send-email', authenticateToken, getEmpresaFromUser, async (req, res) => {
+  try {
+    const { to, subject, message } = req.body;
+
+    if (!to) {
+      return res.status(400).json({ error: 'El email del destinatario es requerido' });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(to)) {
+      return res.status(400).json({ error: 'El formato del email es inválido' });
+    }
+
+    const factura = await prisma.factura.findFirst({
+      where: {
+        id: req.params.id,
+        empresaId: req.empresa.id
+      },
+      include: {
+        cliente: true,
+        empresa: true,
+        detalles: {
+          include: {
+            producto: {
+              select: { id: true, codigo: true, nombre: true }
+            }
+          },
+          orderBy: { orden: 'asc' }
+        }
+      }
+    });
+
+    if (!factura) {
+      return res.status(404).json({ error: 'Factura no encontrada' });
+    }
+
+    // Send email using Resend
+    const result = await sendInvoiceEmail({
+      to,
+      subject: subject || `Factura ${factura.serie}-${factura.numero} - ${factura.cliente.razonSocial || factura.cliente.nombre}`,
+      message: message || `Estimado cliente,\n\nAdjunto encontrará la factura ${factura.serie}-${factura.numero}.\n\nGracias por su preferencia.`,
+      factura: {
+        ...factura,
+        cliente: {
+          nombre: factura.cliente.razonSocial || factura.cliente.nombreComercial,
+          tipoDocumento: factura.cliente.tipoDocumento,
+          documento: factura.cliente.numeroDocumento,
+        }
+      },
+      empresa: {
+        nombre: factura.empresa.razonSocial || factura.empresa.nombreComercial,
+        ruc: factura.empresa.ruc,
+        email: factura.empresa.email,
+        direccion: factura.empresa.direccion,
+      },
+      // Note: PDF generation would happen here in production
+      // pdfBuffer: generatedPdfBuffer
+    });
+
+    res.json({ 
+      success: true, 
+      message: 'Email enviado exitosamente',
+      emailId: result.data?.id 
+    });
+  } catch (error) {
+    console.error('Error enviando email:', error);
+    res.status(500).json({ error: error.message || 'Error enviando email' });
   }
 });
 

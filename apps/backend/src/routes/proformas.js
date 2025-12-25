@@ -3,6 +3,7 @@ const router = express.Router();
 const { authenticateToken, getEmpresaFromUser } = require('../middleware/auth');
 const prisma = require('../utils/prisma');
 const { z } = require('zod');
+const { sendProformaEmail } = require('../services/emailService');
 
 // Esquema de validación para detalle
 const detalleSchema = z.object({
@@ -458,6 +459,76 @@ router.get('/:id/pdf', authenticateToken, getEmpresaFromUser, async (req, res) =
   } catch (error) {
     console.error('Error generando PDF:', error);
     res.status(500).json({ error: 'Error generando PDF' });
+  }
+});
+
+// POST /api/proformas/:id/send-email - Enviar proforma por email
+router.post('/:id/send-email', authenticateToken, getEmpresaFromUser, async (req, res) => {
+  try {
+    const { to, subject, message } = req.body;
+
+    if (!to) {
+      return res.status(400).json({ error: 'El email del destinatario es requerido' });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(to)) {
+      return res.status(400).json({ error: 'El formato del email es inválido' });
+    }
+
+    const proforma = await prisma.proforma.findFirst({
+      where: {
+        id: req.params.id,
+        empresaId: req.empresa.id
+      },
+      include: {
+        cliente: true,
+        empresa: true,
+        detalles: {
+          include: {
+            producto: {
+              select: { id: true, codigo: true, nombre: true }
+            }
+          },
+          orderBy: { orden: 'asc' }
+        }
+      }
+    });
+
+    if (!proforma) {
+      return res.status(404).json({ error: 'Proforma no encontrada' });
+    }
+
+    // Send email using Resend
+    const result = await sendProformaEmail({
+      to,
+      subject: subject || `Proforma ${proforma.serie}-${proforma.numero} - ${proforma.cliente.razonSocial || proforma.cliente.nombre}`,
+      message: message || `Estimado cliente,\n\nAdjunto encontrará la proforma/cotización ${proforma.serie}-${proforma.numero}.\n\nEsta cotización es válida por 30 días.\n\nQuedamos atentos a sus comentarios.`,
+      proforma: {
+        ...proforma,
+        cliente: {
+          nombre: proforma.cliente.razonSocial || proforma.cliente.nombreComercial,
+          tipoDocumento: proforma.cliente.tipoDocumento,
+          documento: proforma.cliente.numeroDocumento,
+        }
+      },
+      empresa: {
+        nombre: proforma.empresa.razonSocial || proforma.empresa.nombreComercial,
+        ruc: proforma.empresa.ruc,
+        email: proforma.empresa.email,
+        direccion: proforma.empresa.direccion,
+      },
+    });
+
+    res.json({ 
+      success: true, 
+      message: 'Email enviado exitosamente',
+      emailId: result.data?.id 
+    });
+  } catch (error) {
+    console.error('Error enviando email:', error);
+    res.status(500).json({ error: error.message || 'Error enviando email' });
   }
 });
 
