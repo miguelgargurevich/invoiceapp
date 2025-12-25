@@ -5,10 +5,8 @@ import { useTranslations } from 'next-intl';
 import {
   BarChart3,
   TrendingUp,
-  Users,
   FileText,
   Download,
-  Calendar,
   Filter,
 } from 'lucide-react';
 import {
@@ -25,7 +23,6 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { useAuth } from '@/contexts/AuthContext';
 import { Button, Card, MetricCard, DatePicker } from '@/components/common';
 import { formatCurrency } from '@/lib/utils';
 
@@ -35,7 +32,7 @@ export default function ReportesPage({
   params: { locale: string };
 }) {
   const t = useTranslations('reports');
-  const { empresa } = useAuth();
+  // const { empresa } = useAuth();
 
   const [dateRange, setDateRange] = useState({
     from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
@@ -149,25 +146,25 @@ export default function ReportesPage({
         <MetricCard
           title={t('totalInvoiced')}
           value={formatCurrency(totales.totalFacturado)}
-          icon={<BarChart3 className="w-6 h-6" />}
+          icon={BarChart3}
           color="blue"
         />
         <MetricCard
           title={t('totalCollected')}
           value={formatCurrency(totales.totalCobrado)}
-          icon={<TrendingUp className="w-6 h-6" />}
+          icon={TrendingUp}
           color="green"
         />
         <MetricCard
           title={t('totalPending')}
           value={formatCurrency(totales.totalPendiente)}
-          icon={<FileText className="w-6 h-6" />}
+          icon={FileText}
           color="yellow"
         />
         <MetricCard
           title={t('totalInvoices')}
           value={totales.facturas.toString()}
-          icon={<FileText className="w-6 h-6" />}
+          icon={FileText}
           color="purple"
         />
       </div>
@@ -186,7 +183,7 @@ export default function ReportesPage({
                 <XAxis dataKey="mes" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `S/${(v/1000).toFixed(0)}k`} />
                 <Tooltip
-                  formatter={(value: number) => [formatCurrency(value)]}
+                  formatter={(value: number | undefined) => value !== undefined ? [formatCurrency(value)] : ['']}
                   contentStyle={{
                     backgroundColor: 'var(--tooltip-bg)',
                     border: 'none',
@@ -316,7 +313,7 @@ export default function ReportesPage({
               <XAxis dataKey="mes" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `S/${(v/1000).toFixed(0)}k`} />
               <Tooltip
-                formatter={(value: number) => [formatCurrency(value)]}
+                formatter={(value: number | undefined) => value !== undefined ? [formatCurrency(value)] : ['']}
                 contentStyle={{
                   backgroundColor: 'var(--tooltip-bg)',
                   border: 'none',

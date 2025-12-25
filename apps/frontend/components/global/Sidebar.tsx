@@ -65,7 +65,7 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
           // Mobile
           isOpen ? 'translate-x-0' : '-translate-x-full',
           // Desktop
-          'md:translate-x-0 md:static',
+          'md:translate-x-0',
           isCollapsed ? 'md:w-16' : 'md:w-64',
           'w-64'
         )}

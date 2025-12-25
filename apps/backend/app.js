@@ -15,6 +15,9 @@ const facturaRoutes = require('./src/routes/facturas');
 const proformaRoutes = require('./src/routes/proformas');
 const reporteRoutes = require('./src/routes/reportes');
 const dashboardRoutes = require('./src/routes/dashboard');
+const workLogRoutes = require('./src/routes/workLogs');
+const jobPhotoRoutes = require('./src/routes/jobPhotos');
+const jobReceiptRoutes = require('./src/routes/jobReceipts');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -52,6 +55,12 @@ app.use('/api/facturas', facturaRoutes);
 app.use('/api/proformas', proformaRoutes);
 app.use('/api/reportes', reporteRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/work-logs', workLogRoutes);
+app.use('/api/job-photos', jobPhotoRoutes);
+app.use('/api/job-receipts', jobReceiptRoutes);
+
+// Servir archivos estáticos (uploads)
+app.use('/uploads', express.static('uploads'));
 
 // Manejo de errores 404
 app.use((req, res) => {

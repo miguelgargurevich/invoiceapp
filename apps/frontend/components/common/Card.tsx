@@ -1,5 +1,3 @@
-'use client';
-
 import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { LucideIcon } from 'lucide-react';
@@ -46,19 +44,20 @@ export function Card({
 interface MetricCardProps {
   title: string;
   value: string | number;
-  icon: LucideIcon;
-  change?: {
-    value: number;
-    type: 'increase' | 'decrease' | 'neutral';
-  };
+  icon: LucideIcon | ReactNode;
+  change?: string;
+  changeType?: 'positive' | 'negative' | 'neutral';
+  subtitle?: string;
   color?: 'blue' | 'green' | 'red' | 'yellow' | 'purple';
 }
 
 export function MetricCard({
   title,
   value,
-  icon: Icon,
+  icon,
   change,
+  changeType,
+  subtitle,
   color = 'blue',
 }: MetricCardProps) {
   const colorClasses = {
@@ -70,10 +69,14 @@ export function MetricCard({
   };
 
   const changeColorClasses = {
-    increase: 'text-green-500',
-    decrease: 'text-red-500',
+    positive: 'text-green-500',
+    negative: 'text-red-500',
     neutral: 'text-gray-500',
   };
+
+  // Check if icon is a component or an element
+  const isIconComponent = typeof icon === 'function';
+  const IconComponent = isIconComponent ? (icon as LucideIcon) : null;
 
   return (
     <Card>
@@ -82,17 +85,43 @@ export function MetricCard({
           <p className="text-sm text-gray-500 dark:text-gray-400">{title}</p>
           <p className="text-2xl font-bold mt-1">{value}</p>
           {change && (
-            <p className={cn('text-sm mt-1', changeColorClasses[change.type])}>
-              {change.type === 'increase' && '+'}
-              {change.type === 'decrease' && '-'}
-              {change.value}%
+            <p className={cn('text-sm mt-1', changeType ? changeColorClasses[changeType] : 'text-gray-500')}>
+              {change}
             </p>
+          )}
+          {subtitle && (
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{subtitle}</p>
           )}
         </div>
         <div className={cn('p-3 rounded-lg', colorClasses[color])}>
-          <Icon className="w-6 h-6" />
+          {IconComponent ? <IconComponent className="w-6 h-6" /> : (icon as ReactNode)}
         </div>
       </div>
     </Card>
   );
 }
+
+// Card subcomponents
+Card.Header = function CardHeader({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div className={cn('border-b border-gray-200 dark:border-gray-800 pb-4 mb-4', className)}>
+      {children}
+    </div>
+  );
+};
+
+Card.Title = function CardTitle({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <h3 className={cn('text-lg font-semibold text-gray-900 dark:text-white', className)}>
+      {children}
+    </h3>
+  );
+};
+
+Card.Content = function CardContent({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div className={className}>
+      {children}
+    </div>
+  );
+};

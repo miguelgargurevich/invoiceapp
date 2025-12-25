@@ -36,10 +36,14 @@
   },
   "auth": {
     "login": "Iniciar sesión",
+    "signIn": "Iniciar Sesión",
+    "signInDescription": "Ingresa tus credenciales para acceder al sistema",
     "logout": "Cerrar sesión",
     "register": "Registrarse",
     "email": "Correo electrónico",
+    "emailPlaceholder": "tu@email.com",
     "password": "Contraseña",
+    "passwordPlaceholder": "Ingresa tu contraseña",
     "confirmPassword": "Confirmar contraseña",
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "rememberMe": "Recordarme",
@@ -49,7 +53,11 @@
     "dontHaveAccount": "¿No tienes una cuenta?",
     "loginSuccess": "Sesión iniciada correctamente",
     "logoutSuccess": "Sesión cerrada correctamente",
-    "invalidCredentials": "Credenciales inválidas"
+    "invalidCredentials": "Credenciales inválidas",
+    "tagline": "Gestiona tus facturas y proformas de manera profesional",
+    "testimonial": "Este sistema ha transformado completamente la forma en que manejamos nuestra facturación. Simple, rápido y confiable.",
+    "testimonialAuthor": "María González, Gerente de Ventas",
+    "allRightsReserved": "Todos los derechos reservados"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -63,18 +71,32 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "welcome": "Bienvenido",
+    "welcome": "Bienvenido, {name}",
     "monthSales": "Ventas del Mes",
+    "monthlySales": "Ventas Mensuales",
     "yearSales": "Ventas del Año",
+    "totalInvoices": "Total Facturas",
     "invoicesIssued": "Facturas Emitidas",
+    "pendingInvoices": "Facturas Pendientes",
     "pendingCollection": "Por Cobrar",
     "collected": "Cobrado",
+    "totalClients": "Total Clientes",
     "activeClients": "Clientes Activos",
     "overdueInvoices": "Facturas Vencidas",
+    "overdue": "vencidas",
     "pendingQuotes": "Proformas Pendientes",
     "salesByMonth": "Ventas por Mes",
+    "revenueOverview": "Resumen de Ingresos",
+    "invoiceStatus": "Estado de Facturas",
+    "last6Months": "Últimos 6 Meses",
+    "last12Months": "Últimos 12 Meses",
     "topClients": "Top Clientes",
     "recentInvoices": "Facturas Recientes",
+    "invoiceNumber": "N° Factura",
+    "client": "Cliente",
+    "date": "Fecha",
+    "amount": "Monto",
+    "status": "Estado",
     "viewAll": "Ver todas"
   },
   "invoices": {
@@ -309,5 +331,78 @@
     "notFound": "No encontrado",
     "serverError": "Error del servidor",
     "tryAgain": "Intente nuevamente"
+  },
+  "workLog": {
+    "title": "Bitácora de Trabajo",
+    "addEntry": "Agregar Entrada",
+    "date": "Fecha",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Describe el trabajo realizado...",
+    "hoursWorked": "Horas Trabajadas",
+    "worker": "Trabajador",
+    "workerPlaceholder": "Nombre del técnico/trabajador",
+    "notes": "Observaciones",
+    "notesPlaceholder": "Notas adicionales...",
+    "noEntries": "No hay entradas de trabajo registradas"
+  },
+  "jobPhotos": {
+    "title": "Fotos del Trabajo",
+    "upload": "Subir Foto",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Descripción de la foto...",
+    "noPhotos": "No hay fotos cargadas",
+    "uploading": "Subiendo...",
+    "dragAndDrop": "Arrastra una imagen o haz clic para seleccionar",
+    "maxSize": "Tamaño máximo: 10MB"
+  },
+  "jobReceipts": {
+    "title": "Recibos y Gastos",
+    "addReceipt": "Agregar Recibo",
+    "date": "Fecha",
+    "description": "Descripción",
+    "amount": "Monto",
+    "category": "Categoría",
+    "supplier": "Proveedor",
+    "receiptNumber": "N° Recibo",
+    "attachFile": "Adjuntar Archivo",
+    "noReceipts": "No hay recibos registrados",
+    "totalExpenses": "Total Gastos",
+    "categories": {
+      "materiales": "Materiales",
+      "mano_obra": "Mano de Obra",
+      "transporte": "Transporte",
+      "equipos": "Equipos",
+      "otros": "Otros"
+    }
+  },
+  "jobDetails": {
+    "title": "Detalles del Trabajo",
+    "jobName": "Nombre del Trabajo",
+    "jobNamePlaceholder": "Ej: Instalación eléctrica oficina 402",
+    "jobLocation": "Ubicación",
+    "jobLocationPlaceholder": "Dirección del trabajo",
+    "orderType": "Tipo de Orden",
+    "workDescription": "Descripción del Trabajo",
+    "workDescriptionPlaceholder": "Detalle completo del trabajo a realizar...",
+    "paymentTerms": "Términos de Pago",
+    "paymentTermsPlaceholder": "Condiciones de pago acordadas...",
+    "orderTypes": {
+      "day_work": "Day Work",
+      "contract": "Contract",
+      "extra": "Extra"
+    }
+  },
+  "jobSummary": {
+    "title": "Resumen Completo del Trabajo",
+    "proposal": "Propuesta",
+    "workLog": "Bitácora",
+    "photos": "Fotos",
+    "receipts": "Gastos",
+    "finalInvoice": "Factura Final",
+    "timeline": "Cronología",
+    "comparison": "Comparación Proforma vs Factura",
+    "estimated": "Estimado",
+    "actual": "Real",
+    "difference": "Diferencia"
   }
 }
