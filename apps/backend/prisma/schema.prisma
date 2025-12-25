@@ -1,0 +1,278 @@
+// This is your Prisma schema file
+// Learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// 🏢 Empresa/Organización del usuario
+model Empresa {
+  id              String    @id @default(uuid())
+  nombre          String
+  ruc             String    @unique
+  direccion       String?
+  telefono        String?
+  email           String?
+  logoUrl         String?   @map("logo_url")
+  moneda          String    @default("PEN")
+  serieFactura    String    @default("F001") @map("serie_factura")
+  serieProforma   String    @default("P001") @map("serie_proforma")
+  userId          String    @map("user_id")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  
+  clientes        Cliente[]
+  productos       Producto[]
+  facturas        Factura[]
+  proformas       Proforma[]
+  categorias      Categoria[]
+  
+  @@index([userId], map: "idx_empresa_user_id")
+  @@map("empresas")
+}
+
+// 👥 Clientes
+model Cliente {
+  id              String    @id @default(uuid())
+  empresaId       String    @map("empresa_id")
+  tipoDocumento   String    @map("tipo_documento") // RUC, DNI, CE
+  numeroDocumento String    @map("numero_documento")
+  razonSocial     String    @map("razon_social")
+  nombreComercial String?   @map("nombre_comercial")
+  direccion       String?
+  email           String?
+  telefono        String?
+  contacto        String?   // Persona de contacto
+  notas           String?
+  activo          Boolean   @default(true)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  
+  empresa         Empresa   @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  facturas        Factura[]
+  proformas       Proforma[]
+  
+  @@unique([empresaId, numeroDocumento])
+  @@index([empresaId], map: "idx_cliente_empresa_id")
+  @@index([numeroDocumento], map: "idx_cliente_documento")
+  @@map("clientes")
+}
+
+// 📦 Productos/Servicios
+model Producto {
+  id              String    @id @default(uuid())
+  empresaId       String    @map("empresa_id")
+  codigo          String?
+  nombre          String
+  descripcion     String?
+  unidadMedida    String    @default("UND") @map("unidad_medida")
+  precioUnitario  Decimal   @map("precio_unitario") @db.Decimal(10, 2)
+  precioConIgv    Boolean   @default(true) @map("precio_con_igv")
+  categoriaId     String?   @map("categoria_id")
+  stockActual     Int?      @map("stock_actual")
+  stockMinimo     Int?      @map("stock_minimo")
+  activo          Boolean   @default(true)
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  
+  empresa         Empresa    @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  categoria       Categoria? @relation(fields: [categoriaId], references: [id])
+  detallesFactura DetalleFactura[]
+  detallesProforma DetalleProforma[]
+  
+  @@unique([empresaId, codigo])
+  @@index([empresaId], map: "idx_producto_empresa_id")
+  @@index([categoriaId], map: "idx_producto_categoria_id")
+  @@map("productos")
+}
+
+// 🏷️ Categorías de productos
+model Categoria {
+  id          String    @id @default(uuid())
+  empresaId   String    @map("empresa_id")
+  nombre      String
+  descripcion String?
+  color       String?
+  activo      Boolean   @default(true)
+  createdAt   DateTime  @default(now()) @map("created_at")
+  
+  empresa     Empresa   @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  productos   Producto[]
+  
+  @@unique([empresaId, nombre])
+  @@map("categorias")
+}
+
+// 🧾 Facturas
+model Factura {
+  id                String    @id @default(uuid())
+  empresaId         String    @map("empresa_id")
+  clienteId         String    @map("cliente_id")
+  serie             String
+  numero            Int
+  fechaEmision      DateTime  @map("fecha_emision")
+  fechaVencimiento  DateTime? @map("fecha_vencimiento")
+  
+  // Montos
+  subtotal          Decimal   @db.Decimal(10, 2)
+  descuento         Decimal   @default(0) @db.Decimal(10, 2)
+  igv               Decimal   @db.Decimal(10, 2)
+  total             Decimal   @db.Decimal(10, 2)
+  moneda            String    @default("PEN")
+  tipoCambio        Decimal?  @map("tipo_cambio") @db.Decimal(10, 4)
+  
+  // Estado
+  estado            String    @default("emitida") // emitida, pagada, anulada, vencida
+  formaPago         String?   @map("forma_pago") // contado, credito_30, credito_60
+  observaciones     String?
+  
+  // SUNAT (opcional para integración futura)
+  enviadoSunat      Boolean   @default(false) @map("enviado_sunat")
+  cdrSunat          String?   @map("cdr_sunat")
+  hashSunat         String?   @map("hash_sunat")
+  
+  // Archivos adjuntos (Supabase Storage)
+  pdfUrl            String?   @map("pdf_url")
+  xmlUrl            String?   @map("xml_url")
+  
+  proformaOrigenId  String?   @map("proforma_origen_id")
+  userId            String    @map("user_id")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  
+  empresa           Empresa   @relation(fields: [empresaId], references: [id])
+  cliente           Cliente   @relation(fields: [clienteId], references: [id])
+  proformaOrigen    Proforma? @relation(fields: [proformaOrigenId], references: [id])
+  detalles          DetalleFactura[]
+  pagos             PagoFactura[]
+  
+  @@unique([empresaId, serie, numero])
+  @@index([empresaId], map: "idx_factura_empresa_id")
+  @@index([clienteId], map: "idx_factura_cliente_id")
+  @@index([fechaEmision(sort: Desc)], map: "idx_factura_fecha")
+  @@index([estado], map: "idx_factura_estado")
+  @@map("facturas")
+}
+
+// 📝 Detalle de Factura
+model DetalleFactura {
+  id              String   @id @default(uuid())
+  facturaId       String   @map("factura_id")
+  productoId      String?  @map("producto_id")
+  descripcion     String
+  cantidad        Decimal  @db.Decimal(10, 3)
+  unidadMedida    String   @map("unidad_medida")
+  precioUnitario  Decimal  @map("precio_unitario") @db.Decimal(10, 4)
+  descuento       Decimal  @default(0) @db.Decimal(10, 2)
+  subtotal        Decimal  @db.Decimal(10, 2)
+  igv             Decimal  @db.Decimal(10, 2)
+  total           Decimal  @db.Decimal(10, 2)
+  orden           Int      @default(0)
+  
+  factura         Factura   @relation(fields: [facturaId], references: [id], onDelete: Cascade)
+  producto        Producto? @relation(fields: [productoId], references: [id])
+  
+  @@index([facturaId], map: "idx_detalle_factura_id")
+  @@map("detalles_factura")
+}
+
+// 💵 Pagos de Factura
+model PagoFactura {
+  id            String   @id @default(uuid())
+  facturaId     String   @map("factura_id")
+  fecha         DateTime
+  monto         Decimal  @db.Decimal(10, 2)
+  metodoPago    String   @map("metodo_pago") // efectivo, transferencia, tarjeta, cheque
+  referencia    String?  // Número de operación, cheque, etc.
+  observaciones String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  
+  factura       Factura  @relation(fields: [facturaId], references: [id], onDelete: Cascade)
+  
+  @@index([facturaId], map: "idx_pago_factura_id")
+  @@map("pagos_factura")
+}
+
+// 📋 Proformas/Cotizaciones
+model Proforma {
+  id                String    @id @default(uuid())
+  empresaId         String    @map("empresa_id")
+  clienteId         String    @map("cliente_id")
+  serie             String
+  numero            Int
+  fechaEmision      DateTime  @map("fecha_emision")
+  fechaValidez      DateTime? @map("fecha_validez")
+  
+  // Montos
+  subtotal          Decimal   @db.Decimal(10, 2)
+  descuento         Decimal   @default(0) @db.Decimal(10, 2)
+  igv               Decimal   @db.Decimal(10, 2)
+  total             Decimal   @db.Decimal(10, 2)
+  moneda            String    @default("PEN")
+  tipoCambio        Decimal?  @map("tipo_cambio") @db.Decimal(10, 4)
+  
+  // Estado
+  estado            String    @default("pendiente") // pendiente, aceptada, rechazada, vencida, facturada
+  condiciones       String?   // Condiciones de pago/entrega
+  observaciones     String?
+  
+  // Archivos (Supabase Storage)
+  pdfUrl            String?   @map("pdf_url")
+  
+  userId            String    @map("user_id")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  
+  empresa           Empresa   @relation(fields: [empresaId], references: [id])
+  cliente           Cliente   @relation(fields: [clienteId], references: [id])
+  detalles          DetalleProforma[]
+  facturasGeneradas Factura[]
+  
+  @@unique([empresaId, serie, numero])
+  @@index([empresaId], map: "idx_proforma_empresa_id")
+  @@index([clienteId], map: "idx_proforma_cliente_id")
+  @@index([fechaEmision(sort: Desc)], map: "idx_proforma_fecha")
+  @@index([estado], map: "idx_proforma_estado")
+  @@map("proformas")
+}
+
+// 📝 Detalle de Proforma
+model DetalleProforma {
+  id              String    @id @default(uuid())
+  proformaId      String    @map("proforma_id")
+  productoId      String?   @map("producto_id")
+  descripcion     String
+  cantidad        Decimal   @db.Decimal(10, 3)
+  unidadMedida    String    @map("unidad_medida")
+  precioUnitario  Decimal   @map("precio_unitario") @db.Decimal(10, 4)
+  descuento       Decimal   @default(0) @db.Decimal(10, 2)
+  subtotal        Decimal   @db.Decimal(10, 2)
+  igv             Decimal   @db.Decimal(10, 2)
+  total           Decimal   @db.Decimal(10, 2)
+  orden           Int       @default(0)
+  
+  proforma        Proforma  @relation(fields: [proformaId], references: [id], onDelete: Cascade)
+  producto        Producto? @relation(fields: [productoId], references: [id])
+  
+  @@index([proformaId], map: "idx_detalle_proforma_id")
+  @@map("detalles_proforma")
+}
+
+// 📊 Configuración de numeración
+model ConfiguracionSeries {
+  id              String   @id @default(uuid())
+  empresaId       String   @map("empresa_id")
+  tipoDocumento   String   @map("tipo_documento") // factura, proforma, boleta
+  serie           String
+  ultimoNumero    Int      @default(0) @map("ultimo_numero")
+  activa          Boolean  @default(true)
+  
+  @@unique([empresaId, tipoDocumento, serie])
+  @@map("configuracion_series")
+}
