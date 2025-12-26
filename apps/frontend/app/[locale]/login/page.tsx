@@ -195,31 +195,6 @@ export default function LoginPage({
                 </motion.div>
               )}
 
-              {/* Google Sign In */}
-              <button
-                type="button"
-                onClick={handleGoogleSignIn}
-                disabled={isLoading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group"
-              >
-                <Chrome className="w-5 h-5 text-gray-700 dark:text-gray-300 group-hover:text-primary-600" />
-                <span className="font-medium text-gray-700 dark:text-gray-300 group-hover:text-primary-600">
-                  {t('continueWithGoogle')}
-                </span>
-              </button>
-
-              {/* Divider */}
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300 dark:border-gray-600" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
-                    {t('orContinueWith')}
-                  </span>
-                </div>
-              </div>
-
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -319,6 +294,31 @@ export default function LoginPage({
                   )}
                 </Button>
               </form>
+
+              {/* Divider */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                    {t('orContinueWith')}
+                  </span>
+                </div>
+              </div>
+
+              {/* Google Sign In */}
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group"
+              >
+                <Chrome className="w-5 h-5 text-gray-700 dark:text-gray-300 group-hover:text-primary-600" />
+                <span className="font-medium text-gray-700 dark:text-gray-300 group-hover:text-primary-600">
+                  {t('continueWithGoogle')}
+                </span>
+              </button>
 
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-500 dark:text-gray-400">
