@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
+const prisma = require('../utils/prisma');
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -35,9 +36,6 @@ const authenticateToken = async (req, res, next) => {
 
 // Middleware para obtener empresa del usuario autenticado
 const getEmpresaFromUser = async (req, res, next) => {
-  const { PrismaClient } = require('@prisma/client');
-  const prisma = new PrismaClient();
-
   try {
     const empresa = await prisma.empresa.findFirst({
       where: { userId: req.user.id }
@@ -52,8 +50,6 @@ const getEmpresaFromUser = async (req, res, next) => {
   } catch (error) {
     console.error('Error obteniendo empresa:', error);
     return res.status(500).json({ error: 'Error interno del servidor' });
-  } finally {
-    await prisma.$disconnect();
   }
 };
 
