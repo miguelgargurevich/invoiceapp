@@ -115,8 +115,8 @@ export default function ProformaDetailPage({
         ...data,
         cliente: {
           id: data.cliente?.id,
-          nombre: data.cliente?.razonSocial || data.cliente?.nombreComercial || data.cliente?.nombre,
-          documento: data.cliente?.numeroDocumento || data.cliente?.documento,
+          razonSocial: data.cliente?.razonSocial || data.cliente?.nombreComercial || data.cliente?.nombre,
+          numeroDocumento: data.cliente?.numeroDocumento || data.cliente?.documento,
           tipoDocumento: data.cliente?.tipoDocumento || 'RUC',
           direccion: data.cliente?.direccion,
           email: data.cliente?.email,
