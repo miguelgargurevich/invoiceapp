@@ -167,9 +167,9 @@ export default function DashboardPage() {
     : 0;
 
   const pieData = [
-    { name: 'Pagadas', value: 120, color: '#22c55e' },
-    { name: 'Pendientes', value: 25, color: '#f59e0b' },
-    { name: 'Vencidas', value: 11, color: '#ef4444' },
+    { name: t('paid'), value: 120, color: '#22c55e' },
+    { name: t('pendingStatus'), value: 25, color: '#f59e0b' },
+    { name: t('overdueStatus'), value: 11, color: '#ef4444' },
   ];
 
   if (loading) {
@@ -310,7 +310,7 @@ export default function DashboardPage() {
                     tickFormatter={(value) => `S/${((parseFloat(String(value)) || 0) / 1000).toFixed(0)}k`}
                   />
                   <Tooltip
-                    formatter={(value: number | undefined) => [formatCurrency(value || 0), 'Ingresos']}
+                    formatter={(value: number | undefined) => [formatCurrency(value || 0), t('revenue')]}
                     contentStyle={{
                       backgroundColor: 'var(--tooltip-bg)',
                       border: 'none',

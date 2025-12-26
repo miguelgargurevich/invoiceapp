@@ -33,7 +33,9 @@
     "optional": "Optional",
     "all": "All",
     "active": "Active",
-    "inactive": "Inactive"
+    "inactive": "Inactive",
+    "noResults": "No results",
+    "noOptions": "No options available"
   },
   "auth": {
     "appName": "Billing System",
@@ -125,7 +127,11 @@
     "date": "Date",
     "amount": "Amount",
     "status": "Status",
-    "viewAll": "View all"
+    "viewAll": "View all",
+    "paid": "Paid",
+    "pendingStatus": "Pending",
+    "overdueStatus": "Overdue",
+    "revenue": "Revenue"
   },
   "invoices": {
     "title": "Invoices",
@@ -197,6 +203,11 @@
     "statusPending": "Pending",
     "statusOverdue": "Overdue",
     "statusCancelled": "Cancelled",
+    "statusEmitted": "Issued",
+    "statusAccepted": "Accepted",
+    "statusRejected": "Rejected",
+    "statusExpired": "Expired",
+    "statusInvoiced": "Invoiced",
     "createFirstInvoice": "Create your first invoice",
     "view": "View",
     "print": "Print",
@@ -292,8 +303,19 @@
     "observations": "Notes",
     "observationsPlaceholder": "Conditions, terms or other notes...",
     "document": "Document",
-    "address": "Address",
-    "editQuote": "Edit Proposal",
+    "address": "Address",    "jobName": "Job Name",
+    "jobLocation": "Job Location",
+    "jobPhone": "Job Phone",
+    "workDescription": "Work Description",
+    "paymentTerms": "Payment Terms",
+    "architectName": "Architect Name",
+    "plansDate": "Date of Plans",
+    "validityDays": "Validity Days",
+    "authorizedSignature": "Authorized Signature",
+    "acceptanceSignature": "Acceptance Signature",
+    "acceptanceDate": "Acceptance Date",
+    "jobInformation": "Job Information",
+    "contractorDetails": "Contractor Details",    "editQuote": "Edit Proposal",
     "quoteDetails": "Proposal Details",
     "quoteNumber": "Number",
     "number": "Number",
@@ -406,6 +428,18 @@
     "unit": "Unit",
     "searchPlaceholder": "Search by code or name...",
     "allCategories": "All Categories",
+    "manageCategories": "Manage Categories",
+    "categoryManagement": "Category Management",
+    "addCategory": "Add Category",
+    "editCategory": "Edit Category",
+    "deleteCategory": "Delete Category",
+    "categoryName": "Category Name",
+    "categoryDescription": "Description",
+    "categoryColor": "Color",
+    "noCategoriesYet": "No categories yet",
+    "createFirstCategory": "Create your first category to organize your products",
+    "productsCount": "{count} products",
+    "deleteCategoryMessage": "Are you sure you want to delete the category {name}? This action cannot be undone.",
     "newProduct": "New Product",
     "editProduct": "Edit Product",
     "productDetails": "Product Details",
@@ -448,7 +482,11 @@
       "deleted": "Product successfully deleted",
       "imported": "Products successfully imported",
       "confirmDelete": "Are you sure you want to delete this product?",
-      "duplicateCode": "A product with this code already exists"
+      "duplicateCode": "A product with this code already exists",
+      "categoryCreated": "Category successfully created",
+      "categoryUpdated": "Category successfully updated",
+      "categoryDeleted": "Category successfully deleted",
+      "categoryHasProducts": "Cannot delete category because it has associated products"
     }
   },
   "reports": {
@@ -609,6 +647,17 @@
       "viewReports": "View Reports",
       "openSettings": "Open Settings"
     }
+  },
+  "emptyState": {
+    "noProducts": "No products",
+    "noProductsDesc": "Add your products or services to streamline invoice creation.",
+    "noProductsRegistered": "No products registered",
+    "noInvoices": "No invoices",
+    "noInvoicesDesc": "Create your first invoice to start billing your clients.",
+    "noClients": "No clients",
+    "noClientsDesc": "Add your first client to create invoices and proposals.",
+    "noSearchResults": "No results",
+    "noSearchResultsDesc": "No results found for your search. Try different terms."
   },
   "validation": {
     "required": "This field is required",

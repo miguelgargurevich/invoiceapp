@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Plus, Search, Filter, Download, Edit, Trash2 } from 'lucide-react';
+import { Plus, Search, Filter, Download, Edit, Trash2, Tag } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
@@ -37,6 +37,11 @@ interface Producto {
 interface Categoria {
   id: string;
   nombre: string;
+  descripcion?: string;
+  color?: string;
+  _count?: {
+    productos: number;
+  };
 }
 
 export default function ProductosPage({
@@ -53,6 +58,7 @@ export default function ProductosPage({
   const [search, setSearch] = useState('');
   const [filterCategoria, setFilterCategoria] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedProducto, setSelectedProducto] = useState<Producto | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -360,6 +366,10 @@ export default function ProductosPage({
               </option>
             ))}
           </select>
+          <Button variant="outline" onClick={() => setIsCategoryModalOpen(true)}>
+            <Tag className="w-4 h-4 mr-2" />
+            {t('manageCategories')}
+          </Button>
           <Button variant="outline" onClick={handleExport}>
             <Download className="w-4 h-4 mr-2" />
             {t('export')}
@@ -432,6 +442,18 @@ export default function ProductosPage({
           loadProductos();
         }}
         locale={locale}
+      />
+
+      {/* Category Management Modal */}
+      <CategoryManagementModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        categorias={categorias}
+        empresa={empresa}
+        onSave={() => {
+          loadCategorias();
+          loadProductos();
+        }}
       />
 
       {/* Delete Confirmation */}
@@ -647,6 +669,203 @@ function ProductModal({ isOpen, onClose, producto, categorias, onSave, locale }:
           </Button>
         </div>
       </form>
+    </Modal>
+  );
+}
+
+// Category Management Modal Component
+function CategoryManagementModal({
+  isOpen,
+  onClose,
+  onSave,
+  categorias,
+  empresa,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: () => void;
+  categorias: Categoria[];
+  empresa: any;
+}) {
+  const t = useTranslations('products');
+  const [loading, setLoading] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Categoria | null>(null);
+  const [isAddMode, setIsAddMode] = useState(false);
+  const [formData, setFormData] = useState({
+    nombre: '',
+    descripcion: '',
+    color: '#3B82F6',
+  });
+
+  const handleAddClick = () => {
+    setIsAddMode(true);
+    setEditingCategory(null);
+    setFormData({ nombre: '', descripcion: '', color: '#3B82F6' });
+  };
+
+  const handleEditClick = (categoria: Categoria) => {
+    setIsAddMode(true);
+    setEditingCategory(categoria);
+    setFormData({
+      nombre: categoria.nombre,
+      descripcion: categoria.descripcion || '',
+      color: categoria.color || '#3B82F6',
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      if (editingCategory) {
+        await api.put(`/categorias/${editingCategory.id}`, formData);
+        alert(t('messages.categoryUpdated'));
+      } else {
+        await api.post('/categorias', { ...formData, empresaId: empresa?.id });
+        alert(t('messages.categoryCreated'));
+      }
+      setIsAddMode(false);
+      setEditingCategory(null);
+      setFormData({ nombre: '', descripcion: '', color: '#3B82F6' });
+      onSave();
+    } catch (error) {
+      console.error('Error saving categoria:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (categoria: Categoria) => {
+    if (!confirm(t('deleteCategoryMessage', { name: categoria.nombre }))) return;
+
+    try {
+      await api.delete(`/categorias/${categoria.id}`);
+      alert(t('messages.categoryDeleted'));
+      onSave();
+    } catch (error: any) {
+      if (error.response?.status === 400) {
+        alert(t('messages.categoryHasProducts'));
+      } else {
+        alert('Error al eliminar categoría');
+      }
+      console.error('Error deleting categoria:', error);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsAddMode(false);
+    setEditingCategory(null);
+    setFormData({ nombre: '', descripcion: '', color: '#3B82F6' });
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={t('categoryManagement')}
+      size="lg"
+    >
+      <div className="space-y-4">
+        {!isAddMode ? (
+          <>
+            <div className="flex justify-between items-center mb-4">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {categorias.length === 0 ? t('noCategoriesYet') : t('productsCount', { count: categorias.length })}
+              </p>
+              <Button onClick={handleAddClick} size="sm">
+                <Plus className="w-4 h-4 mr-1" />
+                {t('addCategory')}
+              </Button>
+            </div>
+
+            {categorias.length === 0 ? (
+              <div className="text-center py-12">
+                <Tag className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                <p className="text-gray-500 dark:text-gray-400">{t('createFirstCategory')}</p>
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {categorias.map((categoria) => (
+                  <div
+                    key={categoria.id}
+                    className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div
+                        className="w-4 h-4 rounded"
+                        style={{ backgroundColor: categoria.color || '#3B82F6' }}
+                      />
+                      <div>
+                        <p className="font-medium text-gray-900 dark:text-gray-100">
+                          {categoria.nombre}
+                        </p>
+                        {categoria.descripcion && (
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            {categoria.descripcion}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => handleEditClick(categoria)}
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                        title={t('edit')}
+                      >
+                        <Edit className="w-4 h-4 text-gray-500" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(categoria)}
+                        className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                        title={t('delete')}
+                      >
+                        <Trash2 className="w-4 h-4 text-red-500" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              label={t('categoryName')}
+              value={formData.nombre}
+              onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+              required
+            />
+
+            <Textarea
+              label={t('categoryDescription')}
+              value={formData.descripcion}
+              onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
+              rows={2}
+            />
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t('categoryColor')}
+              </label>
+              <input
+                type="color"
+                value={formData.color}
+                onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                className="w-20 h-10 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
+              />
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <Button type="button" variant="outline" onClick={handleCancel}>
+                {t('cancel')}
+              </Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? t('saving') : t('save')}
+              </Button>
+            </div>
+          </form>
+        )}
+      </div>
     </Modal>
   );
 }

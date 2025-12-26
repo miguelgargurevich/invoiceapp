@@ -33,7 +33,9 @@
     "optional": "Opcional",
     "all": "Todos",
     "active": "Activo",
-    "inactive": "Inactivo"
+    "inactive": "Inactivo",
+    "noResults": "Sin resultados",
+    "noOptions": "No hay opciones disponibles"
   },
   "auth": {
     "appName": "Sistema de Facturación",
@@ -125,7 +127,11 @@
     "date": "Fecha",
     "amount": "Monto",
     "status": "Estado",
-    "viewAll": "Ver todas"
+    "viewAll": "Ver todas",
+    "paid": "Pagadas",
+    "pendingStatus": "Pendientes",
+    "overdueStatus": "Vencidas",
+    "revenue": "Ingresos"
   },
   "invoices": {
     "title": "Facturas",
@@ -198,6 +204,11 @@
     "statusPending": "Pendiente",
     "statusOverdue": "Vencida",
     "statusCancelled": "Anulada",
+    "statusEmitted": "Emitida",
+    "statusAccepted": "Aceptada",
+    "statusRejected": "Rechazada",
+    "statusExpired": "Vencida",
+    "statusInvoiced": "Facturada",
     "createFirstInvoice": "Crea tu primera factura",
     "view": "Ver",
     "print": "Imprimir",
@@ -295,6 +306,19 @@
     "observationsPlaceholder": "Condiciones, términos u otras observaciones...",
     "document": "Documento",
     "address": "Dirección",
+    "jobName": "Nombre del Trabajo",
+    "jobLocation": "Ubicación del Trabajo",
+    "jobPhone": "Teléfono del Trabajo",
+    "workDescription": "Descripción del Trabajo",
+    "paymentTerms": "Términos de Pago",
+    "architectName": "Nombre del Arquitecto",
+    "plansDate": "Fecha de Planos",
+    "validityDays": "Días de Validez",
+    "authorizedSignature": "Firma Autorizada",
+    "acceptanceSignature": "Firma de Aceptación",
+    "acceptanceDate": "Fecha de Aceptación",
+    "jobInformation": "Información del Trabajo",
+    "contractorDetails": "Detalles del Contratista",
     "editQuote": "Editar Proforma",
     "quoteDetails": "Detalle de Proforma",
     "quoteNumber": "Número",
@@ -408,6 +432,18 @@
     "unit": "Unidad",
     "searchPlaceholder": "Buscar por código o nombre...",
     "allCategories": "Todas las Categorías",
+    "manageCategories": "Gestionar Categorías",
+    "categoryManagement": "Gestión de Categorías",
+    "addCategory": "Agregar Categoría",
+    "editCategory": "Editar Categoría",
+    "deleteCategory": "Eliminar Categoría",
+    "categoryName": "Nombre de la Categoría",
+    "categoryDescription": "Descripción",
+    "categoryColor": "Color",
+    "noCategoriesYet": "Aún no hay categorías",
+    "createFirstCategory": "Crea tu primera categoría para organizar tus productos",
+    "productsCount": "{count} productos",
+    "deleteCategoryMessage": "¿Estás seguro de eliminar la categoría {name}? Esta acción no se puede deshacer.",
     "newProduct": "Nuevo Producto",
     "editProduct": "Editar Producto",
     "productDetails": "Detalle del Producto",
@@ -450,7 +486,11 @@
       "deleted": "Producto eliminado exitosamente",
       "imported": "Productos importados exitosamente",
       "confirmDelete": "¿Está seguro de eliminar este producto?",
-      "duplicateCode": "Ya existe un producto con este código"
+      "duplicateCode": "Ya existe un producto con este código",
+      "categoryCreated": "Categoría creada exitosamente",
+      "categoryUpdated": "Categoría actualizada exitosamente",
+      "categoryDeleted": "Categoría eliminada exitosamente",
+      "categoryHasProducts": "No se puede eliminar la categoría porque tiene productos asociados"
     }
   },
   "reports": {
@@ -611,6 +651,17 @@
       "viewReports": "Ver Reportes",
       "openSettings": "Abrir Configuración"
     }
+  },
+  "emptyState": {
+    "noProducts": "No hay productos",
+    "noProductsDesc": "Agrega tus productos o servicios para agilizar la creación de facturas.",
+    "noProductsRegistered": "No hay productos registrados",
+    "noInvoices": "No hay facturas",
+    "noInvoicesDesc": "Crea tu primera factura para comenzar a facturar a tus clientes.",
+    "noClients": "No hay clientes",
+    "noClientsDesc": "Agrega tu primer cliente para poder crear facturas y proformas.",
+    "noSearchResults": "Sin resultados",
+    "noSearchResultsDesc": "No se encontraron resultados para tu búsqueda. Intenta con otros términos."
   },
   "validation": {
     "required": "Este campo es requerido",

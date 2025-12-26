@@ -67,9 +67,9 @@ export default function ReportesPage({
   ];
 
   const estadoFacturas = [
-    { name: 'Pagadas', value: 120, color: '#22c55e' },
-    { name: 'Pendientes', value: 25, color: '#f59e0b' },
-    { name: 'Vencidas', value: 11, color: '#ef4444' },
+    { name: t('paid'), value: 120, color: '#22c55e' },
+    { name: t('pendingStatus'), value: 25, color: '#f59e0b' },
+    { name: t('overdueStatus'), value: 11, color: '#ef4444' },
   ];
 
   const totales = {

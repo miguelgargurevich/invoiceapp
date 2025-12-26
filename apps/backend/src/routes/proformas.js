@@ -24,6 +24,15 @@ const proformaSchema = z.object({
   moneda: z.string().default('PEN'),
   tipoCambio: z.number().positive().optional(),
   observaciones: z.string().optional(),
+  // Contractor proposal fields
+  jobName: z.string().optional().nullable(),
+  jobLocation: z.string().optional().nullable(),
+  workDescription: z.string().optional().nullable(),
+  paymentTerms: z.string().optional().nullable(),
+  arquitectoNombre: z.string().optional().nullable(),
+  fechaPlanos: z.string().datetime().optional().nullable(),
+  telefonoTrabajo: z.string().optional().nullable(),
+  diasValidez: z.number().int().positive().optional().nullable(),
   detalles: z.array(detalleSchema).min(1)
 });
 

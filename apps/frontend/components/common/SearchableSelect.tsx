@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { Search, ChevronDown, X, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -42,6 +43,7 @@ export function SearchableSelect({
   className,
   emptyMessage = 'No hay opciones disponibles',
 }: SearchableSelectProps) {
+  const t = useTranslations('common');
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -191,11 +193,11 @@ export function SearchableSelect({
           <div className="max-h-60 overflow-y-auto py-1">
             {loading ? (
               <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                Cargando...
+                {t('loading')}
               </div>
             ) : filteredOptions.length === 0 ? (
               <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                {search ? 'Sin resultados' : emptyMessage}
+                {search ? t('noResults') : emptyMessage}
               </div>
             ) : (
               filteredOptions.map((option) => (
@@ -326,6 +328,8 @@ export function ProductSelect({
   loading,
   required,
 }: ProductSelectProps) {
+  const t = useTranslations('invoices');
+  const tEmpty = useTranslations('emptyState');
   const options: SelectOption[] = products.map((product) => ({
     value: product.id,
     label: product.nombre,
@@ -338,14 +342,14 @@ export function ProductSelect({
       value={value}
       onChange={onChange}
       label={label}
-      placeholder={placeholder}
+      placeholder={placeholder || t('selectProduct')}
       searchPlaceholder="Buscar por código o nombre..."
       error={error}
       disabled={disabled}
       loading={loading}
       required={required}
       clearable
-      emptyMessage="No hay productos registrados"
+      emptyMessage={tEmpty('noProductsRegistered')}
     />
   );
 }

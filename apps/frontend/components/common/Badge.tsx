@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
 interface BadgeProps {
@@ -38,11 +39,18 @@ export function Badge({ children, variant = 'default', size = 'sm' }: BadgeProps
 
 // Mapeo de estados de factura a variantes de badge
 export function getInvoiceStatusBadge(status: string) {
+  const t = useTranslations('invoices');
   const statusMap: Record<string, { variant: BadgeProps['variant']; label: string }> = {
-    emitida: { variant: 'info', label: 'Emitida' },
-    pagada: { variant: 'success', label: 'Pagada' },
-    anulada: { variant: 'danger', label: 'Anulada' },
-    vencida: { variant: 'warning', label: 'Vencida' },
+    emitida: { variant: 'info', label: t('statusEmitted') },
+    EMITIDA: { variant: 'info', label: t('statusEmitted') },
+    pagada: { variant: 'success', label: t('statusPaid') },
+    PAGADA: { variant: 'success', label: t('statusPaid') },
+    anulada: { variant: 'danger', label: t('statusCancelled') },
+    ANULADA: { variant: 'danger', label: t('statusCancelled') },
+    vencida: { variant: 'warning', label: t('statusOverdue') },
+    VENCIDA: { variant: 'warning', label: t('statusOverdue') },
+    pendiente: { variant: 'info', label: t('statusPending') },
+    PENDIENTE: { variant: 'info', label: t('statusPending') },
   };
 
   return statusMap[status] || { variant: 'neutral', label: status };
@@ -50,12 +58,13 @@ export function getInvoiceStatusBadge(status: string) {
 
 // Mapeo de estados de proforma a variantes de badge
 export function getQuoteStatusBadge(status: string) {
+  const t = useTranslations('invoices');
   const statusMap: Record<string, { variant: BadgeProps['variant']; label: string }> = {
-    pendiente: { variant: 'info', label: 'Pendiente' },
-    aceptada: { variant: 'success', label: 'Aceptada' },
-    rechazada: { variant: 'danger', label: 'Rechazada' },
-    vencida: { variant: 'warning', label: 'Vencida' },
-    facturada: { variant: 'neutral', label: 'Facturada' },
+    pendiente: { variant: 'info', label: t('statusPending') },
+    aceptada: { variant: 'success', label: t('statusAccepted') },
+    rechazada: { variant: 'danger', label: t('statusRejected') },
+    vencida: { variant: 'warning', label: t('statusExpired') },
+    facturada: { variant: 'neutral', label: t('statusInvoiced') },
   };
 
   return statusMap[status] || { variant: 'neutral', label: status };

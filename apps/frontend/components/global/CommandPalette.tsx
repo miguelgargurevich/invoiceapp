@@ -94,19 +94,19 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
 
   const commands = [
     {
-      group: 'Navegación',
+      group: t('navigation'),
       items: [
         { id: 'dashboard', label: t('commands.goToDashboard'), icon: LayoutDashboard },
-        { id: 'invoices', label: 'Ver Facturas', icon: FileText },
-        { id: 'quotes', label: 'Ver Proformas', icon: FileCheck },
-        { id: 'clients', label: 'Ver Clientes', icon: Users },
-        { id: 'products', label: 'Ver Productos', icon: Package },
+        { id: 'invoices', label: t('commands.viewInvoices'), icon: FileText },
+        { id: 'quotes', label: t('commands.viewQuotes'), icon: FileCheck },
+        { id: 'clients', label: t('commands.viewClients'), icon: Users },
+        { id: 'products', label: t('commands.viewProducts'), icon: Package },
         { id: 'reports', label: t('commands.viewReports'), icon: BarChart3 },
         { id: 'settings', label: t('commands.openSettings'), icon: Settings },
       ],
     },
     {
-      group: 'Crear',
+      group: t('create'),
       items: [
         { id: 'new-invoice', label: t('commands.newInvoice'), icon: FilePlus },
         { id: 'new-quote', label: t('commands.newQuote'), icon: FilePlus },

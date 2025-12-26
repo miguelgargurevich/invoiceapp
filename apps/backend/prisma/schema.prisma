@@ -23,6 +23,7 @@ model Empresa {
   web             String?
   logoUrl         String?   @map("logo_url")
   licencia        String?   // License number (contractor license, etc.)
+  tituloProfesional String? @map("titulo_profesional") // Professional title (e.g., "MASTER ELECTRICIAN")
   moneda          String    @default("PEN")
   serieFactura    String    @default("F001") @map("serie_factura")
   serieProforma   String    @default("P001") @map("serie_proforma")
@@ -230,6 +231,15 @@ model Proforma {
   orderType         String?   @map("order_type") // Day Work, Contract, Extra
   workDescription   String?   @map("work_description") @db.Text
   paymentTerms      String?   @map("payment_terms") @db.Text
+  
+  // Additional contractor fields (Proposal template)
+  arquitectoNombre  String?   @map("arquitecto_nombre")
+  fechaPlanos       DateTime? @map("fecha_planos")
+  telefonoTrabajo   String?   @map("telefono_trabajo")
+  firmaAutorizada   String?   @map("firma_autorizada") @db.Text
+  diasValidez       Int?      @map("dias_validez")
+  firmaAceptacion   String?   @map("firma_aceptacion") @db.Text
+  fechaAceptacion   DateTime? @map("fecha_aceptacion")
   
   // Montos
   subtotal          Decimal   @db.Decimal(10, 2)

@@ -87,6 +87,18 @@ export default function NuevaProformaPage({
   );
   const [observaciones, setObservaciones] = useState('');
   const [lineas, setLineas] = useState<LineaDetalle[]>([]);
+  
+  // Job information fields
+  const [jobName, setJobName] = useState('');
+  const [jobLocation, setJobLocation] = useState('');
+  const [workDescription, setWorkDescription] = useState('');
+  const [paymentTerms, setPaymentTerms] = useState('');
+  
+  // Contractor-specific fields
+  const [arquitectoNombre, setArquitectoNombre] = useState('');
+  const [fechaPlanos, setFechaPlanos] = useState<Date | null>(null);
+  const [telefonoTrabajo, setTelefonoTrabajo] = useState('');
+  const [diasValidez, setDiasValidez] = useState<number>(30);
 
   // Load data
   useEffect(() => {
@@ -206,6 +218,16 @@ export default function NuevaProformaPage({
         fechaEmision: fechaEmision?.toISOString(),
         fechaVencimiento: fechaVencimiento?.toISOString(),
         observaciones,
+        // Job information
+        jobName: jobName || null,
+        jobLocation: jobLocation || null,
+        workDescription: workDescription || null,
+        paymentTerms: paymentTerms || null,
+        // Contractor-specific fields
+        arquitectoNombre: arquitectoNombre || null,
+        fechaPlanos: fechaPlanos?.toISOString() || null,
+        telefonoTrabajo: telefonoTrabajo || null,
+        diasValidez: diasValidez || null,
         detalles: lineas.map((linea) => ({
           productoId: linea.productoId || null,
           descripcion: linea.descripcion,
@@ -501,6 +523,75 @@ export default function NuevaProformaPage({
               placeholder="Condiciones, términos u otras observaciones..."
               rows={3}
             />
+          </Card>
+
+          {/* Job Information */}
+          <Card>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              {t('jobInformation')}
+            </h2>
+            <div className="space-y-4">
+              <Input
+                label={t('jobName')}
+                value={jobName}
+                onChange={(e) => setJobName(e.target.value)}
+                placeholder="e.g., Kitchen Renovation"
+              />
+              <Input
+                label={t('jobLocation')}
+                value={jobLocation}
+                onChange={(e) => setJobLocation(e.target.value)}
+                placeholder="Job site address"
+              />
+              <Input
+                label={t('jobPhone')}
+                value={telefonoTrabajo}
+                onChange={(e) => setTelefonoTrabajo(e.target.value)}
+                placeholder="Job site phone"
+              />
+              <Textarea
+                label={t('workDescription')}
+                value={workDescription}
+                onChange={(e) => setWorkDescription(e.target.value)}
+                placeholder="Detailed description of work to be performed..."
+                rows={4}
+              />
+              <Textarea
+                label={t('paymentTerms')}
+                value={paymentTerms}
+                onChange={(e) => setPaymentTerms(e.target.value)}
+                placeholder="Payment schedule and terms..."
+                rows={3}
+              />
+            </div>
+          </Card>
+
+          {/* Contractor Details */}
+          <Card>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              {t('contractorDetails')}
+            </h2>
+            <div className="space-y-4">
+              <Input
+                label={t('architectName')}
+                value={arquitectoNombre}
+                onChange={(e) => setArquitectoNombre(e.target.value)}
+                placeholder="Architect or designer name"
+              />
+              <DatePicker
+                label={t('plansDate')}
+                value={fechaPlanos}
+                onChange={setFechaPlanos}
+                locale={locale as 'es' | 'en'}
+              />
+              <Input
+                label={t('validityDays')}
+                type="number"
+                value={diasValidez}
+                onChange={(e) => setDiasValidez(parseInt(e.target.value) || 30)}
+                placeholder="30"
+              />
+            </div>
           </Card>
         </div>
 

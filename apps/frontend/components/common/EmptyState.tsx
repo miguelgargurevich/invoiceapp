@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { FileText, Users, Package, Search } from 'lucide-react';
 
@@ -58,44 +59,48 @@ export function EmptyState({
 
 // Variantes pre-configuradas comunes
 export function EmptyInvoices({ action }: { action?: ReactNode }) {
+  const t = useTranslations('emptyState');
   return (
     <EmptyState
       icon={<FileText className="w-full h-full" />}
-      title="No hay facturas"
-      description="Crea tu primera factura para comenzar a facturar a tus clientes."
+      title={t('noInvoices')}
+      description={t('noInvoicesDesc')}
       action={action}
     />
   );
 }
 
 export function EmptyClients({ action }: { action?: ReactNode }) {
+  const t = useTranslations('emptyState');
   return (
     <EmptyState
       icon={<Users className="w-full h-full" />}
-      title="No hay clientes"
-      description="Agrega tu primer cliente para poder crear facturas y proformas."
+      title={t('noClients')}
+      description={t('noClientsDesc')}
       action={action}
     />
   );
 }
 
 export function EmptyProducts({ action }: { action?: ReactNode }) {
+  const t = useTranslations('emptyState');
   return (
     <EmptyState
       icon={<Package className="w-full h-full" />}
-      title="No hay productos"
-      description="Agrega tus productos o servicios para agilizar la creación de facturas."
+      title={t('noProducts')}
+      description={t('noProductsDesc')}
       action={action}
     />
   );
 }
 
 export function EmptySearch() {
+  const t = useTranslations('emptyState');
   return (
     <EmptyState
       icon={<Search className="w-full h-full" />}
-      title="Sin resultados"
-      description="No se encontraron resultados para tu búsqueda. Intenta con otros términos."
+      title={t('noSearchResults')}
+      description={t('noSearchResultsDesc')}
     />
   );
 }
