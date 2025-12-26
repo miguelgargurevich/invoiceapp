@@ -123,6 +123,25 @@ app.get('/api/debug/prisma', async (req, res) => {
   }
 });
 
+// Debug: obtener todos los datos sin auth (solo para debug)
+app.get('/api/debug/data', async (req, res) => {
+  try {
+    const prisma = require('./src/utils/prisma');
+    const empresas = await prisma.empresa.findMany();
+    const facturas = await prisma.factura.count();
+    const proformas = await prisma.proforma.count();
+    const clientes = await prisma.cliente.count();
+    const productos = await prisma.producto.count();
+    
+    res.json({ 
+      empresas: empresas.map(e => ({ id: e.id, nombre: e.nombre, userId: e.userId })),
+      counts: { facturas, proformas, clientes, productos }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Rutas de la API
 app.use('/api/auth', authRoutes);
 app.use('/api/empresas', empresaRoutes);
