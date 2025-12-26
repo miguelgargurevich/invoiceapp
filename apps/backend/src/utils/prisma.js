@@ -7,14 +7,15 @@ if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL environment variable is not set');
 }
 
-// Crear pool de conexiones con configuración optimizada para Supabase
+// Crear pool de conexiones con configuración para Supabase Pooler
 const pool = new Pool({ 
   connectionString: process.env.DATABASE_URL,
-  max: 10,
+  max: 5, // Reducir para pooler
   idleTimeoutMillis: 60000,
   connectionTimeoutMillis: 10000,
   allowExitOnIdle: false,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  // SSL es requerido para Supabase
+  ssl: { rejectUnauthorized: false },
 });
 
 // Manejar errores del pool
@@ -22,8 +23,10 @@ pool.on('error', (err) => {
   console.error('Error inesperado en el pool de conexiones:', err);
 });
 
-// Crear adapter
-const adapter = new PrismaPg(pool);
+// Crear adapter con configuración para PgBouncer
+const adapter = new PrismaPg(pool, {
+  schema: 'public',
+});
 
 // Crear cliente de Prisma con adapter
 const prisma = new PrismaClient({ 
@@ -31,6 +34,6 @@ const prisma = new PrismaClient({
   log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
 });
 
-console.log('✅ Prisma client initialized successfully');
+console.log('✅ Prisma client initialized successfully with Supabase Pooler');
 
 module.exports = prisma;
