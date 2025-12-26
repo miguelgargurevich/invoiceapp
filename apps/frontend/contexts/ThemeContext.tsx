@@ -3,28 +3,36 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
 type Theme = 'light' | 'dark' | 'system';
+type FontSize = 'small' | 'medium' | 'large';
 
 interface ThemeContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
   toggleTheme: () => void;
   resolvedTheme: 'light' | 'dark';
+  fontSize: FontSize;
+  setFontSize: (size: FontSize) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('system');
+  const [fontSize, setFontSizeState] = useState<FontSize>('medium');
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    // Cargar tema guardado solo en el cliente
+    // Cargar tema y tamaño de fuente guardados solo en el cliente
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme') as Theme | null;
       if (savedTheme) {
         setThemeState(savedTheme);
+      }
+      const savedFontSize = localStorage.getItem('fontSize') as FontSize | null;
+      if (savedFontSize) {
+        setFontSizeState(savedFontSize);
       }
     }
   }, []);
@@ -65,10 +73,26 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, [theme, mounted]);
 
+  useEffect(() => {
+    // Aplicar tamaño de fuente
+    if (typeof window === 'undefined') return;
+    const root = window.document.documentElement;
+    
+    root.classList.remove('text-small', 'text-medium', 'text-large');
+    root.classList.add(`text-${fontSize}`);
+  }, [fontSize]);
+
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
     if (typeof window !== 'undefined') {
       localStorage.setItem('theme', newTheme);
+    }
+  };
+
+  const setFontSize = (size: FontSize) => {
+    setFontSizeState(size);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('fontSize', size);
     }
   };
 
@@ -78,7 +102,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, resolvedTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, resolvedTheme, fontSize, setFontSize }}>
       {children}
     </ThemeContext.Provider>
   );

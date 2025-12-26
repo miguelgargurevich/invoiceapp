@@ -289,8 +289,9 @@ export default function ProductosPage({
             setSelectedProducto(null);
             setIsModalOpen(true);
           }}
+          className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
         >
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="w-5 h-5 mr-2" />
           {t('addProduct')}
         </Button>
       </div>
@@ -400,8 +401,8 @@ export default function ProductosPage({
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={confirmDelete}
         title={t('deleteTitle')}
-        message={t('deleteMessage', { name: selectedProducto?.nombre })}
-        confirmText={t('delete')}
+        message={t('deleteMessage', { name: selectedProducto?.nombre || '' })}
+        confirmLabel={t('delete')}
         variant="danger"
       />
     </div>

@@ -52,6 +52,31 @@ body {
   min-height: 100vh;
 }
 
+/* Font size variants */
+.text-small {
+  font-size: 14px;
+}
+
+.text-medium {
+  font-size: 16px;
+}
+
+.text-large {
+  font-size: 18px;
+}
+
+.text-small h1 { font-size: 1.75rem; }
+.text-small h2 { font-size: 1.5rem; }
+.text-small h3 { font-size: 1.25rem; }
+
+.text-medium h1 { font-size: 2rem; }
+.text-medium h2 { font-size: 1.75rem; }
+.text-medium h3 { font-size: 1.5rem; }
+
+.text-large h1 { font-size: 2.25rem; }
+.text-large h2 { font-size: 2rem; }
+.text-large h3 { font-size: 1.75rem; }
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

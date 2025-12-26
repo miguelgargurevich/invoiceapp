@@ -31,7 +31,7 @@ export default function ConfiguracionPage({
 }) {
   const t = useTranslations('settings');
   const { user, empresa, refreshEmpresa } = useAuth();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, fontSize, setFontSize } = useTheme();
 
   const [activeTab, setActiveTab] = useState<Tab>('empresa');
   const [saving, setSaving] = useState(false);
@@ -514,6 +514,39 @@ export default function ConfiguracionPage({
                           'bg-gradient-to-r from-white to-gray-800'
                         )} />
                         <span className="text-sm font-medium capitalize">{t(themeOption)}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Font Size */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    {t('fontSize')}
+                  </label>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                    {t('fontSizeDesc')}
+                  </p>
+                  <div className="grid grid-cols-3 gap-4">
+                    {[
+                      { value: 'small', label: t('fontSizeSmall'), size: '14px' },
+                      { value: 'medium', label: t('fontSizeMedium'), size: '16px' },
+                      { value: 'large', label: t('fontSizeLarge'), size: '18px' },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setFontSize(option.value as 'small' | 'medium' | 'large')}
+                        className={cn(
+                          'p-4 rounded-lg border-2 transition-all',
+                          fontSize === option.value
+                            ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                        )}
+                      >
+                        <div className="mb-2 font-medium" style={{ fontSize: option.size }}>
+                          Aa
+                        </div>
+                        <span className="text-sm">{option.label}</span>
                       </button>
                     ))}
                   </div>

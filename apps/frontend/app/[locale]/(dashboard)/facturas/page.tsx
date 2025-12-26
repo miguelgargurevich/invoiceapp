@@ -288,8 +288,11 @@ export default function FacturasPage({
             {t('subtitle')}
           </p>
         </div>
-        <Button onClick={() => router.push(`/${locale}/facturas/nueva`)}>
-          <Plus className="w-4 h-4 mr-2" />
+        <Button 
+          onClick={() => router.push(`/${locale}/facturas/nueva`)}
+          className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+        >
+          <Plus className="w-5 h-5 mr-2" />
           {t('newInvoice')}
         </Button>
       </div>

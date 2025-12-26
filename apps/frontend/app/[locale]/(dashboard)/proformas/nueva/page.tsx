@@ -23,6 +23,7 @@ import {
   ClientSelect,
   ProductSelect,
   LoadingPage,
+  Modal,
 } from '@/components/common';
 import { formatCurrency } from '@/lib/utils';
 import api from '@/lib/api';
@@ -76,6 +77,7 @@ export default function NuevaProformaPage({
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loadingClientes, setLoadingClientes] = useState(true);
   const [loadingProductos, setLoadingProductos] = useState(true);
+  const [isClientModalOpen, setIsClientModalOpen] = useState(false);
 
   // Form state
   const [clienteId, setClienteId] = useState('');
@@ -263,9 +265,20 @@ export default function NuevaProformaPage({
         <div className="lg:col-span-2 space-y-6">
           {/* Client selection */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              {t('client')}*
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {t('client')}*
+              </h2>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setIsClientModalOpen(true)}
+                type="button"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                {t('addClient')}
+              </Button>
+            </div>
             <ClientSelect
               clients={clientes}
               value={clienteId}
@@ -557,6 +570,137 @@ export default function NuevaProformaPage({
           </Card>
         </div>
       </div>
+
+      {/* Client Modal */}
+      <ClientModal
+        isOpen={isClientModalOpen}
+        onClose={() => setIsClientModalOpen(false)}
+        onSave={async () => {
+          setIsClientModalOpen(false);
+          await loadClientes();
+        }}
+      />
     </div>
   );
 }
+
+// Client Modal Component
+interface ClientModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: () => void;
+}
+
+function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
+  const t = useTranslations('clients');
+  const { empresa } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    tipoDocumento: 'RUC',
+    documento: '',
+    nombre: '',
+    direccion: '',
+    email: '',
+    telefono: '',
+  });
+
+  useEffect(() => {
+    if (!isOpen) {
+      setFormData({
+        tipoDocumento: 'RUC',
+        documento: '',
+        nombre: '',
+        direccion: '',
+        email: '',
+        telefono: '',
+      });
+    }
+  }, [isOpen]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      await api.post('/clientes', { ...formData, empresaId: empresa?.id });
+      onSave();
+    } catch (error) {
+      console.error('Error saving cliente:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={t('addClient')}
+      size="lg"
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('documentType')}
+            </label>
+            <select
+              value={formData.tipoDocumento}
+              onChange={(e) => setFormData({ ...formData, tipoDocumento: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="RUC">RUC</option>
+              <option value="DNI">DNI</option>
+              <option value="CE">Carnet de Extranjería</option>
+              <option value="PASAPORTE">Pasaporte</option>
+            </select>
+          </div>
+          
+          <Input
+            label={t('documentNumber')}
+            value={formData.documento}
+            onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
+            required
+          />
+        </div>
+
+        <Input
+          label={t('name')}
+          value={formData.nombre}
+          onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+          required
+        />
+
+        <Input
+          label={t('address')}
+          value={formData.direccion}
+          onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
+        />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label={t('email')}
+            type="email"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          />
+          
+          <Input
+            label={t('phone')}
+            value={formData.telefono}
+            onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+          />
+        </div>
+
+        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <Button type="button" variant="outline" onClick={onClose}>
+            {t('cancel')}
+          </Button>
+          <Button type="submit" disabled={loading}>
+            {loading ? t('saving') : t('save')}
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
