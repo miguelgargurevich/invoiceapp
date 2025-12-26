@@ -93,20 +93,33 @@ router.put('/mi-empresa', authenticateToken, async (req, res) => {
 // POST /api/empresas/logo - Subir logo
 router.post('/logo', authenticateToken, upload.single('logo'), async (req, res) => {
   try {
+    console.log('[LOGO] Starting upload process...');
+    console.log('[LOGO] User ID:', req.user.id);
+    
     const empresa = await prisma.empresa.findFirst({
       where: { userId: req.user.id }
     });
 
     if (!empresa) {
+      console.log('[LOGO] Empresa not found for user:', req.user.id);
       return res.status(404).json({ error: 'Empresa no encontrada' });
     }
 
+    console.log('[LOGO] Empresa found:', empresa.id);
+
     if (!req.file) {
+      console.log('[LOGO] No file provided');
       return res.status(400).json({ error: 'No se proporcionó archivo' });
     }
 
+    console.log('[LOGO] File received:', req.file.originalname, req.file.mimetype, req.file.size, 'bytes');
+
     const fileExt = req.file.originalname.split('.').pop();
     const fileName = `${empresa.id}/logo.${fileExt}`;
+    
+    console.log('[LOGO] Uploading to Supabase Storage as:', fileName);
+    console.log('[LOGO] Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Set' : 'NOT SET');
+    console.log('[LOGO] Service Role Key:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'Set (length: ' + process.env.SUPABASE_SERVICE_ROLE_KEY.length + ')' : 'NOT SET');
 
     // Subir a Supabase Storage
     const { data, error } = await supabase.storage
@@ -117,13 +130,18 @@ router.post('/logo', authenticateToken, upload.single('logo'), async (req, res) 
       });
 
     if (error) {
-      throw error;
+      console.error('[LOGO] Supabase upload error:', error);
+      return res.status(500).json({ error: 'Error al subir logo: ' + error.message });
     }
+
+    console.log('[LOGO] Upload successful:', data);
 
     // Obtener URL pública
     const { data: publicUrl } = supabase.storage
       .from('logos')
       .getPublicUrl(fileName);
+
+    console.log('[LOGO] Public URL:', publicUrl.publicUrl);
 
     // Actualizar empresa con URL del logo
     await prisma.empresa.update({
@@ -131,10 +149,12 @@ router.post('/logo', authenticateToken, upload.single('logo'), async (req, res) 
       data: { logoUrl: publicUrl.publicUrl }
     });
 
+    console.log('[LOGO] Logo URL updated in database');
+
     res.json({ logoUrl: publicUrl.publicUrl });
   } catch (error) {
-    console.error('Error subiendo logo:', error);
-    res.status(500).json({ error: 'Error al subir logo' });
+    console.error('[LOGO] Error uploading logo:', error);
+    res.status(500).json({ error: 'Error al subir logo: ' + error.message });
   }
 });
 

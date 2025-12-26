@@ -120,9 +120,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signInWithGoogle = async () => {
-    const redirectUrl = typeof window !== 'undefined' 
-      ? `${window.location.origin}/es/dashboard`
-      : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000/es/dashboard';
+    // Detectar URL base automáticamente
+    const baseUrl = typeof window !== 'undefined' 
+      ? window.location.origin 
+      : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    
+    const redirectUrl = `${baseUrl}/es/dashboard`;
+    
+    console.log('[Google Auth] Redirect URL:', redirectUrl);
     
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
