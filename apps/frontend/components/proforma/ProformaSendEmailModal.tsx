@@ -116,9 +116,9 @@ export default function ProformaSendEmailModal({
         )}
 
         {/* Document Info Card */}
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+        <div className="bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-900/20 dark:to-slate-900/20 rounded-xl p-4 border border-gray-200 dark:border-gray-800">
           <div className="flex items-start gap-4">
-            <div className="bg-blue-600 dark:bg-blue-500 rounded-lg p-3">
+            <div className="bg-gray-800 dark:bg-gray-700 rounded-lg p-3">
               <Mail className="w-6 h-6 text-white" />
             </div>
             <div className="flex-1 min-w-0">
@@ -219,7 +219,7 @@ export default function ProformaSendEmailModal({
           <Button
             onClick={handleSendEmail}
             disabled={sending || status === 'success' || !emailData.to}
-            className="min-w-[140px] bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+            className="min-w-[140px] bg-gradient-to-r from-gray-800 to-slate-800 hover:from-gray-900 hover:to-slate-900"
           >
             {sending ? (
               <>
