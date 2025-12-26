@@ -13,6 +13,7 @@ import {
   EmptyInvoices,
   type Column,
 } from '@/components/common';
+import { PrintPreviewModal } from '@/components/invoice';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import api from '@/lib/api';
 
@@ -30,6 +31,45 @@ interface Factura {
   montoPendiente: number;
 }
 
+interface DetalleFactura {
+  id: string;
+  descripcion: string;
+  cantidad: number;
+  precioUnitario: number;
+  descuento: number;
+  subtotal: number;
+  igv: number;
+  total: number;
+  producto?: {
+    codigo: string;
+    nombre: string;
+  };
+}
+
+interface FacturaCompleta {
+  id: string;
+  numero: string;
+  serie: string;
+  cliente: {
+    id: string;
+    razonSocial: string;
+    numeroDocumento: string;
+    tipoDocumento: string;
+    direccion?: string;
+    email?: string;
+  };
+  fechaEmision: string;
+  fechaVencimiento: string;
+  subtotal: number;
+  igv: number;
+  total: number;
+  descuento: number;
+  estado: string;
+  montoPendiente: number;
+  observaciones?: string;
+  detalles: DetalleFactura[];
+}
+
 export default function FacturasPage({
   params: { locale },
 }: {
@@ -45,6 +85,9 @@ export default function FacturasPage({
   const [filterEstado, setFilterEstado] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
+  const [selectedFactura, setSelectedFactura] = useState<FacturaCompleta | null>(null);
+  const [loadingFactura, setLoadingFactura] = useState(false);
 
   const loadFacturas = useCallback(async () => {
     if (!empresa?.id) return;
@@ -139,6 +182,33 @@ export default function FacturasPage({
   useEffect(() => {
     loadFacturas();
   }, [loadFacturas]);
+
+  const loadFacturaCompleta = async (id: string) => {
+    try {
+      setLoadingFactura(true);
+      const response: any = await api.get(`/facturas/${id}`);
+      
+      const facturaData = response.data;
+      const facturaCompleta: FacturaCompleta = {
+        ...facturaData,
+        cliente: {
+          id: facturaData.cliente.id,
+          razonSocial: facturaData.cliente.razonSocial || facturaData.cliente.nombre,
+          numeroDocumento: facturaData.cliente.numeroDocumento || facturaData.cliente.documento,
+          tipoDocumento: facturaData.cliente.tipoDocumento,
+          direccion: facturaData.cliente.direccion,
+          email: facturaData.cliente.email,
+        },
+      };
+      
+      setSelectedFactura(facturaCompleta);
+      setIsPrintPreviewOpen(true);
+    } catch (error) {
+      console.error('Error loading factura:', error);
+    } finally {
+      setLoadingFactura(false);
+    }
+  };
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'neutral'> = {
@@ -299,10 +369,11 @@ export default function FacturasPage({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              // Print invoice
+              loadFacturaCompleta(factura.id);
             }}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             title={t('print')}
+            disabled={loadingFactura}
           >
             <Printer className="w-4 h-4 text-gray-500" />
           </button>
@@ -456,6 +527,19 @@ export default function FacturasPage({
           </div>
         )}
       />
+
+      {/* Print Preview Modal */}
+      {selectedFactura && (
+        <PrintPreviewModal
+          isOpen={isPrintPreviewOpen}
+          onClose={() => {
+            setIsPrintPreviewOpen(false);
+            setSelectedFactura(null);
+          }}
+          factura={selectedFactura}
+          empresa={empresa!}
+        />
+      )}
     </div>
   );
 }
