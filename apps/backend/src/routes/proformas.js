@@ -19,6 +19,7 @@ const detalleSchema = z.object({
 const proformaSchema = z.object({
   clienteId: z.string().uuid(),
   fechaEmision: z.string().datetime().optional(),
+  fechaVencimiento: z.string().datetime().optional(),
   fechaValidez: z.string().datetime().optional(),
   condiciones: z.string().optional(),
   moneda: z.string().default('PEN'),
@@ -74,8 +75,25 @@ function calcularMontos(detalles) {
 }
 
 // Obtener siguiente número de serie
-async function obtenerSiguienteNumero(empresaId, serie) {
-  const config = await prisma.configuracionSeries.findFirst({
+async function obtenerSiguienteNumero(empresaId, serie, prismaClient = prisma) {
+  // Buscar el último número usado directamente en las proformas
+  const ultimaProforma = await prismaClient.proforma.findFirst({
+    where: {
+      empresaId,
+      serie
+    },
+    orderBy: {
+      numero: 'desc'
+    },
+    select: {
+      numero: true
+    }
+  });
+
+  const siguienteNumero = ultimaProforma ? ultimaProforma.numero + 1 : 1;
+
+  // Actualizar o crear la configuración (para mantener el registro)
+  const config = await prismaClient.configuracionSeries.findFirst({
     where: {
       empresaId,
       tipoDocumento: 'proforma',
@@ -85,23 +103,22 @@ async function obtenerSiguienteNumero(empresaId, serie) {
   });
 
   if (config) {
-    await prisma.configuracionSeries.update({
+    await prismaClient.configuracionSeries.update({
       where: { id: config.id },
-      data: { ultimoNumero: config.ultimoNumero + 1 }
+      data: { ultimoNumero: siguienteNumero }
     });
-    return config.ultimoNumero + 1;
+  } else {
+    await prismaClient.configuracionSeries.create({
+      data: {
+        empresaId,
+        tipoDocumento: 'proforma',
+        serie,
+        ultimoNumero: siguienteNumero
+      }
+    });
   }
 
-  await prisma.configuracionSeries.create({
-    data: {
-      empresaId,
-      tipoDocumento: 'proforma',
-      serie,
-      ultimoNumero: 1
-    }
-  });
-
-  return 1;
+  return siguienteNumero;
 }
 
 // GET /api/proformas - Listar proformas
@@ -204,7 +221,7 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
 router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
     const validatedData = proformaSchema.parse(req.body);
-    const { detalles, ...proformaData } = validatedData;
+    const { detalles, fechaVencimiento, ...proformaData } = validatedData;
 
     // Calcular montos
     const montosCalculados = calcularMontos(detalles);
@@ -218,7 +235,7 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
         serie: req.empresa.serieProforma,
         numero,
         fechaEmision: proformaData.fechaEmision ? new Date(proformaData.fechaEmision) : new Date(),
-        fechaValidez: proformaData.fechaValidez ? new Date(proformaData.fechaValidez) : null,
+        fechaVencimiento: fechaVencimiento ? new Date(fechaVencimiento) : null,
         subtotal: montosCalculados.subtotal,
         descuento: montosCalculados.descuento,
         igv: montosCalculados.igv,
