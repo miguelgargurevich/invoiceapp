@@ -44,8 +44,15 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       prisma.cliente.count({ where })
     ]);
 
+    // Map to frontend field names
+    const clientesResponse = clientes.map(c => ({
+      ...c,
+      documento: c.numeroDocumento,
+      nombre: c.razonSocial
+    }));
+
     res.json({
-      data: clientes,
+      data: clientesResponse,
       pagination: {
         total,
         page: parseInt(page),
@@ -99,7 +106,14 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
       return res.status(404).json({ error: 'Cliente no encontrado' });
     }
 
-    res.json(cliente);
+    // Return with frontend field names
+    const clienteResponse = {
+      ...cliente,
+      documento: cliente.numeroDocumento,
+      nombre: cliente.razonSocial
+    };
+
+    res.json(clienteResponse);
   } catch (error) {
     console.error('Error obteniendo cliente:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
@@ -109,7 +123,20 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
 // POST /api/clientes - Crear cliente
 router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
-    const validatedData = clienteSchema.parse(req.body);
+    // Map frontend fields to backend schema
+    const mappedData = {
+      tipoDocumento: req.body.tipoDocumento,
+      numeroDocumento: req.body.numeroDocumento || req.body.documento,
+      razonSocial: req.body.razonSocial || req.body.nombre,
+      nombreComercial: req.body.nombreComercial,
+      direccion: req.body.direccion,
+      email: req.body.email || null,
+      telefono: req.body.telefono,
+      contacto: req.body.contacto,
+      notas: req.body.notas
+    };
+
+    const validatedData = clienteSchema.parse(mappedData);
 
     const cliente = await prisma.cliente.create({
       data: {
@@ -118,7 +145,14 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       }
     });
 
-    res.status(201).json(cliente);
+    // Return with frontend field names
+    const clienteResponse = {
+      ...cliente,
+      documento: cliente.numeroDocumento,
+      nombre: cliente.razonSocial
+    };
+
+    res.status(201).json(clienteResponse);
   } catch (error) {
     console.error('Error creando cliente:', error);
     if (error instanceof z.ZodError) {
@@ -134,7 +168,20 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
 // PUT /api/clientes/:id - Actualizar cliente
 router.put('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
-    const validatedData = clienteSchema.partial().parse(req.body);
+    // Map frontend fields to backend schema
+    const mappedData = {
+      tipoDocumento: req.body.tipoDocumento,
+      numeroDocumento: req.body.numeroDocumento || req.body.documento,
+      razonSocial: req.body.razonSocial || req.body.nombre,
+      nombreComercial: req.body.nombreComercial,
+      direccion: req.body.direccion,
+      email: req.body.email || null,
+      telefono: req.body.telefono,
+      contacto: req.body.contacto,
+      notas: req.body.notas
+    };
+
+    const validatedData = clienteSchema.partial().parse(mappedData);
 
     // Verificar que el cliente pertenece a la empresa
     const existingCliente = await prisma.cliente.findFirst({
@@ -153,7 +200,14 @@ router.put('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
       data: validatedData
     });
 
-    res.json(cliente);
+    // Return with frontend field names
+    const clienteResponse = {
+      ...cliente,
+      documento: cliente.numeroDocumento,
+      nombre: cliente.razonSocial
+    };
+
+    res.json(clienteResponse);
   } catch (error) {
     console.error('Error actualizando cliente:', error);
     if (error instanceof z.ZodError) {

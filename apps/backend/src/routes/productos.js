@@ -50,8 +50,15 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       prisma.producto.count({ where })
     ]);
 
+    // Map to frontend field names
+    const productosResponse = productos.map(p => ({
+      ...p,
+      precioVenta: parseFloat(p.precioUnitario),
+      afectoIgv: p.precioConIgv
+    }));
+
     res.json({
-      data: productos,
+      data: productosResponse,
       pagination: {
         total,
         page: parseInt(page),
@@ -82,7 +89,14 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
       return res.status(404).json({ error: 'Producto no encontrado' });
     }
 
-    res.json(producto);
+    // Return with frontend field names
+    const productoResponse = {
+      ...producto,
+      precioVenta: parseFloat(producto.precioUnitario),
+      afectoIgv: producto.precioConIgv
+    };
+
+    res.json(productoResponse);
   } catch (error) {
     console.error('Error obteniendo producto:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
@@ -92,7 +106,20 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
 // POST /api/productos - Crear producto
 router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
-    const validatedData = productoSchema.parse(req.body);
+    // Map frontend fields to backend schema
+    const mappedData = {
+      codigo: req.body.codigo,
+      nombre: req.body.nombre,
+      descripcion: req.body.descripcion,
+      unidadMedida: req.body.unidadMedida,
+      precioUnitario: req.body.precioUnitario || req.body.precioVenta,
+      precioConIgv: req.body.precioConIgv !== undefined ? req.body.precioConIgv : (req.body.afectoIgv !== undefined ? req.body.afectoIgv : true),
+      categoriaId: req.body.categoriaId,
+      stockActual: req.body.stockActual,
+      stockMinimo: req.body.stockMinimo
+    };
+
+    const validatedData = productoSchema.parse(mappedData);
 
     const producto = await prisma.producto.create({
       data: {
@@ -104,7 +131,14 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       }
     });
 
-    res.status(201).json(producto);
+    // Return with frontend field names
+    const productoResponse = {
+      ...producto,
+      precioVenta: parseFloat(producto.precioUnitario),
+      afectoIgv: producto.precioConIgv
+    };
+
+    res.status(201).json(productoResponse);
   } catch (error) {
     console.error('Error creando producto:', error);
     if (error instanceof z.ZodError) {
@@ -120,7 +154,20 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
 // PUT /api/productos/:id - Actualizar producto
 router.put('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
-    const validatedData = productoSchema.partial().parse(req.body);
+    // Map frontend fields to backend schema
+    const mappedData = {
+      codigo: req.body.codigo,
+      nombre: req.body.nombre,
+      descripcion: req.body.descripcion,
+      unidadMedida: req.body.unidadMedida,
+      precioUnitario: req.body.precioUnitario || req.body.precioVenta,
+      precioConIgv: req.body.precioConIgv !== undefined ? req.body.precioConIgv : (req.body.afectoIgv !== undefined ? req.body.afectoIgv : undefined),
+      categoriaId: req.body.categoriaId,
+      stockActual: req.body.stockActual,
+      stockMinimo: req.body.stockMinimo
+    };
+
+    const validatedData = productoSchema.partial().parse(mappedData);
 
     const existingProducto = await prisma.producto.findFirst({
       where: {
@@ -141,7 +188,14 @@ router.put('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
       }
     });
 
-    res.json(producto);
+    // Return with frontend field names
+    const productoResponse = {
+      ...producto,
+      precioVenta: parseFloat(producto.precioUnitario),
+      afectoIgv: producto.precioConIgv
+    };
+
+    res.json(productoResponse);
   } catch (error) {
     console.error('Error actualizando producto:', error);
     if (error instanceof z.ZodError) {

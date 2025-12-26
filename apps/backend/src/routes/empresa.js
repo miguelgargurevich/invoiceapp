@@ -28,7 +28,14 @@ router.get('/mi-empresa', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Empresa no encontrada' });
     }
 
-    res.json(empresa);
+    // Return with frontend field names
+    const empresaResponse = {
+      ...empresa,
+      razonSocial: empresa.nombre,
+      nombreComercial: empresa.nombre
+    };
+
+    res.json(empresaResponse);
   } catch (error) {
     console.error('Error obteniendo empresa:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
@@ -37,8 +44,6 @@ router.get('/mi-empresa', authenticateToken, async (req, res) => {
 
 // PUT /api/empresas/mi-empresa - Actualizar empresa
 router.put('/mi-empresa', authenticateToken, async (req, res) => {
-  const { nombre, ruc, direccion, telefono, email, moneda, serieFactura, serieProforma } = req.body;
-
   try {
     const empresa = await prisma.empresa.findFirst({
       where: { userId: req.user.id }
@@ -48,21 +53,37 @@ router.put('/mi-empresa', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Empresa no encontrada' });
     }
 
+    // Map frontend fields to backend schema
+    const updateData = {
+      nombre: req.body.nombre || req.body.razonSocial,
+      ruc: req.body.ruc,
+      direccion: req.body.direccion,
+      telefono: req.body.telefono,
+      email: req.body.email,
+      moneda: req.body.moneda,
+      serieFactura: req.body.serieFactura,
+      serieProforma: req.body.serieProforma,
+      licencia: req.body.licencia
+    };
+
+    // Remove undefined values
+    Object.keys(updateData).forEach(key => 
+      updateData[key] === undefined && delete updateData[key]
+    );
+
     const updatedEmpresa = await prisma.empresa.update({
       where: { id: empresa.id },
-      data: {
-        nombre,
-        ruc,
-        direccion,
-        telefono,
-        email,
-        moneda,
-        serieFactura,
-        serieProforma
-      }
+      data: updateData
     });
 
-    res.json(updatedEmpresa);
+    // Return with frontend field names
+    const empresaResponse = {
+      ...updatedEmpresa,
+      razonSocial: updatedEmpresa.nombre,
+      nombreComercial: updatedEmpresa.nombre
+    };
+
+    res.json(empresaResponse);
   } catch (error) {
     console.error('Error actualizando empresa:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
