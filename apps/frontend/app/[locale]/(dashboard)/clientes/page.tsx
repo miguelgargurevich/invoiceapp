@@ -196,8 +196,8 @@ export default function ClientesPage() {
 
   const filteredClientes = clientes.filter(
     (c) =>
-      c.nombre.toLowerCase().includes(search.toLowerCase()) ||
-      c.documento.includes(search)
+      (c.nombre || '').toLowerCase().includes(search.toLowerCase()) ||
+      (c.documento || '').includes(search)
   );
 
   return (

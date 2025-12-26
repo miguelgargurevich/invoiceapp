@@ -265,8 +265,8 @@ export default function ProductosPage({
 
   const filteredProductos = productos.filter((p) => {
     const matchesSearch =
-      p.nombre.toLowerCase().includes(search.toLowerCase()) ||
-      p.codigo.toLowerCase().includes(search.toLowerCase());
+      (p.nombre || '').toLowerCase().includes(search.toLowerCase()) ||
+      (p.codigo || '').toLowerCase().includes(search.toLowerCase());
     const matchesCategoria =
       !filterCategoria || p.categoria?.id === filterCategoria;
     return matchesSearch && matchesCategoria;

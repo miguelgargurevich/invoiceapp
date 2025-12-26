@@ -260,9 +260,9 @@ export default function FacturasPage({
   const filteredFacturas = facturas.filter((f) => {
     const searchLower = search.toLowerCase();
     const matchesSearch =
-      `${f.serie}-${f.numero}`.toLowerCase().includes(searchLower) ||
-      f.cliente.nombre.toLowerCase().includes(searchLower) ||
-      f.cliente.documento.includes(search);
+      `${f.serie || ''}-${f.numero || ''}`.toLowerCase().includes(searchLower) ||
+      (f.cliente?.nombre || '').toLowerCase().includes(searchLower) ||
+      (f.cliente?.documento || '').includes(search);
     const matchesEstado = !filterEstado || f.estado === filterEstado;
     return matchesSearch && matchesEstado;
   });
