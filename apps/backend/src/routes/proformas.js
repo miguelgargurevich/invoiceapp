@@ -19,7 +19,6 @@ const detalleSchema = z.object({
 const proformaSchema = z.object({
   clienteId: z.string().uuid(),
   fechaEmision: z.string().datetime().optional(),
-  fechaVencimiento: z.string().datetime().optional(),
   fechaValidez: z.string().datetime().optional(),
   condiciones: z.string().optional(),
   moneda: z.string().default('PEN'),
@@ -221,7 +220,7 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
 router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
     const validatedData = proformaSchema.parse(req.body);
-    const { detalles, fechaVencimiento, ...proformaData } = validatedData;
+    const { detalles, ...proformaData } = validatedData;
 
     // Calcular montos
     const montosCalculados = calcularMontos(detalles);
@@ -235,7 +234,7 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
         serie: req.empresa.serieProforma,
         numero,
         fechaEmision: proformaData.fechaEmision ? new Date(proformaData.fechaEmision) : new Date(),
-        fechaVencimiento: fechaVencimiento ? new Date(fechaVencimiento) : null,
+        fechaValidez: proformaData.fechaValidez ? new Date(proformaData.fechaValidez) : null,
         subtotal: montosCalculados.subtotal,
         descuento: montosCalculados.descuento,
         igv: montosCalculados.igv,

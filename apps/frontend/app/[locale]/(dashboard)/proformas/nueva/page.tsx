@@ -82,7 +82,7 @@ export default function NuevaProformaPage({
   // Form state
   const [clienteId, setClienteId] = useState('');
   const [fechaEmision, setFechaEmision] = useState<Date | null>(new Date());
-  const [fechaVencimiento, setFechaVencimiento] = useState<Date | null>(
+  const [fechaValidez, setFechaValidez] = useState<Date | null>(
     new Date(Date.now() + 30 * 86400000)
   );
   const [observaciones, setObservaciones] = useState('');
@@ -216,7 +216,7 @@ export default function NuevaProformaPage({
         empresaId: empresa?.id,
         clienteId,
         fechaEmision: fechaEmision?.toISOString(),
-        fechaVencimiento: fechaVencimiento?.toISOString(),
+        fechaValidez: fechaValidez?.toISOString(),
         observaciones,
         // Job information
         jobName: jobName || null,
@@ -611,8 +611,8 @@ export default function NuevaProformaPage({
               />
               <DatePicker
                 label={t('validUntil')}
-                value={fechaVencimiento}
-                onChange={setFechaVencimiento}
+                value={fechaValidez}
+                onChange={setFechaValidez}
                 minDate={fechaEmision || undefined}
                 locale={locale as 'es' | 'en'}
               />
