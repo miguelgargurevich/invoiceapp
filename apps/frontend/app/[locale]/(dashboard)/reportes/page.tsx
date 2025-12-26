@@ -181,7 +181,7 @@ export default function ReportesPage({
               <BarChart data={ventasMensuales}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
                 <XAxis dataKey="mes" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `S/${(v/1000).toFixed(0)}k`} />
+                <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `S/${((parseFloat(String(v)) || 0)/1000).toFixed(0)}k`} />
                 <Tooltip
                   formatter={(value: number | undefined) => value !== undefined ? [formatCurrency(value)] : ['']}
                   contentStyle={{
@@ -311,7 +311,7 @@ export default function ReportesPage({
             <LineChart data={ventasMensuales}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
               <XAxis dataKey="mes" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `S/${(v/1000).toFixed(0)}k`} />
+              <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `S/${((parseFloat(String(v)) || 0)/1000).toFixed(0)}k`} />
               <Tooltip
                 formatter={(value: number | undefined) => value !== undefined ? [formatCurrency(value)] : ['']}
                 contentStyle={{

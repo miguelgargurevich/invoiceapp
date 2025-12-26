@@ -329,7 +329,7 @@ export function ProductSelect({
   const options: SelectOption[] = products.map((product) => ({
     value: product.id,
     label: product.nombre,
-    description: `${product.codigo} • S/ ${product.precioVenta.toFixed(2)} / ${product.unidadMedida}`,
+    description: `${product.codigo} • S/ ${(parseFloat(String(product.precioVenta)) || 0).toFixed(2)} / ${product.unidadMedida}`,
   }));
 
   return (

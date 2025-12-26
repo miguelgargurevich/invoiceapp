@@ -222,7 +222,7 @@ export default function DashboardPage() {
           <MetricCard
             title={t('monthlySales')}
             value={formatCurrency(stats?.ventasMes || 0)}
-            change={`${percentageChange >= 0 ? '+' : ''}${percentageChange.toFixed(1)}%`}
+            change={`${percentageChange >= 0 ? '+' : ''}${(parseFloat(String(percentageChange)) || 0).toFixed(1)}%`}
             changeType={percentageChange >= 0 ? 'positive' : 'negative'}
             icon={<DollarSign className="w-6 h-6" />}
             color="blue"
@@ -307,7 +307,7 @@ export default function DashboardPage() {
                   <YAxis
                     className="text-gray-500"
                     tick={{ fontSize: 12 }}
-                    tickFormatter={(value) => `S/${(value / 1000).toFixed(0)}k`}
+                    tickFormatter={(value) => `S/${((parseFloat(String(value)) || 0) / 1000).toFixed(0)}k`}
                   />
                   <Tooltip
                     formatter={(value: number | undefined) => [formatCurrency(value || 0), 'Ingresos']}
