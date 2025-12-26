@@ -93,6 +93,36 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Diagnóstico de Prisma
+app.get('/api/debug/prisma', async (req, res) => {
+  try {
+    const prisma = require('./src/utils/prisma');
+    await prisma.$connect();
+    const count = await prisma.empresa.count();
+    res.json({ 
+      status: 'ok', 
+      prismaConnected: true,
+      empresaCount: count,
+      env: {
+        hasDbUrl: !!process.env.DATABASE_URL,
+        dbUrlLength: process.env.DATABASE_URL?.length || 0,
+        nodeEnv: process.env.NODE_ENV
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      status: 'error', 
+      message: error.message,
+      stack: error.stack,
+      env: {
+        hasDbUrl: !!process.env.DATABASE_URL,
+        dbUrlLength: process.env.DATABASE_URL?.length || 0,
+        nodeEnv: process.env.NODE_ENV
+      }
+    });
+  }
+});
+
 // Rutas de la API
 app.use('/api/auth', authRoutes);
 app.use('/api/empresas', empresaRoutes);
