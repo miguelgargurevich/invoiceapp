@@ -250,6 +250,17 @@
       "voided": "Factura anulada exitosamente",
       "paymentRegistered": "Pago registrado exitosamente",
       "confirmVoid": "¿Está seguro de anular esta factura?"
+    },
+    "errors": {
+      "saveFailed": "Error al guardar la factura",
+      "duplicateNumber": "Ya existe una factura con este número de serie y correlativo",
+      "selectClient": "Debes seleccionar un cliente",
+      "addItems": "Debes agregar al menos un ítem",
+      "invalidDate": "La fecha de vencimiento debe ser posterior a la fecha de emisión",
+      "loadFailed": "Error al cargar la factura",
+      "updateFailed": "Error al actualizar la factura",
+      "voidFailed": "Error al anular la factura",
+      "paymentFailed": "Error al registrar el pago"
     }
   },
   "quotes": {

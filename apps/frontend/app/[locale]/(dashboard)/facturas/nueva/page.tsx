@@ -226,8 +226,19 @@ export default function NuevaFacturaPage({
   const selectedCliente = clientes.find((c) => c.id === clienteId);
 
   const handleSave = async () => {
-    if (!clienteId || lineas.length === 0) {
-      alert(t('validation.required'));
+    // Validación
+    if (!clienteId) {
+      alert(t('errors.selectClient'));
+      return;
+    }
+
+    if (lineas.length === 0) {
+      alert(t('errors.addItems'));
+      return;
+    }
+
+    if (fechaVencimiento && fechaEmision && fechaVencimiento < fechaEmision) {
+      alert(t('errors.invalidDate'));
       return;
     }
 
@@ -250,10 +261,19 @@ export default function NuevaFacturaPage({
       };
 
       await api.post('/facturas', payload);
+      alert(t('messages.created'));
       router.push(`/${locale}/facturas`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving factura:', error);
-      alert(t('errors.saveFailed'));
+      
+      // Handle specific error codes
+      if (error.response?.data?.code === 'DUPLICATE_INVOICE_NUMBER') {
+        alert(t('errors.duplicateNumber'));
+      } else if (error.response?.status === 400) {
+        alert(error.response?.data?.error || t('errors.saveFailed'));
+      } else {
+        alert(t('errors.saveFailed'));
+      }
     } finally {
       setSaving(false);
     }

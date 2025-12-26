@@ -244,6 +244,13 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ error: 'Datos inválidos', details: error.errors });
     }
+    // Handle unique constraint violation (duplicate serie-numero)
+    if (error.code === 'P2002' && error.meta?.target?.includes('numero')) {
+      return res.status(409).json({ 
+        error: 'Ya existe una factura con este número de serie y correlativo',
+        code: 'DUPLICATE_INVOICE_NUMBER'
+      });
+    }
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });

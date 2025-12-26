@@ -249,8 +249,17 @@
       "updated": "Invoice successfully updated",
       "voided": "Invoice successfully voided",
       "paymentRegistered": "Payment successfully registered",
-      "confirmVoid": "Are you sure you want to void this invoice?"
-    }
+      "confirmVoid": "Are you sure you want to void this invoice?"    },
+    "errors": {
+      "saveFailed": "Error saving invoice",
+      "duplicateNumber": "An invoice with this series and number already exists",
+      "selectClient": "You must select a client",
+      "addItems": "You must add at least one item",
+      "invalidDate": "Due date must be after issue date",
+      "loadFailed": "Error loading invoice",
+      "updateFailed": "Error updating invoice",
+      "voidFailed": "Error voiding invoice",
+      "paymentFailed": "Error registering payment"    }
   },
   "quotes": {
     "title": "Proposals",
