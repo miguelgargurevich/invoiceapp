@@ -16,8 +16,10 @@ export function formatCurrency(amount: number | string | null | undefined, curre
   return `${symbol} ${(isNaN(numericAmount) ? 0 : numericAmount).toFixed(2)}`;
 }
 
-export function formatDate(date: string | Date, locale: string = 'es-PE'): string {
+export function formatDate(date: string | Date | null | undefined, locale: string = 'es-PE'): string {
+  if (!date) return '-';
   const d = typeof date === 'string' ? new Date(date) : date;
+  if (isNaN(d.getTime())) return '-';
   return d.toLocaleDateString(locale, {
     year: 'numeric',
     month: 'short',
@@ -25,8 +27,10 @@ export function formatDate(date: string | Date, locale: string = 'es-PE'): strin
   });
 }
 
-export function formatDateTime(date: string | Date, locale: string = 'es-PE'): string {
+export function formatDateTime(date: string | Date | null | undefined, locale: string = 'es-PE'): string {
+  if (!date) return '-';
   const d = typeof date === 'string' ? new Date(date) : date;
+  if (isNaN(d.getTime())) return '-';
   return d.toLocaleDateString(locale, {
     year: 'numeric',
     month: 'short',
@@ -36,8 +40,8 @@ export function formatDateTime(date: string | Date, locale: string = 'es-PE'): s
   });
 }
 
-export function formatInvoiceNumber(serie: string, numero: number): string {
-  return `${serie}-${numero.toString().padStart(8, '0')}`;
+export function formatInvoiceNumber(serie: string | null | undefined, numero: number | null | undefined): string {
+  return `${serie || 'F001'}-${(numero ?? 0).toString().padStart(8, '0')}`;
 }
 
 export function getInitials(name: string): string {
