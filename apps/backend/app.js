@@ -22,6 +22,9 @@ const jobReceiptRoutes = require('./src/routes/jobReceipts');
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+// Trust proxy - Required for Render and other reverse proxies
+app.set('trust proxy', 1);
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos

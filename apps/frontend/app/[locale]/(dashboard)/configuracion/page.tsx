@@ -111,7 +111,21 @@ export default function ConfiguracionPage({
       console.log('[CONFIG] Saving empresa data:', empresaForm);
       const response = await api.put('/empresas/mi-empresa', empresaForm);
       console.log('[CONFIG] Save response:', response);
-      refreshEmpresa?.();
+      
+      // Actualizar el contexto
+      await refreshEmpresa?.();
+      
+      // Actualizar el formulario con la respuesta para asegurar sincronización
+      setEmpresaForm({
+        ruc: response.ruc || '',
+        razonSocial: response.razonSocial || '',
+        nombreComercial: response.nombreComercial || '',
+        direccion: response.direccion || '',
+        telefono: response.telefono || '',
+        email: response.email || '',
+        web: response.web || '',
+      });
+      
       setMessage(t('savedSuccessfully'));
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
