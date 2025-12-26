@@ -4,41 +4,29 @@ const { Pool } = require('pg');
 
 // Validar que DATABASE_URL existe
 if (!process.env.DATABASE_URL) {
+  console.error('❌ DATABASE_URL environment variable is not set');
   throw new Error('DATABASE_URL environment variable is not set');
 }
 
-let prisma;
+console.log('🔄 Initializing Prisma client...');
+console.log('📍 Database URL prefix:', process.env.DATABASE_URL.substring(0, 30) + '...');
 
-try {
-  // Crear pool de conexiones
-  const pool = new Pool({ 
-    connectionString: process.env.DATABASE_URL,
-  });
+// Crear pool de conexiones con configuración para Supabase Pooler
+const pool = new Pool({ 
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
-  // Crear adapter
-  const adapter = new PrismaPg(pool);
+// Crear adapter
+const adapter = new PrismaPg(pool);
 
-  // Crear cliente de Prisma con adapter
-  prisma = new PrismaClient({ 
-    adapter: adapter,
-    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-  });
+// Crear cliente de Prisma con adapter (REQUERIDO para Prisma 7.x)
+const prisma = new PrismaClient({ 
+  adapter,
+});
 
-  console.log('✅ Prisma client initialized with PrismaPg adapter');
-} catch (error) {
-  console.error('❌ Error initializing Prisma with adapter:', error.message);
-  
-  // Fallback: intentar sin adapter (conexión directa)
-  console.log('⚠️ Attempting fallback without adapter...');
-  prisma = new PrismaClient({
-    datasources: {
-      db: {
-        url: process.env.DATABASE_URL,
-      },
-    },
-    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-  });
-  console.log('✅ Prisma client initialized with direct connection');
-}
+console.log('✅ Prisma client initialized successfully');
 
 module.exports = prisma;
