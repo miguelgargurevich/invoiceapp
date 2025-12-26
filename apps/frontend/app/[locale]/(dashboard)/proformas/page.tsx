@@ -109,7 +109,18 @@ export default function ProformasPage({
       });
 
       const response: any = await api.get(`/proformas?${params}`);
-      setProformas(response.data || []);
+      const proformasData = response.data || [];
+      
+      // Mapear los datos para asegurar que cliente tenga el formato correcto
+      const proformasMapped = proformasData.map((p: any) => ({
+        ...p,
+        cliente: {
+          nombre: p.cliente?.razonSocial || p.cliente?.nombre || '',
+          documento: p.cliente?.numeroDocumento || p.cliente?.documento || '',
+        },
+      }));
+      
+      setProformas(proformasMapped);
       setTotalPages(response.pagination?.totalPages || 1);
     } catch (error) {
       console.error('Error loading proformas:', error);

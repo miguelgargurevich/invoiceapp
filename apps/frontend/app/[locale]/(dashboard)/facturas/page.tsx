@@ -102,7 +102,18 @@ export default function FacturasPage({
         ...(filterEstado && { estado: filterEstado }),
       });
       const response: any = await api.get(`/facturas?${params}`);
-      setFacturas(response.data || []);
+      const facturasData = response.data || [];
+      
+      // Mapear los datos para asegurar que cliente tenga el formato correcto
+      const facturasMapped = facturasData.map((f: any) => ({
+        ...f,
+        cliente: {
+          nombre: f.cliente?.razonSocial || f.cliente?.nombre || '',
+          documento: f.cliente?.numeroDocumento || f.cliente?.documento || '',
+        },
+      }));
+      
+      setFacturas(facturasMapped);
       setTotalPages(response.pagination?.totalPages || 1);
     } catch (error) {
       console.error('Error loading facturas:', error);
