@@ -127,16 +127,24 @@ export default function ProformasPage({
       setLoadingProforma(true);
       const response: any = await api.get(`/proformas/${id}`);
       
-      const proformaData = response.data;
+      const proformaData = response.data || response;
+      
+      // Validar que los datos existan
+      if (!proformaData || !proformaData.cliente) {
+        console.error('Invalid proforma data:', proformaData);
+        alert('Error: No se pudieron cargar los datos de la proforma');
+        return;
+      }
+      
       const proformaCompleta: ProformaCompleta = {
         ...proformaData,
         cliente: {
-          id: proformaData.cliente.id,
-          razonSocial: proformaData.cliente.razonSocial || proformaData.cliente.nombre,
-          numeroDocumento: proformaData.cliente.numeroDocumento || proformaData.cliente.documento,
-          tipoDocumento: proformaData.cliente.tipoDocumento,
-          direccion: proformaData.cliente.direccion,
-          email: proformaData.cliente.email,
+          id: proformaData.cliente.id || '',
+          razonSocial: proformaData.cliente.razonSocial || proformaData.cliente.nombre || '',
+          numeroDocumento: proformaData.cliente.numeroDocumento || proformaData.cliente.documento || '',
+          tipoDocumento: proformaData.cliente.tipoDocumento || 'RUC',
+          direccion: proformaData.cliente.direccion || '',
+          email: proformaData.cliente.email || '',
         },
       };
       
@@ -144,6 +152,7 @@ export default function ProformasPage({
       setIsPrintPreviewOpen(true);
     } catch (error) {
       console.error('Error loading proforma:', error);
+      alert('Error al cargar la proforma. Por favor, intente nuevamente.');
     } finally {
       setLoadingProforma(false);
     }

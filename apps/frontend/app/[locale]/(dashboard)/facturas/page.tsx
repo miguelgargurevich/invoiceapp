@@ -188,16 +188,24 @@ export default function FacturasPage({
       setLoadingFactura(true);
       const response: any = await api.get(`/facturas/${id}`);
       
-      const facturaData = response.data;
+      const facturaData = response.data || response;
+      
+      // Validar que los datos existan
+      if (!facturaData || !facturaData.cliente) {
+        console.error('Invalid factura data:', facturaData);
+        alert('Error: No se pudieron cargar los datos de la factura');
+        return;
+      }
+      
       const facturaCompleta: FacturaCompleta = {
         ...facturaData,
         cliente: {
-          id: facturaData.cliente.id,
-          razonSocial: facturaData.cliente.razonSocial || facturaData.cliente.nombre,
-          numeroDocumento: facturaData.cliente.numeroDocumento || facturaData.cliente.documento,
-          tipoDocumento: facturaData.cliente.tipoDocumento,
-          direccion: facturaData.cliente.direccion,
-          email: facturaData.cliente.email,
+          id: facturaData.cliente.id || '',
+          razonSocial: facturaData.cliente.razonSocial || facturaData.cliente.nombre || '',
+          numeroDocumento: facturaData.cliente.numeroDocumento || facturaData.cliente.documento || '',
+          tipoDocumento: facturaData.cliente.tipoDocumento || 'RUC',
+          direccion: facturaData.cliente.direccion || '',
+          email: facturaData.cliente.email || '',
         },
       };
       
@@ -205,6 +213,7 @@ export default function FacturasPage({
       setIsPrintPreviewOpen(true);
     } catch (error) {
       console.error('Error loading factura:', error);
+      alert('Error al cargar la factura. Por favor, intente nuevamente.');
     } finally {
       setLoadingFactura(false);
     }
