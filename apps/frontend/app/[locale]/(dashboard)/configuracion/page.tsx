@@ -108,12 +108,14 @@ export default function ConfiguracionPage({
   const handleSaveEmpresa = async () => {
     try {
       setSaving(true);
-      await api.put('/empresas/mi-empresa', empresaForm);
+      console.log('[CONFIG] Saving empresa data:', empresaForm);
+      const response = await api.put('/empresas/mi-empresa', empresaForm);
+      console.log('[CONFIG] Save response:', response);
       refreshEmpresa?.();
       setMessage(t('savedSuccessfully'));
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
-      console.error('Error saving empresa:', error);
+      console.error('[CONFIG] Error saving empresa:', error);
       setMessage(t('errorSaving'));
       setTimeout(() => setMessage(''), 3000);
     } finally {

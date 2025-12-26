@@ -45,21 +45,30 @@ router.get('/mi-empresa', authenticateToken, async (req, res) => {
 // PUT /api/empresas/mi-empresa - Actualizar empresa
 router.put('/mi-empresa', authenticateToken, async (req, res) => {
   try {
+    console.log('[EMPRESA] Update request from user:', req.user.id);
+    console.log('[EMPRESA] Request body:', JSON.stringify(req.body, null, 2));
+    
     const empresa = await prisma.empresa.findFirst({
       where: { userId: req.user.id }
     });
 
     if (!empresa) {
+      console.log('[EMPRESA] Empresa not found for user:', req.user.id);
       return res.status(404).json({ error: 'Empresa no encontrada' });
     }
+
+    console.log('[EMPRESA] Current empresa:', empresa.id, empresa.nombre);
 
     // Map frontend fields to backend schema
     const updateData = {
       nombre: req.body.nombre || req.body.razonSocial,
+      razonSocial: req.body.razonSocial,
+      nombreComercial: req.body.nombreComercial,
       ruc: req.body.ruc,
       direccion: req.body.direccion,
       telefono: req.body.telefono,
       email: req.body.email,
+      web: req.body.web,
       moneda: req.body.moneda,
       serieFactura: req.body.serieFactura,
       serieProforma: req.body.serieProforma,
@@ -71,22 +80,26 @@ router.put('/mi-empresa', authenticateToken, async (req, res) => {
       updateData[key] === undefined && delete updateData[key]
     );
 
+    console.log('[EMPRESA] Updating with data:', JSON.stringify(updateData, null, 2));
+
     const updatedEmpresa = await prisma.empresa.update({
       where: { id: empresa.id },
       data: updateData
     });
 
+    console.log('[EMPRESA] Updated successfully:', updatedEmpresa.id);
+
     // Return with frontend field names
     const empresaResponse = {
       ...updatedEmpresa,
-      razonSocial: updatedEmpresa.nombre,
-      nombreComercial: updatedEmpresa.nombre
+      razonSocial: updatedEmpresa.razonSocial || updatedEmpresa.nombre,
+      nombreComercial: updatedEmpresa.nombreComercial || updatedEmpresa.nombre
     };
 
     res.json(empresaResponse);
   } catch (error) {
-    console.error('Error actualizando empresa:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    console.error('[EMPRESA] Error updating empresa:', error);
+    res.status(500).json({ error: 'Error interno del servidor: ' + error.message });
   }
 });
 
