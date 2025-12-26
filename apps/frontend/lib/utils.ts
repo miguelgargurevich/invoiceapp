@@ -5,14 +5,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatCurrency(amount: number, currency: string = 'PEN'): string {
+export function formatCurrency(amount: number | string | null | undefined, currency: string = 'PEN'): string {
   const symbols: Record<string, string> = {
     PEN: 'S/',
     USD: '$',
     EUR: '€',
   };
   const symbol = symbols[currency] || currency;
-  return `${symbol} ${amount.toFixed(2)}`;
+  const numericAmount = typeof amount === 'string' ? parseFloat(amount) : (amount ?? 0);
+  return `${symbol} ${(isNaN(numericAmount) ? 0 : numericAmount).toFixed(2)}`;
 }
 
 export function formatDate(date: string | Date, locale: string = 'es-PE'): string {
