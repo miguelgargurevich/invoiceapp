@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Plus, Search, Filter, Download, Eye, Printer } from 'lucide-react';
+import { Plus, Search, Filter, Eye, Printer } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
@@ -13,10 +13,11 @@ import {
   EmptyState,
   type Column,
 } from '@/components/common';
+import { ProformaPrintPreviewModal } from '@/components/proforma';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import api from '@/lib/api';
 
-interface Proforma {
+interface ProformaListItem {
   id: string;
   numero: string;
   serie: string;
@@ -29,6 +30,53 @@ interface Proforma {
   estado: string;
 }
 
+interface DetalleProforma {
+  id: string;
+  descripcion: string;
+  cantidad: number;
+  precioUnitario: number;
+  descuento: number;
+  subtotal: number;
+  igv: number;
+  total: number;
+  producto?: {
+    codigo: string;
+    nombre: string;
+  };
+}
+
+interface ProformaCompleta {
+  id: string;
+  numero: string;
+  serie: string;
+  cliente: {
+    id: string;
+    razonSocial: string;
+    numeroDocumento: string;
+    tipoDocumento: string;
+    direccion?: string;
+    email?: string;
+  };
+  fechaEmision: string;
+  fechaValidez: string;
+  subtotal: number;
+  igv: number;
+  total: number;
+  descuento: number;
+  estado: string;
+  observaciones?: string;
+  condiciones?: string;
+  jobName?: string;
+  jobLocation?: string;
+  workDescription?: string;
+  paymentTerms?: string;
+  arquitectoNombre?: string;
+  fechaPlanos?: string;
+  telefonoTrabajo?: string;
+  diasValidez?: number;
+  detalles: DetalleProforma[];
+}
+
 export default function ProformasPage({
   params: { locale },
 }: {
@@ -38,12 +86,15 @@ export default function ProformasPage({
   const router = useRouter();
   const { empresa } = useAuth();
   
-  const [proformas, setProformas] = useState<Proforma[]>([]);
+  const [proformas, setProformas] = useState<ProformaListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filterEstado, setFilterEstado] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
+  const [selectedProforma, setSelectedProforma] = useState<ProformaCompleta | null>(null);
+  const [loadingProforma, setLoadingProforma] = useState(false);
 
   const loadProformas = useCallback(async () => {
     if (!empresa?.id) return;
@@ -71,6 +122,33 @@ export default function ProformasPage({
     loadProformas();
   }, [loadProformas]);
 
+  const loadProformaCompleta = async (id: string) => {
+    try {
+      setLoadingProforma(true);
+      const response: any = await api.get(`/proformas/${id}`);
+      
+      const proformaData = response.data;
+      const proformaCompleta: ProformaCompleta = {
+        ...proformaData,
+        cliente: {
+          id: proformaData.cliente.id,
+          razonSocial: proformaData.cliente.razonSocial || proformaData.cliente.nombre,
+          numeroDocumento: proformaData.cliente.numeroDocumento || proformaData.cliente.documento,
+          tipoDocumento: proformaData.cliente.tipoDocumento,
+          direccion: proformaData.cliente.direccion,
+          email: proformaData.cliente.email,
+        },
+      };
+      
+      setSelectedProforma(proformaCompleta);
+      setIsPrintPreviewOpen(true);
+    } catch (error) {
+      console.error('Error loading proforma:', error);
+    } finally {
+      setLoadingProforma(false);
+    }
+  };
+
   const getEstadoBadge = (estado: string) => {
     const variants = {
       pendiente: 'warning' as const,
@@ -81,7 +159,7 @@ export default function ProformasPage({
     return variants[estado as keyof typeof variants] || 'default' as const;
   };
 
-  const columns: Column<Proforma>[] = [
+  const columns: Column<ProformaListItem>[] = [
     {
       key: 'numero',
       header: t('number'),
@@ -140,31 +218,15 @@ export default function ProformasPage({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => handleDownload(proforma.id)}
+            onClick={() => loadProformaCompleta(proforma.id)}
+            disabled={loadingProforma}
           >
-            <Download className="h-4 w-4" />
+            <Printer className="h-4 w-4" />
           </Button>
         </div>
       ),
     },
   ];
-
-  const handleDownload = async (id: string) => {
-    try {
-      const response: any = await api.get(`/proformas/${id}/pdf`, {
-        responseType: 'blob',
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `proforma-${id}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.error('Error downloading proforma:', error);
-    }
-  };
 
   if (loading && proformas.length === 0) {
     return (
@@ -246,6 +308,19 @@ export default function ProformasPage({
           />
         )}
       </Card>
+
+      {/* Print Preview Modal */}
+      {selectedProforma && (
+        <ProformaPrintPreviewModal
+          isOpen={isPrintPreviewOpen}
+          onClose={() => {
+            setIsPrintPreviewOpen(false);
+            setSelectedProforma(null);
+          }}
+          proforma={selectedProforma}
+          empresa={empresa!}
+        />
+      )}
     </div>
   );
 }
