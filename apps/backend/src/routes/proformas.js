@@ -465,7 +465,7 @@ router.get('/:id/pdf', authenticateToken, getEmpresaFromUser, async (req, res) =
 // POST /api/proformas/:id/send-email - Enviar proforma por email
 router.post('/:id/send-email', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
-    const { to, subject, message } = req.body;
+    const { to, subject, message, locale = 'es' } = req.body;
 
     if (!to) {
       return res.status(400).json({ error: 'El email del destinatario es requerido' });
@@ -519,6 +519,7 @@ router.post('/:id/send-email', authenticateToken, getEmpresaFromUser, async (req
         email: proforma.empresa.email,
         direccion: proforma.empresa.direccion,
       },
+      locale,
     });
 
     res.json({ 

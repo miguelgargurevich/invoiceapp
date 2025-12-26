@@ -435,7 +435,7 @@ router.get('/:id/pdf', authenticateToken, getEmpresaFromUser, async (req, res) =
 // POST /api/facturas/:id/send-email - Enviar factura por email
 router.post('/:id/send-email', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
-    const { to, subject, message } = req.body;
+    const { to, subject, message, locale = 'es' } = req.body;
 
     if (!to) {
       return res.status(400).json({ error: 'El email del destinatario es requerido' });
@@ -489,6 +489,7 @@ router.post('/:id/send-email', authenticateToken, getEmpresaFromUser, async (req
         email: factura.empresa.email,
         direccion: factura.empresa.direccion,
       },
+      locale,
       // Note: PDF generation would happen here in production
       // pdfBuffer: generatedPdfBuffer
     });

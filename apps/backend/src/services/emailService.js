@@ -7,6 +7,46 @@ const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
 const fromName = process.env.RESEND_FROM_NAME || 'Invoice App';
 
 /**
+ * Get translations based on locale
+ * @param {string} locale - Language locale (es or en)
+ * @returns {Object} - Translation strings
+ */
+function getTranslations(locale = 'es') {
+  const translations = {
+    es: {
+      invoice: 'Factura',
+      proforma: 'Proforma',
+      client: 'Cliente',
+      document: 'Documento',
+      issueDate: 'Fecha de Emisión',
+      dueDate: 'Fecha de Vencimiento',
+      validUntil: 'Válido hasta',
+      total: 'Total',
+      automaticEmail: 'Este correo ha sido enviado automáticamente desde Invoice App.',
+      forQuestions: 'Para cualquier consulta',
+      proformaValidity: '⚠️ Esta proforma/cotización es válida hasta el',
+      noFiscalValue: 'Este documento no tiene valor fiscal.',
+    },
+    en: {
+      invoice: 'Invoice',
+      proforma: 'Proposal',
+      client: 'Client',
+      document: 'Document',
+      issueDate: 'Issue Date',
+      dueDate: 'Due Date',
+      validUntil: 'Valid until',
+      total: 'Total',
+      automaticEmail: 'This email has been sent automatically from Invoice App.',
+      forQuestions: 'For any questions',
+      proformaValidity: '⚠️ This proposal/quote is valid until',
+      noFiscalValue: 'This document has no fiscal value.',
+    }
+  };
+  
+  return translations[locale] || translations.es;
+}
+
+/**
  * Send an email using Resend
  * @param {Object} options - Email options
  * @param {string} options.to - Recipient email address
@@ -52,9 +92,12 @@ async function sendEmail({ to, subject, text, html, attachments = [] }) {
  * @param {Object} options.factura - Invoice data
  * @param {Object} options.empresa - Company data
  * @param {Buffer} options.pdfBuffer - PDF file buffer (optional)
+ * @param {string} options.locale - Language locale (es or en)
  * @returns {Promise<Object>} - Resend API response
  */
-async function sendInvoiceEmail({ to, subject, message, factura, empresa, pdfBuffer }) {
+async function sendInvoiceEmail({ to, subject, message, factura, empresa, pdfBuffer, locale = 'es' }) {
+  const t = getTranslations(locale);
+  
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -85,34 +128,34 @@ async function sendInvoiceEmail({ to, subject, message, factura, empresa, pdfBuf
         <div class="message">${message.replace(/\n/g, '<br>')}</div>
         
         <div class="invoice-info">
-          <div class="invoice-number">Factura ${factura.serie}-${String(factura.numero).padStart(6, '0')}</div>
+          <div class="invoice-number">${t.invoice} ${factura.serie}-${String(factura.numero).padStart(6, '0')}</div>
           <div style="margin-top: 15px;">
             <div class="info-row">
-              <span class="info-label">Cliente:</span>
+              <span class="info-label">${t.client}:</span>
               <span class="info-value">${factura.cliente?.nombre || 'N/A'}</span>
             </div>
             <div class="info-row">
-              <span class="info-label">Documento:</span>
+              <span class="info-label">${t.document}:</span>
               <span class="info-value">${factura.cliente?.tipoDocumento || ''} ${factura.cliente?.documento || 'N/A'}</span>
             </div>
             <div class="info-row">
-              <span class="info-label">Fecha de Emisión:</span>
-              <span class="info-value">${new Date(factura.fechaEmision).toLocaleDateString('es-PE')}</span>
+              <span class="info-label">${t.issueDate}:</span>
+              <span class="info-value">${new Date(factura.fechaEmision).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-PE')}</span>
             </div>
             <div class="info-row">
-              <span class="info-label">Fecha de Vencimiento:</span>
-              <span class="info-value">${factura.fechaVencimiento ? new Date(factura.fechaVencimiento).toLocaleDateString('es-PE') : 'N/A'}</span>
+              <span class="info-label">${t.dueDate}:</span>
+              <span class="info-value">${factura.fechaVencimiento ? new Date(factura.fechaVencimiento).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-PE') : 'N/A'}</span>
             </div>
             <div class="info-row" style="border-bottom: none; margin-top: 10px;">
-              <span class="info-label">Total:</span>
+              <span class="info-label">${t.total}:</span>
               <span class="total">S/ ${parseFloat(factura.total).toFixed(2)}</span>
             </div>
           </div>
         </div>
         
         <div class="footer">
-          <p>Este correo ha sido enviado automáticamente desde Invoice App.</p>
-          ${empresa?.email ? `<p>Para cualquier consulta: ${empresa.email}</p>` : ''}
+          <p>${t.automaticEmail}</p>
+          ${empresa?.email ? `<p>${t.forQuestions}: ${empresa.email}</p>` : ''}
         </div>
       </div>
     </body>
@@ -123,7 +166,7 @@ async function sendInvoiceEmail({ to, subject, message, factura, empresa, pdfBuf
   
   if (pdfBuffer) {
     attachments.push({
-      filename: `Factura-${factura.serie}-${factura.numero}.pdf`,
+      filename: `${t.invoice}-${factura.serie}-${factura.numero}.pdf`,
       content: pdfBuffer,
     });
   }
@@ -146,9 +189,12 @@ async function sendInvoiceEmail({ to, subject, message, factura, empresa, pdfBuf
  * @param {Object} options.proforma - Proforma data
  * @param {Object} options.empresa - Company data
  * @param {Buffer} options.pdfBuffer - PDF file buffer (optional)
+ * @param {string} options.locale - Language locale (es or en)
  * @returns {Promise<Object>} - Resend API response
  */
-async function sendProformaEmail({ to, subject, message, proforma, empresa, pdfBuffer }) {
+async function sendProformaEmail({ to, subject, message, proforma, empresa, pdfBuffer, locale = 'es' }) {
+  const t = getTranslations(locale);
+  
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -180,39 +226,39 @@ async function sendProformaEmail({ to, subject, message, proforma, empresa, pdfB
         <div class="message">${message.replace(/\n/g, '<br>')}</div>
         
         <div class="proforma-info">
-          <div class="proforma-number">Proforma ${proforma.serie}-${String(proforma.numero).padStart(6, '0')}</div>
+          <div class="proforma-number">${t.proforma} ${proforma.serie}-${String(proforma.numero).padStart(6, '0')}</div>
           <div style="margin-top: 15px;">
             <div class="info-row">
-              <span class="info-label">Cliente:</span>
+              <span class="info-label">${t.client}:</span>
               <span class="info-value">${proforma.cliente?.nombre || 'N/A'}</span>
             </div>
             <div class="info-row">
-              <span class="info-label">Documento:</span>
+              <span class="info-label">${t.document}:</span>
               <span class="info-value">${proforma.cliente?.tipoDocumento || ''} ${proforma.cliente?.documento || 'N/A'}</span>
             </div>
             <div class="info-row">
-              <span class="info-label">Fecha de Emisión:</span>
-              <span class="info-value">${new Date(proforma.fechaEmision).toLocaleDateString('es-PE')}</span>
+              <span class="info-label">${t.issueDate}:</span>
+              <span class="info-value">${new Date(proforma.fechaEmision).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-PE')}</span>
             </div>
             <div class="info-row">
-              <span class="info-label">Válido hasta:</span>
-              <span class="info-value">${proforma.fechaValidez ? new Date(proforma.fechaValidez).toLocaleDateString('es-PE') : 'N/A'}</span>
+              <span class="info-label">${t.validUntil}:</span>
+              <span class="info-value">${proforma.fechaValidez ? new Date(proforma.fechaValidez).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-PE') : 'N/A'}</span>
             </div>
             <div class="info-row" style="border-bottom: none; margin-top: 10px;">
-              <span class="info-label">Total:</span>
+              <span class="info-label">${t.total}:</span>
               <span class="total">S/ ${parseFloat(proforma.total).toFixed(2)}</span>
             </div>
           </div>
         </div>
 
         <div class="validity">
-          ⚠️ Esta proforma/cotización es válida hasta el ${proforma.fechaValidez ? new Date(proforma.fechaValidez).toLocaleDateString('es-PE') : 'fecha indicada'}. 
-          Este documento no tiene valor fiscal.
+          ⚠️ ${t.proformaValidity} ${proforma.fechaValidez ? new Date(proforma.fechaValidez).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-PE') : 'fecha indicada'}. 
+          ${t.noFiscalValue}
         </div>
         
         <div class="footer">
-          <p>Este correo ha sido enviado automáticamente desde Invoice App.</p>
-          ${empresa?.email ? `<p>Para cualquier consulta: ${empresa.email}</p>` : ''}
+          <p>${t.automaticEmail}</p>
+          ${empresa?.email ? `<p>${t.forQuestions}: ${empresa.email}</p>` : ''}
         </div>
       </div>
     </body>
@@ -223,7 +269,7 @@ async function sendProformaEmail({ to, subject, message, proforma, empresa, pdfB
   
   if (pdfBuffer) {
     attachments.push({
-      filename: `Proforma-${proforma.serie}-${proforma.numero}.pdf`,
+      filename: `${t.proforma}-${proforma.serie}-${proforma.numero}.pdf`,
       content: pdfBuffer,
     });
   }

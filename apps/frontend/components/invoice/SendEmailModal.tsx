@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Mail, Send, AlertCircle, CheckCircle } from 'lucide-react';
 import { Button, Modal, Input, Textarea } from '@/components/common';
 import api from '@/lib/api';
@@ -42,6 +42,7 @@ export default function SendEmailModal({
 }: SendEmailModalProps) {
   const t = useTranslations('invoices');
   const tCommon = useTranslations('common');
+  const locale = useLocale();
 
   const [emailData, setEmailData] = useState({
     to: factura.cliente.email || '',
@@ -68,6 +69,7 @@ export default function SendEmailModal({
         to: emailData.to,
         subject: emailData.subject,
         message: emailData.message,
+        locale,
       });
 
       setStatus('success');

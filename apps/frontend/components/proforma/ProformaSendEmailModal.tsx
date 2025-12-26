@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Mail, Send, AlertCircle, CheckCircle } from 'lucide-react';
 import { Button, Modal, Input, Textarea } from '@/components/common';
 import api from '@/lib/api';
@@ -41,6 +41,7 @@ export default function ProformaSendEmailModal({
 }: ProformaSendEmailModalProps) {
   const t = useTranslations('quotes');
   const tCommon = useTranslations('common');
+  const locale = useLocale();
 
   const [emailData, setEmailData] = useState({
     to: proforma.cliente.email || '',
@@ -67,6 +68,7 @@ export default function ProformaSendEmailModal({
         to: emailData.to,
         subject: emailData.subject,
         message: emailData.message,
+        locale,
       });
 
       setStatus('success');
