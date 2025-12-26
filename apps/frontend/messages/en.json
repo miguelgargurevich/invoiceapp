@@ -270,7 +270,26 @@
       "loadFailed": "Error loading invoice",
       "updateFailed": "Error updating invoice",
       "voidFailed": "Error voiding invoice",
-      "paymentFailed": "Error registering payment"    }
+      "paymentFailed": "Error registering payment"    },
+    "pdf": {
+      "invoice": "INVOICE",
+      "issueDate": "Issue Date:",
+      "dueDate": "Due Date:",
+      "clientData": "Client Information",
+      "companyName": "Company Name:",
+      "document": "Address:",
+      "description": "Description",
+      "quantity": "Qty.",
+      "unitPrice": "Unit Price",
+      "lineSubtotal": "Subtotal",
+      "subtotal": "Subtotal:",
+      "discount": "Discount:",
+      "tax": "Tax (18%):",
+      "total": "TOTAL:",
+      "observations": "Observations:",
+      "thankYou": "Thank you for your business",
+      "electronicDocument": "This document has been generated electronically"
+    }
   },
   "quotes": {
     "title": "Proposals",
@@ -378,6 +397,27 @@
       "converted": "Proposal successfully converted to invoice",
       "confirmDelete": "Are you sure you want to delete this proposal?",
       "confirmConvert": "Are you sure you want to convert this proposal to an invoice?"
+    },
+    "pdf": {
+      "proforma": "PROPOSAL",
+      "issueDate": "Issue Date:",
+      "validUntil": "Valid Until:",
+      "clientData": "Client Information",
+      "companyName": "Company Name:",
+      "document": "Address:",
+      "description": "Description",
+      "quantity": "Qty.",
+      "unitPrice": "Unit Price",
+      "lineSubtotal": "Subtotal",
+      "subtotal": "Subtotal:",
+      "discount": "Discount:",
+      "tax": "Tax (18%):",
+      "total": "TOTAL:",
+      "conditions": "Conditions:",
+      "observations": "Observations:",
+      "validUntilDate": "This proposal is valid until",
+      "thankYou": "Thank you for your business",
+      "quotationNote": "This document has no fiscal value - It is a quotation"
     }
   },
   "clients": {

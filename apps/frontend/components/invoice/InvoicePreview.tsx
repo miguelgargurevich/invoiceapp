@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { formatCurrency, formatDate } from '@/lib/utils';
 
 interface DetalleFactura {
@@ -59,6 +60,8 @@ interface InvoicePreviewProps {
 
 const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
   ({ factura, empresa }, ref) => {
+    const t = useTranslations('invoices.pdf');
+    
     return (
       <div
         ref={ref}
@@ -88,18 +91,18 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
           </div>
           <div className="text-right">
             <div className="bg-gray-800 text-white px-4 py-2 rounded-lg mb-2">
-              <div className="text-sm font-bold">FACTURA</div>
+              <div className="text-sm font-bold">{t('invoice')}</div>
               <div className="text-base font-bold">
                 {factura.serie}-{factura.numero.toString().padStart(6, '0')}
               </div>
             </div>
             <div className="text-xs text-gray-600">
               <p>
-                <span className="font-medium">Fecha de Emisión:</span>{' '}
+                <span className="font-medium">{t('issueDate')}</span>{' '}
                 {formatDate(factura.fechaEmision)}
               </p>
               <p>
-                <span className="font-medium">Fecha de Vencimiento:</span>{' '}
+                <span className="font-medium">{t('dueDate')}</span>{' '}
                 {formatDate(factura.fechaVencimiento)}
               </p>
             </div>
@@ -109,11 +112,11 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         {/* Client Info */}
         <div className="mb-6 bg-gray-50 p-3 rounded-lg">
           <h3 className="text-xs font-bold text-gray-800 mb-2 uppercase">
-            Datos del Cliente
+            {t('clientData')}
           </h3>
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
-              <span className="text-gray-500">Razón Social:</span>
+              <span className="text-gray-500">{t('companyName')}</span>
               <p className="font-medium">{factura.cliente.razonSocial}</p>
             </div>
             <div>
@@ -124,7 +127,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
             </div>
             {factura.cliente.direccion && (
               <div className="col-span-2">
-                <span className="text-gray-500">Dirección:</span>
+                <span className="text-gray-500">{t('document')}</span>
                 <p className="font-medium">{factura.cliente.direccion}</p>
               </div>
             )}
@@ -137,16 +140,16 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
             <thead>
               <tr className="bg-gray-800 text-white">
                 <th className="py-2 px-3 text-left text-xs font-medium">
-                  Descripción
+                  {t('description')}
                 </th>
                 <th className="py-2 px-3 text-center text-xs font-medium w-16">
-                  Cant.
+                  {t('quantity')}
                 </th>
                 <th className="py-2 px-3 text-right text-xs font-medium w-24">
-                  P. Unit.
+                  {t('unitPrice')}
                 </th>
                 <th className="py-2 px-3 text-right text-xs font-medium w-24">
-                  Subtotal
+                  {t('lineSubtotal')}
                 </th>
               </tr>
             </thead>
@@ -183,23 +186,23 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         <div className="flex justify-end mb-6">
           <div className="w-64">
             <div className="flex justify-between py-1.5 text-xs">
-              <span className="text-gray-600">Subtotal:</span>
+              <span className="text-gray-600">{t('subtotal')}</span>
               <span>{formatCurrency(factura.subtotal)}</span>
             </div>
             {factura.descuento > 0 && (
               <div className="flex justify-between py-1.5 text-xs">
-                <span className="text-gray-600">Descuento:</span>
+                <span className="text-gray-600">{t('discount')}</span>
                 <span className="text-red-600">
                   -{formatCurrency(factura.descuento)}
                 </span>
               </div>
             )}
             <div className="flex justify-between py-1.5 text-xs">
-              <span className="text-gray-600">IGV (18%):</span>
+              <span className="text-gray-600">{t('tax')}</span>
               <span>{formatCurrency(factura.igv)}</span>
             </div>
             <div className="flex justify-between py-2 border-t-2 border-gray-800 mt-1.5">
-              <span className="text-sm font-bold">TOTAL:</span>
+              <span className="text-sm font-bold">{t('total')}</span>
               <span className="text-sm font-bold text-gray-800">
                 {formatCurrency(factura.total)}
               </span>
@@ -211,7 +214,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         {factura.observaciones && (
           <div className="mb-6 p-3 bg-gray-50 rounded-lg">
             <h3 className="text-xs font-bold text-gray-800 mb-1.5">
-              Observaciones:
+              {t('observations')}
             </h3>
             <p className="text-xs text-gray-600">{factura.observaciones}</p>
           </div>
@@ -219,9 +222,9 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
 
         {/* Footer */}
         <div className="border-t border-gray-300 pt-3 text-center text-[10px] text-gray-500">
-          <p>Gracias por su preferencia</p>
+          <p>{t('thankYou')}</p>
           <p className="mt-1">
-            Este documento ha sido generado electrónicamente
+            {t('electronicDocument')}
           </p>
         </div>
       </div>

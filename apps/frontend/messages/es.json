@@ -272,6 +272,25 @@
       "updateFailed": "Error al actualizar la factura",
       "voidFailed": "Error al anular la factura",
       "paymentFailed": "Error al registrar el pago"
+    },
+    "pdf": {
+      "invoice": "FACTURA",
+      "issueDate": "Fecha de Emisión:",
+      "dueDate": "Fecha de Vencimiento:",
+      "clientData": "Datos del Cliente",
+      "companyName": "Razón Social:",
+      "document": "Dirección:",
+      "description": "Descripción",
+      "quantity": "Cant.",
+      "unitPrice": "P. Unit.",
+      "lineSubtotal": "Subtotal",
+      "subtotal": "Subtotal:",
+      "discount": "Descuento:",
+      "tax": "IGV (18%):",
+      "total": "TOTAL:",
+      "observations": "Observaciones:",
+      "thankYou": "Gracias por su preferencia",
+      "electronicDocument": "Este documento ha sido generado electrónicamente"
     }
   },
   "quotes": {
@@ -381,6 +400,27 @@
       "converted": "Proforma convertida a factura exitosamente",
       "confirmDelete": "¿Está seguro de eliminar esta proforma?",
       "confirmConvert": "¿Está seguro de convertir esta proforma a factura?"
+    },
+    "pdf": {
+      "proforma": "PROFORMA",
+      "issueDate": "Fecha de Emisión:",
+      "validUntil": "Válido hasta:",
+      "clientData": "Datos del Cliente",
+      "companyName": "Razón Social:",
+      "document": "Dirección:",
+      "description": "Descripción",
+      "quantity": "Cant.",
+      "unitPrice": "P. Unit.",
+      "lineSubtotal": "Subtotal",
+      "subtotal": "Subtotal:",
+      "discount": "Descuento:",
+      "tax": "IGV (18%):",
+      "total": "TOTAL:",
+      "conditions": "Condiciones:",
+      "observations": "Observaciones:",
+      "validUntilDate": "Esta proforma es válida hasta el",
+      "thankYou": "Gracias por su preferencia",
+      "quotationNote": "Este documento no tiene valor fiscal - Es una cotización"
     }
   },
   "clients": {

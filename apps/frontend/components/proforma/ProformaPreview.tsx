@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef } from 'react';
+import { useTranslations } from 'next-intl';
 import { formatCurrency, formatDate } from '@/lib/utils';
 
 interface DetalleProforma {
@@ -59,6 +60,8 @@ interface ProformaPreviewProps {
 
 const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
   ({ proforma, empresa }, ref) => {
+    const t = useTranslations('quotes.pdf');
+    
     return (
       <div
         ref={ref}
@@ -88,18 +91,18 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
           </div>
           <div className="text-right">
             <div className="bg-blue-600 text-white px-4 py-2 rounded-lg mb-2">
-              <div className="text-sm font-bold">PROFORMA</div>
+              <div className="text-sm font-bold">{t('proforma')}</div>
               <div className="text-base font-bold">
                 {proforma.serie}-{proforma.numero.toString().padStart(6, '0')}
               </div>
             </div>
             <div className="text-xs text-gray-600">
               <p>
-                <span className="font-medium">Fecha de Emisión:</span>{' '}
+                <span className="font-medium">{t('issueDate')}</span>{' '}
                 {formatDate(proforma.fechaEmision)}
               </p>
               <p>
-                <span className="font-medium">Válido hasta:</span>{' '}
+                <span className="font-medium">{t('validUntil')}</span>{' '}
                 {formatDate(proforma.fechaValidez)}
               </p>
             </div>
@@ -109,11 +112,11 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         {/* Client Info */}
         <div className="mb-6 bg-blue-50 p-3 rounded-lg border border-blue-100">
           <h3 className="text-xs font-bold text-blue-800 mb-2 uppercase">
-            Datos del Cliente
+            {t('clientData')}
           </h3>
           <div className="grid grid-cols-2 gap-3 text-xs">
             <div>
-              <span className="text-gray-500">Razón Social:</span>
+              <span className="text-gray-500">{t('companyName')}</span>
               <p className="font-medium">{proforma.cliente.razonSocial}</p>
             </div>
             <div>
@@ -124,7 +127,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
             </div>
             {proforma.cliente.direccion && (
               <div className="col-span-2">
-                <span className="text-gray-500">Dirección:</span>
+                <span className="text-gray-500">{t('document')}</span>
                 <p className="font-medium">{proforma.cliente.direccion}</p>
               </div>
             )}
@@ -137,16 +140,16 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
             <thead>
               <tr className="bg-blue-600 text-white">
                 <th className="py-2 px-3 text-left text-xs font-medium">
-                  Descripción
+                  {t('description')}
                 </th>
                 <th className="py-2 px-3 text-center text-xs font-medium w-16">
-                  Cant.
+                  {t('quantity')}
                 </th>
                 <th className="py-2 px-3 text-right text-xs font-medium w-24">
-                  P. Unit.
+                  {t('unitPrice')}
                 </th>
                 <th className="py-2 px-3 text-right text-xs font-medium w-24">
-                  Subtotal
+                  {t('lineSubtotal')}
                 </th>
               </tr>
             </thead>
@@ -183,23 +186,23 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         <div className="flex justify-end mb-6">
           <div className="w-64">
             <div className="flex justify-between py-1.5 text-xs">
-              <span className="text-gray-600">Subtotal:</span>
+              <span className="text-gray-600">{t('subtotal')}</span>
               <span>{formatCurrency(proforma.subtotal)}</span>
             </div>
             {proforma.descuento > 0 && (
               <div className="flex justify-between py-1.5 text-xs">
-                <span className="text-gray-600">Descuento:</span>
+                <span className="text-gray-600">{t('discount')}</span>
                 <span className="text-red-600">
                   -{formatCurrency(proforma.descuento)}
                 </span>
               </div>
             )}
             <div className="flex justify-between py-1.5 text-xs">
-              <span className="text-gray-600">IGV (18%):</span>
+              <span className="text-gray-600">{t('tax')}</span>
               <span>{formatCurrency(proforma.igv)}</span>
             </div>
             <div className="flex justify-between py-2 border-t-2 border-blue-600 mt-1.5">
-              <span className="text-sm font-bold">TOTAL:</span>
+              <span className="text-sm font-bold">{t('total')}</span>
               <span className="text-sm font-bold text-blue-600">
                 {formatCurrency(proforma.total)}
               </span>
@@ -211,7 +214,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         {proforma.condiciones && (
           <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
             <h3 className="text-xs font-bold text-yellow-800 mb-1.5">
-              Condiciones:
+              {t('conditions')}
             </h3>
             <p className="text-xs text-gray-700 whitespace-pre-wrap">{proforma.condiciones}</p>
           </div>
@@ -221,7 +224,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         {proforma.observaciones && (
           <div className="mb-6 p-3 bg-gray-50 rounded-lg">
             <h3 className="text-xs font-bold text-gray-800 mb-1.5">
-              Observaciones:
+              {t('observations')}
             </h3>
             <p className="text-xs text-gray-600">{proforma.observaciones}</p>
           </div>
@@ -230,11 +233,11 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         {/* Footer */}
         <div className="border-t border-gray-300 pt-3 text-center text-[10px] text-gray-500">
           <p className="font-medium text-blue-600 mb-1">
-            Esta proforma es válida hasta el {formatDate(proforma.fechaValidez)}
+            {t('validUntilDate')} {formatDate(proforma.fechaValidez)}
           </p>
-          <p>Gracias por su preferencia</p>
+          <p>{t('thankYou')}</p>
           <p className="mt-1">
-            Este documento no tiene valor fiscal - Es una cotización
+            {t('quotationNote')}
           </p>
         </div>
       </div>
