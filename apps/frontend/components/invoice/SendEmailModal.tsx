@@ -140,19 +140,18 @@ export default function SendEmailModal({
             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               {t('emailTo')} <span className="text-red-500">*</span>
             </label>
-            <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <Input
-                type="email"
-                value={emailData.to}
-                onChange={(e) =>
-                  setEmailData({ ...emailData, to: e.target.value })
-                }
-                placeholder={t('emailPlaceholder')}
-                className="pl-11 h-11 text-base"
-                required
-              />
-            </div>
+            <Input
+              type="email"
+              value={emailData.to}
+              onChange={(e) =>
+                setEmailData({ ...emailData, to: e.target.value })
+              }
+              placeholder={t('emailPlaceholder')}
+              className="h-11 text-base"
+              icon={<Mail className="w-5 h-5" />}
+              iconPosition="left"
+              required
+            />
             {factura.cliente.email && emailData.to !== factura.cliente.email && (
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
                 Email del cliente: {factura.cliente.email}
