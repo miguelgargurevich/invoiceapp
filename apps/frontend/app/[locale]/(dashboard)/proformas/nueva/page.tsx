@@ -102,7 +102,7 @@ export default function NuevaProformaPage({
         limit: '100',
       });
       const response: any = await api.get(`/clientes?${params}`);
-      setClientes(response.data.data || []);
+      setClientes(response.data || []);
     } catch (error) {
       console.error('Error loading clientes:', error);
       setClientes([]);
@@ -119,7 +119,7 @@ export default function NuevaProformaPage({
         limit: '100',
       });
       const response: any = await api.get(`/productos?${params}`);
-      setProductos(response.data.data || []);
+      setProductos(response.data || []);
     } catch (error) {
       console.error('Error loading productos:', error);
       setProductos([]);

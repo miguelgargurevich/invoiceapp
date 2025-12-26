@@ -58,8 +58,8 @@ export default function ProformasPage({
       });
 
       const response: any = await api.get(`/proformas?${params}`);
-      setProformas(response.data.proformas || []);
-      setTotalPages(response.data.totalPages || 1);
+      setProformas(response.data || []);
+      setTotalPages(response.pagination?.totalPages || 1);
     } catch (error) {
       console.error('Error loading proformas:', error);
     } finally {

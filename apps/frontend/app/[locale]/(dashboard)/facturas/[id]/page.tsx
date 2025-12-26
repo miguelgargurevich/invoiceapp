@@ -112,7 +112,7 @@ export default function FacturaDetailPage({
     try {
       setLoading(true);
       const response: any = await api.get(`/facturas/${id}`);
-      setFactura(response.data);
+      setFactura(response);
     } catch (error) {
       console.error('Error loading factura:', error);
       // Mock data for development

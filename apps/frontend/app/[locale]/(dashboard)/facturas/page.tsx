@@ -59,8 +59,8 @@ export default function FacturasPage({
         ...(filterEstado && { estado: filterEstado }),
       });
       const response: any = await api.get(`/facturas?${params}`);
-      setFacturas(response.data.data || []);
-      setTotalPages(response.data.totalPages || 1);
+      setFacturas(response.data || []);
+      setTotalPages(response.pagination?.totalPages || 1);
     } catch (error) {
       console.error('Error loading facturas:', error);
       // Mock data for development

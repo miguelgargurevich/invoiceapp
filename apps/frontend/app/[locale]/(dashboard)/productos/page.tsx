@@ -63,17 +63,16 @@ export default function ProductosPage({
     
     try {
       setLoading(true);
-      const response = await api.get('/productos', {
-        params: {
-          empresaId: empresa.id,
-          search,
-          categoriaId: filterCategoria || undefined,
-          page: currentPage,
-          limit: 10,
-        },
+      const params = new URLSearchParams({
+        empresaId: empresa.id,
+        search,
+        page: currentPage.toString(),
+        limit: '10',
+        ...(filterCategoria && { categoriaId: filterCategoria }),
       });
-      setProductos(response.data.data || []);
-      setTotalPages(response.data.totalPages || 1);
+      const response: any = await api.get(`/productos?${params}`);
+      setProductos(response.data || []);
+      setTotalPages(response.pagination?.totalPages || 1);
     } catch (error) {
       console.error('Error loading productos:', error);
       // Mock data for development
@@ -124,10 +123,9 @@ export default function ProductosPage({
     if (!empresa?.id) return;
     
     try {
-      const response = await api.get('/categorias', {
-        params: { empresaId: empresa.id },
-      });
-      setCategorias(response.data.data || []);
+      const params = new URLSearchParams({ empresaId: empresa.id });
+      const response: any = await api.get(`/categorias?${params}`);
+      setCategorias(response.data || []);
     } catch (error) {
       console.error('Error loading categorias:', error);
       setCategorias([
