@@ -312,14 +312,6 @@ export default function FacturaDetailPage({
             <Printer className="w-4 h-4 mr-1" />
             {t('print')}
           </Button>
-          <Button variant="outline" size="sm" onClick={handleDirectDownloadPDF} disabled={downloadingPdf}>
-            <Download className="w-4 h-4 mr-1" />
-            {downloadingPdf ? '...' : 'PDF'}
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setIsSendEmailOpen(true)}>
-            <Mail className="w-4 h-4 mr-1" />
-            {t('send')}
-          </Button>
           {factura.estado !== 'PAGADA' && factura.estado !== 'ANULADA' && (
             <Button size="sm" onClick={() => {
               setPaymentData({ ...paymentData, monto: factura.montoPendiente.toString() });

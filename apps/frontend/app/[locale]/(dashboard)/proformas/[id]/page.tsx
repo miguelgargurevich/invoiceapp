@@ -311,14 +311,6 @@ export default function ProformaDetailPage({
             <Printer className="w-4 h-4 mr-1" />
             {t('print')}
           </Button>
-          <Button variant="outline" size="sm" onClick={handleDirectDownloadPDF} disabled={downloadingPdf}>
-            <Download className="w-4 h-4 mr-1" />
-            {downloadingPdf ? '...' : 'PDF'}
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => setIsSendEmailOpen(true)}>
-            <Mail className="w-4 h-4 mr-1" />
-            {t('send')}
-          </Button>
           {canConvert && (
             <Button size="sm" onClick={() => setIsConvertDialogOpen(true)}>
               <FileText className="w-4 h-4 mr-1" />
