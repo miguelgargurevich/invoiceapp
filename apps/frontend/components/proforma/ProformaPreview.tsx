@@ -69,7 +69,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         style={{ fontFamily: 'Arial, sans-serif' }}
       >
         {/* Header */}
-        <div className="flex justify-between items-start mb-8 border-b-2 border-blue-600 pb-6">
+        <div className="flex justify-between items-start mb-8 border-b-2 border-gray-800 pb-6">
           <div className="flex-1">
             {empresa?.logo ? (
               <img
@@ -90,7 +90,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
             </div>
           </div>
           <div className="text-right">
-            <div className="bg-blue-600 text-white px-4 py-2 rounded-lg mb-2">
+            <div className="bg-gray-800 text-white px-4 py-2 rounded-lg mb-2">
               <div className="text-sm font-bold">{t('proforma')}</div>
               <div className="text-base font-bold">
                 {proforma.serie}-{proforma.numero.toString().padStart(6, '0')}
@@ -110,8 +110,8 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         </div>
 
         {/* Client Info */}
-        <div className="mb-6 bg-blue-50 p-3 rounded-lg border border-blue-100">
-          <h3 className="text-xs font-bold text-blue-800 mb-2 uppercase">
+        <div className="mb-6 bg-gray-50 p-3 rounded-lg">
+          <h3 className="text-xs font-bold text-gray-800 mb-2 uppercase">
             {t('clientData')}
           </h3>
           <div className="grid grid-cols-2 gap-3 text-xs">
@@ -138,7 +138,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         <div className="mb-8">
           <table className="w-full border-collapse">
             <thead>
-              <tr className="bg-blue-600 text-white">
+              <tr className="bg-gray-800 text-white">
                 <th className="py-2 px-3 text-left text-xs font-medium">
                   {t('description')}
                 </th>
@@ -157,7 +157,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
               {proforma.detalles.map((detalle, index) => (
                 <tr
                   key={detalle.id}
-                  className={index % 2 === 0 ? 'bg-white' : 'bg-blue-50'}
+                  className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
                 >
                   <td className="py-2 px-3 text-xs border-b border-gray-200">
                     {detalle.producto && (
@@ -201,9 +201,9 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
               <span className="text-gray-600">{t('tax')}</span>
               <span>{formatCurrency(proforma.igv)}</span>
             </div>
-            <div className="flex justify-between py-2 border-t-2 border-blue-600 mt-1.5">
+            <div className="flex justify-between py-2 border-t-2 border-gray-800 mt-1.5">
               <span className="text-sm font-bold">{t('total')}</span>
-              <span className="text-sm font-bold text-blue-600">
+              <span className="text-sm font-bold text-gray-800">
                 {formatCurrency(proforma.total)}
               </span>
             </div>
@@ -232,7 +232,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
 
         {/* Footer */}
         <div className="border-t border-gray-300 pt-3 text-center text-[10px] text-gray-500">
-          <p className="font-medium text-blue-600 mb-1">
+          <p className="font-medium text-gray-800 mb-1">
             {t('validUntilDate')} {formatDate(proforma.fechaValidez)}
           </p>
           <p>{t('thankYou')}</p>
