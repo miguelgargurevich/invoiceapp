@@ -219,7 +219,7 @@ export default function NuevaProformaPage({
       router.push(`/${locale}/proformas`);
     } catch (error) {
       console.error('Error saving proforma:', error);
-      alert('Error al guardar la proforma');
+      alert(t('proformas.saveError'));
     } finally {
       setSaving(false);
     }

@@ -30,6 +30,7 @@ interface AuthContextType {
   loading: boolean;
   empresa: Empresa | null;
   signIn: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshEmpresa: () => Promise<void>;
@@ -118,6 +119,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const signInWithGoogle = async () => {
+    const redirectUrl = typeof window !== 'undefined' 
+      ? `${window.location.origin}/es/dashboard`
+      : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000/es/dashboard';
+    
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: redirectUrl,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    });
+
+    if (error) {
+      throw new Error(error.message);
+    }
+  };
+
   const signUp = async (email: string, password: string, name: string) => {
     const { error } = await supabase.auth.signUp({
       email,
@@ -148,6 +170,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         empresa,
         signIn,
+        signInWithGoogle,
         signUp,
         signOut,
         refreshEmpresa,

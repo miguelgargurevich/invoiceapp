@@ -151,6 +151,60 @@ export default function FacturasPage({
     return variants[status] || 'neutral';
   };
 
+  const handleView = (factura: Factura) => {
+    router.push(`/${locale}/facturas/${factura.id}`);
+  };
+
+  const handleExport = () => {
+    try {
+      // Prepare CSV data
+      const headers = [
+        t('number'),
+        t('client'),
+        t('document'),
+        t('issueDate'),
+        t('dueDate'),
+        t('subtotal'),
+        t('tax'),
+        t('total'),
+        t('status'),
+        t('pending')
+      ];
+
+      const rows = filteredFacturas.map(f => [
+        `${f.serie}-${f.numero}`,
+        f.cliente.nombre,
+        f.cliente.documento,
+        new Date(f.fechaEmision).toLocaleDateString(),
+        new Date(f.fechaVencimiento).toLocaleDateString(),
+        f.subtotal.toString(),
+        f.igv.toString(),
+        f.total.toString(),
+        f.estado,
+        f.montoPendiente.toString()
+      ]);
+
+      // Create CSV content
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+      ].join('\n');
+
+      // Create blob and download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `facturas_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error exporting facturas:', error);
+    }
+  };
+
   const columns: Column<Factura>[] = [
     {
       key: 'numero',
@@ -344,7 +398,7 @@ export default function FacturasPage({
             <option value="VENCIDA">{t('statusOverdue')}</option>
             <option value="ANULADA">{t('statusCancelled')}</option>
           </select>
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExport}>
             <Download className="w-4 h-4 mr-2" />
             {t('export')}
           </Button>

@@ -121,6 +121,48 @@ export default function ClientesPage() {
     }
   };
 
+  const handleExport = () => {
+    try {
+      // Prepare CSV data
+      const headers = [
+        t('documentType'),
+        t('documentNumber'),
+        t('name'),
+        t('address'),
+        t('email'),
+        t('phone')
+      ];
+
+      const rows = filteredClientes.map(c => [
+        c.tipoDocumento,
+        c.documento,
+        c.nombre,
+        c.direccion || '',
+        c.email || '',
+        c.telefono || ''
+      ]);
+
+      // Create CSV content
+      const csvContent = [
+        headers.join(','),
+        ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+      ].join('\n');
+
+      // Create blob and download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `clientes_${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error exporting clientes:', error);
+    }
+  };
+
   const columns: Column<Cliente>[] = [
     {
       key: 'documento',
@@ -242,7 +284,7 @@ export default function ClientesPage() {
               <Filter className="w-4 h-4 mr-2" />
               {t('filter')}
             </Button>
-            <Button variant="outline">
+            <Button variant="outline" onClick={handleExport}>
               <Download className="w-4 h-4 mr-2" />
               {t('export')}
             </Button>

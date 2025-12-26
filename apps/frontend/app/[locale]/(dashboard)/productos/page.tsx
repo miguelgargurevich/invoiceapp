@@ -165,6 +165,45 @@ export default function ProductosPage({
     }
   };
 
+  const handleExport = () => {
+    const headers = [
+      t('productos.codigo'),
+      t('productos.nombre'),
+      t('productos.descripcion'),
+      t('productos.categoria'),
+      t('productos.unidadMedida'),
+      t('productos.precioVenta'),
+      t('productos.tipo')
+    ];
+
+    const rows = filteredProductos.map(producto => [
+      producto.codigo || '',
+      producto.nombre || '',
+      producto.descripcion || '',
+      producto.categoria?.nombre || '',
+      producto.unidadMedida || '',
+      producto.precioVenta?.toString() || '0',
+      producto.tipo || ''
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => 
+        row.map(cell => `"${cell.toString().replace(/"/g, '""')}"`).join(',')
+      )
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `productos_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const columns: Column<Producto>[] = [
     {
       key: 'codigo',
@@ -321,7 +360,7 @@ export default function ProductosPage({
               </option>
             ))}
           </select>
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExport}>
             <Download className="w-4 h-4 mr-2" />
             {t('export')}
           </Button>

@@ -7,16 +7,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Mail, Lock, Globe, Moon, Sun } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, Globe, Moon, Sun, Chrome } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button, Input, LoadingSpinner } from '@/components/common';
 import { cn } from '@/lib/utils';
 
-const loginSchema = z.object({
-  email: z.string().email('Email inválido'),
-  password: z.string().min(6, 'La contraseña debe tener al menos 6 caracteres'),
-});
+// Schema will be created inside component to access translations
 
 type LoginForm = z.infer<typeof loginSchema>;
 
@@ -27,11 +24,16 @@ export default function LoginPage({
 }) {
   const t = useTranslations('auth');
   const router = useRouter();
-  const { signIn, user, loading: authLoading } = useAuth();
+  const { signIn, signInWithGoogle, user, loading: authLoading } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const loginSchema = z.object({
+    email: z.string().email(t('emailInvalid')),
+    password: z.string().min(6, t('passwordMinLength')),
+  });
 
   const {
     register,
@@ -60,7 +62,7 @@ export default function LoginPage({
       router.push(`/${locale}/dashboard`);
     } catch (err: unknown) {
       const error = err as Error;
-      setError(error.message || 'Error al iniciar sesión');
+      setError(error.message || t('signInError'));
     } finally {
       setIsLoading(false);
     }
@@ -69,6 +71,20 @@ export default function LoginPage({
   const switchLocale = () => {
     const newLocale = locale === 'es' ? 'en' : 'es';
     router.push(`/${newLocale}/login`);
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setError('');
+      setIsLoading(true);
+      await signInWithGoogle();
+      // Redirect is handled by Supabase callback
+    } catch (err: unknown) {
+      const error = err as Error;
+      setError(error.message || t('googleSignInError'));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (authLoading) {
@@ -177,6 +193,31 @@ export default function LoginPage({
                   <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
                 </motion.div>
               )}
+
+              {/* Google Sign In */}
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                disabled={isLoading}
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed group"
+              >
+                <Chrome className="w-5 h-5 text-gray-700 dark:text-gray-300 group-hover:text-primary-600" />
+                <span className="font-medium text-gray-700 dark:text-gray-300 group-hover:text-primary-600">
+                  {t('continueWithGoogle')}
+                </span>
+              </button>
+
+              {/* Divider */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                    {t('orContinueWith')}
+                  </span>
+                </div>
+              </div>
 
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div>
