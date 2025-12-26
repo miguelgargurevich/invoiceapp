@@ -79,36 +79,83 @@ export default function PrintPreviewModal({
   const generatePDF = async (): Promise<jsPDF | null> => {
     if (!previewRef.current) return null;
 
+    // Esperar a que todas las fuentes se carguen
+    await document.fonts.ready;
+
     const canvas = await html2canvas(previewRef.current, {
-      scale: 2,
+      scale: 3,
       useCORS: true,
       logging: false,
       backgroundColor: '#ffffff',
+      windowWidth: previewRef.current.scrollWidth,
+      windowHeight: previewRef.current.scrollHeight,
+      onclone: (clonedDoc) => {
+        const clonedElement = clonedDoc.querySelector('[data-preview-content]');
+        if (clonedElement) {
+          (clonedElement as HTMLElement).style.transform = 'none';
+        }
+      },
     });
 
-    const imgData = canvas.toDataURL('image/png');
+    const imgData = canvas.toDataURL('image/png', 1.0);
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
       format: 'a4',
+      compress: true,
     });
 
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
     const imgWidth = canvas.width;
     const imgHeight = canvas.height;
-    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-    const imgX = (pdfWidth - imgWidth * ratio) / 2;
-    const imgY = 0;
+    
+    // Calcular dimensiones manteniendo el aspect ratio
+    const ratio = pdfWidth / imgWidth;
+    const scaledWidth = imgWidth * ratio;
+    const scaledHeight = imgHeight * ratio;
 
-    pdf.addImage(
-      imgData,
-      'PNG',
-      imgX,
-      imgY,
-      imgWidth * ratio,
-      imgHeight * ratio
-    );
+    // Si la imagen es más alta que la página, necesitamos dividirla
+    let position = 0;
+    let pageHeight = pdfHeight;
+    
+    while (position < scaledHeight) {
+      const pageCanvas = document.createElement('canvas');
+      pageCanvas.width = imgWidth;
+      pageCanvas.height = Math.min(imgHeight - position / ratio, pdfHeight / ratio);
+      
+      const ctx = pageCanvas.getContext('2d');
+      if (ctx) {
+        ctx.drawImage(
+          canvas,
+          0,
+          position / ratio,
+          imgWidth,
+          pageCanvas.height,
+          0,
+          0,
+          imgWidth,
+          pageCanvas.height
+        );
+        
+        const pageImgData = pageCanvas.toDataURL('image/png', 1.0);
+        
+        if (position > 0) {
+          pdf.addPage();
+        }
+        
+        pdf.addImage(
+          pageImgData,
+          'PNG',
+          0,
+          0,
+          pdfWidth,
+          Math.min(pageCanvas.height * ratio, pdfHeight)
+        );
+      }
+      
+      position += pageHeight;
+    }
 
     return pdf;
   };
@@ -197,6 +244,7 @@ export default function PrintPreviewModal({
         {/* Preview Area */}
         <div className="flex-1 overflow-auto bg-gray-200 dark:bg-gray-800 p-4">
           <div
+            data-preview-content
             className="mx-auto shadow-2xl transition-transform duration-200"
             style={{
               transform: `scale(${zoom})`,
