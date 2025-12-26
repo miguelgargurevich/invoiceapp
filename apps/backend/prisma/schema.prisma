@@ -14,10 +14,13 @@ datasource db {
 model Empresa {
   id              String    @id @default(uuid())
   nombre          String
+  razonSocial     String?   @map("razon_social")
+  nombreComercial String?   @map("nombre_comercial")
   ruc             String    @unique
   direccion       String?
   telefono        String?
   email           String?
+  web             String?
   logoUrl         String?   @map("logo_url")
   licencia        String?   // License number (contractor license, etc.)
   moneda          String    @default("PEN")
@@ -71,6 +74,7 @@ model Producto {
   codigo          String?
   nombre          String
   descripcion     String?
+  tipo            String?   // producto, servicio
   unidadMedida    String    @default("UND") @map("unidad_medida")
   precioUnitario  Decimal   @map("precio_unitario") @db.Decimal(10, 2)
   precioConIgv    Boolean   @default(true) @map("precio_con_igv")
@@ -89,6 +93,7 @@ model Producto {
   @@unique([empresaId, codigo])
   @@index([empresaId], map: "idx_producto_empresa_id")
   @@index([categoriaId], map: "idx_producto_categoria_id")
+  @@index([nombre], map: "idx_producto_nombre")
   @@map("productos")
 }
 

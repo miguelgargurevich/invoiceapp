@@ -13,9 +13,10 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { Button, Input, LoadingSpinner } from '@/components/common';
 import { cn } from '@/lib/utils';
 
-// Schema will be created inside component to access translations
-
-type LoginForm = z.infer<typeof loginSchema>;
+type LoginForm = {
+  email: string;
+  password: string;
+};
 
 export default function LoginPage({
   params: { locale },
