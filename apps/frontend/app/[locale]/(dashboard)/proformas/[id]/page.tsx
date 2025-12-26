@@ -68,6 +68,15 @@ interface Proforma {
   estado: string;
   observaciones?: string;
   condiciones?: string;
+  // Contractor proposal fields
+  jobName?: string;
+  jobLocation?: string;
+  workDescription?: string;
+  paymentTerms?: string;
+  arquitectoNombre?: string;
+  fechaPlanos?: string;
+  telefonoTrabajo?: string;
+  diasValidez?: number;
   detalles: DetalleProforma[];
 }
 
@@ -435,6 +444,86 @@ export default function ProformaDetailPage({
               ))}
             </div>
           </Card>
+
+          {/* Job Information */}
+          {(proforma.jobName || proforma.jobLocation || proforma.workDescription || proforma.telefonoTrabajo) && (
+            <Card>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                {t('jobInformation')}
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {proforma.jobName && (
+                  <div>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{t('jobName')}</span>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">
+                      {proforma.jobName}
+                    </p>
+                  </div>
+                )}
+                {proforma.jobLocation && (
+                  <div>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{t('jobLocation')}</span>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">
+                      {proforma.jobLocation}
+                    </p>
+                  </div>
+                )}
+                {proforma.telefonoTrabajo && (
+                  <div>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{t('jobPhone')}</span>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">
+                      {proforma.telefonoTrabajo}
+                    </p>
+                  </div>
+                )}
+              </div>
+              {proforma.workDescription && (
+                <div className="mt-4">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">{t('workDescription')}</span>
+                  <p className="mt-1 text-gray-900 dark:text-gray-100 whitespace-pre-wrap">
+                    {proforma.workDescription}
+                  </p>
+                </div>
+              )}
+            </Card>
+          )}
+
+          {/* Contractor Details */}
+          {(proforma.arquitectoNombre || proforma.fechaPlanos) && (
+            <Card>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                {t('contractorDetails')}
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {proforma.arquitectoNombre && (
+                  <div>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{t('architectName')}</span>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">
+                      {proforma.arquitectoNombre}
+                    </p>
+                  </div>
+                )}
+                {proforma.fechaPlanos && (
+                  <div>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{t('plansDate')}</span>
+                    <p className="font-medium text-gray-900 dark:text-gray-100">
+                      {formatDate(proforma.fechaPlanos)}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
+
+          {/* Payment Terms */}
+          {proforma.paymentTerms && (
+            <Card>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                {t('paymentTerms')}
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{proforma.paymentTerms}</p>
+            </Card>
+          )}
 
           {/* Conditions */}
           {proforma.condiciones && (

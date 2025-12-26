@@ -279,7 +279,6 @@
     "subtitle": "Crea y gestiona tus proformas",
     "description": "Gestiona tus proformas y cotizaciones",
     "create": "Nueva Proforma",
-    "saveError": "Error al guardar la proforma",
     "createError": "Error al crear la proforma",
     "updateError": "Error al actualizar la proforma",
     "deleteError": "Error al eliminar la proforma",
