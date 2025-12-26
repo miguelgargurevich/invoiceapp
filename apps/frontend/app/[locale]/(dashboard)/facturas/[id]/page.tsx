@@ -314,7 +314,7 @@ export default function FacturaDetailPage({
           </Button>
           {factura.estado !== 'PAGADA' && factura.estado !== 'ANULADA' && (
             <Button size="sm" onClick={() => {
-              setPaymentData({ ...paymentData, monto: factura.montoPendiente.toString() });
+              setPaymentData({ ...paymentData, monto: (factura.montoPendiente || 0).toString() });
               setIsPaymentModalOpen(true);
             }}>
               <CreditCard className="w-4 h-4 mr-1" />
