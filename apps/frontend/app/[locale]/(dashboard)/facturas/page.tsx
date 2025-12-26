@@ -181,7 +181,7 @@ export default function FacturasPage({
         f.igv.toString(),
         f.total.toString(),
         f.estado,
-        f.montoPendiente.toString()
+        (f.montoPendiente || 0).toString()
       ]);
 
       // Create CSV content
