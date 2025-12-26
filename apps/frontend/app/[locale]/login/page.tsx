@@ -91,7 +91,7 @@ export default function LoginPage({
 
         <div className="relative z-10">
           <h1 className="text-4xl font-bold text-white">
-            Sistema de Facturación
+            {t('appName')}
           </h1>
           <p className="mt-2 text-primary-200 text-lg">
             {t('tagline')}
@@ -110,7 +110,7 @@ export default function LoginPage({
         </div>
 
         <div className="relative z-10 text-primary-200 text-sm">
-          © {new Date().getFullYear()} Sistema de Facturación. {t('allRightsReserved')}
+          © {new Date().getFullYear()} {t('appName')}. {t('allRightsReserved')}
         </div>
       </div>
 
@@ -151,7 +151,7 @@ export default function LoginPage({
             {/* Mobile branding */}
             <div className="lg:hidden text-center mb-8">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                Sistema de Facturación
+                {t('appName')}
               </h1>
               <p className="text-gray-500 dark:text-gray-400 mt-1">
                 {t('tagline')}
