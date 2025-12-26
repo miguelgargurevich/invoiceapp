@@ -21,6 +21,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { Button, Card, Input, Textarea, LoadingSpinner } from '@/components/common';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 
 type Tab = 'empresa' | 'usuario' | 'apariencia' | 'facturacion' | 'notificaciones';
 
@@ -169,6 +170,14 @@ export default function ConfiguracionPage({
       };
       reader.readAsDataURL(file);
 
+      // Obtener el token de Supabase
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
       // Subir al servidor
       const formData = new FormData();
       formData.append('logo', file);
@@ -176,7 +185,7 @@ export default function ConfiguracionPage({
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/empresas/logo`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: formData,
       });
