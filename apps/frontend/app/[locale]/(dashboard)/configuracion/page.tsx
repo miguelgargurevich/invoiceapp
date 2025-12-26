@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import {
   Building2,
@@ -31,6 +32,8 @@ export default function ConfiguracionPage({
   params: { locale: string };
 }) {
   const t = useTranslations('settings');
+  const router = useRouter();
+  const pathname = usePathname();
   const { user, empresa, refreshEmpresa } = useAuth();
   const { theme, setTheme, fontSize, setFontSize } = useTheme();
 
@@ -234,6 +237,16 @@ export default function ConfiguracionPage({
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleChangeLanguage = (newLocale: string) => {
+    // Guardar preferencia en localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('preferredLocale', newLocale);
+    }
+    // Redirigir a la nueva ruta con el idioma
+    const newPath = pathname.replace(`/${locale}`, `/${newLocale}`);
+    router.push(newPath);
   };
 
   const handleSaveInvoiceConfig = async () => {
@@ -586,7 +599,7 @@ export default function ConfiguracionPage({
                   </label>
                   <div className="flex gap-4">
                     <button
-                      onClick={() => window.location.href = '/es/configuracion'}
+                      onClick={() => handleChangeLanguage('es')}
                       className={cn(
                         'flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all',
                         locale === 'es'
@@ -598,7 +611,7 @@ export default function ConfiguracionPage({
                       <span>Español</span>
                     </button>
                     <button
-                      onClick={() => window.location.href = '/en/configuracion'}
+                      onClick={() => handleChangeLanguage('en')}
                       className={cn(
                         'flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all',
                         locale === 'en'

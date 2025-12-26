@@ -17,24 +17,28 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('system');
-  const [fontSize, setFontSizeState] = useState<FontSize>('medium');
+  // Inicializar con valores de localStorage si están disponibles
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme') as Theme | null;
+      return savedTheme || 'system';
+    }
+    return 'system';
+  });
+  
+  const [fontSize, setFontSizeState] = useState<FontSize>(() => {
+    if (typeof window !== 'undefined') {
+      const savedFontSize = localStorage.getItem('fontSize') as FontSize | null;
+      return savedFontSize || 'medium';
+    }
+    return 'medium';
+  });
+  
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    // Cargar tema y tamaño de fuente guardados solo en el cliente
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme') as Theme | null;
-      if (savedTheme) {
-        setThemeState(savedTheme);
-      }
-      const savedFontSize = localStorage.getItem('fontSize') as FontSize | null;
-      if (savedFontSize) {
-        setFontSizeState(savedFontSize);
-      }
-    }
   }, []);
 
   useEffect(() => {
