@@ -36,6 +36,7 @@
     "inactive": "Inactivo"
   },
   "auth": {
+    "appName": "Sistema de Facturación",
     "login": "Iniciar sesión",
     "signIn": "Iniciar Sesión",
     "signInButton": "Iniciar Sesión",

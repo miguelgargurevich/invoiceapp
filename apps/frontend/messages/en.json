@@ -36,6 +36,7 @@
     "inactive": "Inactive"
   },
   "auth": {
+    "appName": "Billing System",
     "login": "Log in",
     "signIn": "Sign In",
     "signInButton": "Sign In",

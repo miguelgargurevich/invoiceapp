@@ -7,20 +7,38 @@ if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL environment variable is not set');
 }
 
-// Crear pool de conexiones
-const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL,
-});
+let prisma;
 
-// Crear adapter
-const adapter = new PrismaPg(pool);
+try {
+  // Crear pool de conexiones
+  const pool = new Pool({ 
+    connectionString: process.env.DATABASE_URL,
+  });
 
-// Crear cliente de Prisma con adapter
-const prisma = new PrismaClient({ 
-  adapter,
-  log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
-});
+  // Crear adapter
+  const adapter = new PrismaPg(pool);
 
-console.log('✅ Prisma client initialized successfully');
+  // Crear cliente de Prisma con adapter
+  prisma = new PrismaClient({ 
+    adapter: adapter,
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+  });
+
+  console.log('✅ Prisma client initialized with PrismaPg adapter');
+} catch (error) {
+  console.error('❌ Error initializing Prisma with adapter:', error.message);
+  
+  // Fallback: intentar sin adapter (conexión directa)
+  console.log('⚠️ Attempting fallback without adapter...');
+  prisma = new PrismaClient({
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL,
+      },
+    },
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+  });
+  console.log('✅ Prisma client initialized with direct connection');
+}
 
 module.exports = prisma;
