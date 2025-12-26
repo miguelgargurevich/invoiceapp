@@ -12,8 +12,8 @@ interface Factura {
   serie: string;
   cliente: {
     id: string;
-    nombre: string;
-    documento: string;
+    razonSocial: string;
+    numeroDocumento: string;
     tipoDocumento: string;
     direccion?: string;
     email?: string;
@@ -46,7 +46,7 @@ export default function SendEmailModal({
 
   const [emailData, setEmailData] = useState({
     to: factura.cliente.email || '',
-    subject: `Factura ${factura.serie}-${factura.numero} - ${factura.cliente.nombre}`,
+    subject: `Factura ${factura.serie}-${factura.numero} - ${factura.cliente.razonSocial}`,
     message: `Estimado/a cliente,\n\nAdjunto encontrará la factura ${factura.serie}-${factura.numero}.\n\nGracias por su preferencia.\n\nSaludos cordiales.`,
   });
   const [sending, setSending] = useState(false);

@@ -39,8 +39,8 @@ interface Factura {
   serie: string;
   cliente: {
     id: string;
-    nombre: string;
-    documento: string;
+    razonSocial: string;
+    numeroDocumento: string;
     tipoDocumento: string;
     direccion?: string;
     email?: string;
@@ -143,7 +143,7 @@ export default function PrintPreviewModal({
           await navigator.share({
             files: [file],
             title: `Factura ${factura.serie}-${factura.numero}`,
-            text: `Factura para ${factura.cliente.nombre}`,
+            text: `Factura para ${factura.cliente.razonSocial}`,
           });
         } else {
           // Fallback: download the file

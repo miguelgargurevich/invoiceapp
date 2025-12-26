@@ -53,8 +53,8 @@ interface Proforma {
   serie: string;
   cliente: {
     id: string;
-    nombre: string;
-    documento: string;
+    razonSocial: string;
+    numeroDocumento: string;
     tipoDocumento: string;
     direccion?: string;
     email?: string;
@@ -132,8 +132,8 @@ export default function ProformaDetailPage({
         serie: 'P001',
         cliente: {
           id: '1',
-          nombre: 'Empresa Demo S.A.C.',
-          documento: '20123456789',
+          razonSocial: 'Empresa Demo S.A.C.',
+          numeroDocumento: '20123456789',
           tipoDocumento: 'RUC',
           direccion: 'Av. Principal 123, Lima',
           email: 'contacto@empresademo.com',
@@ -340,13 +340,13 @@ export default function ProformaDetailPage({
               <div>
                 <span className="text-sm text-gray-500 dark:text-gray-400">{t('client')}</span>
                 <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {proforma.cliente.nombre}
+                  {proforma.cliente.razonSocial}
                 </p>
               </div>
               <div>
                 <span className="text-sm text-gray-500 dark:text-gray-400">{t('document')}</span>
                 <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {proforma.cliente.tipoDocumento}: {proforma.cliente.documento}
+                  {proforma.cliente.tipoDocumento}: {proforma.cliente.numeroDocumento}
                 </p>
               </div>
               {proforma.cliente.direccion && (

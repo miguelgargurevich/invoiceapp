@@ -12,8 +12,8 @@ interface Proforma {
   serie: string;
   cliente: {
     id: string;
-    nombre: string;
-    documento: string;
+    razonSocial: string;
+    numeroDocumento: string;
     tipoDocumento: string;
     direccion?: string;
     email?: string;
@@ -45,7 +45,7 @@ export default function ProformaSendEmailModal({
 
   const [emailData, setEmailData] = useState({
     to: proforma.cliente.email || '',
-    subject: `Proforma ${proforma.serie}-${proforma.numero} - ${proforma.cliente.nombre}`,
+    subject: `Proforma ${proforma.serie}-${proforma.numero} - ${proforma.cliente.razonSocial}`,
     message: `Estimado/a cliente,\n\nAdjunto encontrará la proforma/cotización ${proforma.serie}-${proforma.numero}.\n\nEsta cotización es válida por 30 días a partir de la fecha de emisión.\n\nQuedamos atentos a sus comentarios.\n\nSaludos cordiales.`,
   });
   const [sending, setSending] = useState(false);

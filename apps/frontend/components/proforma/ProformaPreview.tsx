@@ -34,8 +34,8 @@ interface Proforma {
   serie: string;
   cliente: {
     id: string;
-    nombre: string;
-    documento: string;
+    razonSocial: string;
+    numeroDocumento: string;
     tipoDocumento: string;
     direccion?: string;
     email?: string;
@@ -114,13 +114,13 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-gray-500">Razón Social:</span>
-              <p className="font-medium">{proforma.cliente.nombre}</p>
+              <p className="font-medium">{proforma.cliente.razonSocial}</p>
             </div>
             <div>
               <span className="text-gray-500">
                 {proforma.cliente.tipoDocumento}:
               </span>
-              <p className="font-medium">{proforma.cliente.documento}</p>
+              <p className="font-medium">{proforma.cliente.numeroDocumento}</p>
             </div>
             {proforma.cliente.direccion && (
               <div className="col-span-2">

@@ -39,8 +39,8 @@ interface Proforma {
   serie: string;
   cliente: {
     id: string;
-    nombre: string;
-    documento: string;
+    razonSocial: string;
+    numeroDocumento: string;
     tipoDocumento: string;
     direccion?: string;
     email?: string;
@@ -118,7 +118,7 @@ export default function ProformaPrintPreviewModal({
       setDownloading(true);
       const pdf = await generatePDF();
       if (pdf) {
-        pdf.save(`Proforma-${proforma.serie}-${proforma.numero}.pdf`);
+        pdf.save(`${t('title')}-${proforma.serie}-${proforma.numero}.pdf`);
       }
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -135,15 +135,15 @@ export default function ProformaPrintPreviewModal({
         const pdfBlob = pdf.output('blob');
         const file = new File(
           [pdfBlob],
-          `Proforma-${proforma.serie}-${proforma.numero}.pdf`,
+          `${t('title')}-${proforma.serie}-${proforma.numero}.pdf`,
           { type: 'application/pdf' }
         );
 
         if (navigator.share && navigator.canShare({ files: [file] })) {
           await navigator.share({
             files: [file],
-            title: `Proforma ${proforma.serie}-${proforma.numero}`,
-            text: `Proforma para ${proforma.cliente.nombre}`,
+            title: `${t('title')} ${proforma.serie}-${proforma.numero}`,
+            text: `${t('title')} ${tCommon('for')} ${proforma.cliente.razonSocial}`,
           });
         } else {
           handleDownloadPDF();

@@ -34,8 +34,8 @@ interface Factura {
   serie: string;
   cliente: {
     id: string;
-    nombre: string;
-    documento: string;
+    razonSocial: string;
+    numeroDocumento: string;
     tipoDocumento: string;
     direccion?: string;
     email?: string;
@@ -114,13 +114,13 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-gray-500">Razón Social:</span>
-              <p className="font-medium">{factura.cliente.nombre}</p>
+              <p className="font-medium">{factura.cliente.razonSocial}</p>
             </div>
             <div>
               <span className="text-gray-500">
                 {factura.cliente.tipoDocumento}:
               </span>
-              <p className="font-medium">{factura.cliente.documento}</p>
+              <p className="font-medium">{factura.cliente.numeroDocumento}</p>
             </div>
             {factura.cliente.direccion && (
               <div className="col-span-2">

@@ -60,8 +60,8 @@ interface Factura {
   serie: string;
   cliente: {
     id: string;
-    nombre: string;
-    documento: string;
+    razonSocial: string;
+    numeroDocumento: string;
     tipoDocumento: string;
     direccion?: string;
     email?: string;
@@ -122,8 +122,8 @@ export default function FacturaDetailPage({
         serie: 'F001',
         cliente: {
           id: '1',
-          nombre: 'Empresa ABC S.A.C.',
-          documento: '20123456789',
+          razonSocial: 'Empresa ABC S.A.C.',
+          numeroDocumento: '20123456789',
           tipoDocumento: 'RUC',
           direccion: 'Av. Principal 123, Lima',
           email: 'contacto@empresaabc.com',
@@ -344,13 +344,13 @@ export default function FacturaDetailPage({
               <div>
                 <span className="text-sm text-gray-500 dark:text-gray-400">{t('client')}</span>
                 <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {factura.cliente.nombre}
+                  {factura.cliente.razonSocial}
                 </p>
               </div>
               <div>
                 <span className="text-sm text-gray-500 dark:text-gray-400">{t('document')}</span>
                 <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {factura.cliente.tipoDocumento}: {factura.cliente.documento}
+                  {factura.cliente.tipoDocumento}: {factura.cliente.numeroDocumento}
                 </p>
               </div>
               {factura.cliente.direccion && (
