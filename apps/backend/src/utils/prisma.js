@@ -5,14 +5,8 @@ if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL environment variable is not set');
 }
 
-// Para Supabase con PgBouncer, usar Prisma directamente sin adapter
-// El adapter PrismaPg no es necesario cuando usas la URL de pooler
+// Crear cliente de Prisma - tomará DATABASE_URL del entorno automáticamente
 const prisma = new PrismaClient({
-  datasources: {
-    db: {
-      url: process.env.DATABASE_URL,
-    },
-  },
   log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
 });
 
