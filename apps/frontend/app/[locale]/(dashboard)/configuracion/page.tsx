@@ -109,7 +109,7 @@ export default function ConfiguracionPage({
     try {
       setSaving(true);
       console.log('[CONFIG] Saving empresa data:', empresaForm);
-      const response = await api.put('/empresas/mi-empresa', empresaForm);
+      const response = await api.put('/empresas/mi-empresa', empresaForm) as any;
       console.log('[CONFIG] Save response:', response);
       
       // Actualizar el contexto
