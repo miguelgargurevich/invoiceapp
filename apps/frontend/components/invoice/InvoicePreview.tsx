@@ -75,11 +75,11 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
     return (
       <div
         ref={ref}
-        className="bg-white text-black p-8 max-w-[210mm] mx-auto"
+        className="bg-white text-black p-6 max-w-[210mm] mx-auto"
         style={{ fontFamily: 'Arial, sans-serif' }}
       >
         {/* Header */}
-        <div className="flex justify-between items-start mb-8 border-b-2 border-gray-800 pb-6">
+        <div className="flex justify-between items-start mb-4 border-b-2 border-gray-800 pb-3">
           <div className="flex-1">
             {empresa?.logo ? (
               <img
@@ -120,11 +120,11 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         </div>
 
         {/* Client Info */}
-        <div className="mb-6 bg-gray-50 p-3 rounded-lg">
-          <h3 className="text-[10px] font-semibold text-gray-800 mb-2 uppercase">
+        <div className="mb-4 bg-gray-50 p-2 rounded-lg" style={{ pageBreakInside: 'avoid' }}>
+          <h3 className="text-[10px] font-semibold text-gray-800 mb-1 uppercase">
             {t('clientData')}
           </h3>
-          <div className="grid grid-cols-2 gap-3 text-xs">
+          <div className="grid grid-cols-2 gap-2 text-xs">
             <div>
               <span className="text-gray-500">{t('companyName')}</span>
               <p className="font-medium">{factura.cliente.razonSocial}</p>
@@ -145,7 +145,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         </div>
 
         {/* Items Table */}
-        <div className="mb-8">
+        <div className="mb-4" style={{ pageBreakInside: 'avoid' }}>
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-gray-800 text-white">
@@ -193,7 +193,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         </div>
 
         {/* Totals */}
-        <div className="flex justify-end mb-6">
+        <div className="flex justify-end mb-4" style={{ pageBreakInside: 'avoid' }}>
           <div className="w-64">
             <div className="flex justify-between py-1.5 text-xs">
               <span className="text-gray-600">{t('subtotal')}</span>
@@ -222,8 +222,8 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
 
         {/* Observations */}
         {factura.observaciones && (
-          <div className="mb-6 p-3 bg-gray-50 rounded-lg">
-            <h3 className="text-[10px] font-semibold text-gray-800 mb-1.5">
+          <div className="mb-4 p-2 bg-gray-50 rounded-lg" style={{ pageBreakInside: 'avoid' }}>
+            <h3 className="text-[10px] font-semibold text-gray-800 mb-1">
               {t('observations')}
             </h3>
             <p className="text-xs text-gray-600">{factura.observaciones}</p>
@@ -232,8 +232,8 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
 
         {/* Signature */}
         {factura.signatureRequest?.signature && (
-          <div className="mb-6 p-3 bg-gray-50 rounded-lg border-2 border-green-200">
-            <h3 className="text-[10px] font-semibold text-gray-800 mb-2">
+          <div className="mb-4 p-2 bg-gray-50 rounded-lg border-2 border-green-200" style={{ pageBreakInside: 'avoid' }}>
+            <h3 className="text-[10px] font-semibold text-gray-800 mb-1.5">
               {t('pdf.signature')}
             </h3>
             <div className="flex items-end gap-4">
