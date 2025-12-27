@@ -334,7 +334,7 @@ async function sendSignatureRequestEmail({
             background-color: #ffffff;
           }
           .header {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
             padding: 40px 20px;
             text-align: center;
           }
@@ -385,13 +385,13 @@ async function sendSignatureRequestEmail({
             margin-bottom: 10px;
           }
           .document-amount {
-            color: #3b82f6;
+            color: #111827;
             font-size: 24px;
             font-weight: 700;
           }
           .cta-button {
             display: inline-block;
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
             color: #ffffff !important;
             text-decoration: none;
             padding: 16px 40px;
@@ -400,26 +400,26 @@ async function sendSignatureRequestEmail({
             font-weight: 600;
             text-align: center;
             margin: 20px 0;
-            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           }
           .cta-button:hover {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            background: linear-gradient(135deg, #111827 0%, #000000 100%);
           }
           .info-box {
-            background-color: #eff6ff;
-            border-left: 4px solid #3b82f6;
+            background-color: #f9fafb;
+            border-left: 4px solid #6b7280;
             padding: 15px 20px;
             margin: 25px 0;
             border-radius: 4px;
           }
           .info-title {
-            color: #1e40af;
+            color: #374151;
             font-size: 14px;
             font-weight: 600;
             margin-bottom: 8px;
           }
           .info-list {
-            color: #1e40af;
+            color: #4b5563;
             font-size: 13px;
             line-height: 1.8;
             margin: 0;
@@ -438,7 +438,7 @@ async function sendSignatureRequestEmail({
             margin: 5px 0;
           }
           .footer-link {
-            color: #3b82f6;
+            color: #374151;
             text-decoration: none;
           }
           .expires-notice {
