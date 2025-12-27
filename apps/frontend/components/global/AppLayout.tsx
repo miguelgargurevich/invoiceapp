@@ -18,8 +18,26 @@ export function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true); // Collapsed by default
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+
+  // Detect screen size and set sidebar state
+  useEffect(() => {
+    const handleResize = () => {
+      // On desktop (md and up), expand sidebar by default
+      if (window.innerWidth >= 768) {
+        setSidebarCollapsed(false);
+      } else {
+        setSidebarCollapsed(true);
+      }
+    };
+
+    // Run on mount
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Redirigir si no está autenticado
   useEffect(() => {

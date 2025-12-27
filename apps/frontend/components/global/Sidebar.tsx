@@ -113,42 +113,49 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
         )}
       >
         {/* Header del Sidebar */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-gray-800">
-          {!isCollapsed && (
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <CompanyLogo />
-              <span className="font-bold text-lg truncate max-w-[140px]">
-                {empresa?.nombre || 'Factura'}
-              </span>
-            </Link>
-          )}
-          {isCollapsed && (
-            <Link href="/dashboard" className="mx-auto">
-              <CompanyLogo />
-            </Link>
-          )}
+        <div className="flex items-center h-16 px-4 border-b border-gray-800 relative">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            {!isCollapsed && (
+              <Link href="/dashboard" className="flex items-center gap-2 flex-1 min-w-0">
+                <CompanyLogo />
+                <span className="font-bold text-lg truncate">
+                  {empresa?.nombre || 'Factura'}
+                </span>
+              </Link>
+            )}
+            {isCollapsed && (
+              <Link href="/dashboard" className="flex items-center justify-center w-full">
+                <CompanyLogo />
+              </Link>
+            )}
+          </div>
           
           {/* Botón cerrar en móvil */}
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-800 md:hidden"
+            className="p-2 rounded-lg hover:bg-gray-800 md:hidden shrink-0 ml-2"
           >
             <X className="w-5 h-5" />
           </button>
-
-          {/* Botón colapsar en desktop */}
-          <button
-            onClick={onToggleCollapse}
-            className="hidden md:flex p-2 rounded-lg hover:bg-gray-800"
-          >
-            <ChevronLeft
-              className={cn(
-                'w-5 h-5 transition-transform duration-300',
-                isCollapsed && 'rotate-180'
-              )}
-            />
-          </button>
         </div>
+
+        {/* Botón colapsar en desktop - Posicionado de forma absoluta para que no se corte */}
+        <button
+          onClick={onToggleCollapse}
+          className={cn(
+            'hidden md:flex absolute top-20 -right-3 z-50',
+            'w-6 h-6 items-center justify-center',
+            'bg-gray-800 hover:bg-gray-700 border border-gray-700',
+            'rounded-full shadow-lg transition-all duration-300'
+          )}
+        >
+          <ChevronLeft
+            className={cn(
+              'w-4 h-4 transition-transform duration-300',
+              isCollapsed && 'rotate-180'
+            )}
+          />
+        </button>
 
         {/* Navegación */}
         <nav className="flex-1 overflow-y-auto py-4">
