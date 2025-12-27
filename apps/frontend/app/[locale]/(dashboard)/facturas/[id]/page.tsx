@@ -830,8 +830,9 @@ export default function FacturaDetailPage({
         onConfirm={handleRequestSignature}
         title="Request Signature"
         message={`Are you sure you want to request a signature from ${factura?.cliente.razonSocial}? An email will be sent to ${factura?.cliente.email} with a secure signing link.`}
-        confirmText="Send Request"
-        cancelText="Cancel"
+        confirmLabel="Send Request"
+        cancelLabel="Cancel"
+        variant="info"
       />
 
       {/* Hidden PDF Generator */}
