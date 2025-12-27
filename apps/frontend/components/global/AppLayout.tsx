@@ -73,7 +73,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       <div
         className={cn(
           'flex flex-col min-h-screen transition-all duration-300',
-          sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'
+          'md:ml-16' // SIEMPRE 16 (sidebar colapsado)
         )}
       >
         {/* Header */}

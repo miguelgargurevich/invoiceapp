@@ -106,28 +106,19 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
           'transform transition-all duration-300 ease-in-out',
           // Mobile
           isOpen ? 'translate-x-0' : '-translate-x-full',
-          // Desktop
+          // Desktop - SIEMPRE COLAPSADO
           'md:translate-x-0',
-          isCollapsed ? 'md:w-16' : 'md:w-64',
-          'w-64'
+          'md:w-16', // Siempre 16 (colapsado) en desktop
+          'w-64' // Ancho completo en móvil cuando está abierto
         )}
       >
         {/* Header del Sidebar */}
         <div className="flex items-center h-16 px-4 border-b border-gray-800 relative">
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            {!isCollapsed && (
-              <Link href="/dashboard" className="flex items-center gap-2 flex-1 min-w-0">
-                <CompanyLogo />
-                <span className="font-bold text-lg truncate">
-                  {empresa?.nombre || 'Factura'}
-                </span>
-              </Link>
-            )}
-            {isCollapsed && (
-              <Link href="/dashboard" className="flex items-center justify-center w-full">
-                <CompanyLogo />
-              </Link>
-            )}
+            {/* SIEMPRE COLAPSADO - Solo mostrar logo */}
+            <Link href="/dashboard" className="flex items-center justify-center w-full">
+              <CompanyLogo />
+            </Link>
           </div>
           
           {/* Botón cerrar en móvil */}
@@ -139,8 +130,8 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
           </button>
         </div>
 
-        {/* Botón colapsar en desktop - Posicionado de forma absoluta para que no se corte */}
-        <button
+        {/* Botón colapsar en desktop - DESHABILITADO: Sidebar siempre colapsado */}
+        {/* <button
           onClick={(e) => {
             e.preventDefault();
             onToggleCollapse();
@@ -158,7 +149,7 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
               isCollapsed && 'rotate-180'
             )}
           />
-        </button>
+        </button> */}
 
         {/* Navegación */}
         <nav className="flex-1 overflow-y-auto py-4">
@@ -175,13 +166,12 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
                       'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
                       'hover:bg-gray-800',
                       isActive && 'bg-blue-600 hover:bg-blue-700',
-                      isCollapsed && 'md:justify-center md:px-2'
+                      'md:justify-center md:px-2' // SIEMPRE centrado en desktop
                     )}
                   >
                     <item.icon className="w-5 h-5 shrink-0" />
-                    {!isCollapsed && (
-                      <span className="truncate">{t(item.labelKey)}</span>
-                    )}
+                    {/* Texto solo visible en móvil */}
+                    <span className="md:hidden truncate">{t(item.labelKey)}</span>
                   </Link>
                 </li>
               );
@@ -196,11 +186,12 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
             className={cn(
               'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
               'hover:bg-gray-800 text-gray-400',
-              isCollapsed && 'md:justify-center md:px-2'
+              'md:justify-center md:px-2' // SIEMPRE centrado en desktop
             )}
           >
             <HelpCircle className="w-5 h-5 shrink-0" />
-            {!isCollapsed && <span>{t('help')}</span>}
+            {/* Texto solo visible en móvil */}
+            <span className="md:hidden">{t('help')}</span>
           </Link>
         </div>
       </aside>
