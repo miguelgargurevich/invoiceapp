@@ -208,12 +208,67 @@ export default function DashboardPage({
         </p>
       </div>
 
-      {/* Main Layout: Content + Sidebar */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Main Content Area */}
-        <div className="lg:col-span-3 space-y-6">
-          {/* Giant Action Buttons */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Hero - Metrics Cards */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Monthly Sales */}
+          <Card>
+            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+              {t('monthlySales')}
+            </div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {formatCurrency(stats?.ventasMes || 0)}
+            </div>
+            <div className={cn(
+              "text-xs font-medium mt-1 flex items-center gap-1",
+              percentageChange >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+            )}>
+              {percentageChange >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+              {`${percentageChange >= 0 ? '+' : ''}${(parseFloat(String(percentageChange)) || 0).toFixed(1)}%`}
+            </div>
+          </Card>
+
+          {/* Total Invoices */}
+          <Card>
+            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+              {t('totalInvoices')}
+            </div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {stats?.totalFacturas || 0}
+            </div>
+          </Card>
+
+          {/* Total Clients */}
+          <Card>
+            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+              {t('totalClients')}
+            </div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {stats?.totalClientes || 0}
+            </div>
+          </Card>
+
+          {/* Pending Invoices */}
+          <Card>
+            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+              {t('pendingInvoices')}
+            </div>
+            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {stats?.facturasPendientes || 0}
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+              {stats?.facturasVencidas || 0} {t('overdue')}
+            </div>
+          </Card>
+        </div>
+      </motion.div>
+
+      {/* Giant Action Buttons */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Create Invoice Button */}
             <motion.button
               onClick={() => router.push(`/${locale}/facturas/nueva`)}
@@ -267,13 +322,16 @@ export default function DashboardPage({
             </motion.button>
           </div>
 
-          {/* Recent Invoices */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Card>
+          {/* Bottom Grid: Recent Invoices + Donut Chart */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Recent Invoices */}
+            <motion.div
+              className="lg:col-span-2"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Card>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   {t('recentInvoices')}
@@ -389,76 +447,12 @@ export default function DashboardPage({
               </div>
             </Card>
           </motion.div>
-        </div>
-
-        {/* Right Sidebar */}
-        <div className="space-y-6">
-          {/* Consolidated Metrics Card */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <Card>
-              <div className="space-y-4">
-                {/* Monthly Sales */}
-                <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-                    {t('monthlySales')}
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                    {formatCurrency(stats?.ventasMes || 0)}
-                  </div>
-                  <div className={cn(
-                    "text-xs font-medium mt-1 flex items-center gap-1",
-                    percentageChange >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
-                  )}>
-                    {percentageChange >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                    {`${percentageChange >= 0 ? '+' : ''}${(parseFloat(String(percentageChange)) || 0).toFixed(1)}%`}
-                  </div>
-                </div>
-
-                {/* Total Invoices */}
-                <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-                    {t('totalInvoices')}
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                    {stats?.totalFacturas || 0}
-                  </div>
-                </div>
-
-                {/* Total Clients */}
-                <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-                    {t('totalClients')}
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                    {stats?.totalClientes || 0}
-                  </div>
-                </div>
-
-                {/* Pending Invoices */}
-                <div>
-                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-                    {t('pendingInvoices')}
-                  </div>
-                  <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                    {stats?.facturasPendientes || 0}
-                  </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    {stats?.facturasVencidas || 0} {t('overdue')}
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
 
           {/* Invoice Status Donut Chart */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
           >
             <Card>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">

@@ -294,7 +294,7 @@ export default function NuevaProformaPage({
                 {t('client')}*
               </h2>
               <Button
-                size="default"
+                size="md"
                 variant="outline"
                 onClick={() => setIsClientModalOpen(true)}
                 type="button"
@@ -336,7 +336,7 @@ export default function NuevaProformaPage({
               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 {t('items')}
               </h2>
-              <Button size="default" onClick={addLinea}>
+              <Button size="md" onClick={addLinea}>
                 <Plus className="w-5 h-5 mr-2" />
                 {t('addItem')}
               </Button>
