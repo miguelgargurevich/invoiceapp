@@ -90,12 +90,10 @@ export default function DashboardPage({
       setLoading(true);
       
       // Fetch real data from API
-      const [recentInvoicesData] = await Promise.all([
-        api.get('/dashboard/ultimas-facturas')
-      ]);
+      const recentInvoicesResponse = await api.get('/dashboard/ultimas-facturas');
 
       // Transform invoices data to match interface
-      const transformedInvoices: RecentInvoice[] = recentInvoicesData.data.map((factura: any) => ({
+      const transformedInvoices: RecentInvoice[] = recentInvoicesResponse.data.map((factura: any) => ({
         id: factura.id.toString(),
         numero: `${factura.serie}-${factura.numero.toString().padStart(6, '0')}`,
         cliente: { nombre: factura.cliente.razonSocial },

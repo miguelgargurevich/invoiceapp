@@ -81,11 +81,11 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
                 className="h-12 w-auto mb-1.5"
               />
             ) : (
-              <div className="text-sm font-bold text-gray-800 mb-1.5">
+              <div className="text-[11px] font-bold text-gray-800 mb-1.5">
                 {empresa?.nombre || 'Mi Empresa'}
               </div>
             )}
-            <div className="text-[10px] text-gray-600 space-y-0.5">
+            <div className="text-[9px] text-gray-600 space-y-0.5">
               {empresa?.ruc && <p>RUC: {empresa.ruc}</p>}
               {empresa?.direccion && <p>{empresa.direccion}</p>}
               {empresa?.telefono && <p>Tel: {empresa.telefono}</p>}
@@ -94,12 +94,12 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
           </div>
           <div className="text-right">
             <div className="bg-gray-800 text-white px-3 py-1.5 rounded mb-1.5">
-              <div className="text-[10px] font-bold">{t('proforma')}</div>
-              <div className="text-xs font-bold">
+              <div className="text-[9px] font-bold">{t('proforma')}</div>
+              <div className="text-[10px] font-bold">
                 {proforma.serie}-{proforma.numero.toString().padStart(6, '0')}
               </div>
             </div>
-            <div className="text-[10px] text-gray-600">
+            <div className="text-[9px] text-gray-600">
               <p>
                 <span className="font-medium">{t('issueDate')}</span>{' '}
                 {formatDate(proforma.fechaEmision)}
@@ -114,10 +114,10 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
 
         {/* Client Info */}
         <div className="mb-3 bg-gray-50 p-1.5 rounded" style={{ pageBreakInside: 'avoid' }}>
-          <h3 className="text-[8px] font-medium text-gray-800 mb-0.5 uppercase">
+          <h3 className="text-[7px] font-medium text-gray-800 mb-0.5 uppercase">
             {t('clientData')}
           </h3>
-          <div className="grid grid-cols-2 gap-1.5 text-[10px]">
+          <div className="grid grid-cols-2 gap-1.5 text-[9px]">
             <div>
               <span className="text-gray-500">{t('companyName')}</span>
               <p className="font-medium">{proforma.cliente.razonSocial}</p>
