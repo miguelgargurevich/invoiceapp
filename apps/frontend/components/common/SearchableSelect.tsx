@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { Search, ChevronDown, X, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/contexts/AuthContext';
 
 export interface SelectOption {
   value: string;
@@ -330,10 +331,12 @@ export function ProductSelect({
 }: ProductSelectProps) {
   const t = useTranslations('invoices');
   const tEmpty = useTranslations('emptyState');
+  const { empresa } = useAuth();
+  const currency = empresa?.moneda || 'S/';
   const options: SelectOption[] = products.map((product) => ({
     value: product.id,
     label: product.nombre,
-    description: `${product.codigo} • S/ ${(parseFloat(String(product.precioVenta)) || 0).toFixed(2)} / ${product.unidadMedida}`,
+    description: `${product.codigo} • ${currency} ${(parseFloat(String(product.precioVenta)) || 0).toFixed(2)} / ${product.unidadMedida}`,
   }));
 
   return (

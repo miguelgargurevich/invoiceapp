@@ -476,7 +476,6 @@ function ClientModal({ isOpen, onClose, cliente, onSave }: ClientModalProps) {
             label={t('documentNumber')}
             value={formData.documento}
             onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
-            required
           />
         </div>
 
