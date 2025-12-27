@@ -29,9 +29,6 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
-  PieChart,
-  Pie,
-  Cell,
 } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { MetricCard, Card, Badge, SkeletonMetricCard, Skeleton } from '@/components/common';
@@ -177,12 +174,6 @@ export default function DashboardPage({
   const percentageChange = stats
     ? ((stats.ventasMes - stats.ventasMesAnterior) / stats.ventasMesAnterior) * 100
     : 0;
-
-  const pieData = [
-    { name: t('paid'), value: invoiceStatus.pagada, color: '#22c55e' },
-    { name: t('pendingStatus'), value: invoiceStatus.pendiente, color: '#f59e0b' },
-    { name: t('overdueStatus'), value: invoiceStatus.vencida, color: '#ef4444' },
-  ];
 
   if (loading) {
     return (
@@ -366,11 +357,10 @@ export default function DashboardPage({
         </motion.button>
       </div>
 
-      {/* Bottom Grid: Recent Invoices + Donut Chart */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Bottom Grid: Recent Invoices */}
+      <div>
           {/* Recent Invoices */}
           <motion.div
-            className="lg:col-span-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -486,57 +476,6 @@ export default function DashboardPage({
                       {formatCurrency(invoice.total)}
                     </span>
                   </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* Invoice Status Donut Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
-              {t('invoiceStatus')}
-            </h2>
-            <div className="h-48 w-full min-h-[192px]">
-              <ResponsiveContainer width="100%" height={192}>
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={70}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="space-y-2 mt-4">
-              {pieData.map((item) => (
-                <div key={item.name} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="text-sm text-gray-600 dark:text-gray-400">
-                      {item.name}
-                    </span>
-                  </div>
-                  <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {item.value}
-                  </span>
                 </div>
               ))}
             </div>
