@@ -741,9 +741,11 @@ async function sendSignatureConfirmationEmail({
             ` : ''}
 
             <p class="message" style="margin-top: 30px;">
-              A copy of the signed document has been saved for your records. 
+              ${signedPdfUrl 
+                ? 'A copy of the signed document has been saved for your records.' 
+                : 'Your signature has been recorded successfully. The signed document will be available shortly.'}
               If you need any assistance, please contact ${empresa.nombre} 
-              ${empresa.email ? `at <a href="mailto:${empresa.email}" style="color: #3b82f6;">${empresa.email}</a>` : ''}.
+              ${empresa.email ? `at <a href="mailto:${empresa.email}" style="color: #374151;">${empresa.email}</a>` : ''}.
             </p>
           </div>
 

@@ -253,10 +253,8 @@ router.post('/submit', async (req, res) => {
     const signatureImageUrl = `/signatures/${token}-signature.png`;
     
     // TODO: Generate signed PDF with pdf-lib
-    const document = signatureRequest.documentType === 'INVOICE' 
-      ? signatureRequest.factura 
-      : signatureRequest.proforma;
-    const signedPdfUrl = `/signed-documents/${document.serie}-${document.numero}-signed.pdf`;
+    // For now, we don't have a signed PDF URL until we implement PDF generation
+    const signedPdfUrl = null;
 
     // Create signature record
     const signature = await prisma.signature.create({
