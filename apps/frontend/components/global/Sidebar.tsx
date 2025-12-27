@@ -143,7 +143,7 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
         <button
           onClick={onToggleCollapse}
           className={cn(
-            'hidden md:flex absolute top-20 -right-3 z-50',
+            'hidden md:flex absolute top-5 -right-3 z-50',
             'w-6 h-6 items-center justify-center',
             'bg-gray-800 hover:bg-gray-700 border border-gray-700',
             'rounded-full shadow-lg transition-all duration-300'
