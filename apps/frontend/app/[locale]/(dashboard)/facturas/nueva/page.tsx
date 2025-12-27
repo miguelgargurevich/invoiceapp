@@ -11,6 +11,7 @@ import {
   Trash2,
   Calculator,
   Search,
+  Receipt,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -294,6 +295,9 @@ export default function NuevaFacturaPage({
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
+          <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+            <Receipt className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {t('newInvoice')}

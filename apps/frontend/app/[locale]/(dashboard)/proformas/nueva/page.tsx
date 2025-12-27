@@ -11,6 +11,7 @@ import {
   Trash2,
   Calculator,
   Search,
+  FileBarChart,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -261,8 +262,9 @@ export default function NuevaProformaPage({
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div>
+          </button>          <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl">
+            <FileBarChart className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+          </div>          <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {t('newQuote')}
             </h1>
