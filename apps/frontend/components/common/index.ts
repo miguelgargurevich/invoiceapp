@@ -10,6 +10,8 @@ export { ConfirmDialog } from './ConfirmDialog';
 export { DatePicker } from './DatePicker';
 export { DataTable, useDataTableState, type Column } from './DataTable';
 export { SearchableSelect, ClientSelect, ProductSelect } from './SearchableSelect';
+export { default as Toast } from './Toast';
+export type { ToastType } from './Toast';
 export {
   EmptyState,
   EmptyInvoices,

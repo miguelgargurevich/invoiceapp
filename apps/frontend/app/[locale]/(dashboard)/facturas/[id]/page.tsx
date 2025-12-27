@@ -27,6 +27,8 @@ import {
   Input,
   LoadingPage,
   ConfirmDialog,
+  Toast,
+  ToastType,
 } from '@/components/common';
 import { PrintPreviewModal, SendEmailModal, InvoicePreview } from '@/components/invoice';
 import { formatDate } from '@/lib/utils';
@@ -82,6 +84,8 @@ interface Factura {
   observaciones?: string;
   detalles: DetalleFactura[];
   pagos: PagoFactura[];
+  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureRequest?: any;
 }
 
 export default function FacturaDetailPage({
@@ -108,6 +112,8 @@ export default function FacturaDetailPage({
     email: string;
   }>({ isOpen: false, signingUrl: '', email: '' });
   const [urlCopied, setUrlCopied] = useState(false);
+  const [isSignatureConfirmOpen, setIsSignatureConfirmOpen] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
   const pdfRef = useRef<HTMLDivElement>(null);
   const [paymentData, setPaymentData] = useState({
     monto: '',
@@ -211,6 +217,8 @@ export default function FacturaDetailPage({
   const handleRequestSignature = async () => {
     if (!factura) return;
 
+    setIsSignatureConfirmOpen(false);
+
     try {
       setRequestingSignature(true);
       const response: any = await api.post('/signatures/request', {
@@ -218,6 +226,12 @@ export default function FacturaDetailPage({
         documentId: factura.id,
         signerEmail: factura.cliente.email || '',
         signerName: factura.cliente.razonSocial,
+      });
+
+      // Show success toast
+      setToast({
+        message: 'Signature request sent successfully!',
+        type: 'success'
       });
 
       // Show success modal with signing URL
@@ -228,11 +242,14 @@ export default function FacturaDetailPage({
         email: factura.cliente.email || ''
       });
       
-      // Optionally reload to show signature status
+      // Reload to show signature status
       loadFactura();
     } catch (error: any) {
       console.error('Error requesting signature:', error);
-      alert(error.response?.data?.error || 'Failed to request signature');
+      setToast({
+        message: error.response?.data?.error || 'Failed to request signature',
+        type: 'error'
+      });
     } finally {
       setRequestingSignature(false);
     }
@@ -344,6 +361,18 @@ export default function FacturaDetailPage({
                   {factura.estado}
                 </span>
               </Badge>
+              {factura.signatureStatus === 'SIGNED' && (
+                <Badge variant="success">
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  Signed
+                </Badge>
+              )}
+              {factura.signatureStatus === 'PENDING' && (
+                <Badge variant="warning">
+                  <Clock className="w-3 h-3 mr-1" />
+                  Signature Pending
+                </Badge>
+              )}
             </div>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
               {t('issuedOn', { date: formatDate(factura.fechaEmision) })}
@@ -355,15 +384,15 @@ export default function FacturaDetailPage({
             <Printer className="w-4 h-4 mr-1" />
             {t('print')}
           </Button>
-          {factura.cliente.email && factura.estado !== 'ANULADA' && (
+          {factura.cliente.email && factura.estado !== 'ANULADA' && factura.signatureStatus !== 'SIGNED' && (
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={handleRequestSignature}
-              disabled={requestingSignature}
+              onClick={() => setIsSignatureConfirmOpen(true)}
+              disabled={requestingSignature || factura.signatureStatus === 'PENDING'}
             >
               <PenLine className="w-4 h-4 mr-1" />
-              {requestingSignature ? 'Requesting...' : 'Request Signature'}
+              {requestingSignature ? 'Requesting...' : factura.signatureStatus === 'PENDING' ? 'Pending Signature' : 'Request Signature'}
             </Button>
           )}
           {factura.estado !== 'PAGADA' && factura.estado !== 'ANULADA' && (
@@ -800,6 +829,26 @@ export default function FacturaDetailPage({
           </div>
         </div>
       </Modal>
+
+      {/* Signature Request Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={isSignatureConfirmOpen}
+        onClose={() => setIsSignatureConfirmOpen(false)}
+        onConfirm={handleRequestSignature}
+        title="Request Signature"
+        message={`Are you sure you want to request a signature from ${factura?.cliente.razonSocial}? An email will be sent to ${factura?.cliente.email} with a secure signing link.`}
+        confirmText="Send Request"
+        cancelText="Cancel"
+      />
+
+      {/* Toast Notification */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
 
       {/* Hidden PDF Generator */}
       <div className="fixed -left-[9999px] -top-[9999px]">

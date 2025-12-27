@@ -180,6 +180,13 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
         },
         proformaOrigen: {
           select: { id: true, serie: true, numero: true }
+        },
+        signatureRequests: {
+          include: {
+            signature: true
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 1
         }
       }
     });
@@ -192,10 +199,18 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
     const totalPagado = factura.pagos.reduce((acc, pago) => acc + parseFloat(pago.monto), 0);
     const saldoPendiente = parseFloat(factura.total) - totalPagado;
 
+    // Get signature status
+    const signatureRequest = factura.signatureRequests?.[0] || null;
+    const signatureStatus = signatureRequest 
+      ? signatureRequest.status 
+      : null;
+
     res.json({
       ...factura,
       totalPagado,
-      saldoPendiente
+      saldoPendiente,
+      signatureRequest,
+      signatureStatus
     });
   } catch (error) {
     console.error('Error obteniendo factura:', error);
