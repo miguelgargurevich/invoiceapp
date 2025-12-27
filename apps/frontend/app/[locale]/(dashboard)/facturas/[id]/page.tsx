@@ -886,7 +886,7 @@ export default function FacturaDetailPage({
               Issue Date
             </label>
             <DatePicker
-              selected={fechaEmisionEdit}
+              value={fechaEmisionEdit}
               onChange={(date) => setFechaEmisionEdit(date)}
               disabled={editingDates}
             />
@@ -897,7 +897,7 @@ export default function FacturaDetailPage({
               Due Date
             </label>
             <DatePicker
-              selected={fechaVencimientoEdit}
+              value={fechaVencimientoEdit}
               onChange={(date) => setFechaVencimientoEdit(date)}
               disabled={editingDates}
             />
