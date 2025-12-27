@@ -29,11 +29,30 @@ interface SignatureRequestData {
     serie: string;
     numero: string;
     fechaEmision: string;
+    subtotal: number;
+    igv: number;
     total: number;
     cliente: {
-      nombre: string;
+      razonSocial: string;
+      numeroDocumento: string;
+      tipoDocumento: string;
+      direccion?: string;
       email: string;
     };
+    detalles: Array<{
+      id: string;
+      descripcion: string;
+      cantidad: number;
+      precioUnitario: number;
+      descuento: number;
+      subtotal: number;
+      igv: number;
+      total: number;
+      producto?: {
+        codigo: string;
+        nombre: string;
+      };
+    }>;
   };
 }
 
@@ -308,13 +327,20 @@ export default function SignDocumentPage() {
         <InvoicePreview 
           ref={pdfRef} 
           factura={{
-            ...data.document,
+            id: data.document.id,
+            numero: data.document.numero,
+            serie: data.document.serie,
+            cliente: data.document.cliente,
+            fechaEmision: data.document.fechaEmision,
+            fechaVencimiento: data.document.fechaEmision, // Use same date if not provided
             estado: 'EMITIDA',
+            montoPendiente: 0,
             descuento: 0,
-            subtotal: Number(data.document.total) / 1.18,
-            igv: Number(data.document.total) * 0.18 / 1.18,
-            observaciones: null,
-            detalles: [],
+            subtotal: data.document.subtotal,
+            igv: data.document.igv,
+            total: data.document.total,
+            observaciones: undefined,
+            detalles: data.document.detalles || [],
             signatureRequest: {
               signature: {
                 signatureImageUrl: signatureData || '',
