@@ -179,7 +179,7 @@ router.post('/logo', authenticateToken, upload.single('logo'), async (req, res) 
     console.log('[LOGO] File received:', req.file.originalname, req.file.mimetype, req.file.size, 'bytes');
 
     const fileExt = req.file.originalname.split('.').pop();
-    const fileName = `${empresa.id}/logo.${fileExt}`;
+    const fileName = `${empresa.id}/images/logo.${fileExt}`;
     
     console.log('[LOGO] Uploading to Supabase Storage as:', fileName);
     console.log('[LOGO] Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Set' : 'NOT SET');

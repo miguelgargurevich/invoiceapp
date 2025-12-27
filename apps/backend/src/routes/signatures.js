@@ -354,10 +354,10 @@ router.post('/submit', async (req, res) => {
         // Upload signature image
         const signatureBuffer = Buffer.from(signatureDataUrl.replace(/^data:image\/\w+;base64,/, ''), 'base64');
         const signatureFileName = `${token}-signature.png`;
-        const signatureFilePath = `signatures/${signatureFileName}`;
+        const signatureFilePath = `${signatureRequest.empresaId}/signatures/${signatureFileName}`;
         
         const { error: signatureUploadError } = await supabase.storage
-          .from('invoices')
+          .from('logos')
           .upload(signatureFilePath, signatureBuffer, {
             contentType: 'image/png',
             upsert: true
@@ -368,7 +368,7 @@ router.post('/submit', async (req, res) => {
           signatureImageUrl = signatureDataUrl;
         } else {
           const { data: { publicUrl } } = supabase.storage
-            .from('invoices')
+            .from('logos')
             .getPublicUrl(signatureFilePath);
           signatureImageUrl = publicUrl;
         }
@@ -381,10 +381,10 @@ router.post('/submit', async (req, res) => {
           
           const pdfBuffer = Buffer.from(signedPdfDataUrl.replace(/^data:application\/pdf;filename=generated\.pdf;base64,/, ''), 'base64');
           const pdfFileName = `${document.serie}-${document.numero}-signed.pdf`;
-          const pdfFilePath = `signed/${pdfFileName}`;
+          const pdfFilePath = `${signatureRequest.empresaId}/invoices/${pdfFileName}`;
           
           const { error: pdfUploadError } = await supabase.storage
-            .from('invoices')
+            .from('logos')
             .upload(pdfFilePath, pdfBuffer, {
               contentType: 'application/pdf',
               upsert: true
@@ -394,7 +394,7 @@ router.post('/submit', async (req, res) => {
             console.error('Error uploading signed PDF to Supabase:', pdfUploadError);
           } else {
             const { data: { publicUrl: pdfPublicUrl } } = supabase.storage
-              .from('invoices')
+              .from('logos')
               .getPublicUrl(pdfFilePath);
             signedPdfUrl = pdfPublicUrl;
             console.log('✅ Signed PDF uploaded successfully:', signedPdfUrl);
