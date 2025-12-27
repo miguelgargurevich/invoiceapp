@@ -335,16 +335,6 @@ export default function FacturasPage({
       ),
     },
     {
-      key: 'fechaVencimiento',
-      header: t('dueDate'),
-      sortable: true,
-      render: (factura) => (
-        <span className="text-gray-600 dark:text-gray-400">
-          {formatDate(factura.fechaVencimiento)}
-        </span>
-      ),
-    },
-    {
       key: 'total',
       header: t('total'),
       sortable: true,
@@ -352,16 +342,6 @@ export default function FacturasPage({
       render: (factura) => (
         <span className="font-medium text-gray-900 dark:text-gray-100">
           {formatCurrency(factura.total)}
-        </span>
-      ),
-    },
-    {
-      key: 'montoPendiente',
-      header: t('pending'),
-      className: 'text-right',
-      render: (factura) => (
-        <span className={factura.montoPendiente > 0 ? 'text-orange-600' : 'text-gray-400'}>
-          {formatCurrency(factura.montoPendiente)}
         </span>
       ),
     },
@@ -475,17 +455,11 @@ export default function FacturasPage({
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="!p-4">
           <div className="text-sm text-gray-500 dark:text-gray-400">{t('totalInvoiced')}</div>
           <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
             {formatCurrency(totals.total)}
-          </div>
-        </Card>
-        <Card className="!p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">{t('totalPending')}</div>
-          <div className="text-2xl font-bold text-orange-600 mt-1">
-            {formatCurrency(totals.pendiente)}
           </div>
         </Card>
         <Card className="!p-4">
