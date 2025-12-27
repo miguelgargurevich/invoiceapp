@@ -131,14 +131,13 @@ export default function ProductosPage({
     try {
       const params = new URLSearchParams({ empresaId: empresa.id });
       const response: any = await api.get(`/categorias?${params}`);
-      setCategorias(response.data || []);
+      const cats = response.data || response || [];
+      console.log('[PRODUCTOS] Categorias loaded:', cats);
+      setCategorias(cats);
     } catch (error) {
-      console.error('Error loading categorias:', error);
-      setCategorias([
-        { id: '1', nombre: 'Servicios' },
-        { id: '2', nombre: 'Equipos' },
-        { id: '3', nombre: 'Licencias' },
-      ]);
+      console.error('[PRODUCTOS] Error loading categorias:', error);
+      // Set empty array to ensure filter works
+      setCategorias([]);
     }
   }, [empresa?.id]);
 
@@ -530,14 +529,20 @@ function ProductModal({ isOpen, onClose, producto, categorias, onSave, locale }:
         categoriaId: formData.categoriaId || null,
       };
       
+      console.log('[PRODUCTO MODAL] Saving product:', payload);
+      
       if (producto) {
         await api.put(`/productos/${producto.id}`, payload);
+        console.log('[PRODUCTO MODAL] Product updated successfully');
       } else {
         await api.post('/productos', payload);
+        console.log('[PRODUCTO MODAL] Product created successfully');
       }
       onSave();
-    } catch (error) {
-      console.error('Error saving producto:', error);
+      onClose();
+    } catch (error: any) {
+      console.error('[PRODUCTO MODAL] Error saving producto:', error);
+      alert(error.response?.data?.error || 'Error al guardar el producto');
     } finally {
       setLoading(false);
     }
