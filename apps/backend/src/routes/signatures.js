@@ -308,7 +308,8 @@ router.post('/submit', async (req, res) => {
   try {
     const { 
       token, 
-      signatureDataUrl, 
+      signatureDataUrl,
+      signedPdfDataUrl, 
       consentGiven, 
       consentText,
       ipAddress,
@@ -346,34 +347,61 @@ router.post('/submit', async (req, res) => {
 
     // Upload signature image to Supabase Storage (if available)
     let signatureImageUrl;
+    let signedPdfUrl = null;
     
     if (supabase) {
       try {
+        // Upload signature image
         const signatureBuffer = Buffer.from(signatureDataUrl.replace(/^data:image\/\w+;base64,/, ''), 'base64');
-        const fileName = `${token}-signature.png`;
-        const filePath = `signatures/${fileName}`;
+        const signatureFileName = `${token}-signature.png`;
+        const signatureFilePath = `signatures/${signatureFileName}`;
         
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: signatureUploadError } = await supabase.storage
           .from('invoices')
-          .upload(filePath, signatureBuffer, {
+          .upload(signatureFilePath, signatureBuffer, {
             contentType: 'image/png',
             upsert: true
           });
 
-        if (uploadError) {
-          console.error('Error uploading signature to Supabase:', uploadError);
-          // Fallback to data URL
+        if (signatureUploadError) {
+          console.error('Error uploading signature to Supabase:', signatureUploadError);
           signatureImageUrl = signatureDataUrl;
         } else {
-          // Get public URL
           const { data: { publicUrl } } = supabase.storage
             .from('invoices')
-            .getPublicUrl(filePath);
+            .getPublicUrl(signatureFilePath);
           signatureImageUrl = publicUrl;
+        }
+
+        // Upload signed PDF if provided
+        if (signedPdfDataUrl) {
+          const document = signatureRequest.documentType === 'INVOICE' 
+            ? signatureRequest.factura 
+            : signatureRequest.proforma;
+          
+          const pdfBuffer = Buffer.from(signedPdfDataUrl.replace(/^data:application\/pdf;filename=generated\.pdf;base64,/, ''), 'base64');
+          const pdfFileName = `${document.serie}-${document.numero}-signed.pdf`;
+          const pdfFilePath = `signed/${pdfFileName}`;
+          
+          const { error: pdfUploadError } = await supabase.storage
+            .from('invoices')
+            .upload(pdfFilePath, pdfBuffer, {
+              contentType: 'application/pdf',
+              upsert: true
+            });
+
+          if (pdfUploadError) {
+            console.error('Error uploading signed PDF to Supabase:', pdfUploadError);
+          } else {
+            const { data: { publicUrl: pdfPublicUrl } } = supabase.storage
+              .from('invoices')
+              .getPublicUrl(pdfFilePath);
+            signedPdfUrl = pdfPublicUrl;
+            console.log('✅ Signed PDF uploaded successfully:', signedPdfUrl);
+          }
         }
       } catch (error) {
         console.error('Error with Supabase upload:', error);
-        // Fallback to data URL
         signatureImageUrl = signatureDataUrl;
       }
     } else {
@@ -381,10 +409,6 @@ router.post('/submit', async (req, res) => {
       console.log('📝 Storing signature as data URL (Supabase not configured)');
       signatureImageUrl = signatureDataUrl;
     }
-    
-    // TODO: Generate signed PDF with pdf-lib
-    // For now, we don't have a signed PDF URL until we implement PDF generation
-    const signedPdfUrl = null;
 
     // Create signature record
     const signature = await prisma.signature.create({
@@ -424,9 +448,9 @@ router.post('/submit', async (req, res) => {
         signedAt: signature.signedAt,
         locale: 'en' // TODO: Get from request or user preferences
       });
-      console.log('Signature confirmation emails sent successfully');
+      console.log('✅ Signature confirmation emails sent successfully');
     } catch (emailError) {
-      console.error('Failed to send signature confirmation emails:', emailError);
+      console.error('❌ Failed to send signature confirmation emails:', emailError);
       // Don't fail the request if email fails, just log it
     }
 

@@ -1,12 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { CheckCircle, AlertCircle, Clock, FileText, Building2 } from 'lucide-react';
 import { Button, Card, LoadingPage } from '@/components/common';
 import SignatureCanvas from '@/components/signature/SignatureCanvas';
+import { InvoicePreview } from '@/components/invoice';
 import api from '@/lib/api';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 
 interface SignatureRequestData {
   signatureRequest: {
@@ -47,6 +50,8 @@ export default function SignDocumentPage() {
   const [consentGiven, setConsentGiven] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [generatingPdf, setGeneratingPdf] = useState(false);
+  const pdfRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     validateToken();
@@ -76,6 +81,46 @@ export default function SignDocumentPage() {
 
     try {
       setSubmitting(true);
+      setGeneratingPdf(true);
+      
+      // Generate PDF with signature
+      let signedPdfBase64 = null;
+      if (pdfRef.current) {
+        const canvas = await html2canvas(pdfRef.current, {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4',
+        });
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+        const imgX = (pdfWidth - imgWidth * ratio) / 2;
+        const imgY = 0;
+
+        pdf.addImage(
+          imgData,
+          'PNG',
+          imgX,
+          imgY,
+          imgWidth * ratio,
+          imgHeight * ratio
+        );
+
+        // Convert PDF to base64
+        signedPdfBase64 = pdf.output('datauristring');
+      }
+      
+      setGeneratingPdf(false);
       
       // Get client info for audit trail
       const ipResponse = await fetch('https://api.ipify.org?format=json');
@@ -84,6 +129,7 @@ export default function SignDocumentPage() {
       await api.post('/signatures/submit', {
         token,
         signatureDataUrl: signatureData,
+        signedPdfDataUrl: signedPdfBase64,
         consentGiven,
         consentText: 'I agree to electronically sign this document and understand that my signature is legally binding.',
         ipAddress: ip,
@@ -93,7 +139,9 @@ export default function SignDocumentPage() {
 
       setSuccess(true);
     } catch (err: any) {
+      console.error('Error submitting signature:', err);
       alert(err.response?.data?.error || 'Failed to submit signature');
+      setGeneratingPdf(false);
     } finally {
       setSubmitting(false);
     }
@@ -231,7 +279,7 @@ export default function SignDocumentPage() {
               disabled={!signatureData || !consentGiven || submitting}
               className="flex-1"
             >
-              {submitting ? 'Submitting...' : 'Submit Signature'}
+              {generatingPdf ? 'Generating PDF...' : submitting ? 'Submitting...' : 'Submit Signature'}
             </Button>
             <Button
               variant="outline"
@@ -250,6 +298,34 @@ export default function SignDocumentPage() {
             and National Commerce Act (ESIGN) and the Uniform Electronic Transactions Act (UETA).
           </p>
         </div>
+      </div>
+
+      {/* Hidden PDF Generator */}
+      <div className="fixed -left-[9999px] -top-[9999px]">
+        <InvoicePreview 
+          ref={pdfRef} 
+          factura={{
+            ...data.document,
+            estado: 'EMITIDA',
+            descuento: 0,
+            subtotal: Number(data.document.total) / 1.18,
+            igv: Number(data.document.total) * 0.18 / 1.18,
+            observaciones: null,
+            detalles: [],
+            signatureRequest: {
+              signature: {
+                signatureImageUrl: signatureData || '',
+                signerName: data.signatureRequest.signerName || data.signatureRequest.signerEmail,
+                signedAt: new Date().toISOString()
+              }
+            }
+          } as any}
+          empresa={{
+            ...data.empresa,
+            id: '',
+            ruc: ''
+          } as any}
+        />
       </div>
     </div>
   );
