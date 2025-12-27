@@ -141,7 +141,10 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
 
         {/* Botón colapsar en desktop - Posicionado de forma absoluta para que no se corte */}
         <button
-          onClick={onToggleCollapse}
+          onClick={(e) => {
+            e.preventDefault();
+            onToggleCollapse();
+          }}
           className={cn(
             'hidden md:flex absolute top-5 -right-3 z-50',
             'w-6 h-6 items-center justify-center',

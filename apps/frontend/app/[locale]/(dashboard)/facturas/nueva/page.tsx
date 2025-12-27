@@ -310,11 +310,11 @@ export default function NuevaFacturaPage({
           </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={() => router.back()}>
+          <Button variant="outline" onClick={() => router.back()} size="lg">
             {t('cancel')}
           </Button>
-          <Button onClick={handleSave} disabled={saving}>
-            <Save className="w-4 h-4 mr-2" />
+          <Button onClick={handleSave} disabled={saving} size="lg">
+            <Save className="w-5 h-5 mr-2" />
             {saving ? t('saving') : t('save')}
           </Button>
         </div>
@@ -330,12 +330,12 @@ export default function NuevaFacturaPage({
                 {t('clientInfo')}
               </h2>
               <Button
-                size="sm"
+                size="default"
                 variant="outline"
                 onClick={() => setIsClientModalOpen(true)}
                 type="button"
               >
-                <Plus className="w-4 h-4 mr-1" />
+                <Plus className="w-5 h-5 mr-2" />
                 {t('addClient')}
               </Button>
             </div>
@@ -372,8 +372,8 @@ export default function NuevaFacturaPage({
               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 {t('items')}
               </h2>
-              <Button size="sm" onClick={addLinea}>
-                <Plus className="w-4 h-4 mr-1" />
+              <Button size="default" onClick={addLinea}>
+                <Plus className="w-5 h-5 mr-2" />
                 {t('addItem')}
               </Button>
             </div>
