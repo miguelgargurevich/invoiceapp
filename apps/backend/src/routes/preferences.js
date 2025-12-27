@@ -6,10 +6,24 @@ const { authenticateToken } = require('../middleware/auth');
 // GET /api/preferences - Get user preferences
 router.get('/', authenticateToken, async (req, res) => {
   try {
-    console.log('[PREFERENCES] Getting preferences for user:', req.user.sub);
+    const userId = req.user.id; // Use req.user.id instead of req.user.sub
+    console.log('[PREFERENCES] Getting preferences for user:', userId);
+    
+    if (!userId) {
+      console.log('[PREFERENCES] No user ID found in request');
+      return res.json({
+        theme: 'light',
+        fontSize: 'medium',
+        locale: 'es',
+        emailFactura: true,
+        emailVencimiento: true,
+        emailPago: true,
+        diasAntesVencimiento: 5
+      });
+    }
     
     let preferences = await prisma.userPreferences.findUnique({
-      where: { userId: req.user.sub }
+      where: { userId }
     });
 
     // If no preferences exist, create default ones
@@ -17,7 +31,7 @@ router.get('/', authenticateToken, async (req, res) => {
       console.log('[PREFERENCES] No preferences found, creating defaults');
       preferences = await prisma.userPreferences.create({
         data: {
-          userId: req.user.sub,
+          userId,
           theme: 'light',
           fontSize: 'medium',
           locale: 'es',
@@ -55,8 +69,14 @@ router.get('/', authenticateToken, async (req, res) => {
 // PUT /api/preferences - Update user preferences
 router.put('/', authenticateToken, async (req, res) => {
   try {
-    console.log('[PREFERENCES] Updating preferences for user:', req.user.sub);
+    const userId = req.user.id; // Use req.user.id instead of req.user.sub
+    console.log('[PREFERENCES] Updating preferences for user:', userId);
     console.log('[PREFERENCES] Update data:', req.body);
+    
+    if (!userId) {
+      console.log('[PREFERENCES] No user ID found in request');
+      return res.json(req.body);
+    }
     
     const {
       theme,
@@ -69,7 +89,7 @@ router.put('/', authenticateToken, async (req, res) => {
     } = req.body;
 
     const preferences = await prisma.userPreferences.upsert({
-      where: { userId: req.user.sub },
+      where: { userId },
       update: {
         ...(theme && { theme }),
         ...(fontSize && { fontSize }),
@@ -80,7 +100,7 @@ router.put('/', authenticateToken, async (req, res) => {
         ...(diasAntesVencimiento !== undefined && { diasAntesVencimiento })
       },
       create: {
-        userId: req.user.sub,
+        userId,
         theme: theme || 'light',
         fontSize: fontSize || 'medium',
         locale: locale || 'es',
