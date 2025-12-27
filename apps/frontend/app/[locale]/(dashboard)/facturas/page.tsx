@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Plus, Search, Filter, Download, Eye, Printer, MoreHorizontal, Receipt, CheckCircle } from 'lucide-react';
+import { Plus, Search, Filter, Download, Eye, Printer, MoreHorizontal, Receipt, CheckCircle, Clock, XCircle, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
@@ -350,7 +350,7 @@ export default function FacturasPage({
       key: 'estado',
       header: t('status'),
       render: (factura) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Badge variant={getStatusBadge(factura.estado)}>
             {factura.estado}
           </Badge>
@@ -358,6 +358,24 @@ export default function FacturasPage({
             <Badge variant="success">
               <CheckCircle className="w-3 h-3 mr-1" />
               SIGNED
+            </Badge>
+          )}
+          {factura.signatureStatus === 'PENDING' && (
+            <Badge variant="warning">
+              <Clock className="w-3 h-3 mr-1" />
+              PENDING
+            </Badge>
+          )}
+          {factura.signatureStatus === 'EXPIRED' && (
+            <Badge variant="neutral">
+              <AlertTriangle className="w-3 h-3 mr-1" />
+              EXPIRED
+            </Badge>
+          )}
+          {factura.signatureStatus === 'CANCELLED' && (
+            <Badge variant="neutral">
+              <XCircle className="w-3 h-3 mr-1" />
+              CANCELLED
             </Badge>
           )}
         </div>

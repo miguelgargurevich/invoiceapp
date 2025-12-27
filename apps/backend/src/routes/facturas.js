@@ -130,6 +130,14 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
               numeroDocumento: true
             }
           },
+          signatureRequests: {
+            select: {
+              status: true,
+              token: true
+            },
+            orderBy: { createdAt: 'desc' },
+            take: 1
+          },
           _count: {
             select: { detalles: true, pagos: true }
           }
@@ -141,8 +149,17 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       prisma.factura.count({ where })
     ]);
 
+    // Map facturas to include signatureStatus
+    const facturasWithSignatureStatus = facturas.map(factura => {
+      const signatureRequest = factura.signatureRequests?.[0];
+      return {
+        ...factura,
+        signatureStatus: signatureRequest?.status || null
+      };
+    });
+
     res.json({
-      data: facturas,
+      data: facturasWithSignatureStatus,
       pagination: {
         total,
         page: parseInt(page),
