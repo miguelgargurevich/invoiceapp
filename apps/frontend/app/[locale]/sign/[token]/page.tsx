@@ -87,16 +87,17 @@ export default function SignDocumentPage() {
       let signedPdfBase64 = null;
       if (pdfRef.current) {
         const canvas = await html2canvas(pdfRef.current, {
-          scale: 2,
+          scale: 1.5, // Reduced from 2 to decrease file size
           useCORS: true,
           logging: false,
         });
 
-        const imgData = canvas.toDataURL('image/png');
+        const imgData = canvas.toDataURL('image/jpeg', 0.85); // Use JPEG with 85% quality
         const pdf = new jsPDF({
           orientation: 'portrait',
           unit: 'mm',
           format: 'a4',
+          compress: true, // Enable PDF compression
         });
 
         const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -109,11 +110,13 @@ export default function SignDocumentPage() {
 
         pdf.addImage(
           imgData,
-          'PNG',
+          'JPEG',
           imgX,
           imgY,
           imgWidth * ratio,
-          imgHeight * ratio
+          imgHeight * ratio,
+          undefined,
+          'FAST' // Use fast compression
         );
 
         // Convert PDF to base64
