@@ -234,7 +234,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         {factura.signatureRequest?.signature && (
           <div className="mb-6 p-3 bg-gray-50 rounded-lg border-2 border-green-200">
             <h3 className="text-[10px] font-semibold text-gray-800 mb-2">
-              {t('signature') || 'Signature'}
+              {t('pdf.signature')}
             </h3>
             <div className="flex items-end gap-4">
               <div className="flex-shrink-0">
@@ -249,7 +249,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
                   {factura.signatureRequest.signature.signerName}
                 </p>
                 <p className="text-[10px] text-gray-500 mt-0.5">
-                  {t('signedOn') || 'Signed on'}: {formatDate(factura.signatureRequest.signature.signedAt)}
+                  {t('pdf.signedOn')}: {formatDate(factura.signatureRequest.signature.signedAt)}
                 </p>
               </div>
             </div>

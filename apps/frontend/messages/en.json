@@ -287,6 +287,8 @@
       "tax": "Tax (18%):",
       "total": "TOTAL:",
       "observations": "Observations:",
+      "signature": "Signature",
+      "signedOn": "Signed on",
       "thankYou": "Thank you for your business",
       "electronicDocument": "This document has been generated electronically"
     }

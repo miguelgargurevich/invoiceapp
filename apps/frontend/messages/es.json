@@ -289,6 +289,8 @@
       "tax": "IGV (18%):",
       "total": "TOTAL:",
       "observations": "Observaciones:",
+      "signature": "Firma",
+      "signedOn": "Firmado el",
       "thankYou": "Gracias por su preferencia",
       "electronicDocument": "Este documento ha sido generado electrónicamente"
     }
