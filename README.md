@@ -587,6 +587,6 @@ ISC
 
 ---
 
-Made with ❤️ using Next.js, Express, and Supabase
+Made with ❤️ by **Gargurevich Dev**
 
-Desarrollado con ❤️ usando Next.js 14 y Express.js
+Built with Next.js, Express, Prisma, and Supabase
