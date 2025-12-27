@@ -48,19 +48,19 @@ export function Modal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
+        <div className="fixed inset-0 z-50">
           {/* Backdrop overlay with blur */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={onClose}
           />
 
           {/* Modal Container - Always centered horizontally, aligned to top */}
-          <div className="fixed inset-0 z-50 flex items-start justify-center p-4 md:p-6 overflow-y-auto">
+          <div className="absolute inset-0 flex items-start justify-center p-4 md:p-6 overflow-y-auto">
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -127,7 +127,7 @@ export function Modal({
               background: rgba(75, 85, 99, 0.7);
             }
           `}</style>
-        </>
+        </div>
       )}
     </AnimatePresence>
   );
