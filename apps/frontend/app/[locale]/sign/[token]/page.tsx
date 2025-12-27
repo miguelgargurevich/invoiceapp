@@ -175,7 +175,7 @@ export default function SignDocumentPage() {
                   {data.document.serie}-{data.document.numero}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  Amount: ${data.document.total.toFixed(2)}
+                  Amount: ${Number(data.document.total).toFixed(2)}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Date: {new Date(data.document.fechaEmision).toLocaleDateString()}
