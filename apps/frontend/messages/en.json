@@ -131,7 +131,12 @@
     "paid": "Paid",
     "pendingStatus": "Pending",
     "overdueStatus": "Overdue",
-    "revenue": "Revenue"
+    "revenue": "Revenue",
+    "statusIssued": "Issued",
+    "statusPaid": "Paid",
+    "statusPending": "Pending",
+    "statusOverdue": "Overdue",
+    "statusCancelled": "Cancelled"
   },
   "invoices": {
     "title": "Invoices",

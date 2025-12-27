@@ -217,11 +217,18 @@ export default function DashboardPage({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Monthly Sales */}
           <Card>
-            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-              {t('monthlySales')}
-            </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {formatCurrency(stats?.ventasMes || 0)}
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                  {t('monthlySales')}
+                </div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  {formatCurrency(stats?.ventasMes || 0)}
+                </div>
+              </div>
+              <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400" />
+              </div>
             </div>
             <div className={cn(
               "text-xs font-medium mt-1 flex items-center gap-1",
@@ -234,34 +241,55 @@ export default function DashboardPage({
 
           {/* Total Invoices */}
           <Card>
-            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-              {t('totalInvoices')}
-            </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {stats?.totalFacturas || 0}
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                  {t('totalInvoices')}
+                </div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  {stats?.totalFacturas || 0}
+                </div>
+              </div>
+              <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+              </div>
             </div>
           </Card>
 
           {/* Total Clients */}
           <Card>
-            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-              {t('totalClients')}
-            </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {stats?.totalClientes || 0}
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                  {t('totalClients')}
+                </div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  {stats?.totalClientes || 0}
+                </div>
+              </div>
+              <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                <Users className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              </div>
             </div>
           </Card>
 
           {/* Pending Invoices */}
           <Card>
-            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-              {t('pendingInvoices')}
-            </div>
-            <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {stats?.facturasPendientes || 0}
-            </div>
-            <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-              {stats?.facturasVencidas || 0} {t('overdue')}
+            <div className="flex items-start justify-between">
+              <div>
+                <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                  {t('pendingInvoices')}
+                </div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  {stats?.facturasPendientes || 0}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                  {stats?.facturasVencidas || 0} {t('overdue')}
+                </div>
+              </div>
+              <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+                <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              </div>
             </div>
           </Card>
         </div>

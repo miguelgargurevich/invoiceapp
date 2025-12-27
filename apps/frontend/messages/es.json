@@ -131,7 +131,12 @@
     "paid": "Pagadas",
     "pendingStatus": "Pendientes",
     "overdueStatus": "Vencidas",
-    "revenue": "Ingresos"
+    "revenue": "Ingresos",
+    "statusIssued": "Emitida",
+    "statusPaid": "Pagada",
+    "statusPending": "Pendiente",
+    "statusOverdue": "Vencida",
+    "statusCancelled": "Anulada"
   },
   "invoices": {
     "title": "Facturas",
