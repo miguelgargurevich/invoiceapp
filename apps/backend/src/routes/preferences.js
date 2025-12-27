@@ -12,9 +12,9 @@ router.get('/', authenticateToken, async (req, res) => {
     if (!userId) {
       console.log('[PREFERENCES] No user ID found in request');
       return res.json({
-        theme: 'light',
-        fontSize: 'medium',
-        locale: 'es',
+        theme: 'system',
+        fontSize: 'large',
+        locale: 'en',
         emailFactura: true,
         emailVencimiento: true,
         emailPago: true,
@@ -32,9 +32,9 @@ router.get('/', authenticateToken, async (req, res) => {
       preferences = await prisma.userPreferences.create({
         data: {
           userId,
-          theme: 'light',
-          fontSize: 'medium',
-          locale: 'es',
+          theme: 'system',
+          fontSize: 'large',
+          locale: 'en',
           emailFactura: true,
           emailVencimiento: true,
           emailPago: true,
@@ -52,9 +52,9 @@ router.get('/', authenticateToken, async (req, res) => {
     if (error.code === 'P2021' || error.message.includes('does not exist')) {
       console.log('[PREFERENCES] Table does not exist, returning defaults');
       return res.json({
-        theme: 'light',
-        fontSize: 'medium',
-        locale: 'es',
+        theme: 'system',
+        fontSize: 'large',
+        locale: 'en',
         emailFactura: true,
         emailVencimiento: true,
         emailPago: true,
@@ -101,9 +101,9 @@ router.put('/', authenticateToken, async (req, res) => {
       },
       create: {
         userId,
-        theme: theme || 'light',
-        fontSize: fontSize || 'medium',
-        locale: locale || 'es',
+        theme: theme || 'system',
+        fontSize: fontSize || 'large',
+        locale: locale || 'en',
         emailFactura: emailFactura !== undefined ? emailFactura : true,
         emailVencimiento: emailVencimiento !== undefined ? emailVencimiento : true,
         emailPago: emailPago !== undefined ? emailPago : true,
@@ -120,9 +120,9 @@ router.put('/', authenticateToken, async (req, res) => {
     if (error.code === 'P2021' || error.message.includes('does not exist')) {
       console.log('[PREFERENCES] Table does not exist, returning sent data');
       return res.json({
-        theme: req.body.theme || 'light',
-        fontSize: req.body.fontSize || 'medium',
-        locale: req.body.locale || 'es',
+        theme: req.body.theme || 'system',
+        fontSize: req.body.fontSize || 'large',
+        locale: req.body.locale || 'en',
         emailFactura: req.body.emailFactura !== undefined ? req.body.emailFactura : true,
         emailVencimiento: req.body.emailVencimiento !== undefined ? req.body.emailVencimiento : true,
         emailPago: req.body.emailPago !== undefined ? req.body.emailPago : true,
