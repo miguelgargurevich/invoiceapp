@@ -676,18 +676,15 @@ export default function ConfiguracionPage({
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Input
-                      label={t('taxRate')}
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      max="100"
-                      value={invoiceConfig.igv.toString()}
-                      onChange={(e) => setInvoiceConfig({ ...invoiceConfig, igv: parseFloat(e.target.value) || 18 })}
-                    />
-                    <span className="text-xs text-gray-500 mt-1">%</span>
-                  </div>
+                  <Input
+                    label={t('taxRate')}
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="100"
+                    value={invoiceConfig.igv.toString()}
+                    onChange={(e) => setInvoiceConfig({ ...invoiceConfig, igv: parseFloat(e.target.value) || 18 })}
+                  />
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       {t('currency')}
