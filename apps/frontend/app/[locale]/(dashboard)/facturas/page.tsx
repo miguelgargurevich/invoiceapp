@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Plus, Search, Filter, Download, Eye, Printer, MoreHorizontal, Receipt } from 'lucide-react';
+import { Plus, Search, Filter, Download, Eye, Printer, MoreHorizontal, Receipt, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
@@ -350,9 +350,17 @@ export default function FacturasPage({
       key: 'estado',
       header: t('status'),
       render: (factura) => (
-        <Badge variant={factura.signatureStatus === 'SIGNED' ? 'success' : getStatusBadge(factura.estado)}>
-          {factura.signatureStatus === 'SIGNED' ? 'SIGNED' : factura.estado}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant={getStatusBadge(factura.estado)}>
+            {factura.estado}
+          </Badge>
+          {factura.signatureStatus === 'SIGNED' && (
+            <Badge variant="success">
+              <CheckCircle className="w-3 h-3 mr-1" />
+              SIGNED
+            </Badge>
+          )}
+        </div>
       ),
     },
     {
