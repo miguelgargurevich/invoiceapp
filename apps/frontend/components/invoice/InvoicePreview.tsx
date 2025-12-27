@@ -2,7 +2,7 @@
 
 import { forwardRef } from 'react';
 import { useTranslations } from 'next-intl';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatCurrency as baseFormatCurrency, formatDate } from '@/lib/utils';
 
 interface DetalleFactura {
   id: string;
@@ -27,6 +27,7 @@ interface Empresa {
   telefono?: string;
   email?: string;
   logo?: string;
+  moneda?: string;
 }
 
 interface Factura {
@@ -61,6 +62,8 @@ interface InvoicePreviewProps {
 const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
   ({ factura, empresa }, ref) => {
     const t = useTranslations('invoices.pdf');
+    const formatCurrency = (amount: number | string | null | undefined) => 
+      baseFormatCurrency(amount, empresa?.moneda || 'PEN');
     
     return (
       <div

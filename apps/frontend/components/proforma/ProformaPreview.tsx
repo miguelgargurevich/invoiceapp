@@ -2,7 +2,7 @@
 
 import { forwardRef } from 'react';
 import { useTranslations } from 'next-intl';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatCurrency as baseFormatCurrency, formatDate } from '@/lib/utils';
 
 interface DetalleProforma {
   id: string;
@@ -27,6 +27,7 @@ interface Empresa {
   telefono?: string;
   email?: string;
   logo?: string;
+  moneda?: string;
 }
 
 interface Proforma {
@@ -61,6 +62,8 @@ interface ProformaPreviewProps {
 const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
   ({ proforma, empresa }, ref) => {
     const t = useTranslations('quotes.pdf');
+    const formatCurrency = (amount: number | string | null | undefined) => 
+      baseFormatCurrency(amount, empresa?.moneda || 'PEN');
     
     return (
       <div

@@ -27,7 +27,8 @@ import {
   ProformaSendEmailModal,
   ProformaPreview,
 } from '@/components/proforma';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -89,6 +90,7 @@ export default function ProformaDetailPage({
   const tCommon = useTranslations('common');
   const router = useRouter();
   const { empresa } = useAuth();
+  const { formatCurrency } = useCurrency();
 
   const [proforma, setProforma] = useState<Proforma | null>(null);
   const [loading, setLoading] = useState(true);

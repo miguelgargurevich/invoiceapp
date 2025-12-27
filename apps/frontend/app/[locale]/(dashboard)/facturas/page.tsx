@@ -14,7 +14,8 @@ import {
   type Column,
 } from '@/components/common';
 import { PrintPreviewModal } from '@/components/invoice';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
 
 interface Factura {
@@ -78,6 +79,7 @@ export default function FacturasPage({
   const t = useTranslations('invoices');
   const router = useRouter();
   const { empresa } = useAuth();
+  const { formatCurrency } = useCurrency();
   
   const [facturas, setFacturas] = useState<Factura[]>([]);
   const [loading, setLoading] = useState(true);

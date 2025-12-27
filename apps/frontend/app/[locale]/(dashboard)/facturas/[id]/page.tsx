@@ -25,7 +25,8 @@ import {
   ConfirmDialog,
 } from '@/components/common';
 import { PrintPreviewModal, SendEmailModal, InvoicePreview } from '@/components/invoice';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -87,6 +88,7 @@ export default function FacturaDetailPage({
   const t = useTranslations('invoices');
   const router = useRouter();
   const { empresa } = useAuth();
+  const { formatCurrency } = useCurrency();
 
   const [factura, setFactura] = useState<Factura | null>(null);
   const [loading, setLoading] = useState(true);

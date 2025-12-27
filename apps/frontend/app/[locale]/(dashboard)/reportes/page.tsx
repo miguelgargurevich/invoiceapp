@@ -25,7 +25,7 @@ import {
   Cell,
 } from 'recharts';
 import { Button, Card, MetricCard, DatePicker } from '@/components/common';
-import { formatCurrency } from '@/lib/utils';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 
 export default function ReportesPage({
   params: { locale },
@@ -34,7 +34,7 @@ export default function ReportesPage({
 }) {
   const t = useTranslations('reports');
   const { empresa } = useAuth();
-  const currency = empresa?.moneda || 'S/';
+  const { formatCurrency, currencySymbol } = useCurrency();
 
   const [dateRange, setDateRange] = useState({
     from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
@@ -183,7 +183,7 @@ export default function ReportesPage({
               <BarChart data={ventasMensuales}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
                 <XAxis dataKey="mes" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${currency}${((parseFloat(String(v)) || 0)/1000).toFixed(0)}k`} />
+                <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${currencySymbol}${((parseFloat(String(v)) || 0)/1000).toFixed(0)}k`} />
                 <Tooltip
                   formatter={(value: number | undefined) => value !== undefined ? [formatCurrency(value)] : ['']}
                   contentStyle={{
@@ -313,7 +313,7 @@ export default function ReportesPage({
             <LineChart data={ventasMensuales}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
               <XAxis dataKey="mes" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${currency}${((parseFloat(String(v)) || 0)/1000).toFixed(0)}k`} />
+              <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${currencySymbol}${((parseFloat(String(v)) || 0)/1000).toFixed(0)}k`} />
               <Tooltip
                 formatter={(value: number | undefined) => value !== undefined ? [formatCurrency(value)] : ['']}
                 contentStyle={{

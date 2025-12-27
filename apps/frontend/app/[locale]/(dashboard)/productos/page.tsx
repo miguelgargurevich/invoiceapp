@@ -18,7 +18,7 @@ import {
   EmptyProducts,
   type Column,
 } from '@/components/common';
-import { formatCurrency } from '@/lib/utils';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
 
 interface Producto {
@@ -51,6 +51,7 @@ export default function ProductosPage({
 }) {
   const t = useTranslations('products');
   const { empresa } = useAuth();
+  const { formatCurrency } = useCurrency();
   
   const [productos, setProductos] = useState<Producto[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);

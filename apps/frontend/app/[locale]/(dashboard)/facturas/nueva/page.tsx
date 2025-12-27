@@ -26,7 +26,7 @@ import {
   LoadingPage,
   Modal,
 } from '@/components/common';
-import { formatCurrency } from '@/lib/utils';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
 
 interface Cliente {
@@ -69,6 +69,7 @@ export default function NuevaFacturaPage({
   const t = useTranslations('invoices');
   const router = useRouter();
   const { empresa } = useAuth();
+  const { formatCurrency } = useCurrency();
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);

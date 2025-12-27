@@ -34,7 +34,8 @@ import {
 } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
 import { MetricCard, Card, Badge, SkeletonMetricCard, Skeleton } from '@/components/common';
-import { cn, formatCurrency } from '@/lib/utils';
+import { cn } from '@/lib/utils';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
 
 interface DashboardStats {
@@ -70,6 +71,7 @@ export default function DashboardPage({
   const t = useTranslations('dashboard');
   const router = useRouter();
   const { empresa } = useAuth();
+  const { formatCurrency } = useCurrency();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [recentInvoices, setRecentInvoices] = useState<RecentInvoice[]>([]);
   const [monthlyRevenue, setMonthlyRevenue] = useState<MonthlyRevenue[]>([]);

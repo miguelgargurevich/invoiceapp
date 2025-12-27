@@ -14,7 +14,8 @@ import {
   type Column,
 } from '@/components/common';
 import { ProformaPrintPreviewModal } from '@/components/proforma';
-import { formatCurrency, formatDate } from '@/lib/utils';
+import { formatDate } from '@/lib/utils';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
 
 interface ProformaListItem {
@@ -85,6 +86,7 @@ export default function ProformasPage({
   const t = useTranslations('quotes');
   const router = useRouter();
   const { empresa } = useAuth();
+  const { formatCurrency } = useCurrency();
   
   const [proformas, setProformas] = useState<ProformaListItem[]>([]);
   const [loading, setLoading] = useState(true);
