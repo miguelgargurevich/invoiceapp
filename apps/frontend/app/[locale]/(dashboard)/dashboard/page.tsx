@@ -56,6 +56,7 @@ interface RecentInvoice {
   total: number;
   estado: string;
   fechaEmision: string;
+  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
 }
 
 interface MonthlyRevenue {
@@ -345,8 +346,8 @@ export default function DashboardPage({
                           {formatCurrency(invoice.total)}
                         </td>
                         <td className="py-3 px-4 text-center">
-                          <Badge variant={getStatusBadge(invoice.estado)}>
-                            {invoice.estado}
+                          <Badge variant={invoice.signatureStatus === 'SIGNED' ? 'success' : getStatusBadge(invoice.estado)}>
+                            {invoice.signatureStatus === 'SIGNED' ? 'SIGNED' : invoice.estado}
                           </Badge>
                         </td>
                       </tr>
@@ -366,8 +367,8 @@ export default function DashboardPage({
                       <span className="font-medium text-gray-900 dark:text-gray-100">
                         {invoice.numero}
                       </span>
-                      <Badge variant={getStatusBadge(invoice.estado)} size="sm">
-                        {invoice.estado}
+                      <Badge variant={invoice.signatureStatus === 'SIGNED' ? 'success' : getStatusBadge(invoice.estado)} size="sm">
+                        {invoice.signatureStatus === 'SIGNED' ? 'SIGNED' : invoice.estado}
                       </Badge>
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">

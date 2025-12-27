@@ -30,6 +30,7 @@ interface Factura {
   total: number;
   estado: string;
   montoPendiente: number;
+  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
 }
 
 interface DetalleFactura {
@@ -349,8 +350,8 @@ export default function FacturasPage({
       key: 'estado',
       header: t('status'),
       render: (factura) => (
-        <Badge variant={getStatusBadge(factura.estado)}>
-          {factura.estado}
+        <Badge variant={factura.signatureStatus === 'SIGNED' ? 'success' : getStatusBadge(factura.estado)}>
+          {factura.signatureStatus === 'SIGNED' ? 'SIGNED' : factura.estado}
         </Badge>
       ),
     },
