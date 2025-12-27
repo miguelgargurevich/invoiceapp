@@ -18,7 +18,7 @@ import {
   Send,
   ExternalLink,
   Calendar,
-  Edit2,
+  Edit2,  Share2,  Share2,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -117,7 +117,6 @@ export default function FacturaDetailPage({
   }>({ isOpen: false, signingUrl: '', email: '', emailSent: false });
   const [urlCopied, setUrlCopied] = useState(false);
   const [sendingEmail, setSendingEmail] = useState(false);
-  const [isSignatureConfirmOpen, setIsSignatureConfirmOpen] = useState(false);
   const [isEditDatesOpen, setIsEditDatesOpen] = useState(false);
   const [editingDates, setEditingDates] = useState(false);
   const [fechaEmisionEdit, setFechaEmisionEdit] = useState<Date | null>(null);
@@ -225,8 +224,6 @@ export default function FacturaDetailPage({
   const handleRequestSignature = async () => {
     if (!factura) return;
 
-    setIsSignatureConfirmOpen(false);
-
     try {
       setRequestingSignature(true);
       const response: any = await api.post('/signatures/request', {
@@ -284,7 +281,29 @@ export default function FacturaDetailPage({
       setSendingEmail(false);
     }
   };
+  const handleShareLink = async () => {
+    try {
+      const shareData = {
+        title: `Signature Request - Invoice ${factura?.serie}-${factura?.numero}`,
+        text: `Please sign this invoice for ${factura?.cliente.razonSocial}`,
+        url: signatureRequestModal.signingUrl,
+      };
 
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(signatureRequestModal.signingUrl);
+        setUrlCopied(true);
+        setTimeout(() => setUrlCopied(false), 2000);
+      }
+    } catch (error: any) {
+      // User cancelled or error occurred
+      if (error.name !== 'AbortError') {
+        console.error('Error sharing:', error);
+      }
+    }
+  };
   const handleCancelInvoice = async () => {
     if (!factura) return;
 
@@ -451,7 +470,7 @@ export default function FacturaDetailPage({
             <Button 
               variant="outline" 
               size="sm" 
-              onClick={() => setIsSignatureConfirmOpen(true)}
+              onClick={handleRequestSignature}
               disabled={requestingSignature || factura.signatureStatus === 'PENDING'}
             >
               <PenLine className="w-4 h-4 mr-1" />
@@ -829,7 +848,7 @@ export default function FacturaDetailPage({
             <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 text-left">
               Signing URL
             </label>
-            <div className="flex gap-2">
+            <div className="flex gap-2 mb-2">
               <input
                 type="text"
                 readOnly
@@ -837,6 +856,8 @@ export default function FacturaDetailPage({
                 className="flex-1 px-3 py-2 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 font-mono"
                 onClick={(e) => e.currentTarget.select()}
               />
+            </div>
+            <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
@@ -845,7 +866,7 @@ export default function FacturaDetailPage({
                   setUrlCopied(true);
                   setTimeout(() => setUrlCopied(false), 2000);
                 }}
-                className="shrink-0"
+                className="flex-1"
               >
                 {urlCopied ? (
                   <>
@@ -858,6 +879,15 @@ export default function FacturaDetailPage({
                     Copy
                   </>
                 )}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleShareLink}
+                className="flex-1"
+              >
+                <Share2 className="w-4 h-4 mr-1" />
+                Share
               </Button>
             </div>
           </div>
@@ -976,18 +1006,6 @@ export default function FacturaDetailPage({
           </div>
         </div>
       </Modal>
-
-      {/* Signature Request Confirmation Dialog */}
-      <ConfirmDialog
-        isOpen={isSignatureConfirmOpen}
-        onClose={() => setIsSignatureConfirmOpen(false)}
-        onConfirm={handleRequestSignature}
-        title="Request Signature"
-        message={`Are you sure you want to request a signature from ${factura?.cliente.razonSocial}? An email will be sent to ${factura?.cliente.email} with a secure signing link.`}
-        confirmLabel="Send Request"
-        cancelLabel="Cancel"
-        variant="info"
-      />
 
       {/* Hidden PDF Generator */}
       <div className="fixed -left-[9999px] -top-[9999px]">
