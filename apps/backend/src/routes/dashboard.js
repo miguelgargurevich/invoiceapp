@@ -120,13 +120,48 @@ router.get('/graficos', authenticateToken, getEmpresaFromUser, async (req, res) 
     const hoy = new Date();
     const hace6Meses = new Date(hoy.getFullYear(), hoy.getMonth() - 5, 1);
 
-    const facturas = await prisma.factura.findMany({
-      where: {
-        empresaId: req.empresa.id,
-        estado: { not: 'anulada' },
-        fechaEmision: {
-          gte: hace6Meses,
-          lte: hoy
+    const [facturas, facturasEstado] = await Promise.all([
+      // Facturas de últimos 6 meses para gráfico de ventas
+      prisma.factura.findMany({
+        where: {
+          empresaId: req.empresa.id,
+          estado: { not: 'anulada' },
+          fechaEmision: {
+            gte: hace6Meses,
+            lte: hoy
+          }
+        }
+      }),
+      // Todas las facturas para conteo de estado
+      prisma.factura.findMany({
+        where: {
+          empresaId: req.empresa.id,
+          estado: { not: 'anulada' }
+        },
+        select: {
+          estado: true,
+          fechaVencimiento: true
+        }
+      })
+    ]);
+
+    // Calcular conteo por estado
+    const estadosCount = {
+      pagada: 0,
+      pendiente: 0,
+      vencida: 0,
+      emitida: 0
+    };
+
+    facturasEstado.forEach(f => {
+      if (f.estado === 'pagada') {
+        estadosCount.pagada++;
+      } else if (f.estado === 'emitida') {
+        // Verificar si está vencida
+        if (f.fechaVencimiento && new Date(f.fechaVencimiento) < hoy) {
+          estadosCount.vencida++;
+        } else {
+          estadosCount.pendiente++;
         }
       }
     });
@@ -199,7 +234,8 @@ router.get('/graficos', authenticateToken, getEmpresaFromUser, async (req, res) 
 
     res.json({
       ventasPorMes,
-      topClientes
+      topClientes,
+      estadosFacturas: estadosCount
     });
   } catch (error) {
     console.error('Error obteniendo datos de gráficos:', error);
