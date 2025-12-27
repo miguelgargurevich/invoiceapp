@@ -64,7 +64,7 @@ RESEND_FROM_EMAIL=noreply@gargurevich.com
 RESEND_FROM_NAME=InvoiceApp
 
 # Base URL para links en emails
-BASE_URL=https://invoiceapp.gargurevich.com
+FRONTEND_URL=https://invoiceapp.gargurevich.com
 ```
 
 **Si usas dominio NO verificado** (solo para testing):
@@ -79,7 +79,7 @@ RESEND_FROM_EMAIL=onboarding@resend.dev
 | `RESEND_API_KEY` | API Key de Resend | `re_123abc...` |
 | `RESEND_FROM_EMAIL` | Email remitente | `noreply@gargurevich.com` |
 | `RESEND_FROM_NAME` | Nombre remitente | `InvoiceApp` |
-| `BASE_URL` | URL base de la app | `https://invoiceapp.gargurevich.com` |
+| `FRONTEND_URL` | URL base de la app | `https://invoiceapp.gargurevich.com` |
 
 ## Tipos de Emails
 
@@ -155,12 +155,12 @@ npm run dev
 ### ❌ "Email not sent"
 - Revisa los logs del backend: `console.log` mostrará errores
 - Verifica el Dashboard de Resend > Logs para ver el estado
-- Asegúrate de que `BASE_URL` esté configurada correctamente
+- Asegúrate de que `FRONTEND_URL` esté configurada correctamente
 
 ### ❌ Link de firma no funciona
-- Verifica que `BASE_URL` no termine en `/`
+- Verifica que `FRONTEND_URL` no termine en `/`
 - Debe ser: `https://invoiceapp.gargurevich.com` (sin barra final)
-- El link generado será: `${BASE_URL}/en/sign/${token}`
+- El link generado será: `${FRONTEND_URL}/en/sign/${token}`
 
 ## Límites del Plan Gratuito
 
@@ -181,7 +181,7 @@ Si despliegas en Vercel, agrega las variables:
 vercel env add RESEND_API_KEY
 vercel env add RESEND_FROM_EMAIL
 vercel env add RESEND_FROM_NAME
-vercel env add BASE_URL
+vercel env add FRONTEND_URL
 ```
 
 O desde el Dashboard de Vercel:

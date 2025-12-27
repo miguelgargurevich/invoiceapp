@@ -66,7 +66,16 @@ router.post('/request', async (req, res) => {
 
     // Send email notification
     try {
-      const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+      const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      console.log('📧 Attempting to send signature request email...');
+      console.log('📧 Config:', {
+        to: signerEmail,
+        baseUrl,
+        token: token.substring(0, 10) + '...',
+        hasResendKey: !!process.env.RESEND_API_KEY,
+        fromEmail: process.env.RESEND_FROM_EMAIL
+      });
+      
       await sendSignatureRequestEmail({
         signerEmail,
         signerName: signerName || signerEmail,
@@ -77,9 +86,11 @@ router.post('/request', async (req, res) => {
         baseUrl,
         locale: 'en' // TODO: Get from request or user preferences
       });
-      console.log('Signature request email sent successfully');
+      
+      console.log('✅ Signature request email sent successfully to:', signerEmail);
     } catch (emailError) {
-      console.error('Failed to send signature request email:', emailError);
+      console.error('❌ Failed to send signature request email:', emailError);
+      console.error('❌ Email error details:', emailError.message);
       // Don't fail the request if email fails, just log it
     }
 

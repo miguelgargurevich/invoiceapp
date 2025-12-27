@@ -58,6 +58,14 @@ function getTranslations(locale = 'es') {
  */
 async function sendEmail({ to, subject, text, html, attachments = [] }) {
   try {
+    console.log('📤 Preparing email:', {
+      to,
+      subject,
+      from: `${fromName} <${fromEmail}>`,
+      hasHtml: !!html,
+      attachmentsCount: attachments.length
+    });
+
     const emailData = {
       from: `${fromName} <${fromEmail}>`,
       to: Array.isArray(to) ? to : [to],
@@ -73,9 +81,10 @@ async function sendEmail({ to, subject, text, html, attachments = [] }) {
       emailData.attachments = attachments;
     }
 
+    console.log('📨 Sending via Resend API...');
     const response = await resend.emails.send(emailData);
     
-    console.log('Email sent successfully:', response);
+    console.log('✅ Email sent successfully:', response);
     return response;
   } catch (error) {
     console.error('Error sending email:', error);
