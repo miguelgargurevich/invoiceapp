@@ -9,63 +9,283 @@ A modern, full-featured invoicing and billing system built with Next.js 14 and E
 ![Supabase](https://img.shields.io/badge/Supabase-Auth-3ECF8E?logo=supabase)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?logo=tailwind-css)
 
+## 🎯 Why InvoiceApp?
+
+InvoiceApp solves the common pain points of freelancers and small businesses:
+
+- **No more spreadsheets** - Professional invoicing without Excel headaches
+- **Get paid faster** - Digital signatures and email delivery reduce payment delays
+- **Stay organized** - All clients, products, and invoices in one place
+- **Look professional** - Beautiful PDF invoices that impress clients
+- **Work anywhere** - Fully responsive, works on desktop, tablet, and mobile
+- **Multi-currency** - Bill international clients in their preferred currency
+
 ## ✨ Features
 
 ### 📄 Invoice Management
-- Create, edit, and manage professional invoices
-- Automatic invoice numbering with customizable series (F001, F002...)
-- Multiple status tracking: Draft, Issued, Paid, Overdue, Cancelled
-- PDF generation and email delivery
-- Multi-currency support (USD, PEN, EUR, etc.)
 
-### 📋 Proposals/Quotes
+**Create Professional Invoices in Minutes**
+- Intuitive invoice builder with live preview
+- Auto-fill client and product information
+- Automatic tax calculations (configurable per company)
+- Customizable invoice series (F001, F002, B001...)
+- Support for multiple currencies (USD, PEN, EUR, and more)
+
+**Smart Invoice Numbering**
+- Automatic sequential numbering per series
+- Multiple series support for different invoice types
+- Never worry about duplicate invoice numbers
+
+**Status Tracking & Workflow**
+- **Draft** - Work in progress, not yet sent
+- **Issued** - Sent to client, awaiting payment
+- **Paid** - Payment received
+- **Overdue** - Past due date, needs follow-up
+- **Cancelled** - Voided invoices
+
+**PDF Generation & Delivery**
+- One-click professional PDF generation
+- Direct email delivery to clients
+- Download and print options
+- Company logo and branding included
+
+**Line Item Management**
+- Add unlimited products/services per invoice
+- Automatic line total calculations
+- Quantity and unit price editing
+- Discount support per item or invoice total
+- Notes and observations field
+
+### 📋 Proposals & Quotes
+
+**Win More Projects with Professional Proposals**
 - Create detailed project proposals
+- Include scope, timeline, and pricing
+- Professional presentation impresses clients
+
+**Streamlined Workflow**
 - Convert accepted proposals to invoices with one click
-- Track proposal status and follow-ups
+- No need to re-enter information
+- Track proposal conversion rate
+
+**Status Management**
+- **Pending** - Awaiting client response
+- **Approved** - Client accepted
+- **Rejected** - Client declined
+- **Converted** - Turned into invoice
 
 ### ✍️ Digital Signature System
-- Request client signatures via email
-- Secure token-based signature links
-- Signature capture on any device
-- Automatic document signing and timestamping
-- Signature status tracking (Pending, Signed, Expired)
 
-### 👥 Client Management
-- Complete client database with contact information
-- Client document types (Tax ID, National ID, etc.)
-- Client history and invoice tracking
-- Quick client search and filtering
+**Legally Binding Digital Signatures**
+- Request signatures via email
+- Clients sign from any device (phone, tablet, computer)
+- No app installation required for clients
 
-### 📦 Product/Service Catalog
-- Product and service management
-- Category organization
-- Unit pricing with tax options
-- Stock tracking (optional)
+**Secure & Traceable**
+- Unique token-based signature links
+- IP address and timestamp recording
+- Expiration dates for security
+- Tamper-evident signature storage
 
-### 📊 Dashboard & Reports
-- Real-time business metrics
-- Monthly sales overview
-- Invoice status distribution
-- Recent activity tracking
-- Revenue charts and analytics
+**Signature Workflow**
+1. Create invoice/proposal
+2. Request signature via email
+3. Client receives secure link
+4. Client signs on their device
+5. Document automatically marked as signed
+6. Both parties notified
 
-### 🌐 Internationalization
-- Multi-language support (English, Spanish)
-- Locale-based formatting (dates, currency)
-- RTL-ready architecture
+**Status Tracking**
+- **Pending** - Awaiting signature
+- **Signed** - Successfully signed
+- **Expired** - Link expired (configurable duration)
+- **Cancelled** - Request cancelled
 
-### 🎨 Modern UI/UX
-- Clean, professional design
-- Dark/Light mode
-- Responsive layout (mobile-friendly)
-- Keyboard shortcuts
-- Toast notifications
+### 👥 Client Management (CRM Lite)
 
-### 🔐 Security
-- Supabase Authentication (Email/Password, Google OAuth)
-- JWT-based API authentication
-- Role-based access control
-- Secure file uploads
+**Complete Client Database**
+- Store all client information in one place
+- Company name, contact person, address
+- Multiple contact methods (email, phone)
+- Tax ID / National ID storage
+
+**Document Types Support**
+- **RUC** - Tax identification (Peru)
+- **DNI** - National ID (Peru)
+- **EIN** - Employer ID (USA)
+- **VAT** - Value Added Tax ID (EU)
+- Custom document types
+
+**Client Insights**
+- View complete invoice history per client
+- Outstanding balance tracking
+- Payment history
+- Total revenue per client
+
+**Quick Actions**
+- Create invoice for client with one click
+- Send email directly from client profile
+- View all related documents
+
+### 📦 Product & Service Catalog
+
+**Centralized Product Management**
+- Create reusable products and services
+- Set default prices and descriptions
+- Organize with categories
+
+**Pricing Options**
+- Unit price with or without tax
+- Multiple units of measure (Hours, Units, Services, etc.)
+- Quick price updates across all products
+
+**Categories & Organization**
+- Create custom categories
+- Filter products by category
+- Search by name or code
+
+**Stock Tracking (Optional)**
+- Track inventory levels
+- Low stock alerts
+- Stock movement history
+
+### 📊 Dashboard & Analytics
+
+**Real-Time Business Metrics**
+- Monthly sales with trend comparison
+- Total invoices issued
+- Active client count
+- Pending invoices requiring attention
+
+**Visual Analytics**
+- Revenue charts (last 6/12 months)
+- Invoice status distribution (pie chart)
+- Payment trends over time
+
+**Recent Activity**
+- Latest invoices at a glance
+- Quick status indicators
+- One-click navigation to details
+
+**Quick Actions from Dashboard**
+- Create new invoice
+- Create new proposal
+- Access all main features
+
+### 🏢 Company Settings
+
+**Complete Company Profile**
+- Company name and legal name
+- Tax ID / Registration number
+- Address and contact information
+- Website and email
+
+**Professional Branding**
+- Upload company logo
+- Logo appears on all invoices and PDFs
+- Professional appearance
+
+**Invoice Configuration**
+- Default tax rate (customizable)
+- Invoice series prefixes
+- Proposal series prefixes
+- Default currency
+
+**Professional Title Support**
+- Add professional credentials (e.g., "Master Electrician", "CPA", "Licensed Contractor")
+- License number display
+- Appears on official documents
+
+### 🌐 Internationalization (i18n)
+
+**Multi-Language Interface**
+- English (default)
+- Spanish (Español)
+- Easy to add more languages
+
+**Locale-Aware Formatting**
+- Date formats adjust to locale
+- Currency symbols and formatting
+- Number formatting (decimals, thousands)
+
+**URL-Based Language**
+- `/en/dashboard` - English
+- `/es/dashboard` - Spanish
+- SEO-friendly URLs
+
+### 🎨 Modern User Interface
+
+**Clean, Professional Design**
+- Minimalist interface
+- Focus on productivity
+- No clutter or distractions
+
+**Dark & Light Mode**
+- Automatic system preference detection
+- Manual toggle available
+- Consistent experience in both modes
+
+**Responsive Design**
+- Desktop-optimized for productivity
+- Tablet-friendly for on-the-go
+- Mobile-ready for quick access
+
+**Accessibility**
+- Keyboard navigation support
+- Screen reader compatible
+- High contrast options
+
+**User Experience**
+- Toast notifications for feedback
+- Loading states and skeletons
+- Smooth animations (Framer Motion)
+- Collapsible sidebar for more space
+
+### 🔐 Security & Authentication
+
+**Supabase Authentication**
+- Secure email/password login
+- Google OAuth integration (optional)
+- Password recovery via email
+
+**API Security**
+- JWT-based authentication
+- Token expiration and refresh
+- Secure HTTPS communication
+
+**Data Protection**
+- Row-level security in database
+- User data isolation (multi-tenant)
+- Secure file uploads to Supabase Storage
+
+**Session Management**
+- Automatic session refresh
+- Secure logout
+- Device session tracking
+
+### 📧 Email Integration
+
+**Transactional Emails via Resend**
+- Invoice delivery to clients
+- Signature request notifications
+- Payment confirmations
+
+**Professional Templates**
+- Branded email templates
+- Clear call-to-action buttons
+- Mobile-responsive design
+
+### 📱 Mobile Experience
+
+**Fully Responsive**
+- All features available on mobile
+- Touch-optimized interfaces
+- Swipe gestures support
+
+**Progressive Web App Ready**
+- Add to home screen
+- Offline capability (planned)
+- Native app feel
 
 ## 🏗️ Tech Stack
 
