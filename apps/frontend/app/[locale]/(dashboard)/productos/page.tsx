@@ -598,15 +598,19 @@ function ProductModal({ isOpen, onClose, producto, categorias, onSave, locale }:
           
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('type')}
+              {t('category')}
             </label>
             <select
-              value={formData.tipo}
-              onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
+              value={formData.categoriaId}
+              onChange={(e) => setFormData({ ...formData, categoriaId: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
-              <option value="PRODUCTO">{t('typeProduct')}</option>
-              <option value="SERVICIO">{t('typeService')}</option>
+              <option value="">{t('noCategory')}</option>
+              {categorias.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.nombre}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -626,6 +630,20 @@ function ProductModal({ isOpen, onClose, producto, categorias, onSave, locale }:
         />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('type')}
+            </label>
+            <select
+              value={formData.tipo}
+              onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="PRODUCTO">{t('typeProduct')}</option>
+              <option value="SERVICIO">{t('typeService')}</option>
+            </select>
+          </div>
+          
           <Input
             label={t('price')}
             type="number"
@@ -648,24 +666,6 @@ function ProductModal({ isOpen, onClose, producto, categorias, onSave, locale }:
               {unidades.map((u) => (
                 <option key={u.value} value={u.value}>
                   {u.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('category')}
-            </label>
-            <select
-              value={formData.categoriaId}
-              onChange={(e) => setFormData({ ...formData, categoriaId: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              <option value="">{t('noCategory')}</option>
-              {categorias.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.nombre}
                 </option>
               ))}
             </select>
