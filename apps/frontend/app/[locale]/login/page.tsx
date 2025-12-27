@@ -332,6 +332,13 @@ export default function LoginPage({
                 </p>
               </div>
             </div>
+
+            {/* Footer credit */}
+            <div className="mt-6 text-center">
+              <p className="text-xs text-gray-400 dark:text-gray-500">
+                Made with ❤️ by <span className="font-medium">Gargurevich Dev</span>
+              </p>
+            </div>
           </motion.div>
         </div>
       </div>
