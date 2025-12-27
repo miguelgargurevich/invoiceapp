@@ -34,21 +34,26 @@ export function SearchableSelect({
   value,
   onChange,
   label,
-  placeholder = 'Seleccionar...',
-  searchPlaceholder = 'Buscar...',
+  placeholder,
+  searchPlaceholder,
   error,
   disabled = false,
   loading = false,
   clearable = false,
   required = false,
   className,
-  emptyMessage = 'No hay opciones disponibles',
+  emptyMessage,
 }: SearchableSelectProps) {
   const t = useTranslations('common');
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Use translation defaults if not provided
+  const actualPlaceholder = placeholder || t('select');
+  const actualSearchPlaceholder = searchPlaceholder || t('searchPlaceholder');
+  const actualEmptyMessage = emptyMessage || t('noOptions');
 
   const selectedOption = options.find((opt) => opt.value === value);
 
@@ -140,7 +145,7 @@ export function SearchableSelect({
               : 'text-gray-400 dark:text-gray-500'
           )}
         >
-          {selectedOption ? selectedOption.label : placeholder}
+          {selectedOption ? selectedOption.label : actualPlaceholder}
         </span>
 
         <div className="flex items-center gap-1">
@@ -177,7 +182,7 @@ export function SearchableSelect({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder={searchPlaceholder}
+                placeholder={actualSearchPlaceholder}
                 className={cn(
                   'w-full pl-9 pr-3 py-2 text-sm',
                   'border border-gray-200 dark:border-gray-700 rounded-lg',
@@ -198,7 +203,7 @@ export function SearchableSelect({
               </div>
             ) : filteredOptions.length === 0 ? (
               <div className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                {search ? t('noResults') : emptyMessage}
+                {search ? t('noResults') : actualEmptyMessage}
               </div>
             ) : (
               filteredOptions.map((option) => (
@@ -268,13 +273,14 @@ export function ClientSelect({
   clients,
   value,
   onChange,
-  label = 'Cliente',
-  placeholder = 'Seleccionar cliente...',
+  label,
+  placeholder,
   error,
   disabled,
   loading,
   required,
 }: ClientSelectProps) {
+  const t = useTranslations('common');
   const options: SelectOption[] = clients.map((client) => ({
     value: client.id,
     label: client.nombre,
@@ -286,15 +292,15 @@ export function ClientSelect({
       options={options}
       value={value}
       onChange={onChange}
-      label={label}
-      placeholder={placeholder}
-      searchPlaceholder="Buscar por nombre o documento..."
+      label={label || t('client')}
+      placeholder={placeholder || t('selectClientPlaceholder')}
+      searchPlaceholder={t('searchByNameOrDocument')}
       error={error}
       disabled={disabled}
       loading={loading}
       required={required}
       clearable
-      emptyMessage="No hay clientes registrados"
+      emptyMessage={t('noClientsRegistered')}
     />
   );
 }
@@ -323,13 +329,14 @@ export function ProductSelect({
   value,
   onChange,
   label,
-  placeholder = 'Seleccionar producto...',
+  placeholder,
   error,
   disabled,
   loading,
   required,
 }: ProductSelectProps) {
   const t = useTranslations('invoices');
+  const tCommon = useTranslations('common');
   const tEmpty = useTranslations('emptyState');
   const { empresa } = useAuth();
   const currency = empresa?.moneda || 'S/';
@@ -346,7 +353,7 @@ export function ProductSelect({
       onChange={onChange}
       label={label}
       placeholder={placeholder || t('selectProduct')}
-      searchPlaceholder="Buscar por código o nombre..."
+      searchPlaceholder={tCommon('searchByCodeOrName')}
       error={error}
       disabled={disabled}
       loading={loading}

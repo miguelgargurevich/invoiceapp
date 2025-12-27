@@ -35,7 +35,20 @@
     "active": "Active",
     "inactive": "Inactive",
     "noResults": "No results",
-    "noOptions": "No options available"
+    "noOptions": "No options available",
+    "select": "Select...",
+    "searchPlaceholder": "Search...",
+    "selectDate": "Select date",
+    "searchByNameOrDocument": "Search by name or document...",
+    "searchByCodeOrName": "Search by code or name...",
+    "noClientsRegistered": "No clients registered",
+    "client": "Client",
+    "selectClientPlaceholder": "Select client...",
+    "errorLoading": "Error loading data. Please try again.",
+    "errorSaving": "Error saving. Please try again.",
+    "errorDeleting": "Error deleting. Please try again.",
+    "pleaseCompleteRequired": "Please complete all required fields",
+    "couldNotLoadData": "Could not load data"
   },
   "auth": {
     "appName": "Billing System",
@@ -524,11 +537,19 @@
     "saving": "Saving...",
     "units": {
       "UND": "Unit",
+      "UNIDAD": "Unit",
       "SRV": "Service",
+      "SERVICIO": "Service",
       "KG": "Kilogram",
       "M": "Meter",
+      "MT": "Meter",
+      "M2": "Square meter",
       "L": "Liter",
-      "HRA": "Hour"
+      "LT": "Liter",
+      "HRA": "Hour",
+      "HORA": "Hour",
+      "DIA": "Day",
+      "MES": "Month"
     },
     "messages": {
       "created": "Product successfully created",

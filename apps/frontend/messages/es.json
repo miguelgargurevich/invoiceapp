@@ -35,7 +35,20 @@
     "active": "Activo",
     "inactive": "Inactivo",
     "noResults": "Sin resultados",
-    "noOptions": "No hay opciones disponibles"
+    "noOptions": "No hay opciones disponibles",
+    "select": "Seleccionar...",
+    "searchPlaceholder": "Buscar...",
+    "selectDate": "Seleccionar fecha",
+    "searchByNameOrDocument": "Buscar por nombre o documento...",
+    "searchByCodeOrName": "Buscar por código o nombre...",
+    "noClientsRegistered": "No hay clientes registrados",
+    "client": "Cliente",
+    "selectClientPlaceholder": "Seleccionar cliente...",
+    "errorLoading": "Error al cargar datos. Por favor, intente nuevamente.",
+    "errorSaving": "Error al guardar. Por favor, intente nuevamente.",
+    "errorDeleting": "Error al eliminar. Por favor, intente nuevamente.",
+    "pleaseCompleteRequired": "Por favor complete todos los campos requeridos",
+    "couldNotLoadData": "No se pudieron cargar los datos"
   },
   "auth": {
     "appName": "Sistema de Facturación",
@@ -527,11 +540,19 @@
     "saving": "Guardando...",
     "units": {
       "UND": "Unidad",
+      "UNIDAD": "Unidad",
       "SRV": "Servicio",
+      "SERVICIO": "Servicio",
       "KG": "Kilogramo",
       "M": "Metro",
+      "MT": "Metro",
+      "M2": "Metro cuadrado",
       "L": "Litro",
-      "HRA": "Hora"
+      "LT": "Litro",
+      "HRA": "Hora",
+      "HORA": "Hora",
+      "DIA": "Día",
+      "MES": "Mes"
     },
     "messages": {
       "created": "Producto creado exitosamente",

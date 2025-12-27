@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { es, enUS } from 'date-fns/locale';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface DatePickerProps {
   value?: Date | null;
@@ -25,19 +26,21 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       value,
       onChange,
       label,
-      placeholder = 'Seleccionar fecha',
+      placeholder,
       error,
       disabled = false,
       minDate,
       maxDate,
-      locale = 'es',
+      locale = 'en',
       className,
     },
     ref
   ) {
+    const t = useTranslations('common');
     const [isOpen, setIsOpen] = useState(false);
     const [currentMonth, setCurrentMonth] = useState(value || new Date());
 
+    const actualPlaceholder = placeholder || t('selectDate');
     const dateLocale = locale === 'es' ? es : enUS;
 
     const daysInMonth = new Date(
@@ -141,7 +144,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                 : 'text-gray-400 dark:text-gray-500'
             )}
           >
-            {value ? format(value, 'PPP', { locale: dateLocale }) : placeholder}
+            {value ? format(value, 'PPP', { locale: dateLocale }) : actualPlaceholder}
           </span>
         </button>
 

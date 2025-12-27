@@ -502,6 +502,7 @@ interface ProductModalProps {
 
 function ProductModal({ isOpen, onClose, producto, categorias, onSave, locale }: ProductModalProps) {
   const t = useTranslations('products');
+  const tUnits = useTranslations('products.units');
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     codigo: '',
@@ -570,15 +571,15 @@ function ProductModal({ isOpen, onClose, producto, categorias, onSave, locale }:
   };
 
   const unidades = [
-    { value: 'UNIDAD', label: 'Unidad' },
-    { value: 'HORA', label: 'Hora' },
-    { value: 'DIA', label: 'Día' },
-    { value: 'MES', label: 'Mes' },
-    { value: 'KG', label: 'Kilogramo' },
-    { value: 'LT', label: 'Litro' },
-    { value: 'MT', label: 'Metro' },
-    { value: 'M2', label: 'Metro cuadrado' },
-    { value: 'SERVICIO', label: 'Servicio' },
+    { value: 'UNIDAD', label: tUnits('UNIDAD') },
+    { value: 'HORA', label: tUnits('HORA') },
+    { value: 'DIA', label: tUnits('DIA') },
+    { value: 'MES', label: tUnits('MES') },
+    { value: 'KG', label: tUnits('KG') },
+    { value: 'LT', label: tUnits('LT') },
+    { value: 'MT', label: tUnits('MT') },
+    { value: 'M2', label: tUnits('M2') },
+    { value: 'SERVICIO', label: tUnits('SERVICIO') },
   ];
 
   return (
