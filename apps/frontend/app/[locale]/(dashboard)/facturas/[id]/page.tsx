@@ -17,6 +17,8 @@ import {
   Copy,
   Send,
   ExternalLink,
+  Calendar,
+  Edit2,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -28,6 +30,7 @@ import {
   Input,
   LoadingPage,
   ConfirmDialog,
+  DatePicker,
 } from '@/components/common';
 import { PrintPreviewModal, SendEmailModal, InvoicePreview } from '@/components/invoice';
 import { formatDate } from '@/lib/utils';
@@ -96,7 +99,7 @@ export default function FacturaDetailPage({
   const router = useRouter();
   const { empresa } = useAuth();
   const { formatCurrency } = useCurrency();
-  const { showSuccess, showError } = useToast();
+  const { showSuccess, showError, showWarning } = useToast();
 
   const [factura, setFactura] = useState<Factura | null>(null);
   const [loading, setLoading] = useState(true);
@@ -113,6 +116,10 @@ export default function FacturaDetailPage({
   }>({ isOpen: false, signingUrl: '', email: '' });
   const [urlCopied, setUrlCopied] = useState(false);
   const [isSignatureConfirmOpen, setIsSignatureConfirmOpen] = useState(false);
+  const [isEditDatesOpen, setIsEditDatesOpen] = useState(false);
+  const [editingDates, setEditingDates] = useState(false);
+  const [fechaEmisionEdit, setFechaEmisionEdit] = useState<Date | null>(null);
+  const [fechaVencimientoEdit, setFechaVencimientoEdit] = useState<Date | null>(null);
   const pdfRef = useRef<HTMLDivElement>(null);
   const [paymentData, setPaymentData] = useState({
     monto: '',
@@ -257,6 +264,39 @@ export default function FacturaDetailPage({
       loadFactura();
     } catch (error) {
       console.error('Error cancelling invoice:', error);
+    }
+  };
+
+  const handleOpenEditDates = () => {
+    if (!factura) return;
+    setFechaEmisionEdit(new Date(factura.fechaEmision));
+    setFechaVencimientoEdit(new Date(factura.fechaVencimiento));
+    setIsEditDatesOpen(true);
+  };
+
+  const handleSaveDates = async () => {
+    if (!factura || !fechaEmisionEdit || !fechaVencimientoEdit) return;
+
+    if (fechaEmisionEdit > fechaVencimientoEdit) {
+      showWarning('Due date must be after issue date');
+      return;
+    }
+
+    try {
+      setEditingDates(true);
+      await api.put(`/facturas/${factura.id}/dates`, {
+        fechaEmision: fechaEmisionEdit.toISOString(),
+        fechaVencimiento: fechaVencimientoEdit.toISOString(),
+      });
+      
+      showSuccess('Dates updated successfully');
+      setIsEditDatesOpen(false);
+      loadFactura();
+    } catch (error: any) {
+      console.error('Error updating dates:', error);
+      showError(error.response?.data?.error || 'Failed to update dates');
+    } finally {
+      setEditingDates(false);
     }
   };
 
@@ -597,9 +637,20 @@ export default function FacturaDetailPage({
 
           {/* Dates */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              {t('dates')}
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {t('dates')}
+              </h2>
+              {factura.estado !== 'ANULADA' && (
+                <button
+                  onClick={handleOpenEditDates}
+                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                  title="Edit dates"
+                >
+                  <Edit2 className="w-4 h-4 text-gray-500" />
+                </button>
+              )}
+            </div>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">{t('issueDate')}</span>
@@ -818,6 +869,56 @@ export default function FacturaDetailPage({
               className="flex-1"
             >
               Done
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Edit Dates Modal */}
+      <Modal
+        isOpen={isEditDatesOpen}
+        onClose={() => !editingDates && setIsEditDatesOpen(false)}
+        title="Edit Invoice Dates"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Issue Date
+            </label>
+            <DatePicker
+              selected={fechaEmisionEdit}
+              onChange={(date) => setFechaEmisionEdit(date)}
+              disabled={editingDates}
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Due Date
+            </label>
+            <DatePicker
+              selected={fechaVencimientoEdit}
+              onChange={(date) => setFechaVencimientoEdit(date)}
+              disabled={editingDates}
+            />
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsEditDatesOpen(false)}
+              disabled={editingDates}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveDates}
+              disabled={editingDates || !fechaEmisionEdit || !fechaVencimientoEdit}
+              className="flex-1"
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              {editingDates ? 'Saving...' : 'Save Dates'}
             </Button>
           </div>
         </div>
