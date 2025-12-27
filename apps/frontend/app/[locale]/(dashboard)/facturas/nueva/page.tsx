@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import {
   ArrowLeft,
   Save,
@@ -347,9 +346,7 @@ export default function NuevaFacturaPage({
               required
             />
             {selectedCliente && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
+              <div
                 className="mt-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg"
               >
                 <div className="grid grid-cols-2 gap-4 text-sm">
@@ -362,7 +359,7 @@ export default function NuevaFacturaPage({
                     <p className="font-medium">{selectedCliente.direccion || '-'}</p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             )}
           </Card>
 
