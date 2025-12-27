@@ -2,9 +2,16 @@ const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const crypto = require('crypto');
+const { createClient } = require('@supabase/supabase-js');
 const { sendSignatureRequestEmail, sendSignatureConfirmationEmail } = require('../services/emailService');
 
 const prisma = new PrismaClient();
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+);
 
 // POST /api/signatures/request - Create signature request
 router.post('/request', async (req, res) => {
@@ -249,8 +256,29 @@ router.post('/submit', async (req, res) => {
       return res.status(400).json({ error: 'Signature request expired' });
     }
 
-    // TODO: Upload signature image to Supabase Storage
-    const signatureImageUrl = `/signatures/${token}-signature.png`;
+    // Upload signature image to Supabase Storage
+    const signatureBuffer = Buffer.from(signatureDataUrl.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+    const fileName = `${token}-signature.png`;
+    const filePath = `signatures/${fileName}`;
+    
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('invoices')
+      .upload(filePath, signatureBuffer, {
+        contentType: 'image/png',
+        upsert: true
+      });
+
+    if (uploadError) {
+      console.error('Error uploading signature:', uploadError);
+      return res.status(500).json({ error: 'Failed to upload signature' });
+    }
+
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('invoices')
+      .getPublicUrl(filePath);
+
+    const signatureImageUrl = publicUrl;
     
     // TODO: Generate signed PDF with pdf-lib
     // For now, we don't have a signed PDF URL until we implement PDF generation
