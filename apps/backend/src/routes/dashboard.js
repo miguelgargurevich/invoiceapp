@@ -220,13 +220,25 @@ router.get('/ultimas-facturas', authenticateToken, getEmpresaFromUser, async (re
             razonSocial: true,
             numeroDocumento: true
           }
+        },
+        signatureRequests: {
+          orderBy: {
+            createdAt: 'desc'
+          },
+          take: 1
         }
       },
       orderBy: { fechaEmision: 'desc' },
       take: 10
     });
 
-    res.json(facturas);
+    // Map signatureStatus from latest signatureRequest
+    const facturasConEstado = facturas.map(factura => ({
+      ...factura,
+      signatureStatus: factura.signatureRequests[0]?.status || null
+    }));
+
+    res.json(facturasConEstado);
   } catch (error) {
     console.error('Error obteniendo últimas facturas:', error);
     res.status(500).json({ error: 'Error interno del servidor' });

@@ -89,8 +89,23 @@ export default function DashboardPage({
     try {
       setLoading(true);
       
-      // In a real app, this would be a single API call
-      // For now, we'll simulate the data
+      // Fetch real data from API
+      const [recentInvoicesData] = await Promise.all([
+        api.get('/dashboard/ultimas-facturas')
+      ]);
+
+      // Transform invoices data to match interface
+      const transformedInvoices: RecentInvoice[] = recentInvoicesData.data.map((factura: any) => ({
+        id: factura.id.toString(),
+        numero: `${factura.serie}-${factura.numero.toString().padStart(6, '0')}`,
+        cliente: { nombre: factura.cliente.razonSocial },
+        total: parseFloat(factura.total),
+        estado: factura.estado,
+        fechaEmision: factura.fechaEmision,
+        signatureStatus: factura.signatureStatus,
+      })).slice(0, 5);
+
+      // Mock data for other stats (will be replaced with real API calls)
       const dashboardData: DashboardStats = {
         totalFacturas: 156,
         totalProformas: 43,
@@ -102,49 +117,6 @@ export default function DashboardPage({
         facturasVencidas: 3,
       };
 
-      const recentData: RecentInvoice[] = [
-        {
-          id: '1',
-          numero: 'F001-000156',
-          cliente: { nombre: 'Empresa ABC S.A.C.' },
-          total: 2450.00,
-          estado: 'EMITIDA',
-          fechaEmision: new Date().toISOString(),
-        },
-        {
-          id: '2',
-          numero: 'F001-000155',
-          cliente: { nombre: 'Comercial Lima E.I.R.L.' },
-          total: 1890.50,
-          estado: 'PAGADA',
-          fechaEmision: new Date(Date.now() - 86400000).toISOString(),
-        },
-        {
-          id: '3',
-          numero: 'F001-000154',
-          cliente: { nombre: 'Distribuidora Norte S.A.' },
-          total: 5670.00,
-          estado: 'PENDIENTE',
-          fechaEmision: new Date(Date.now() - 172800000).toISOString(),
-        },
-        {
-          id: '4',
-          numero: 'F001-000153',
-          cliente: { nombre: 'Servicios Generales SAC' },
-          total: 890.00,
-          estado: 'PAGADA',
-          fechaEmision: new Date(Date.now() - 259200000).toISOString(),
-        },
-        {
-          id: '5',
-          numero: 'F001-000152',
-          cliente: { nombre: 'Tech Solutions Peru' },
-          total: 3200.00,
-          estado: 'VENCIDA',
-          fechaEmision: new Date(Date.now() - 604800000).toISOString(),
-        },
-      ];
-
       const monthlyData: MonthlyRevenue[] = [
         { mes: 'Ene', ingresos: 32000 },
         { mes: 'Feb', ingresos: 28000 },
@@ -155,7 +127,7 @@ export default function DashboardPage({
       ];
 
       setStats(dashboardData);
-      setRecentInvoices(recentData);
+      setRecentInvoices(transformedInvoices);
       setMonthlyRevenue(monthlyData);
     } catch (error) {
       console.error('Error loading dashboard:', error);
@@ -165,14 +137,27 @@ export default function DashboardPage({
   };
 
   const getStatusBadge = (status: string) => {
+    const normalizedStatus = status.toLowerCase();
     const variants: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'neutral'> = {
-      PAGADA: 'success',
-      EMITIDA: 'info',
-      PENDIENTE: 'warning',
-      VENCIDA: 'danger',
-      ANULADA: 'neutral',
+      pagada: 'success',
+      emitida: 'info',
+      pendiente: 'warning',
+      vencida: 'danger',
+      anulada: 'neutral',
     };
-    return variants[status] || 'neutral';
+    return variants[normalizedStatus] || 'neutral';
+  };
+
+  const getStatusLabel = (status: string) => {
+    const normalizedStatus = status.toLowerCase();
+    const statusMap: Record<string, string> = {
+      emitida: t('statusIssued'),
+      pagada: t('statusPaid'),
+      pendiente: t('statusPending'),
+      vencida: t('statusOverdue'),
+      anulada: t('statusCancelled'),
+    };
+    return statusMap[normalizedStatus] || status;
   };
 
   const percentageChange = stats
@@ -330,6 +315,7 @@ export default function DashboardPage({
                     {recentInvoices.map((invoice) => (
                       <tr
                         key={invoice.id}
+                        onClick={() => router.push(`/${locale}/facturas/${invoice.id}`)}
                         className="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
                       >
                         <td className="py-3 px-4">
@@ -349,7 +335,7 @@ export default function DashboardPage({
                         <td className="py-3 px-4 text-center">
                           <div className="flex items-center justify-center gap-2">
                             <Badge variant={getStatusBadge(invoice.estado)}>
-                              {invoice.estado}
+                              {getStatusLabel(invoice.estado)}
                             </Badge>
                             {invoice.signatureStatus === 'SIGNED' && (
                               <Badge variant="success">
@@ -370,7 +356,8 @@ export default function DashboardPage({
                 {recentInvoices.map((invoice) => (
                   <div
                     key={invoice.id}
-                    className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4"
+                    onClick={() => router.push(`/${locale}/facturas/${invoice.id}`)}
+                    className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                   >
                     <div className="flex items-start justify-between mb-2">
                       <span className="font-medium text-gray-900 dark:text-gray-100">
@@ -378,7 +365,7 @@ export default function DashboardPage({
                       </span>
                       <div className="flex items-center gap-1.5">
                         <Badge variant={getStatusBadge(invoice.estado)} size="sm">
-                          {invoice.estado}
+                          {getStatusLabel(invoice.estado)}
                         </Badge>
                         {invoice.signatureStatus === 'SIGNED' && (
                           <Badge variant="success" size="sm">
