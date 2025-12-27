@@ -30,7 +30,7 @@ interface Producto {
   unidadMedida: string;
   tipo: string;
   afectoIgv: boolean;
-  categoria?: { id: string; nombre: string };
+  categoria?: { id: string; nombre: string; color?: string };
   createdAt: string;
 }
 
@@ -239,21 +239,19 @@ export default function ProductosPage({
       key: 'categoria',
       header: t('category'),
       render: (producto) => (
-        <Badge variant="neutral" size="sm">
-          {producto.categoria?.nombre || '-'}
-        </Badge>
-      ),
-    },
-    {
-      key: 'tipo',
-      header: t('type'),
-      render: (producto) => (
-        <Badge
-          variant={producto.tipo === 'SERVICIO' ? 'info' : 'success'}
-          size="sm"
-        >
-          {producto.tipo}
-        </Badge>
+        producto.categoria ? (
+          <div className="flex items-center gap-2">
+            <div
+              className="w-3 h-3 rounded-full"
+              style={{ backgroundColor: producto.categoria.color || '#9ca3af' }}
+            />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {producto.categoria.nombre}
+            </span>
+          </div>
+        ) : (
+          <span className="text-sm text-gray-400">-</span>
+        )
       ),
     },
     {

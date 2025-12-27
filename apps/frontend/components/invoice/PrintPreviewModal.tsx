@@ -210,39 +210,55 @@ export default function PrintPreviewModal({
   const handleZoomOut = () => setZoom((prev) => Math.max(prev - 0.1, 0.5));
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={`${t('print')} - ${factura.serie}-${factura.numero}`} size="xl" showCloseButton={false}>
-      <div className="flex flex-col h-[75vh]">
-        {/* Controls */}
-        <div className="flex items-center justify-between pb-4 border-b dark:border-gray-700">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleZoomOut}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              title="Zoom out"
-            >
-              <ZoomOut className="w-5 h-5" />
-            </button>
-            <span className="text-sm text-gray-500 min-w-[60px] text-center">
-              {Math.round(zoom * 100)}%
+    <Modal isOpen={isOpen} onClose={onClose} title="" size="xl" showCloseButton={false}>
+      <div className="flex flex-col h-[85vh]">
+        {/* Compact Controls Bar */}
+        <div className="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-900 border-b dark:border-gray-700">
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              {factura.serie}-{factura.numero}
             </span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={handleZoomOut}
+                className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+                title="Zoom out"
+              >
+                <ZoomOut className="w-4 h-4" />
+              </button>
+              <span className="text-xs text-gray-500 min-w-[50px] text-center">
+                {Math.round(zoom * 100)}%
+              </span>
+              <button
+                onClick={handleZoomIn}
+                className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+                title="Zoom in"
+              >
+                <ZoomIn className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={handleShare} disabled={downloading}>
+              <Share2 className="w-4 h-4 mr-1.5" />
+              {t('share')}
+            </Button>
+            <Button size="sm" onClick={handleDownloadPDF} disabled={downloading}>
+              <Download className="w-4 h-4 mr-1.5" />
+              {downloading ? tCommon('loading') : t('downloadPdf')}
+            </Button>
             <button
-              onClick={handleZoomIn}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              title="Zoom in"
+              onClick={onClose}
+              className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors ml-1"
             >
-              <ZoomIn className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
         </div>
 
-        {/* Preview Area */}
-        <div className="flex-1 overflow-auto bg-gray-200 dark:bg-gray-800 p-4">
+        {/* Preview Area - More Space */}
+        <div className="flex-1 overflow-auto bg-gray-200 dark:bg-gray-800 p-3">
           <div
             data-preview-content
             className="mx-auto shadow-2xl transition-transform duration-200"
@@ -252,23 +268,6 @@ export default function PrintPreviewModal({
             }}
           >
             <InvoicePreview ref={previewRef} factura={factura} empresa={empresa} />
-          </div>
-        </div>
-
-        {/* Footer Actions */}
-        <div className="flex items-center justify-between pt-4 border-t dark:border-gray-700">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {t('previewDescription')}
-          </p>
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={handleShare} disabled={downloading}>
-              <Share2 className="w-4 h-4 mr-2" />
-              {t('share')}
-            </Button>
-            <Button onClick={handleDownloadPDF} disabled={downloading}>
-              <Download className="w-4 h-4 mr-2" />
-              {downloading ? tCommon('loading') : t('downloadPdf')}
-            </Button>
           </div>
         </div>
       </div>

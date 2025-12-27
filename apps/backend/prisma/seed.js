@@ -74,6 +74,46 @@ async function main() {
         color: '#8b5cf6',
       },
     }),
+    prisma.categoria.upsert({
+      where: { empresaId_nombre: { empresaId: empresa.id, nombre: 'Consultoría' } },
+      update: {},
+      create: {
+        empresaId: empresa.id,
+        nombre: 'Consultoría',
+        descripcion: 'Servicios de consultoría',
+        color: '#f59e0b',
+      },
+    }),
+    prisma.categoria.upsert({
+      where: { empresaId_nombre: { empresaId: empresa.id, nombre: 'Mantenimiento' } },
+      update: {},
+      create: {
+        empresaId: empresa.id,
+        nombre: 'Mantenimiento',
+        descripcion: 'Servicios de mantenimiento',
+        color: '#ef4444',
+      },
+    }),
+    prisma.categoria.upsert({
+      where: { empresaId_nombre: { empresaId: empresa.id, nombre: 'Software' } },
+      update: {},
+      create: {
+        empresaId: empresa.id,
+        nombre: 'Software',
+        descripcion: 'Licencias y software',
+        color: '#06b6d4',
+      },
+    }),
+    prisma.categoria.upsert({
+      where: { empresaId_nombre: { empresaId: empresa.id, nombre: 'Capacitación' } },
+      update: {},
+      create: {
+        empresaId: empresa.id,
+        nombre: 'Capacitación',
+        descripcion: 'Cursos y capacitaciones',
+        color: '#ec4899',
+      },
+    }),
   ]);
 
   console.log('✅ Categorías creadas:', categorias.length);
