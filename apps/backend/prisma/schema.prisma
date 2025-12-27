@@ -460,3 +460,26 @@ model Signature {
   @@index([signatureRequestId])
   @@map("signatures")
 }
+
+// 🎨 User Preferences
+model UserPreferences {
+  id          String   @id @default(uuid())
+  userId      String   @unique @map("user_id")
+  
+  // Appearance settings
+  theme       String   @default("light") // light, dark
+  fontSize    String   @default("medium") @map("font_size") // small, medium, large
+  locale      String   @default("es") // es, en
+  
+  // Notification settings
+  emailFactura          Boolean  @default(true) @map("email_factura")
+  emailVencimiento      Boolean  @default(true) @map("email_vencimiento")
+  emailPago             Boolean  @default(true) @map("email_pago")
+  diasAntesVencimiento  Int      @default(5) @map("dias_antes_vencimiento")
+  
+  // Timestamps
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  @@map("user_preferences")
+}
