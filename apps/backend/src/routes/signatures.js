@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const crypto = require('crypto');
+const { sendSignatureRequestEmail, sendSignatureConfirmationEmail } = require('../services/emailService');
 
 const prisma = new PrismaClient();
 
@@ -63,8 +64,24 @@ router.post('/request', async (req, res) => {
       }
     });
 
-    // TODO: Send email notification
-    // await sendSignatureRequestEmail(signatureRequest, document);
+    // Send email notification
+    try {
+      const baseUrl = process.env.BASE_URL || 'http://localhost:3000';
+      await sendSignatureRequestEmail({
+        signerEmail,
+        signerName: signerName || signerEmail,
+        token,
+        document,
+        empresa: document.empresa,
+        expiresAt,
+        baseUrl,
+        locale: 'en' // TODO: Get from request or user preferences
+      });
+      console.log('Signature request email sent successfully');
+    } catch (emailError) {
+      console.error('Failed to send signature request email:', emailError);
+      // Don't fail the request if email fails, just log it
+    }
 
     res.json({
       success: true,
@@ -253,8 +270,26 @@ router.post('/submit', async (req, res) => {
       data: { status: 'SIGNED' }
     });
 
-    // TODO: Send confirmation emails
-    // await sendSignatureConfirmationEmail(signatureRequest, signature);
+    // Send confirmation emails
+    try {
+      const document = signatureRequest.documentType === 'INVOICE' 
+        ? signatureRequest.factura 
+        : signatureRequest.proforma;
+      
+      await sendSignatureConfirmationEmail({
+        signerEmail: signature.signerEmail,
+        signerName: signature.signerName,
+        document,
+        empresa: signatureRequest.empresa,
+        signedPdfUrl: signature.signedPdfUrl,
+        signedAt: signature.signedAt,
+        locale: 'en' // TODO: Get from request or user preferences
+      });
+      console.log('Signature confirmation emails sent successfully');
+    } catch (emailError) {
+      console.error('Failed to send signature confirmation emails:', emailError);
+      // Don't fail the request if email fails, just log it
+    }
 
     res.json({
       success: true,
