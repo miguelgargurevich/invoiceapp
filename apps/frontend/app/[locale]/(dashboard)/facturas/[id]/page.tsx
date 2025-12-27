@@ -13,6 +13,7 @@ import {
   CheckCircle,
   XCircle,
   Clock,
+  PenLine,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -97,6 +98,7 @@ export default function FacturaDetailPage({
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [isSendEmailOpen, setIsSendEmailOpen] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
+  const [requestingSignature, setRequestingSignature] = useState(false);
   const pdfRef = useRef<HTMLDivElement>(null);
   const [paymentData, setPaymentData] = useState({
     monto: '',
@@ -194,6 +196,32 @@ export default function FacturaDetailPage({
       console.error('Error registering payment:', error);
     } finally {
       setSavingPayment(false);
+    }
+  };
+
+  const handleRequestSignature = async () => {
+    if (!factura) return;
+
+    try {
+      setRequestingSignature(true);
+      const response: any = await api.post('/signatures/request', {
+        documentType: 'INVOICE',
+        documentId: factura.id,
+        signerEmail: factura.cliente.email || '',
+        signerName: factura.cliente.razonSocial,
+      });
+
+      // Show success message with signing URL
+      const signingUrl = `${window.location.origin}/${locale}/sign/${response.token}`;
+      alert(`Signature request sent!\n\nSigning URL:\n${signingUrl}\n\nAn email has been sent to ${factura.cliente.email}`);
+      
+      // Optionally reload to show signature status
+      loadFactura();
+    } catch (error: any) {
+      console.error('Error requesting signature:', error);
+      alert(error.response?.data?.error || 'Failed to request signature');
+    } finally {
+      setRequestingSignature(false);
     }
   };
 
@@ -314,6 +342,17 @@ export default function FacturaDetailPage({
             <Printer className="w-4 h-4 mr-1" />
             {t('print')}
           </Button>
+          {factura.cliente.email && factura.estado !== 'ANULADA' && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleRequestSignature}
+              disabled={requestingSignature}
+            >
+              <PenLine className="w-4 h-4 mr-1" />
+              {requestingSignature ? 'Requesting...' : 'Request Signature'}
+            </Button>
+          )}
           {factura.estado !== 'PAGADA' && factura.estado !== 'ANULADA' && (
             <Button size="sm" onClick={() => {
               setPaymentData({ ...paymentData, monto: (factura.montoPendiente || 0).toString() });
