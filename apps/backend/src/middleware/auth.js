@@ -10,15 +10,24 @@ const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
+  console.log('[AUTH] Checking token...');
+  console.log('[AUTH] SUPABASE_URL configured:', !!process.env.NEXT_PUBLIC_SUPABASE_URL);
+  console.log('[AUTH] SERVICE_KEY configured:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+  console.log('[AUTH] Token received:', token ? `${token.substring(0, 20)}...` : 'NO TOKEN');
+
   if (!token) {
+    console.log('[AUTH] No token provided');
     return res.status(401).json({ error: 'Token de acceso requerido' });
   }
 
   try {
     const { data: { user }, error } = await supabase.auth.getUser(token);
     
+    console.log('[AUTH] Supabase response - User:', user?.email, '| Error:', error?.message);
+    
     if (error || !user) {
-      return res.status(403).json({ error: 'Token inválido' });
+      console.log('[AUTH] Token validation failed:', error?.message || 'No user returned');
+      return res.status(403).json({ error: 'Token inválido', details: error?.message });
     }
 
     req.user = {
@@ -27,10 +36,11 @@ const authenticateToken = async (req, res, next) => {
       name: user.user_metadata?.name || user.email
     };
 
+    console.log('[AUTH] User authenticated:', user.email);
     next();
   } catch (error) {
-    console.error('Error de autenticación:', error);
-    return res.status(403).json({ error: 'Token inválido' });
+    console.error('[AUTH] Exception during authentication:', error.message);
+    return res.status(403).json({ error: 'Token inválido', details: error.message });
   }
 };
 
