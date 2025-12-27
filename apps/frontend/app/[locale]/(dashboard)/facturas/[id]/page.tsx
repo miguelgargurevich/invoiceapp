@@ -226,16 +226,26 @@ export default function FacturaDetailPage({
 
     try {
       setRequestingSignature(true);
-      const response: any = await api.post('/signatures/request', {
-        documentType: 'INVOICE',
-        documentId: factura.id,
-        signerEmail: factura.cliente.email || '',
-        signerName: factura.cliente.razonSocial,
-        sendEmail: false, // Don't send email yet
-      });
+      
+      let token;
+      
+      // If signature is already pending, reuse existing token
+      if (factura.signatureStatus === 'PENDING' && factura.signatureRequest?.token) {
+        token = factura.signatureRequest.token;
+      } else {
+        // Create new signature request
+        const response: any = await api.post('/signatures/request', {
+          documentType: 'INVOICE',
+          documentId: factura.id,
+          signerEmail: factura.cliente.email || '',
+          signerName: factura.cliente.razonSocial,
+          sendEmail: false, // Don't send email yet
+        });
+        token = response.token;
+      }
 
       // Show modal with signing URL (email not sent yet)
-      const signingUrl = `${window.location.origin}/${locale}/sign/${response.token}`;
+      const signingUrl = `${window.location.origin}/${locale}/sign/${token}`;
       setSignatureRequestModal({
         isOpen: true,
         signingUrl,
@@ -244,7 +254,9 @@ export default function FacturaDetailPage({
       });
       
       // Reload to show signature status
-      loadFactura();
+      if (factura.signatureStatus !== 'PENDING') {
+        loadFactura();
+      }
     } catch (error: any) {
       console.error('Error requesting signature:', error);
       showError(error.response?.data?.error || 'Failed to request signature');
@@ -471,10 +483,10 @@ export default function FacturaDetailPage({
               variant="outline" 
               size="sm" 
               onClick={handleRequestSignature}
-              disabled={requestingSignature || factura.signatureStatus === 'PENDING'}
+              disabled={requestingSignature}
             >
               <PenLine className="w-4 h-4 mr-1" />
-              {requestingSignature ? 'Requesting...' : factura.signatureStatus === 'PENDING' ? 'Pending Signature' : 'Request Signature'}
+              {requestingSignature ? 'Loading...' : factura.signatureStatus === 'PENDING' ? 'Resend Signature' : 'Request Signature'}
             </Button>
           )}
           {factura.estado !== 'PAGADA' && factura.estado !== 'ANULADA' && (
