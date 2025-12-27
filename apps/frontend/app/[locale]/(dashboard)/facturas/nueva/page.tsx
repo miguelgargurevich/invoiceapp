@@ -14,6 +14,7 @@ import {
   Receipt,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import {
   Button,
   Card,
@@ -70,6 +71,7 @@ export default function NuevaFacturaPage({
   const router = useRouter();
   const { empresa } = useAuth();
   const { formatCurrency } = useCurrency();
+  const { showSuccess, showError, showWarning } = useToast();
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -229,17 +231,17 @@ export default function NuevaFacturaPage({
   const handleSave = async () => {
     // Validación
     if (!clienteId) {
-      alert(t('errors.selectClient'));
+      showWarning(t('errors.selectClient'));
       return;
     }
 
     if (lineas.length === 0) {
-      alert(t('errors.addItems'));
+      showWarning(t('errors.addItems'));
       return;
     }
 
     if (fechaVencimiento && fechaEmision && fechaVencimiento < fechaEmision) {
-      alert(t('errors.invalidDate'));
+      showWarning(t('errors.invalidDate'));
       return;
     }
 
@@ -262,18 +264,18 @@ export default function NuevaFacturaPage({
       };
 
       await api.post('/facturas', payload);
-      alert(t('messages.created'));
+      showSuccess(t('messages.created'));
       router.push(`/${locale}/facturas`);
     } catch (error: any) {
       console.error('Error saving factura:', error);
       
       // Handle specific error codes
       if (error.response?.data?.code === 'DUPLICATE_INVOICE_NUMBER') {
-        alert(t('errors.duplicateNumber'));
+        showError(t('errors.duplicateNumber'));
       } else if (error.response?.status === 400) {
-        alert(error.response?.data?.error || t('errors.saveFailed'));
+        showError(error.response?.data?.error || t('errors.saveFailed'));
       } else {
-        alert(t('errors.saveFailed'));
+        showError(t('errors.saveFailed'));
       }
     } finally {
       setSaving(false);

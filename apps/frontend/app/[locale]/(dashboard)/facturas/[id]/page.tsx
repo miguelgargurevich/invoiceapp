@@ -19,6 +19,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import {
   Button,
   Card,
@@ -27,8 +28,6 @@ import {
   Input,
   LoadingPage,
   ConfirmDialog,
-  Toast,
-  ToastType,
 } from '@/components/common';
 import { PrintPreviewModal, SendEmailModal, InvoicePreview } from '@/components/invoice';
 import { formatDate } from '@/lib/utils';
@@ -97,6 +96,7 @@ export default function FacturaDetailPage({
   const router = useRouter();
   const { empresa } = useAuth();
   const { formatCurrency } = useCurrency();
+  const { showSuccess, showError } = useToast();
 
   const [factura, setFactura] = useState<Factura | null>(null);
   const [loading, setLoading] = useState(true);
@@ -113,7 +113,6 @@ export default function FacturaDetailPage({
   }>({ isOpen: false, signingUrl: '', email: '' });
   const [urlCopied, setUrlCopied] = useState(false);
   const [isSignatureConfirmOpen, setIsSignatureConfirmOpen] = useState(false);
-  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
   const pdfRef = useRef<HTMLDivElement>(null);
   const [paymentData, setPaymentData] = useState({
     monto: '',
@@ -229,10 +228,7 @@ export default function FacturaDetailPage({
       });
 
       // Show success toast
-      setToast({
-        message: 'Signature request sent successfully!',
-        type: 'success'
-      });
+      showSuccess('Signature request sent successfully!');
 
       // Show success modal with signing URL
       const signingUrl = `${window.location.origin}/${locale}/sign/${response.token}`;
@@ -246,10 +242,7 @@ export default function FacturaDetailPage({
       loadFactura();
     } catch (error: any) {
       console.error('Error requesting signature:', error);
-      setToast({
-        message: error.response?.data?.error || 'Failed to request signature',
-        type: 'error'
-      });
+      showError(error.response?.data?.error || 'Failed to request signature');
     } finally {
       setRequestingSignature(false);
     }
@@ -840,15 +833,6 @@ export default function FacturaDetailPage({
         confirmText="Send Request"
         cancelText="Cancel"
       />
-
-      {/* Toast Notification */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
 
       {/* Hidden PDF Generator */}
       <div className="fixed -left-[9999px] -top-[9999px]">
