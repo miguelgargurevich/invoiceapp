@@ -6,7 +6,7 @@ export function useCurrency() {
   
   // Get currency symbol from empresa settings
   const getCurrencySymbol = () => {
-    if (!empresa?.moneda) return 'S/';
+    if (!empresa?.moneda) return '$';
     
     const symbols: Record<string, string> = {
       PEN: 'S/',
@@ -19,11 +19,11 @@ export function useCurrency() {
 
   // Format currency using empresa settings
   const formatCurrency = (amount: number | string | null | undefined) => {
-    return baseCurrency(amount, empresa?.moneda || 'PEN');
+    return baseCurrency(amount, empresa?.moneda || 'USD');
   };
 
   return {
-    currency: empresa?.moneda || 'PEN',
+    currency: empresa?.moneda || 'USD',
     currencySymbol: getCurrencySymbol(),
     formatCurrency,
   };

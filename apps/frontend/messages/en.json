@@ -161,7 +161,7 @@
     "client": "Client",
     "subtotal": "Subtotal",
     "discount": "Discount",
-    "tax": "IGV (18%)",
+    "tax": "Sales Tax (18%)",
     "total": "Total",
     "status": "Status",
     "paymentMethod": "Payment Method",
@@ -323,7 +323,7 @@
     "price": "PRICE",
     "discount": "Discount",
     "subtotal": "Subtotal",
-    "tax": "IGV (18%)",
+    "tax": "Sales Tax (18%)",
     "dates": "Dates",
     "totals": "Totals",
     "observations": "Notes",
@@ -497,7 +497,7 @@
     "noCategory": "No category",
     "unitMeasure": "Unit of Measure",
     "unitPrice": "Unit Price",
-    "priceWithTax": "Price includes IGV",
+    "priceWithTax": "Price includes Sales Tax",
     "currentStock": "Current Stock",
     "minStock": "Minimum Stock",
     "lowStock": "Low Stock",
@@ -507,7 +507,7 @@
     "downloadTemplate": "Download Template",
     "typeProduct": "Product",
     "typeService": "Service",
-    "taxable": "Subject to IGV",
+    "taxable": "Subject to Sales Tax",
     "deleteTitle": "Delete Product",
     "deleteMessage": "Are you sure you want to delete {name}? This action cannot be undone.",
     "edit": "Edit",
@@ -633,7 +633,7 @@
     "invoiceSettingsDesc": "Configure invoice and billing preferences",
     "receiptSeries": "Receipt Series",
     "taxRate": "Tax Rate (%)",
-    "igvRate": "IGV Rate",
+    "igvRate": "Sales Tax Rate",
     "paymentTerms": "Payment Terms",
     "footerNotes": "Footer Notes",
     "footerNotesPlaceholder": "Additional notes that will appear at the bottom of invoices...",
@@ -823,7 +823,7 @@
     "faqs": {
       "createInvoice": {
         "question": "How do I create my first invoice?",
-        "answer": "To create an invoice, go to the 'Invoices' section in the sidebar and click the 'New Invoice' button. Fill in the client details, add products or services, and save. The system will automatically calculate totals and IGV."
+        "answer": "To create an invoice, go to the 'Invoices' section in the sidebar and click the 'New Invoice' button. Fill in the client details, add products or services, and save. The system will automatically calculate totals and Sales Tax."
       },
       "addClient": {
         "question": "How do I add a new client?",
@@ -842,8 +842,8 @@
         "answer": "Go to 'Settings' where you can update your company data, receipt series, logo, currency and other system preferences."
       },
       "vatCalculation": {
-        "question": "Does the system automatically calculate IGV?",
-        "answer": "Yes, the system automatically calculates IGV (18%) on all products and services, unless you configure a product as IGV exempt."
+        "question": "Does the system automatically calculate Sales Tax?",
+        "answer": "Yes, the system automatically calculates Sales Tax (18%) on all products and services, unless you configure a product as tax exempt."
       }
     }
   }

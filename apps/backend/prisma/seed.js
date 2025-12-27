@@ -33,7 +33,7 @@ async function main() {
       direccion: 'Av. Los Pinos 123, San Isidro, Lima',
       telefono: '987654321',
       email: 'contacto@miempresa.com',
-      moneda: 'PEN',
+      moneda: 'USD',
       serieFactura: 'F001',
       serieProforma: 'P001',
       userId: userId,

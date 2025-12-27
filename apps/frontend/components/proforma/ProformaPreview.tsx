@@ -63,7 +63,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
   ({ proforma, empresa }, ref) => {
     const t = useTranslations('quotes.pdf');
     const formatCurrency = (amount: number | string | null | undefined) => 
-      baseFormatCurrency(amount, empresa?.moneda || 'PEN');
+      baseFormatCurrency(amount, empresa?.moneda || 'USD');
     
     return (
       <div

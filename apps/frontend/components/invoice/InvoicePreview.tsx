@@ -63,7 +63,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
   ({ factura, empresa }, ref) => {
     const t = useTranslations('invoices.pdf');
     const formatCurrency = (amount: number | string | null | undefined) => 
-      baseFormatCurrency(amount, empresa?.moneda || 'PEN');
+      baseFormatCurrency(amount, empresa?.moneda || 'USD');
     
     return (
       <div
