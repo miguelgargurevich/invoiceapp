@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Plus, Search, Filter, Download, Edit, Trash2, Tag } from 'lucide-react';
+import { Plus, Search, Filter, Download, Edit, Trash2, Tag, Package } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
@@ -336,7 +336,7 @@ export default function ProductosPage({
           }}
           className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
         >
-          <Plus className="w-5 h-5 mr-2" />
+          <Package className="w-5 h-5 mr-2" />
           {t('addProduct')}
         </Button>
       </div>
@@ -387,7 +387,7 @@ export default function ProductosPage({
           <EmptyProducts
             action={
               <Button onClick={() => setIsModalOpen(true)}>
-                <Plus className="w-4 h-4 mr-2" />
+                <Package className="w-4 h-4 mr-2" />
                 {t('addFirstProduct')}
               </Button>
             }
