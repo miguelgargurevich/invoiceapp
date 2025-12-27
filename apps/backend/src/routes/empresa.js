@@ -124,7 +124,8 @@ router.put('/mi-empresa/config', authenticateToken, async (req, res) => {
     const updateData = {
       serieFactura: req.body.serieFactura,
       serieProforma: req.body.serieBoleta, // Map serieBoleta to serieProforma
-      moneda: req.body.moneda
+      moneda: req.body.moneda,
+      taxRate: req.body.igv ? parseFloat(req.body.igv) : undefined
     };
 
     // Remove undefined values
@@ -144,7 +145,8 @@ router.put('/mi-empresa/config', authenticateToken, async (req, res) => {
     res.json({
       serieFactura: updatedEmpresa.serieFactura,
       serieBoleta: updatedEmpresa.serieProforma,
-      moneda: updatedEmpresa.moneda
+      moneda: updatedEmpresa.moneda,
+      igv: updatedEmpresa.taxRate ? parseFloat(updatedEmpresa.taxRate) : 18
     });
   } catch (error) {
     console.error('[EMPRESA CONFIG] Error updating config:', error);

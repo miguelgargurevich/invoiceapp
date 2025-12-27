@@ -17,6 +17,7 @@ export interface Empresa {
   web?: string;
   logoUrl?: string;
   moneda: string;
+  taxRate?: number | string; // Tax rate percentage (e.g., 18 for 18%)
   serieFactura: string;
   serieProforma: string;
   userId: string;

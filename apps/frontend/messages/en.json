@@ -632,6 +632,7 @@
     "invoiceSettings": "Invoice Settings",
     "invoiceSettingsDesc": "Configure invoice and billing preferences",
     "receiptSeries": "Receipt Series",
+    "taxRate": "Tax Rate (%)",
     "igvRate": "VAT Rate",
     "paymentTerms": "Payment Terms",
     "footerNotes": "Footer Notes",

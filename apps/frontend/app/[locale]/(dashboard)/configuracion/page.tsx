@@ -106,7 +106,7 @@ export default function ConfiguracionPage({
         serieFactura: empresa.serieFactura || 'F001',
         correlativoBoleta: 1,
         correlativoFactura: 1,
-        igv: 18,
+        igv: empresa.taxRate ? parseFloat(empresa.taxRate.toString()) : 18,
         moneda: empresa.moneda || 'PEN',
         condicionesPago: '30 días',
         notasPie: '',
@@ -678,10 +678,13 @@ export default function ConfiguracionPage({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <Input
-                      label={t('igvRate')}
+                      label={t('taxRate')}
                       type="number"
+                      step="0.01"
+                      min="0"
+                      max="100"
                       value={invoiceConfig.igv.toString()}
-                      onChange={(e) => setInvoiceConfig({ ...invoiceConfig, igv: parseInt(e.target.value) || 18 })}
+                      onChange={(e) => setInvoiceConfig({ ...invoiceConfig, igv: parseFloat(e.target.value) || 18 })}
                     />
                     <span className="text-xs text-gray-500 mt-1">%</span>
                   </div>

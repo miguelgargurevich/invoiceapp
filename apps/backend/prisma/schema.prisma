@@ -25,6 +25,7 @@ model Empresa {
   licencia        String?   // License number (contractor license, etc.)
   tituloProfesional String? @map("titulo_profesional") // Professional title (e.g., "MASTER ELECTRICIAN")
   moneda          String    @default("PEN")
+  taxRate         Decimal   @default(18) @map("tax_rate") @db.Decimal(5, 2) // Tax rate percentage (e.g., 18 for 18%, 10 for 10%)
   serieFactura    String    @default("F001") @map("serie_factura")
   serieProforma   String    @default("P001") @map("serie_proforma")
   userId          String    @map("user_id")

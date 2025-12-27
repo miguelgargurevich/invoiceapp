@@ -635,6 +635,7 @@
     "invoiceSettings": "Configuración de Facturación",
     "invoiceSettingsDesc": "Configura las preferencias de facturas y cobros",
     "receiptSeries": "Serie de Recibos",
+    "taxRate": "Tasa de Impuesto (%)",
     "igvRate": "Tasa de IGV",
     "paymentTerms": "Términos de Pago",
     "footerNotes": "Notas al Pie",
