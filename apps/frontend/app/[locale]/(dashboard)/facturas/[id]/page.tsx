@@ -18,7 +18,7 @@ import {
   Send,
   ExternalLink,
   Calendar,
-  Edit2,  Share2,  Share2,
+  Edit2,  Share2,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
