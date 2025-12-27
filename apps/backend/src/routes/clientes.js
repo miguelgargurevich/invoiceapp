@@ -6,15 +6,15 @@ const { z } = require('zod');
 
 // Esquema de validación
 const clienteSchema = z.object({
-  tipoDocumento: z.enum(['RUC', 'DNI', 'CE']),
-  numeroDocumento: z.string().min(8).max(11),
+  tipoDocumento: z.enum(['RUC', 'DNI', 'CE', 'PASAPORTE']),
+  numeroDocumento: z.string().min(6).max(20),
   razonSocial: z.string().min(2).max(200),
-  nombreComercial: z.string().optional(),
-  direccion: z.string().optional(),
-  email: z.string().email().optional().or(z.literal('')),
-  telefono: z.string().optional(),
-  contacto: z.string().optional(),
-  notas: z.string().optional()
+  nombreComercial: z.string().optional().nullable(),
+  direccion: z.string().optional().nullable(),
+  email: z.string().email().optional().nullable().or(z.literal('')).or(z.literal(null)),
+  telefono: z.string().optional().nullable(),
+  contacto: z.string().optional().nullable(),
+  notas: z.string().optional().nullable()
 });
 
 // GET /api/clientes - Listar clientes
@@ -123,20 +123,27 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
 // POST /api/clientes - Crear cliente
 router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
+    console.log('[CLIENTES] Creating client, body:', JSON.stringify(req.body, null, 2));
+    
     // Map frontend fields to backend schema
     const mappedData = {
-      tipoDocumento: req.body.tipoDocumento,
-      numeroDocumento: req.body.numeroDocumento || req.body.documento,
-      razonSocial: req.body.razonSocial || req.body.nombre,
-      nombreComercial: req.body.nombreComercial,
-      direccion: req.body.direccion,
-      email: req.body.email || null,
-      telefono: req.body.telefono,
-      contacto: req.body.contacto,
-      notas: req.body.notas
+      tipoDocumento: req.body.tipoDocumento || 'RUC',
+      numeroDocumento: req.body.numeroDocumento || req.body.documento || '',
+      razonSocial: req.body.razonSocial || req.body.nombre || '',
+      nombreComercial: req.body.nombreComercial || null,
+      direccion: req.body.direccion || null,
+      email: req.body.email && req.body.email.trim() !== '' ? req.body.email : null,
+      telefono: req.body.telefono || null,
+      contacto: req.body.contacto || null,
+      notas: req.body.notas || null
     };
 
+    console.log('[CLIENTES] Mapped data:', JSON.stringify(mappedData, null, 2));
+
     const validatedData = clienteSchema.parse(mappedData);
+
+    console.log('[CLIENTES] Validated data:', JSON.stringify(validatedData, null, 2));
+    console.log('[CLIENTES] EmpresaId:', req.empresa.id);
 
     const cliente = await prisma.cliente.create({
       data: {
