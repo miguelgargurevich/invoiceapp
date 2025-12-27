@@ -61,8 +61,6 @@ interface LineaDetalle {
   total: number;
 }
 
-const IGV_RATE = 0.18;
-
 export default function NuevaProformaPage({
   params: { locale },
 }: {
@@ -183,7 +181,8 @@ export default function NuevaProformaPage({
         // Recalculate totals
         const baseAmount = updated.cantidad * updated.precioUnitario;
         updated.subtotal = baseAmount - updated.descuento;
-        updated.igv = updated.producto?.afectoIgv !== false ? updated.subtotal * IGV_RATE : 0;
+        const taxRate = empresa?.taxRate ? parseFloat(empresa.taxRate.toString()) / 100 : 0.18;
+        updated.igv = updated.producto?.afectoIgv !== false ? updated.subtotal * taxRate : 0;
         updated.total = updated.subtotal + updated.igv;
 
         return updated;

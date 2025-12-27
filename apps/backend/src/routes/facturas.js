@@ -28,8 +28,8 @@ const facturaSchema = z.object({
 });
 
 // Calcular montos de factura
-function calcularMontos(detalles) {
-  const IGV_RATE = 0.18;
+function calcularMontos(detalles, taxRate = 18) {
+  const TAX_RATE = parseFloat(taxRate) / 100; // Convert percentage to decimal
   let subtotalSinIgv = 0;
   let totalDescuento = 0;
 
@@ -37,7 +37,7 @@ function calcularMontos(detalles) {
     const subtotalLinea = detalle.cantidad * detalle.precioUnitario;
     const descuentoLinea = detalle.descuento || 0;
     const baseImponible = subtotalLinea - descuentoLinea;
-    const igvLinea = baseImponible * IGV_RATE;
+    const igvLinea = baseImponible * TAX_RATE;
     const totalLinea = baseImponible + igvLinea;
 
     subtotalSinIgv += baseImponible;
@@ -52,7 +52,7 @@ function calcularMontos(detalles) {
     };
   });
 
-  const igvTotal = subtotalSinIgv * IGV_RATE;
+  const igvTotal = subtotalSinIgv * TAX_RATE;
   const total = subtotalSinIgv + igvTotal;
 
   return {
@@ -209,8 +209,8 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
     const validatedData = facturaSchema.parse(req.body);
     const { detalles, ...facturaData } = validatedData;
 
-    // Calcular montos
-    const montosCalculados = calcularMontos(detalles);
+    // Calcular montos usando el taxRate de la empresa
+    const montosCalculados = calcularMontos(detalles, req.empresa.taxRate || 18);
 
     // Obtener siguiente número
     const numero = await obtenerSiguienteNumero(req.empresa.id, req.empresa.serieFactura);
@@ -278,7 +278,7 @@ router.put('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
     // Si se actualizan detalles, recalcular
     let montosActualizados = {};
     if (detalles) {
-      const montosCalculados = calcularMontos(detalles);
+      const montosCalculados = calcularMontos(detalles, req.empresa.taxRate || 18);
       montosActualizados = {
         subtotal: montosCalculados.subtotal,
         descuento: montosCalculados.descuento,
