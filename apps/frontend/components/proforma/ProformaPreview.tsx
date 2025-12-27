@@ -114,7 +114,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
 
         {/* Client Info */}
         <div className="mb-4 bg-gray-50 p-2 rounded-lg" style={{ pageBreakInside: 'avoid' }}>
-          <h3 className="text-[10px] font-semibold text-gray-800 mb-1 uppercase">
+          <h3 className="text-[9px] font-medium text-gray-800 mb-1 uppercase">
             {t('clientData')}
           </h3>
           <div className="grid grid-cols-2 gap-2 text-xs">
@@ -216,7 +216,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         {/* Conditions */}
         {proforma.condiciones && (
           <div className="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg" style={{ pageBreakInside: 'avoid' }}>
-            <h3 className="text-[10px] font-semibold text-yellow-800 mb-1">
+            <h3 className="text-[9px] font-medium text-yellow-800 mb-1">
               {t('conditions')}
             </h3>
             <p className="text-xs text-gray-700 whitespace-pre-wrap">{proforma.condiciones}</p>
@@ -226,7 +226,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         {/* Observations */}
         {proforma.observaciones && (
           <div className="mb-4 p-2 bg-gray-50 rounded-lg" style={{ pageBreakInside: 'avoid' }}>
-            <h3 className="text-[10px] font-semibold text-gray-800 mb-1">
+            <h3 className="text-[9px] font-medium text-gray-800 mb-1">
               {t('observations')}
             </h3>
             <p className="text-xs text-gray-600">{proforma.observaciones}</p>
