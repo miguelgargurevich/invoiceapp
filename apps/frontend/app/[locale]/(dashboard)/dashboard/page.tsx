@@ -388,60 +388,99 @@ export default function DashboardPage({
 
         {/* Right Sidebar */}
         <div className="space-y-6">
-          {/* Metric Cards */}
+          {/* Consolidated Metrics Card */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <MetricCard
-              title={t('monthlySales')}
-              value={formatCurrency(stats?.ventasMes || 0)}
-              change={`${percentageChange >= 0 ? '+' : ''}${(parseFloat(String(percentageChange)) || 0).toFixed(1)}%`}
-              changeType={percentageChange >= 0 ? 'positive' : 'negative'}
-              icon={<DollarSign className="w-6 h-6" />}
-              color="blue"
-            />
-          </motion.div>
+            <Card>
+              <div className="space-y-6">
+                {/* Monthly Sales */}
+                <div className="border-b border-gray-200 dark:border-gray-700 pb-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                          <DollarSign className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          {t('monthlySales')}
+                        </span>
+                      </div>
+                      <div className="ml-11">
+                        <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+                          {formatCurrency(stats?.ventasMes || 0)}
+                        </div>
+                        <div className={cn(
+                          "text-sm font-medium mt-1 flex items-center gap-1",
+                          percentageChange >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                        )}>
+                          {percentageChange >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                          {`${percentageChange >= 0 ? '+' : ''}${(parseFloat(String(percentageChange)) || 0).toFixed(1)}%`}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <MetricCard
-              title={t('totalInvoices')}
-              value={stats?.totalFacturas.toString() || '0'}
-              icon={<FileText className="w-6 h-6" />}
-              color="green"
-            />
-          </motion.div>
+                {/* Total Invoices */}
+                <div className="border-b border-gray-200 dark:border-gray-700 pb-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                        <FileText className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        {t('totalInvoices')}
+                      </span>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {stats?.totalFacturas || 0}
+                    </div>
+                  </div>
+                </div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-          >
-            <MetricCard
-              title={t('totalClients')}
-              value={stats?.totalClientes.toString() || '0'}
-              icon={<Users className="w-6 h-6" />}
-              color="yellow"
-            />
-          </motion.div>
+                {/* Total Clients */}
+                <div className="border-b border-gray-200 dark:border-gray-700 pb-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                        <Users className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+                      </div>
+                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                        {t('totalClients')}
+                      </span>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {stats?.totalClientes || 0}
+                    </div>
+                  </div>
+                </div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <MetricCard
-              title={t('pendingInvoices')}
-              value={stats?.facturasPendientes.toString() || '0'}
-              subtitle={`${stats?.facturasVencidas || 0} ${t('overdue')}`}
-              icon={<Clock className="w-6 h-6" />}
-              color="red"
-            />
+                {/* Pending Invoices */}
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                        <Clock className="w-5 h-5 text-red-600 dark:text-red-400" />
+                      </div>
+                      <div>
+                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                          {t('pendingInvoices')}
+                        </span>
+                        <div className="text-xs text-gray-500 dark:text-gray-500">
+                          {stats?.facturasVencidas || 0} {t('overdue')}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      {stats?.facturasPendientes || 0}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
           </motion.div>
 
           {/* Invoice Status Donut Chart */}

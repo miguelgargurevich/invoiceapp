@@ -76,21 +76,23 @@ export function Modal({
               )}
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Header with gradient border */}
-              <div className="relative flex items-center justify-between px-6 py-5 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-br from-gray-50/50 to-transparent dark:from-gray-800/50">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
-                  {title}
-                </h2>
-                {showCloseButton && (
-                  <button
-                    onClick={onClose}
-                    className="p-2 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
-                    aria-label="Close modal"
-                  >
-                    <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                  </button>
-                )}
-              </div>
+              {/* Header with gradient border - Only show if title exists */}
+              {title && (
+                <div className="relative flex items-center justify-between px-6 py-5 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-br from-gray-50/50 to-transparent dark:from-gray-800/50">
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 tracking-tight">
+                    {title}
+                  </h2>
+                  {showCloseButton && (
+                    <button
+                      onClick={onClose}
+                      className="p-2 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95"
+                      aria-label="Close modal"
+                    >
+                      <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                    </button>
+                  )}
+                </div>
+              )}
 
               {/* Content - Scrollable */}
               <div className="overflow-y-auto px-6 py-5 flex-1 custom-scrollbar">
