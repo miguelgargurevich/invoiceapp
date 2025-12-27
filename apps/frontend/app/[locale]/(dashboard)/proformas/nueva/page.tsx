@@ -194,10 +194,10 @@ export default function NuevaProformaPage({
   // Calculate totals
   const totals = lineas.reduce(
     (acc, linea) => ({
-      subtotal: acc.subtotal + linea.subtotal,
-      igv: acc.igv + linea.igv,
-      total: acc.total + linea.total,
-      descuento: acc.descuento + linea.descuento,
+      subtotal: acc.subtotal + Number(linea.subtotal),
+      igv: acc.igv + Number(linea.igv),
+      total: acc.total + Number(linea.total),
+      descuento: acc.descuento + Number(linea.descuento),
     }),
     { subtotal: 0, igv: 0, total: 0, descuento: 0 }
   );

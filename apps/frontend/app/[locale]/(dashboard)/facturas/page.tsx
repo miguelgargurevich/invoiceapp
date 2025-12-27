@@ -447,8 +447,8 @@ export default function FacturasPage({
   // Calculate totals
   const totals = filteredFacturas.reduce(
     (acc, f) => ({
-      total: acc.total + f.total,
-      pendiente: acc.pendiente + f.montoPendiente,
+      total: acc.total + Number(f.total),
+      pendiente: acc.pendiente + Number(f.montoPendiente),
     }),
     { total: 0, pendiente: 0 }
   );
