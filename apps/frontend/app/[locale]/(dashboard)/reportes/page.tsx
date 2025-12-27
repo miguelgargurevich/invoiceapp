@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   BarChart3,
@@ -24,8 +24,40 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { Button, Card, MetricCard, DatePicker } from '@/components/common';
+import { Button, Card, MetricCard, DatePicker, LoadingSpinner } from '@/components/common';
 import { useCurrency } from '@/lib/hooks/useCurrency';
+import api from '@/lib/api';
+
+interface VentasPorMes {
+  mes: string;
+  ventas: number;
+  cobrado: number;
+}
+
+interface TopCliente {
+  cliente: { razonSocial: string };
+  totalVentas: number;
+}
+
+interface TopProducto {
+  producto: { nombre: string };
+  totalVentas: number;
+  cantidadVendida: number;
+}
+
+interface Totales {
+  totalFacturado: number;
+  totalCobrado: number;
+  totalPendiente: number;
+  facturas: number;
+}
+
+interface EstadoFactura {
+  name: string;
+  value: number;
+  color: string;
+  [key: string]: string | number;
+}
 
 export default function ReportesPage({
   params: { locale },
@@ -36,51 +68,99 @@ export default function ReportesPage({
   const { empresa } = useAuth();
   const { formatCurrency, currencySymbol } = useCurrency();
 
+  const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState({
-    from: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+    from: new Date(new Date().getFullYear(), new Date().getMonth() - 5, 1),
     to: new Date(),
   });
   const [reportType, setReportType] = useState('ventas');
 
-  // Mock data for reports
-  const ventasMensuales = [
-    { mes: 'Ene', ventas: 32000, cobrado: 28000 },
-    { mes: 'Feb', ventas: 28000, cobrado: 25000 },
-    { mes: 'Mar', ventas: 35000, cobrado: 32000 },
-    { mes: 'Abr', ventas: 42000, cobrado: 38000 },
-    { mes: 'May', ventas: 38000, cobrado: 35000 },
-    { mes: 'Jun', ventas: 45680, cobrado: 40000 },
-  ];
+  // State for real data from API
+  const [ventasMensuales, setVentasMensuales] = useState<VentasPorMes[]>([]);
+  const [topClientes, setTopClientes] = useState<TopCliente[]>([]);
+  const [topProductos, setTopProductos] = useState<TopProducto[]>([]);
+  const [estadoFacturas, setEstadoFacturas] = useState<EstadoFactura[]>([]);
+  const [totales, setTotales] = useState<Totales>({
+    totalFacturado: 0,
+    totalCobrado: 0,
+    totalPendiente: 0,
+    facturas: 0,
+  });
 
-  const topClientes = [
-    { nombre: 'Empresa ABC S.A.C.', total: 15680 },
-    { nombre: 'Comercial Lima E.I.R.L.', total: 12450 },
-    { nombre: 'Tech Solutions Peru', total: 9800 },
-    { nombre: 'Distribuidora Norte S.A.', total: 8500 },
-    { nombre: 'Servicios Generales SAC', total: 6200 },
-  ];
+  const loadReportData = useCallback(async () => {
+    if (!empresa?.id) return;
 
-  const topProductos = [
-    { nombre: 'Servicio de Consultoría', total: 25000, cantidad: 120 },
-    { nombre: 'Laptop HP ProBook', total: 18000, cantidad: 6 },
-    { nombre: 'Mantenimiento Mensual', total: 12000, cantidad: 15 },
-    { nombre: 'Capacitación', total: 8500, cantidad: 20 },
-    { nombre: 'Licencia Software', total: 5200, cantidad: 40 },
-  ];
+    try {
+      setLoading(true);
+      const fechaInicio = dateRange.from.toISOString().split('T')[0];
+      const fechaFin = dateRange.to.toISOString().split('T')[0];
 
-  const estadoFacturas = [
-    { name: t('paid'), value: 120, color: '#22c55e' },
-    { name: t('pendingStatus'), value: 25, color: '#f59e0b' },
-    { name: t('overdueStatus'), value: 11, color: '#ef4444' },
-  ];
+      // Fetch all report data in parallel
+      const [ventasData, clientesData, productosData, graficosData] = await Promise.all([
+        api.get<any>(`/reportes/ventas?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&agrupacion=mes`),
+        api.get<any>(`/reportes/clientes?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&limite=5`),
+        api.get<any>(`/reportes/productos?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&limite=5`),
+        api.get<any>('/dashboard/graficos'),
+      ]);
 
-  const totales = {
-    totalFacturado: 220680,
-    totalCobrado: 198000,
-    totalPendiente: 22680,
-    facturas: 156,
-    clientes: 89,
-    productos: 234,
+      // Transform monthly sales data
+      const monthNames: Record<string, string> = {
+        '01': 'Ene', '02': 'Feb', '03': 'Mar', '04': 'Abr',
+        '05': 'May', '06': 'Jun', '07': 'Jul', '08': 'Ago',
+        '09': 'Sep', '10': 'Oct', '11': 'Nov', '12': 'Dic'
+      };
+      
+      const ventasTransformed: VentasPorMes[] = (ventasData.datos || []).map((item: any) => ({
+        mes: monthNames[item.periodo.split('-')[1]] || item.periodo,
+        ventas: item.total || 0,
+        cobrado: item.pagado || 0,
+      }));
+
+      // Set totals from sales data
+      setTotales({
+        totalFacturado: ventasData.resumen?.totalVentas || 0,
+        totalCobrado: ventasData.resumen?.totalPagado || 0,
+        totalPendiente: ventasData.resumen?.totalPendiente || 0,
+        facturas: ventasData.resumen?.cantidadFacturas || 0,
+      });
+
+      // Set monthly sales
+      setVentasMensuales(ventasTransformed);
+
+      // Set top clients
+      setTopClientes((clientesData.datos || []).map((c: any) => ({
+        cliente: c.cliente,
+        totalVentas: c.totalVentas,
+      })));
+
+      // Set top products
+      setTopProductos((productosData.datos || []).map((p: any) => ({
+        producto: p.producto,
+        totalVentas: p.totalVentas,
+        cantidadVendida: p.cantidadVendida,
+      })));
+
+      // Set invoice status from graficos endpoint
+      const estados = graficosData.estadosFacturas || { pagada: 0, pendiente: 0, vencida: 0 };
+      setEstadoFacturas([
+        { name: t('paid'), value: estados.pagada, color: '#22c55e' },
+        { name: t('pendingStatus'), value: estados.pendiente, color: '#f59e0b' },
+        { name: t('overdueStatus'), value: estados.vencida, color: '#ef4444' },
+      ]);
+
+    } catch (error) {
+      console.error('Error loading report data:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [empresa?.id, dateRange, t]);
+
+  useEffect(() => {
+    loadReportData();
+  }, [loadReportData]);
+
+  const handleGenerateReport = () => {
+    loadReportData();
   };
 
   return (
@@ -135,8 +215,8 @@ export default function ReportesPage({
               <option value="productos">{t('productsReport')}</option>
               <option value="pagos">{t('paymentsReport')}</option>
             </select>
-            <Button>
-              <Filter className="w-4 h-4 mr-2" />
+            <Button onClick={handleGenerateReport} disabled={loading}>
+              {loading ? <LoadingSpinner size="sm" className="mr-2" /> : <Filter className="w-4 h-4 mr-2" />}
               {t('generate')}
             </Button>
           </div>
@@ -251,27 +331,31 @@ export default function ReportesPage({
             {t('topClients')}
           </h2>
           <div className="space-y-4">
-            {topClientes.map((cliente, index) => (
-              <div key={cliente.nombre} className="flex items-center gap-4">
-                <span className="w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 text-sm font-medium flex items-center justify-center">
-                  {index + 1}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                    {cliente.nombre}
-                  </p>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-1">
-                    <div
-                      className="bg-primary-500 h-2 rounded-full"
-                      style={{ width: `${(cliente.total / topClientes[0].total) * 100}%` }}
-                    />
+            {topClientes.length === 0 ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('noData')}</p>
+            ) : (
+              topClientes.map((cliente, index) => (
+                <div key={cliente.cliente.razonSocial} className="flex items-center gap-4">
+                  <span className="w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 text-sm font-medium flex items-center justify-center">
+                    {index + 1}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                      {cliente.cliente.razonSocial}
+                    </p>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-1">
+                      <div
+                        className="bg-primary-500 h-2 rounded-full"
+                        style={{ width: `${topClientes[0]?.totalVentas ? (cliente.totalVentas / topClientes[0].totalVentas) * 100 : 0}%` }}
+                      />
+                    </div>
                   </div>
+                  <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {formatCurrency(cliente.totalVentas)}
+                  </span>
                 </div>
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {formatCurrency(cliente.total)}
-                </span>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </Card>
 
@@ -281,24 +365,28 @@ export default function ReportesPage({
             {t('topProducts')}
           </h2>
           <div className="space-y-4">
-            {topProductos.map((producto, index) => (
-              <div key={producto.nombre} className="flex items-center gap-4">
-                <span className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 text-sm font-medium flex items-center justify-center">
-                  {index + 1}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                    {producto.nombre}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {producto.cantidad} {t('unitsSold')}
-                  </p>
+            {topProductos.length === 0 ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('noData')}</p>
+            ) : (
+              topProductos.map((producto, index) => (
+                <div key={producto.producto.nombre} className="flex items-center gap-4">
+                  <span className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400 text-sm font-medium flex items-center justify-center">
+                    {index + 1}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                      {producto.producto.nombre}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {producto.cantidadVendida} {t('unitsSold')}
+                    </p>
+                  </div>
+                  <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {formatCurrency(producto.totalVentas)}
+                  </span>
                 </div>
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  {formatCurrency(producto.total)}
-                </span>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </Card>
       </div>

@@ -582,8 +582,12 @@
     "invoiceStatus": "Estado de Facturas",
     "topClients": "Mejores Clientes",
     "topProducts": "Mejores Productos",
-    "unitsSold": "Unidades Vendidas",
-    "salesTrend": "Tendencia de Ventas"
+    "unitsSold": "unidades vendidas",
+    "salesTrend": "Tendencia de Ventas",
+    "paid": "Pagadas",
+    "pendingStatus": "Pendientes",
+    "overdueStatus": "Vencidas",
+    "noData": "No hay datos disponibles para este período"
   },
   "settings": {
     "title": "Configuración",

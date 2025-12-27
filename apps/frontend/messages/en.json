@@ -579,8 +579,12 @@
     "invoiceStatus": "Invoice Status",
     "topClients": "Top Clients",
     "topProducts": "Top Products",
-    "unitsSold": "Units Sold",
-    "salesTrend": "Sales Trend"
+    "unitsSold": "units sold",
+    "salesTrend": "Sales Trend",
+    "paid": "Paid",
+    "pendingStatus": "Pending",
+    "overdueStatus": "Overdue",
+    "noData": "No data available for this period"
   },
   "settings": {
     "title": "Settings",
