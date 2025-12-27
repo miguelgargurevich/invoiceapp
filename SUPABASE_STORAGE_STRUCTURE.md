@@ -34,50 +34,169 @@ logos/
 
 ### Permisos necesarios en Supabase:
 
-**Política para imágenes (logos):**
-```sql
--- Allow authenticated users to upload their own company logos
-CREATE POLICY "Users can upload company logos"
-ON storage.objects FOR INSERT
-TO authenticated
-WITH CHECK (bucket_id = 'logos' AND (storage.foldername(name))[1] = auth.uid()::text);
+Ir a **Supabase Dashboard → Storage → logos bucket → Policies**
 
--- Allow public read access to logos
-CREATE POLICY "Public can view logos"
+**IMPORTANTE:** Elimina las políticas existentes y crea estas nuevas:
+
+#### 1. Public can read all files (SELECT)
+```sql
+-- Policy name: Public can read all files
+-- Command: SELECT
+-- Target roles: public
+
+CREATE POLICY "Public can read all files"
 ON storage.objects FOR SELECT
 TO public
-USING (bucket_id = 'logos' AND (storage.foldername(name))[2] = 'images');
+USING (bucket_id = 'logos');
 ```
 
-**Política para firmas:**
+#### 2. Authenticated users can upload to their company folder (INSERT)
 ```sql
--- Allow public insert for signatures (signing page is public)
+-- Policy name: Authenticated users can upload to their company
+-- Command: INSERT
+-- Target roles: authenticated
+
+CREATE POLICY "Authenticated users can upload to their company"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (
+  bucket_id = 'logos'
+);
+```
+
+#### 3. Public can upload signatures (INSERT)
+```sql
+-- Policy name: Public can upload signatures
+-- Command: INSERT
+-- Target roles: public
+
 CREATE POLICY "Public can upload signatures"
 ON storage.objects FOR INSERT
 TO public
-WITH CHECK (bucket_id = 'logos' AND (storage.foldername(name))[2] = 'signatures');
-
--- Allow public read for signatures
-CREATE POLICY "Public can view signatures"
-ON storage.objects FOR SELECT
-TO public
-USING (bucket_id = 'logos' AND (storage.foldername(name))[2] = 'signatures');
+WITH CHECK (
+  bucket_id = 'logos' AND
+  (storage.foldername(name))[2] = 'signatures'
+);
 ```
 
-**Política para facturas:**
+#### 4. Public can upload invoices (INSERT)
 ```sql
--- Allow public insert for invoices (generated from signing page)
+-- Policy name: Public can upload invoices
+-- Command: INSERT
+-- Target roles: public
+
 CREATE POLICY "Public can upload invoices"
 ON storage.objects FOR INSERT
 TO public
-WITH CHECK (bucket_id = 'logos' AND (storage.foldername(name))[2] = 'invoices');
-
--- Allow public read for invoices
-CREATE POLICY "Public can view invoices"
-ON storage.objects FOR SELECT
-TO public
-USING (bucket_id = 'logos' AND (storage.foldername(name))[2] = 'invoices');
+WITH CHECK (
+  bucket_id = 'logos' AND
+  (storage.foldername(name))[2] = 'invoices'
+);
 ```
+
+#### 5. Authenticated can update their files (UPDATE)
+```sql
+-- Policy name: Authenticated can update their files
+-- Command: UPDATE
+-- Target roles: authenticated
+
+CREATE POLICY "Authenticated can update their files"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (bucket_id = 'logos');
+```
+
+#### 6. Service role has full access (ALL)
+```sql
+-- Policy name: Service role has full access
+-- Command: ALL
+-- Target roles: service_role
+
+CREATE POLICY "Service role has full access"
+ON storage.objects FOR ALL
+TO service_role
+USING (bucket_id = 'logos')
+WITH CHECK (bucket_id = 'logos');
+```
+
+---
+
+### Pasos para aplicar en Supabase UI:
+
+1. Ve a **Storage → logos → Policies**
+2. **Elimina todas las políticas existentes**
+3. Click en **"New Policy"** para cada una:
+
+**Política 1: Public can read all files**
+- Policy name: `Public can read all files`
+- Allowed operation: `SELECT`
+- Target roles: `public` ✅
+- USING expression:
+```sql
+bucket_id = 'logos'
+```
+
+**Política 2: Authenticated users can upload to their company**
+- Policy name: `Authenticated users can upload to their company`
+- Allowed operation: `INSERT`
+- Target roles: `authenticated` ✅
+- WITH CHECK expression:
+```sql
+bucket_id = 'logos'
+```
+
+**Política 3: Public can upload signatures**
+- Policy name: `Public can upload signatures`
+- Allowed operation: `INSERT`
+- Target roles: `public` ✅
+- WITH CHECK expression:
+```sql
+bucket_id = 'logos' AND (storage.foldername(name))[2] = 'signatures'
+```
+
+**Política 4: Public can upload invoices**
+- Policy name: `Public can upload invoices`
+- Allowed operation: `INSERT`
+- Target roles: `public` ✅
+- WITH CHECK expression:
+```sql
+bucket_id = 'logos' AND (storage.foldername(name))[2] = 'invoices'
+```
+
+**Política 5: Authenticated can update their files**
+- Policy name: `Authenticated can update their files`
+- Allowed operation: `UPDATE`
+- Target roles: `authenticated` ✅
+- USING expression:
+```sql
+bucket_id = 'logos'
+```
+
+**Política 6: Service role has full access**
+- Policy name: `Service role has full access`
+- Allowed operation: `ALL`
+- Target roles: `service_role` ✅
+- USING expression:
+```sql
+bucket_id = 'logos'
+```
+- WITH CHECK expression:
+```sql
+bucket_id = 'logos'
+```
+
+---
+
+### ¿Por qué estas políticas?
+
+| Política | Propósito |
+|----------|-----------|
+| Public read all | Los PDFs firmados y firmas necesitan ser accesibles públicamente vía link |
+| Authenticated upload | Usuarios autenticados suben logos de su empresa |
+| Public upload signatures | Página de firma es pública (no requiere login) |
+| Public upload invoices | PDF se genera en página de firma (pública) |
+| Authenticated update | Usuarios pueden actualizar sus logos |
+| Service role full | Backend con service_role key tiene acceso completo |
 
 ### Archivos modificados:
 
