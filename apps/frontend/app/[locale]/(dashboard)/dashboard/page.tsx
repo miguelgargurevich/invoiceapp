@@ -90,10 +90,10 @@ export default function DashboardPage({
       setLoading(true);
       
       // Fetch real data from API
-      const recentInvoicesResponse = await api.get('/dashboard/ultimas-facturas');
+      const recentInvoicesData = await api.get<any[]>('/dashboard/ultimas-facturas');
 
       // Transform invoices data to match interface
-      const transformedInvoices: RecentInvoice[] = recentInvoicesResponse.data.map((factura: any) => ({
+      const transformedInvoices: RecentInvoice[] = recentInvoicesData.map((factura: any) => ({
         id: factura.id.toString(),
         numero: `${factura.serie}-${factura.numero.toString().padStart(6, '0')}`,
         cliente: { nombre: factura.cliente.razonSocial },
@@ -209,9 +209,9 @@ export default function DashboardPage({
       </div>
 
       {/* Main Layout: Content + Sidebar */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Main Content Area */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-3 space-y-6">
           {/* Giant Action Buttons */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Create Invoice Button */}
@@ -400,88 +400,54 @@ export default function DashboardPage({
             transition={{ delay: 0.1 }}
           >
             <Card>
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {/* Monthly Sales */}
-                <div className="border-b border-gray-200 dark:border-gray-700 pb-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                          <DollarSign className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                        </div>
-                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                          {t('monthlySales')}
-                        </span>
-                      </div>
-                      <div className="ml-11">
-                        <div className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-                          {formatCurrency(stats?.ventasMes || 0)}
-                        </div>
-                        <div className={cn(
-                          "text-sm font-medium mt-1 flex items-center gap-1",
-                          percentageChange >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
-                        )}>
-                          {percentageChange >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                          {`${percentageChange >= 0 ? '+' : ''}${(parseFloat(String(percentageChange)) || 0).toFixed(1)}%`}
-                        </div>
-                      </div>
-                    </div>
+                <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
+                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                    {t('monthlySales')}
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    {formatCurrency(stats?.ventasMes || 0)}
+                  </div>
+                  <div className={cn(
+                    "text-xs font-medium mt-1 flex items-center gap-1",
+                    percentageChange >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"
+                  )}>
+                    {percentageChange >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                    {`${percentageChange >= 0 ? '+' : ''}${(parseFloat(String(percentageChange)) || 0).toFixed(1)}%`}
                   </div>
                 </div>
 
                 {/* Total Invoices */}
-                <div className="border-b border-gray-200 dark:border-gray-700 pb-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                        <FileText className="w-5 h-5 text-green-600 dark:text-green-400" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                        {t('totalInvoices')}
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                      {stats?.totalFacturas || 0}
-                    </div>
+                <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
+                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                    {t('totalInvoices')}
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    {stats?.totalFacturas || 0}
                   </div>
                 </div>
 
                 {/* Total Clients */}
-                <div className="border-b border-gray-200 dark:border-gray-700 pb-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
-                        <Users className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
-                      </div>
-                      <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                        {t('totalClients')}
-                      </span>
-                    </div>
-                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                      {stats?.totalClientes || 0}
-                    </div>
+                <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
+                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                    {t('totalClients')}
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    {stats?.totalClientes || 0}
                   </div>
                 </div>
 
                 {/* Pending Invoices */}
                 <div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-red-50 dark:bg-red-900/20 rounded-lg">
-                        <Clock className="w-5 h-5 text-red-600 dark:text-red-400" />
-                      </div>
-                      <div>
-                        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                          {t('pendingInvoices')}
-                        </span>
-                        <div className="text-xs text-gray-500 dark:text-gray-500">
-                          {stats?.facturasVencidas || 0} {t('overdue')}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                      {stats?.facturasPendientes || 0}
-                    </div>
+                  <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                    {t('pendingInvoices')}
+                  </div>
+                  <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                    {stats?.facturasPendientes || 0}
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                    {stats?.facturasVencidas || 0} {t('overdue')}
                   </div>
                 </div>
               </div>
