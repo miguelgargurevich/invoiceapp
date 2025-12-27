@@ -10,6 +10,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Enums for Digital Signature System
+enum DocumentType {
+  INVOICE
+  PROFORMA
+}
+
+enum SignatureRequestStatus {
+  PENDING
+  SIGNED
+  EXPIRED
+  CANCELLED
+}
+
 // 🏢 Empresa/Organización del usuario
 model Empresa {
   id              String    @id @default(uuid())
@@ -37,6 +50,7 @@ model Empresa {
   facturas        Factura[]
   proformas       Proforma[]
   categorias      Categoria[]
+  signatureRequests SignatureRequest[]
   
   @@index([userId], map: "idx_empresa_user_id")
   @@map("empresas")
@@ -168,6 +182,7 @@ model Factura {
   workLogs          WorkLog[]
   jobPhotos         JobPhoto[]
   jobReceipts       JobReceipt[]
+  signatureRequests SignatureRequest[]
   
   @@unique([empresaId, serie, numero])
   @@index([empresaId], map: "idx_factura_empresa_id")
@@ -268,6 +283,7 @@ model Proforma {
   facturasGeneradas Factura[]
   workLogs          WorkLog[]
   jobPhotos         JobPhoto[]
+  signatureRequests SignatureRequest[]
   jobReceipts       JobReceipt[]
   
   @@unique([empresaId, serie, numero])
@@ -376,4 +392,71 @@ model JobReceipt {
   @@index([proformaId], map: "idx_job_receipt_proforma")
   @@index([fecha(sort: Desc)], map: "idx_job_receipt_fecha")
   @@map("job_receipts")
+}
+
+// 📝 Digital Signature System
+// Signature Requests - Tracks requests for digital signatures
+model SignatureRequest {
+  id              String                   @id @default(uuid())
+  token           String                   @unique // Secure single-use token
+  documentType    DocumentType             @map("document_type") // 'INVOICE' or 'PROFORMA'
+  documentId      String                   @map("document_id") // ID of invoice or proforma
+  signerEmail     String                   @map("signer_email")
+  signerName      String?                  @map("signer_name")
+  status          SignatureRequestStatus   @default(PENDING) // PENDING, SIGNED, EXPIRED, CANCELLED
+  expiresAt       DateTime                 @map("expires_at")
+  
+  // Metadata
+  requestedBy     String    @map("requested_by") // User ID who requested
+  empresaId       String    @map("empresa_id")
+  
+  // Timestamps
+  createdAt       DateTime  @default(now()) @map("created_at")
+  sentAt          DateTime? @map("sent_at")
+  viewedAt        DateTime? @map("viewed_at")
+  
+  // Relations
+  empresa         Empresa   @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  factura         Factura?  @relation(fields: [documentId], references: [id], map: "fk_signature_request_factura")
+  proforma        Proforma? @relation(fields: [documentId], references: [id], map: "fk_signature_request_proforma")
+  signature       Signature?
+  
+  @@index([token])
+  @@index([documentId])
+  @@index([status])
+  @@index([expiresAt])
+  @@map("signature_requests")
+}
+
+// ✍️ Signatures - Stores completed signatures
+model Signature {
+  id                    String    @id @default(uuid())
+  signatureRequestId    String    @unique @map("signature_request_id")
+  
+  // Signature data
+  signatureImageUrl     String    @map("signature_image_url") // Path in Supabase Storage
+  signedPdfUrl          String?   @map("signed_pdf_url") // Final signed PDF
+  
+  // Signer information
+  signerName            String    @map("signer_name")
+  signerEmail           String    @map("signer_email")
+  signedAt              DateTime  @default(now()) @map("signed_at")
+  
+  // Legal compliance
+  consentGiven          Boolean   @default(true) @map("consent_given")
+  consentText           String?   @map("consent_text")
+  
+  // Audit metadata
+  ipAddress             String?   @map("ip_address")
+  userAgent             String?   @map("user_agent")
+  deviceType            String?   @map("device_type") // 'mobile', 'tablet', 'desktop'
+  
+  // Timestamps
+  createdAt             DateTime  @default(now()) @map("created_at")
+  
+  // Relations
+  signatureRequest      SignatureRequest @relation(fields: [signatureRequestId], references: [id], onDelete: Cascade)
+  
+  @@index([signatureRequestId])
+  @@map("signatures")
 }
