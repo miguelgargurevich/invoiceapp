@@ -63,6 +63,8 @@ export default function ProductosPage({
   const [selectedProducto, setSelectedProducto] = useState<Producto | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [sortKey, setSortKey] = useState<string>('nombre');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const loadProductos = useCallback(async () => {
     if (!empresa?.id) return;
@@ -305,14 +307,31 @@ export default function ProductosPage({
     },
   ];
 
-  const filteredProductos = productos.filter((p) => {
-    const matchesSearch =
-      (p.nombre || '').toLowerCase().includes(search.toLowerCase()) ||
-      (p.codigo || '').toLowerCase().includes(search.toLowerCase());
-    const matchesCategoria =
-      !filterCategoria || p.categoria?.id === filterCategoria;
-    return matchesSearch && matchesCategoria;
-  });
+  const handleSort = (key: string, order: 'asc' | 'desc') => {
+    setSortKey(key);
+    setSortOrder(order);
+  };
+
+  const filteredProductos = productos
+    .filter((p) => {
+      const matchesSearch =
+        (p.nombre || '').toLowerCase().includes(search.toLowerCase()) ||
+        (p.codigo || '').toLowerCase().includes(search.toLowerCase());
+      const matchesCategoria =
+        !filterCategoria || p.categoria?.id === filterCategoria;
+      return matchesSearch && matchesCategoria;
+    })
+    .sort((a, b) => {
+      let aVal: any = a[sortKey as keyof Producto];
+      let bVal: any = b[sortKey as keyof Producto];
+      
+      if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+      if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+      
+      if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
 
   return (
     <div className="space-y-6">
@@ -391,6 +410,9 @@ export default function ProductosPage({
           />
         }
         onRowClick={(p) => handleEdit(p)}
+        sortKey={sortKey}
+        sortOrder={sortOrder}
+        onSort={handleSort}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}

@@ -92,6 +92,8 @@ export default function ProformasPage({
   const [filterEstado, setFilterEstado] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [sortKey, setSortKey] = useState<string>('fechaEmision');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [selectedProforma, setSelectedProforma] = useState<ProformaCompleta | null>(null);
   const [loadingProforma, setLoadingProforma] = useState(false);
@@ -183,6 +185,7 @@ export default function ProformasPage({
     {
       key: 'numero',
       header: t('number'),
+      sortable: true,
       render: (proforma) => (
         <span className="font-medium">{`${proforma.serie}-${proforma.numero}`}</span>
       ),
@@ -190,6 +193,7 @@ export default function ProformasPage({
     {
       key: 'cliente',
       header: t('client'),
+      sortable: true,
       render: (proforma) => (
         <div>
           <div className="font-medium">{proforma.cliente.nombre}</div>
@@ -200,16 +204,19 @@ export default function ProformasPage({
     {
       key: 'fechaEmision',
       header: t('issueDate'),
+      sortable: true,
       render: (proforma) => formatDate(proforma.fechaEmision),
     },
     {
       key: 'fechaVencimiento',
       header: t('validUntil'),
+      sortable: true,
       render: (proforma) => formatDate(proforma.fechaVencimiento),
     },
     {
       key: 'total',
       header: t('total'),
+      sortable: true,
       render: (proforma) => (
         <span className="font-semibold">{formatCurrency(proforma.total)}</span>
       ),
@@ -247,6 +254,45 @@ export default function ProformasPage({
       ),
     },
   ];
+
+  const handleSort = (key: string, order: 'asc' | 'desc') => {
+    setSortKey(key);
+    setSortOrder(order);
+  };
+
+  const filteredProformas = proformas
+    .filter((proforma) => {
+      const matchesSearch = search === '' ||
+        proforma.serie.toLowerCase().includes(search.toLowerCase()) ||
+        proforma.numero.toLowerCase().includes(search.toLowerCase()) ||
+        proforma.cliente.nombre.toLowerCase().includes(search.toLowerCase());
+      
+      const matchesEstado = filterEstado === '' || proforma.estado === filterEstado;
+      
+      return matchesSearch && matchesEstado;
+    })
+    .sort((a, b) => {
+      let aVal: any;
+      let bVal: any;
+      
+      if (sortKey === 'cliente') {
+        aVal = a.cliente.nombre.toLowerCase();
+        bVal = b.cliente.nombre.toLowerCase();
+      } else if (sortKey === 'numero') {
+        aVal = `${a.serie}-${a.numero}`;
+        bVal = `${b.serie}-${b.numero}`;
+      } else {
+        aVal = a[sortKey as keyof ProformaListItem];
+        bVal = b[sortKey as keyof ProformaListItem];
+      }
+      
+      if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+      if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+      
+      if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
 
   if (loading && proformas.length === 0) {
     return (
@@ -319,9 +365,12 @@ export default function ProformasPage({
           />
         ) : (
           <DataTable
-            data={proformas}
+            data={filteredProformas}
             columns={columns}
             keyExtractor={(proforma) => proforma.id}
+            sortKey={sortKey}
+            sortOrder={sortOrder}
+            onSort={handleSort}
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}

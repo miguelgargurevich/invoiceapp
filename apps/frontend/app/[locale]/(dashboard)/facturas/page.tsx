@@ -85,6 +85,8 @@ export default function FacturasPage({
   const [filterEstado, setFilterEstado] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [sortKey, setSortKey] = useState<string>('fechaEmision');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [selectedFactura, setSelectedFactura] = useState<FacturaCompleta | null>(null);
   const [loadingFactura, setLoadingFactura] = useState(false);
@@ -402,15 +404,43 @@ export default function FacturasPage({
     },
   ];
 
-  const filteredFacturas = facturas.filter((f) => {
-    const searchLower = search.toLowerCase();
-    const matchesSearch =
-      `${f.serie || ''}-${f.numero || ''}`.toLowerCase().includes(searchLower) ||
-      (f.cliente?.nombre || '').toLowerCase().includes(searchLower) ||
-      (f.cliente?.documento || '').includes(search);
-    const matchesEstado = !filterEstado || f.estado === filterEstado;
-    return matchesSearch && matchesEstado;
-  });
+  const handleSort = (key: string, order: 'asc' | 'desc') => {
+    setSortKey(key);
+    setSortOrder(order);
+  };
+
+  const filteredFacturas = facturas
+    .filter((f) => {
+      const searchLower = search.toLowerCase();
+      const matchesSearch =
+        `${f.serie || ''}-${f.numero || ''}`.toLowerCase().includes(searchLower) ||
+        (f.cliente?.nombre || '').toLowerCase().includes(searchLower) ||
+        (f.cliente?.documento || '').includes(search);
+      const matchesEstado = !filterEstado || f.estado === filterEstado;
+      return matchesSearch && matchesEstado;
+    })
+    .sort((a, b) => {
+      let aVal: any;
+      let bVal: any;
+      
+      if (sortKey === 'cliente') {
+        aVal = (a.cliente?.nombre || '').toLowerCase();
+        bVal = (b.cliente?.nombre || '').toLowerCase();
+      } else if (sortKey === 'numero') {
+        aVal = `${a.serie}-${a.numero}`;
+        bVal = `${b.serie}-${b.numero}`;
+      } else {
+        aVal = a[sortKey as keyof Factura];
+        bVal = b[sortKey as keyof Factura];
+      }
+      
+      if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+      if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+      
+      if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
 
   // Calculate totals
   const totals = filteredFacturas.reduce(
@@ -513,6 +543,9 @@ export default function FacturasPage({
           />
         }
         onRowClick={(f) => router.push(`/${locale}/facturas/${f.id}`)}
+        sortKey={sortKey}
+        sortOrder={sortOrder}
+        onSort={handleSort}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}

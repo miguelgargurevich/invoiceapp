@@ -39,6 +39,8 @@ export default function ClientesPage() {
   const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [sortKey, setSortKey] = useState<string>('nombre');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
   const loadClientes = useCallback(async () => {
     if (!empresa?.id) return;
@@ -236,11 +238,28 @@ export default function ClientesPage() {
     },
   ];
 
-  const filteredClientes = clientes.filter(
-    (c) =>
-      (c.nombre || '').toLowerCase().includes(search.toLowerCase()) ||
-      (c.documento || '').includes(search)
-  );
+  const handleSort = (key: string, order: 'asc' | 'desc') => {
+    setSortKey(key);
+    setSortOrder(order);
+  };
+
+  const filteredClientes = clientes
+    .filter(
+      (c) =>
+        (c.nombre || '').toLowerCase().includes(search.toLowerCase()) ||
+        (c.documento || '').includes(search)
+    )
+    .sort((a, b) => {
+      let aVal: any = a[sortKey as keyof Cliente];
+      let bVal: any = b[sortKey as keyof Cliente];
+      
+      if (typeof aVal === 'string') aVal = aVal.toLowerCase();
+      if (typeof bVal === 'string') bVal = bVal.toLowerCase();
+      
+      if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+      if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
 
   return (
     <div className="space-y-6">
@@ -309,6 +328,9 @@ export default function ClientesPage() {
           />
         }
         onRowClick={(c) => handleEdit(c)}
+        sortKey={sortKey}
+        sortOrder={sortOrder}
+        onSort={handleSort}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}

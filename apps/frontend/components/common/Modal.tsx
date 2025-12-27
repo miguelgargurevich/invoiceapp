@@ -60,8 +60,8 @@ export function Modal({
             onClick={onClose}
           />
 
-          {/* Modal Container - Always centered horizontally, aligned to top */}
-          <div className="absolute inset-0 flex items-start justify-center overflow-y-auto">
+          {/* Modal Container - Centered */}
+          <div className="absolute inset-0 flex items-center justify-center overflow-y-auto p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -71,7 +71,7 @@ export function Modal({
                 'relative w-full bg-white dark:bg-gray-900',
                 'rounded-2xl shadow-2xl',
                 'flex flex-col',
-                'max-h-[92vh]',
+                'max-h-[92vh] my-auto',
                 sizeClasses[size]
               )}
               onClick={(e) => e.stopPropagation()}
