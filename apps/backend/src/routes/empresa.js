@@ -103,6 +103,55 @@ router.put('/mi-empresa', authenticateToken, async (req, res) => {
   }
 });
 
+// PUT /api/empresas/mi-empresa/config - Actualizar configuración de facturación
+router.put('/mi-empresa/config', authenticateToken, async (req, res) => {
+  try {
+    console.log('[EMPRESA CONFIG] Update request from user:', req.user.id);
+    console.log('[EMPRESA CONFIG] Request body:', JSON.stringify(req.body, null, 2));
+    
+    const empresa = await prisma.empresa.findFirst({
+      where: { userId: req.user.id }
+    });
+
+    if (!empresa) {
+      console.log('[EMPRESA CONFIG] Empresa not found for user:', req.user.id);
+      return res.status(404).json({ error: 'Empresa no encontrada' });
+    }
+
+    console.log('[EMPRESA CONFIG] Current empresa:', empresa.id);
+
+    // Map invoice config fields
+    const updateData = {
+      serieFactura: req.body.serieFactura,
+      serieProforma: req.body.serieBoleta, // Map serieBoleta to serieProforma
+      moneda: req.body.moneda
+    };
+
+    // Remove undefined values
+    Object.keys(updateData).forEach(key => 
+      updateData[key] === undefined && delete updateData[key]
+    );
+
+    console.log('[EMPRESA CONFIG] Updating with data:', JSON.stringify(updateData, null, 2));
+
+    const updatedEmpresa = await prisma.empresa.update({
+      where: { id: empresa.id },
+      data: updateData
+    });
+
+    console.log('[EMPRESA CONFIG] Updated successfully:', updatedEmpresa.id);
+
+    res.json({
+      serieFactura: updatedEmpresa.serieFactura,
+      serieBoleta: updatedEmpresa.serieProforma,
+      moneda: updatedEmpresa.moneda
+    });
+  } catch (error) {
+    console.error('[EMPRESA CONFIG] Error updating config:', error);
+    res.status(500).json({ error: 'Error interno del servidor: ' + error.message });
+  }
+});
+
 // POST /api/empresas/logo - Subir logo
 router.post('/logo', authenticateToken, upload.single('logo'), async (req, res) => {
   try {

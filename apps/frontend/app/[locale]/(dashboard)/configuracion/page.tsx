@@ -99,6 +99,18 @@ export default function ConfiguracionPage({
       if (empresa.logoUrl) {
         setLogoPreview(empresa.logoUrl);
       }
+      
+      // Cargar configuración de facturación desde empresa
+      setInvoiceConfig({
+        serieBoleta: empresa.serieProforma || 'B001',
+        serieFactura: empresa.serieFactura || 'F001',
+        correlativoBoleta: 1,
+        correlativoFactura: 1,
+        igv: 18,
+        moneda: empresa.moneda || 'PEN',
+        condicionesPago: '30 días',
+        notasPie: '',
+      });
     }
     if (user) {
       setUserForm((prev) => ({
@@ -252,11 +264,19 @@ export default function ConfiguracionPage({
   const handleSaveInvoiceConfig = async () => {
     try {
       setSaving(true);
-      // Save invoice config logic here
+      console.log('[CONFIG] Saving invoice config:', invoiceConfig);
+      const response = await api.put('/empresas/mi-empresa/config', invoiceConfig) as any;
+      console.log('[CONFIG] Invoice config save response:', response);
+      
+      // Actualizar el contexto
+      await refreshEmpresa?.();
+      
       setMessage(t('savedSuccessfully'));
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
-      console.error('Error saving config:', error);
+      console.error('[CONFIG] Error saving invoice config:', error);
+      setMessage(t('errorSaving'));
+      setTimeout(() => setMessage(''), 3000);
     } finally {
       setSaving(false);
     }
