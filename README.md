@@ -1,245 +1,372 @@
-# 🚀 InvoiceApp - Sistema de Facturación
+# 🧾 InvoiceApp
 
-Sistema completo de facturación electrónica con Next.js 14 (App Router) y Express.js.
+A modern, full-featured invoicing and billing system built with Next.js 14 and Express.js. Designed for freelancers, contractors, and small businesses to manage invoices, proposals, clients, and digital signatures.
 
-## 📋 Requisitos Previos
+![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)
+![Express.js](https://img.shields.io/badge/Express.js-4-green?logo=express)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
+![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma)
+![Supabase](https://img.shields.io/badge/Supabase-Auth-3ECF8E?logo=supabase)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?logo=tailwind-css)
 
-- Node.js 18+ 
-- npm o yarn
-- PostgreSQL (Supabase configurado)
+## ✨ Features
 
-## 🏗️ Estructura del Proyecto
+### 📄 Invoice Management
+- Create, edit, and manage professional invoices
+- Automatic invoice numbering with customizable series (F001, F002...)
+- Multiple status tracking: Draft, Issued, Paid, Overdue, Cancelled
+- PDF generation and email delivery
+- Multi-currency support (USD, PEN, EUR, etc.)
+
+### 📋 Proposals/Quotes
+- Create detailed project proposals
+- Convert accepted proposals to invoices with one click
+- Track proposal status and follow-ups
+
+### ✍️ Digital Signature System
+- Request client signatures via email
+- Secure token-based signature links
+- Signature capture on any device
+- Automatic document signing and timestamping
+- Signature status tracking (Pending, Signed, Expired)
+
+### 👥 Client Management
+- Complete client database with contact information
+- Client document types (Tax ID, National ID, etc.)
+- Client history and invoice tracking
+- Quick client search and filtering
+
+### 📦 Product/Service Catalog
+- Product and service management
+- Category organization
+- Unit pricing with tax options
+- Stock tracking (optional)
+
+### 📊 Dashboard & Reports
+- Real-time business metrics
+- Monthly sales overview
+- Invoice status distribution
+- Recent activity tracking
+- Revenue charts and analytics
+
+### 🌐 Internationalization
+- Multi-language support (English, Spanish)
+- Locale-based formatting (dates, currency)
+- RTL-ready architecture
+
+### 🎨 Modern UI/UX
+- Clean, professional design
+- Dark/Light mode
+- Responsive layout (mobile-friendly)
+- Keyboard shortcuts
+- Toast notifications
+
+### 🔐 Security
+- Supabase Authentication (Email/Password, Google OAuth)
+- JWT-based API authentication
+- Role-based access control
+- Secure file uploads
+
+## 🏗️ Tech Stack
+
+### Frontend
+- **Framework**: Next.js 14 (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Custom component library
+- **State Management**: React Context
+- **Charts**: Recharts
+- **Animations**: Framer Motion
+- **i18n**: next-intl
+
+### Backend
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **Authentication**: Supabase Auth
+- **File Storage**: Supabase Storage
+- **Email**: Resend
+
+### Infrastructure
+- **Database Hosting**: Supabase
+- **Backend Hosting**: Render
+- **Frontend Hosting**: Vercel
+
+## 📁 Project Structure
 
 ```
 InvoiceApp/
 ├── apps/
-│   ├── frontend/          # Next.js 14 App Router
-│   │   ├── app/          # Rutas y páginas
-│   │   ├── components/   # Componentes reutilizables
-│   │   ├── contexts/     # Context API (Auth, Theme)
-│   │   └── lib/          # Utilidades y API
+│   ├── frontend/              # Next.js 14 Application
+│   │   ├── app/              # App Router pages & layouts
+│   │   │   └── [locale]/     # i18n routes
+│   │   ├── components/       # Reusable UI components
+│   │   │   ├── common/       # Base components (Button, Card, etc.)
+│   │   │   ├── global/       # Layout components
+│   │   │   ├── invoice/      # Invoice-specific components
+│   │   │   └── signature/    # Digital signature components
+│   │   ├── contexts/         # React Context providers
+│   │   ├── lib/              # Utilities, API client, hooks
+│   │   └── messages/         # i18n translations (en.json, es.json)
 │   │
-│   └── backend/          # Express.js API
+│   └── backend/              # Express.js API
 │       ├── src/
-│       │   ├── routes/   # Endpoints
-│       │   ├── middleware/
-│       │   └── utils/
-│       └── prisma/       # Esquema y migraciones
+│       │   ├── routes/       # API endpoints
+│       │   ├── middleware/   # Auth, validation
+│       │   ├── services/     # Business logic (email, etc.)
+│       │   └── utils/        # Prisma client, helpers
+│       └── prisma/           # Database schema & migrations
 │
-├── docs/                 # Documentación
-└── supabase/            # Migraciones de Supabase
+├── docs/                     # Documentation
+└── supabase/                 # Supabase migrations
 ```
 
-## 🚀 Inicio Rápido
+## 🚀 Getting Started
 
-### 1. Instalar Dependencias
+### Prerequisites
 
+- Node.js 18+
+- npm or yarn
+- PostgreSQL database (Supabase recommended)
+
+### Installation
+
+1. **Clone the repository**
 ```bash
-# Instalar todas las dependencias (frontend + backend)
+git clone https://github.com/yourusername/invoiceapp.git
+cd invoiceapp
+```
+
+2. **Install dependencies**
+```bash
 npm install
 ```
 
-### 2. Configurar Variables de Entorno
+3. **Configure environment variables**
 
-Ya están configuradas en:
-- `apps/frontend/.env.local`
-- `apps/backend/.env`
+Create `.env` files based on the examples:
 
-### 3. Iniciar Aplicación (Frontend + Backend)
+**Backend** (`apps/backend/.env`):
+```env
+DATABASE_URL="postgresql://..."
+DIRECT_URL="postgresql://..."
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+RESEND_API_KEY=your-resend-api-key
+FRONTEND_URL=http://localhost:3000
+```
 
+**Frontend** (`apps/frontend/.env.local`):
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+NEXT_PUBLIC_API_URL=http://localhost:4000/api
+```
+
+4. **Set up the database**
 ```bash
-# Inicia ambos servidores simultáneamente
+cd apps/backend
+npx prisma migrate deploy
+npx prisma generate
+```
+
+5. **Start the development servers**
+```bash
+# From root directory - starts both frontend and backend
 npm run dev
 ```
 
-Esto iniciará:
+This will start:
 - **Backend**: http://localhost:4000
 - **Frontend**: http://localhost:3000
 
-### 4. Comandos Individuales
+### Individual Commands
 
 ```bash
-# Solo backend
+# Backend only
 npm run dev:backend
 
-# Solo frontend  
+# Frontend only
 npm run dev:frontend
 ```
 
-## 🗄️ Base de Datos
+## 🗄️ Database
 
-### Estado Actual
-✅ Estructura creada en PostgreSQL (Supabase)  
-✅ Datos de prueba cargados  
-
-Ver detalles en: [DATOS_PRUEBA.md](DATOS_PRUEBA.md)
-
-### Comandos Prisma
+### Prisma Commands
 
 ```bash
 cd apps/backend
 
-# Ver estado de migraciones
+# Check migration status
 npx prisma migrate status
 
-# Crear nueva migración
-npx prisma migrate dev --name nombre_migracion
+# Create a new migration
+npx prisma migrate dev --name migration_name
 
-# Regenerar cliente Prisma
+# Regenerate Prisma Client
 npx prisma generate
 
-# Abrir Prisma Studio (GUI para BD)
+# Open Prisma Studio (Database GUI)
 npx prisma studio
 
-# Resetear BD (¡cuidado!)
+# Reset database (caution!)
 npx prisma migrate reset
 
-# Cargar datos de prueba
+# Seed database with sample data
 node prisma/seed.js
 ```
 
-## 🔐 Autenticación
+## 🔐 Authentication
 
-El sistema usa **Supabase Auth**. 
+The system uses **Supabase Auth** for user authentication.
 
-⚠️ **Antes de usar el sistema, debes**:
-1. Crear un usuario en Supabase Auth
-2. Vincular el UUID del usuario con la empresa
+### Supported Methods
+- Email/Password authentication
+- Google OAuth (optional)
 
-Ver instrucciones completas en [DATOS_PRUEBA.md](DATOS_PRUEBA.md#-autenticación)
+### User Setup
+1. Users register through the app or are created via Supabase Admin
+2. Each user is linked to a company (Empresa)
+3. JWT tokens are used for API authentication
 
-## 📦 Scripts Disponibles
+## 📦 Available Scripts
 
-### Raíz del proyecto
+### Root Directory
 ```bash
-npm run dev              # Inicia frontend + backend
-npm run dev:frontend     # Solo frontend (Next.js)
-npm run dev:backend      # Solo backend (Express)
-npm run build            # Build de ambos proyectos
-npm run start            # Inicia ambos en modo producción
+npm run dev              # Start frontend + backend
+npm run dev:frontend     # Frontend only (Next.js)
+npm run dev:backend      # Backend only (Express)
+npm run build            # Build both projects
+npm run start            # Start both in production mode
 ```
 
 ### Backend (apps/backend)
 ```bash
-npm run dev              # Desarrollo con nodemon
-npm start                # Producción
+npm run dev              # Development with nodemon
+npm start                # Production
 ```
 
 ### Frontend (apps/frontend)
 ```bash
-npm run dev              # Desarrollo
-npm run build            # Build para producción
-npm start                # Servidor de producción
+npm run dev              # Development
+npm run build            # Production build
+npm start                # Production server
 npm run lint             # ESLint
 ```
 
-## 🌐 URLs del Sistema
+## 🌐 System URLs
 
-| Servicio | URL | Descripción |
-|----------|-----|-------------|
-| Frontend | http://localhost:3000 | Aplicación Next.js |
-| Backend API | http://localhost:4000 | API REST Express |
-| Health Check | http://localhost:4000/health | Estado del backend |
-| Supabase | https://cqvcauymipatkmckekrv.supabase.co | Base de datos |
+| Service | URL | Description |
+|---------|-----|-------------|
+| Frontend | http://localhost:3000 | Next.js Application |
+| Backend API | http://localhost:4000 | Express REST API |
+| Health Check | http://localhost:4000/health | Backend status |
 
-## 📱 Rutas Principales
+## 📱 Main Routes
 
 ### Frontend
-- `/es/login` - Login
-- `/es/dashboard` - Panel principal
-- `/es/clientes` - Gestión de clientes
-- `/es/productos` - Gestión de productos
-- `/es/facturas` - Gestión de facturas
-- `/es/reportes` - Reportes y estadísticas
-- `/es/configuracion` - Configuración
+- `/en/login` - Login page
+- `/en/dashboard` - Main dashboard
+- `/en/clientes` - Client management
+- `/en/productos` - Product management
+- `/en/facturas` - Invoice management
+- `/en/proformas` - Proposals/Quotes
+- `/en/reportes` - Reports & analytics
+- `/en/configuracion` - Settings
 
 ### Backend API
 - `GET /health` - Health check
-- `POST /api/auth/login` - Login
-- `GET /api/empresas` - Empresas
-- `GET /api/clientes` - Clientes
-- `GET /api/productos` - Productos
-- `GET /api/facturas` - Facturas
-- `GET /api/dashboard` - Datos del dashboard
+- `POST /api/auth/login` - Authentication
+- `GET /api/empresas/mi-empresa` - Current company
+- `GET /api/clientes` - Clients
+- `GET /api/productos` - Products
+- `GET /api/facturas` - Invoices
+- `GET /api/proformas` - Proposals
+- `GET /api/dashboard/*` - Dashboard data
+- `POST /api/signatures/*` - Digital signatures
 
-## 🛠️ Stack Tecnológico
-
-### Frontend
-- **Framework**: Next.js 14 (App Router)
-- **Lenguaje**: TypeScript
-- **Estilos**: Tailwind CSS
-- **Internacionalización**: next-intl
-- **Formularios**: React Hook Form
-- **Gráficos**: Recharts
-- **Iconos**: Lucide React
-- **Auth**: Supabase Auth
-
-### Backend
-- **Framework**: Express.js 5
-- **ORM**: Prisma 7
-- **Base de Datos**: PostgreSQL (Supabase)
-- **Auth**: Supabase + JWT
-- **Validación**: Zod
-- **Seguridad**: Helmet, CORS, Rate Limiting
-
-## 🔧 Desarrollo
+## 🔧 Development
 
 ### Hot Reload
-Ambos servidores soportan hot reload:
-- **Frontend**: Actualización automática de Next.js
-- **Backend**: Nodemon reinicia al detectar cambios
+Both servers support hot reload:
+- **Frontend**: Next.js automatic refresh
+- **Backend**: Nodemon restarts on changes
 
 ### Logs
-Los logs se muestran con prefijos de color:
-- 🔵 **backend**: Azul
+Logs are displayed with color prefixes:
+- 🔵 **backend**: Blue
 - 🟣 **frontend**: Magenta
 
-### Reiniciar Servidores
-En la terminal donde corre `npm run dev`, presiona:
-- `Ctrl + C` para detener
-- `npm run dev` para reiniciar
+### Restart Servers
+In the terminal running `npm run dev`:
+- `Ctrl + C` to stop
+- `npm run dev` to restart
 
-## 📝 Notas Importantes
+## 🐛 Troubleshooting
 
-1. **Puerto 3000 y 4000**: Asegúrate de que estén disponibles
-2. **Variables de entorno**: Ya configuradas, no las subas a Git
-3. **Prisma 7**: Requiere adapter de PostgreSQL (`@prisma/adapter-pg`)
-4. **CORS**: Configurado para `http://localhost:3000`
-
-## 🐛 Problemas Comunes
-
-### Error: Puerto en uso
+### Error: Port in use
 ```bash
 # MacOS/Linux
 lsof -ti:3000 | xargs kill -9
 lsof -ti:4000 | xargs kill -9
 ```
 
-### Error: Prisma Client no generado
+### Error: Prisma Client not generated
 ```bash
 cd apps/backend
 npx prisma generate
 ```
 
 ### Error: Cannot connect to database
-Verifica las variables en `apps/backend/.env`
+Check environment variables in `apps/backend/.env`
 
-## 📚 Documentación Adicional
+### Error: Invalid token
+Ensure Supabase environment variables are correctly set in both frontend and backend.
 
-- [Datos de Prueba](DATOS_PRUEBA.md)
-- [Prompt del Sistema](PROMPT_SISTEMA_FACTURACION.md)
+## 📄 API Documentation
 
-## 🤝 Contribuir
+### Authentication
+All API endpoints (except `/health` and `/api/auth/*`) require authentication via Bearer token:
+```
+Authorization: Bearer <supabase_access_token>
+```
 
-1. Crea una rama: `git checkout -b feature/nueva-funcionalidad`
-2. Commit: `git commit -m 'Agrega nueva funcionalidad'`
-3. Push: `git push origin feature/nueva-funcionalidad`
-4. Pull Request
+### Response Format
+```json
+{
+  "data": { ... },
+  "error": null
+}
+```
 
-## 📄 Licencia
+### Error Response
+```json
+{
+  "error": "Error message"
+}
+```
+
+## 🚀 Deployment
+
+### Frontend (Vercel)
+1. Connect repository to Vercel
+2. Set environment variables
+3. Deploy automatically on push
+
+### Backend (Render)
+1. Create Web Service on Render
+2. Set root directory to `apps/backend`
+3. Build command: `npm install && npx prisma generate`
+4. Start command: `npm start`
+5. Set environment variables
+
+## 📄 License
 
 ISC
 
 ---
+
+Made with ❤️ using Next.js, Express, and Supabase
 
 Desarrollado con ❤️ usando Next.js 14 y Express.js
