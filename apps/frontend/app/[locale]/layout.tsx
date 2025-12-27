@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { PreferencesProvider } from '@/contexts/PreferencesContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { ToastProvider } from '@/contexts/ToastContext';
 
@@ -27,13 +28,15 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages} locale={locale}>
-      <ThemeProvider>
-        <AuthProvider>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
-        </AuthProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <PreferencesProvider>
+          <ThemeProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </ThemeProvider>
+        </PreferencesProvider>
+      </AuthProvider>
     </NextIntlClientProvider>
   );
 }

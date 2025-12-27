@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { usePreferences } from '@/contexts/PreferencesContext';
 import { Button, Card, Input, Textarea, LoadingSpinner } from '@/components/common';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
@@ -36,6 +37,7 @@ export default function ConfiguracionPage({
   const pathname = usePathname();
   const { user, empresa, refreshEmpresa } = useAuth();
   const { theme, setTheme, fontSize, setFontSize } = useTheme();
+  const { updatePreferences } = usePreferences();
 
   const [activeTab, setActiveTab] = useState<Tab>('empresa');
   const [saving, setSaving] = useState(false);
@@ -251,11 +253,10 @@ export default function ConfiguracionPage({
     }
   };
 
-  const handleChangeLanguage = (newLocale: string) => {
-    // Guardar preferencia en localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('preferredLocale', newLocale);
-    }
+  const handleChangeLanguage = async (newLocale: string) => {
+    // Guardar preferencia en BD y localStorage
+    await updatePreferences({ locale: newLocale as 'es' | 'en' });
+    
     // Redirigir a la nueva ruta con el idioma
     const newPath = pathname.replace(`/${locale}`, `/${newLocale}`);
     router.push(newPath);
