@@ -629,21 +629,7 @@ function ProductModal({ isOpen, onClose, producto, categorias, onSave, locale }:
           rows={2}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('type')}
-            </label>
-            <select
-              value={formData.tipo}
-              onChange={(e) => setFormData({ ...formData, tipo: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              <option value="PRODUCTO">{t('typeProduct')}</option>
-              <option value="SERVICIO">{t('typeService')}</option>
-            </select>
-          </div>
-          
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label={t('price')}
             type="number"
