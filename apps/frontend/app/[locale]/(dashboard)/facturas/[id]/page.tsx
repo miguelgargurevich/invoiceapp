@@ -14,6 +14,9 @@ import {
   XCircle,
   Clock,
   PenLine,
+  Copy,
+  Send,
+  ExternalLink,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -99,6 +102,12 @@ export default function FacturaDetailPage({
   const [isSendEmailOpen, setIsSendEmailOpen] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [requestingSignature, setRequestingSignature] = useState(false);
+  const [signatureRequestModal, setSignatureRequestModal] = useState<{
+    isOpen: boolean;
+    signingUrl: string;
+    email: string;
+  }>({ isOpen: false, signingUrl: '', email: '' });
+  const [urlCopied, setUrlCopied] = useState(false);
   const pdfRef = useRef<HTMLDivElement>(null);
   const [paymentData, setPaymentData] = useState({
     monto: '',
@@ -211,9 +220,13 @@ export default function FacturaDetailPage({
         signerName: factura.cliente.razonSocial,
       });
 
-      // Show success message with signing URL
+      // Show success modal with signing URL
       const signingUrl = `${window.location.origin}/${locale}/sign/${response.token}`;
-      alert(`Signature request sent!\n\nSigning URL:\n${signingUrl}\n\nAn email has been sent to ${factura.cliente.email}`);
+      setSignatureRequestModal({
+        isOpen: true,
+        signingUrl,
+        email: factura.cliente.email || ''
+      });
       
       // Optionally reload to show signature status
       loadFactura();
@@ -684,6 +697,109 @@ export default function FacturaDetailPage({
         onClose={() => setIsSendEmailOpen(false)}
         factura={factura}
       />
+
+      {/* Signature Request Success Modal */}
+      <Modal
+        isOpen={signatureRequestModal.isOpen}
+        onClose={() => {
+          setSignatureRequestModal({ isOpen: false, signingUrl: '', email: '' });
+          setUrlCopied(false);
+        }}
+        title=""
+      >
+        <div className="text-center">
+          {/* Success Icon */}
+          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/20 mb-4">
+            <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
+          </div>
+
+          {/* Title */}
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+            Signature Request Sent!
+          </h3>
+
+          {/* Email Confirmation */}
+          <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-6">
+            <Send className="w-4 h-4" />
+            <span>Email sent to <strong>{signatureRequestModal.email}</strong></span>
+          </div>
+
+          {/* URL Box */}
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 text-left">
+              Signing URL
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                readOnly
+                value={signatureRequestModal.signingUrl}
+                className="flex-1 px-3 py-2 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 font-mono"
+                onClick={(e) => e.currentTarget.select()}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(signatureRequestModal.signingUrl);
+                  setUrlCopied(true);
+                  setTimeout(() => setUrlCopied(false), 2000);
+                }}
+                className="shrink-0"
+              >
+                {urlCopied ? (
+                  <>
+                    <CheckCircle className="w-4 h-4 mr-1" />
+                    Copied!
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4 mr-1" />
+                    Copy
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+
+          {/* Info Message */}
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-6 text-left">
+            <div className="flex gap-3">
+              <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+              <div className="text-sm text-gray-700 dark:text-gray-300">
+                <p className="font-medium mb-1">What happens next?</p>
+                <ul className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
+                  <li>• The client will receive an email with the signing link</li>
+                  <li>• They can sign the document on any device (mobile-friendly)</li>
+                  <li>• You'll receive a notification when they complete the signature</li>
+                  <li>• The link expires in 7 days</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => window.open(signatureRequestModal.signingUrl, '_blank')}
+              className="flex-1"
+            >
+              <ExternalLink className="w-4 h-4 mr-2" />
+              Preview Link
+            </Button>
+            <Button
+              onClick={() => {
+                setSignatureRequestModal({ isOpen: false, signingUrl: '', email: '' });
+                setUrlCopied(false);
+              }}
+              className="flex-1"
+            >
+              Done
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Hidden PDF Generator */}
       <div className="fixed -left-[9999px] -top-[9999px]">
