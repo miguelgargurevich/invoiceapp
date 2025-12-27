@@ -7,16 +7,22 @@ const { sendSignatureRequestEmail, sendSignatureConfirmationEmail } = require('.
 
 const prisma = new PrismaClient();
 
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-);
+// Initialize Supabase client only if credentials are available
+let supabase = null;
+if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  );
+  console.log('✅ Supabase Storage initialized for signature images');
+} else {
+  console.warn('⚠️ Supabase credentials not found - signature images will be stored as data URLs');
+}
 
 // POST /api/signatures/request - Create signature request
 router.post('/request', async (req, res) => {
   try {
-    const { documentType, documentId, signerEmail, signerName } = req.body;
+    const { documentType, documentId, signerEmail, signerName, sendEmail = true } = req.body;
     const userId = req.user?.id;
 
     if (!documentType || !documentId || !signerEmail) {
@@ -67,38 +73,40 @@ router.post('/request', async (req, res) => {
         expiresAt,
         requestedBy: userId || 'system',
         empresaId,
-        sentAt: new Date()
+        sentAt: sendEmail ? new Date() : null
       }
     });
 
-    // Send email notification
-    try {
-      const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-      console.log('📧 Attempting to send signature request email...');
-      console.log('📧 Config:', {
-        to: signerEmail,
-        baseUrl,
-        token: token.substring(0, 10) + '...',
-        hasResendKey: !!process.env.RESEND_API_KEY,
-        fromEmail: process.env.RESEND_FROM_EMAIL
-      });
-      
-      await sendSignatureRequestEmail({
-        signerEmail,
-        signerName: signerName || signerEmail,
-        token,
-        document,
-        empresa: document.empresa,
-        expiresAt,
-        baseUrl,
-        locale: 'en' // TODO: Get from request or user preferences
-      });
-      
-      console.log('✅ Signature request email sent successfully to:', signerEmail);
-    } catch (emailError) {
-      console.error('❌ Failed to send signature request email:', emailError);
-      console.error('❌ Email error details:', emailError.message);
-      // Don't fail the request if email fails, just log it
+    // Send email notification only if requested
+    if (sendEmail) {
+      try {
+        const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+        console.log('📧 Attempting to send signature request email...');
+        console.log('📧 Config:', {
+          to: signerEmail,
+          baseUrl,
+          token: token.substring(0, 10) + '...',
+          hasResendKey: !!process.env.RESEND_API_KEY,
+          fromEmail: process.env.RESEND_FROM_EMAIL
+        });
+        
+        await sendSignatureRequestEmail({
+          signerEmail,
+          signerName: signerName || signerEmail,
+          token,
+          document,
+          empresa: document.empresa,
+          expiresAt,
+          baseUrl,
+          locale: 'en' // TODO: Get from request or user preferences
+        });
+        
+        console.log('✅ Signature request email sent successfully to:', signerEmail);
+      } catch (emailError) {
+        console.error('❌ Failed to send signature request email:', emailError);
+        console.error('❌ Email error details:', emailError.message);
+        // Don't fail the request if email fails, just log it
+      }
     }
 
     res.json({
@@ -112,6 +120,86 @@ router.post('/request', async (req, res) => {
   } catch (error) {
     console.error('Error creating signature request:', error);
     res.status(500).json({ error: 'Failed to create signature request' });
+  }
+});
+
+// POST /api/signatures/:token/send-email - Send signature request email for existing request
+router.post('/:token/send-email', async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { signerEmail, signerName } = req.body;
+
+    // Find signature request
+    const signatureRequest = await prisma.signatureRequest.findUnique({
+      where: { token },
+      include: {
+        factura: {
+          include: { empresa: true }
+        },
+        proforma: {
+          include: { empresa: true }
+        }
+      }
+    });
+
+    if (!signatureRequest) {
+      return res.status(404).json({ error: 'Signature request not found' });
+    }
+
+    if (signatureRequest.status !== 'PENDING') {
+      return res.status(400).json({ error: 'Signature request is not pending' });
+    }
+
+    // Get document and empresa
+    const document = signatureRequest.documentType === 'INVOICE' 
+      ? signatureRequest.factura 
+      : signatureRequest.proforma;
+    
+    if (!document) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+
+    // Send email
+    try {
+      const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+      console.log('📧 Sending signature request email...');
+      console.log('📧 Config:', {
+        to: signerEmail,
+        baseUrl,
+        token: token.substring(0, 10) + '...',
+      });
+      
+      await sendSignatureRequestEmail({
+        signerEmail,
+        signerName: signerName || signerEmail,
+        token,
+        document,
+        empresa: document.empresa,
+        expiresAt: signatureRequest.expiresAt,
+        baseUrl,
+        locale: 'en'
+      });
+
+      // Update sentAt timestamp
+      await prisma.signatureRequest.update({
+        where: { token },
+        data: { sentAt: new Date() }
+      });
+      
+      console.log('✅ Signature request email sent successfully to:', signerEmail);
+
+      res.json({
+        success: true,
+        message: 'Email sent successfully'
+      });
+    } catch (emailError) {
+      console.error('❌ Failed to send signature request email:', emailError);
+      return res.status(500).json({ error: 'Failed to send email: ' + emailError.message });
+    }
+
+  } catch (error) {
+    console.error('Error sending signature email:', error);
+    res.status(500).json({ error: 'Failed to send signature email' });
   }
 });
 
@@ -256,29 +344,43 @@ router.post('/submit', async (req, res) => {
       return res.status(400).json({ error: 'Signature request expired' });
     }
 
-    // Upload signature image to Supabase Storage
-    const signatureBuffer = Buffer.from(signatureDataUrl.replace(/^data:image\/\w+;base64,/, ''), 'base64');
-    const fileName = `${token}-signature.png`;
-    const filePath = `signatures/${fileName}`;
+    // Upload signature image to Supabase Storage (if available)
+    let signatureImageUrl;
     
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('invoices')
-      .upload(filePath, signatureBuffer, {
-        contentType: 'image/png',
-        upsert: true
-      });
+    if (supabase) {
+      try {
+        const signatureBuffer = Buffer.from(signatureDataUrl.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+        const fileName = `${token}-signature.png`;
+        const filePath = `signatures/${fileName}`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('invoices')
+          .upload(filePath, signatureBuffer, {
+            contentType: 'image/png',
+            upsert: true
+          });
 
-    if (uploadError) {
-      console.error('Error uploading signature:', uploadError);
-      return res.status(500).json({ error: 'Failed to upload signature' });
+        if (uploadError) {
+          console.error('Error uploading signature to Supabase:', uploadError);
+          // Fallback to data URL
+          signatureImageUrl = signatureDataUrl;
+        } else {
+          // Get public URL
+          const { data: { publicUrl } } = supabase.storage
+            .from('invoices')
+            .getPublicUrl(filePath);
+          signatureImageUrl = publicUrl;
+        }
+      } catch (error) {
+        console.error('Error with Supabase upload:', error);
+        // Fallback to data URL
+        signatureImageUrl = signatureDataUrl;
+      }
+    } else {
+      // Supabase not available, store as data URL
+      console.log('📝 Storing signature as data URL (Supabase not configured)');
+      signatureImageUrl = signatureDataUrl;
     }
-
-    // Get public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('invoices')
-      .getPublicUrl(filePath);
-
-    const signatureImageUrl = publicUrl;
     
     // TODO: Generate signed PDF with pdf-lib
     // For now, we don't have a signed PDF URL until we implement PDF generation

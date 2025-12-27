@@ -113,8 +113,10 @@ export default function FacturaDetailPage({
     isOpen: boolean;
     signingUrl: string;
     email: string;
-  }>({ isOpen: false, signingUrl: '', email: '' });
+    emailSent: boolean;
+  }>({ isOpen: false, signingUrl: '', email: '', emailSent: false });
   const [urlCopied, setUrlCopied] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
   const [isSignatureConfirmOpen, setIsSignatureConfirmOpen] = useState(false);
   const [isEditDatesOpen, setIsEditDatesOpen] = useState(false);
   const [editingDates, setEditingDates] = useState(false);
@@ -232,17 +234,16 @@ export default function FacturaDetailPage({
         documentId: factura.id,
         signerEmail: factura.cliente.email || '',
         signerName: factura.cliente.razonSocial,
+        sendEmail: false, // Don't send email yet
       });
 
-      // Show success toast
-      showSuccess('Signature request sent successfully!');
-
-      // Show success modal with signing URL
+      // Show modal with signing URL (email not sent yet)
       const signingUrl = `${window.location.origin}/${locale}/sign/${response.token}`;
       setSignatureRequestModal({
         isOpen: true,
         signingUrl,
-        email: factura.cliente.email || ''
+        email: factura.cliente.email || '',
+        emailSent: false
       });
       
       // Reload to show signature status
@@ -252,6 +253,35 @@ export default function FacturaDetailPage({
       showError(error.response?.data?.error || 'Failed to request signature');
     } finally {
       setRequestingSignature(false);
+    }
+  };
+
+  const handleSendSignatureEmail = async () => {
+    if (!factura || !signatureRequestModal.signingUrl) return;
+
+    try {
+      setSendingEmail(true);
+      
+      // Extract token from URL
+      const token = signatureRequestModal.signingUrl.split('/').pop();
+      
+      await api.post(`/signatures/${token}/send-email`, {
+        signerEmail: factura.cliente.email || '',
+        signerName: factura.cliente.razonSocial,
+      });
+
+      // Update modal to show email sent
+      setSignatureRequestModal(prev => ({
+        ...prev,
+        emailSent: true
+      }));
+      
+      showSuccess('Email sent successfully!');
+    } catch (error: any) {
+      console.error('Error sending email:', error);
+      showError(error.response?.data?.error || 'Failed to send email');
+    } finally {
+      setSendingEmail(false);
     }
   };
 
@@ -771,31 +801,28 @@ export default function FacturaDetailPage({
         factura={factura}
       />
 
-      {/* Signature Request Success Modal */}
+      {/* Signature Request Modal */}
       <Modal
         isOpen={signatureRequestModal.isOpen}
         onClose={() => {
-          setSignatureRequestModal({ isOpen: false, signingUrl: '', email: '' });
+          setSignatureRequestModal({ isOpen: false, signingUrl: '', email: '', emailSent: false });
           setUrlCopied(false);
         }}
-        title=""
+        title={signatureRequestModal.emailSent ? "Signature Request Sent!" : "Share Signature Link"}
       >
         <div className="text-center">
-          {/* Success Icon */}
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/20 mb-4">
-            <CheckCircle className="h-10 w-10 text-green-600 dark:text-green-400" />
-          </div>
-
-          {/* Title */}
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-            Signature Request Sent!
-          </h3>
-
-          {/* Email Confirmation */}
-          <div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-6">
-            <Send className="w-4 h-4" />
-            <span>Email sent to <strong>{signatureRequestModal.email}</strong></span>
-          </div>
+          {/* Success Icon - Only show if email sent */}
+          {signatureRequestModal.emailSent && (
+            <>
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
+                <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
+              </div>
+              {/* Email Info */}
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                Email sent to <span className="font-medium text-gray-900 dark:text-gray-100">{signatureRequestModal.email}</span>
+              </p>
+            </>
+          )}
 
           {/* URL Box */}
           <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
@@ -853,23 +880,49 @@ export default function FacturaDetailPage({
 
           {/* Actions */}
           <div className="flex gap-3">
-            <Button
-              variant="outline"
-              onClick={() => window.open(signatureRequestModal.signingUrl, '_blank')}
-              className="flex-1"
-            >
-              <ExternalLink className="w-4 h-4 mr-2" />
-              Preview Link
-            </Button>
-            <Button
-              onClick={() => {
-                setSignatureRequestModal({ isOpen: false, signingUrl: '', email: '' });
-                setUrlCopied(false);
-              }}
-              className="flex-1"
-            >
-              Done
-            </Button>
+            {!signatureRequestModal.emailSent ? (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSignatureRequestModal({ isOpen: false, signingUrl: '', email: '', emailSent: false });
+                    setUrlCopied(false);
+                  }}
+                  disabled={sendingEmail}
+                  className="flex-1"
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={handleSendSignatureEmail}
+                  disabled={sendingEmail || !signatureRequestModal.email}
+                  className="flex-1"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  {sendingEmail ? 'Sending...' : 'Send Email'}
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => window.open(signatureRequestModal.signingUrl, '_blank')}
+                  className="flex-1"
+                >
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  Preview Link
+                </Button>
+                <Button
+                  onClick={() => {
+                    setSignatureRequestModal({ isOpen: false, signingUrl: '', email: '', emailSent: false });
+                    setUrlCopied(false);
+                  }}
+                  className="flex-1"
+                >
+                  Done
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </Modal>
