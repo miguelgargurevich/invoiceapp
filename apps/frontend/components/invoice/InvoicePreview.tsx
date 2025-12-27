@@ -48,6 +48,13 @@ interface Factura {
   igv: number;
   total: number;
   descuento: number;
+  signatureRequest?: {
+    signature?: {
+      signatureImageUrl: string;
+      signerName: string;
+      signedAt: string;
+    };
+  };
   estado: string;
   montoPendiente: number;
   observaciones?: string;
@@ -114,7 +121,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
 
         {/* Client Info */}
         <div className="mb-6 bg-gray-50 p-3 rounded-lg">
-          <h3 className="text-xs font-bold text-gray-800 mb-2 uppercase">
+          <h3 className="text-[10px] font-semibold text-gray-800 mb-2 uppercase">
             {t('clientData')}
           </h3>
           <div className="grid grid-cols-2 gap-3 text-xs">
@@ -216,10 +223,36 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         {/* Observations */}
         {factura.observaciones && (
           <div className="mb-6 p-3 bg-gray-50 rounded-lg">
-            <h3 className="text-xs font-bold text-gray-800 mb-1.5">
+            <h3 className="text-[10px] font-semibold text-gray-800 mb-1.5">
               {t('observations')}
             </h3>
             <p className="text-xs text-gray-600">{factura.observaciones}</p>
+          </div>
+        )}
+
+        {/* Signature */}
+        {factura.signatureRequest?.signature && (
+          <div className="mb-6 p-3 bg-gray-50 rounded-lg border-2 border-green-200">
+            <h3 className="text-[10px] font-semibold text-gray-800 mb-2">
+              {t('signature') || 'Signature'}
+            </h3>
+            <div className="flex items-end gap-4">
+              <div className="flex-shrink-0">
+                <img 
+                  src={factura.signatureRequest.signature.signatureImageUrl} 
+                  alt="Signature" 
+                  className="h-16 w-auto border border-gray-300 rounded bg-white"
+                />
+              </div>
+              <div className="text-xs text-gray-600">
+                <p className="font-medium text-gray-800">
+                  {factura.signatureRequest.signature.signerName}
+                </p>
+                <p className="text-[10px] text-gray-500 mt-0.5">
+                  {t('signedOn') || 'Signed on'}: {formatDate(factura.signatureRequest.signature.signedAt)}
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
