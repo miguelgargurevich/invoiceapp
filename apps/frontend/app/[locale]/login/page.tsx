@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, Globe, Moon, Sun, Chrome } from 'lucide-react';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button, Input, LoadingSpinner } from '@/components/common';
@@ -107,9 +108,20 @@ export default function LoginPage({
         </div>
 
         <div className="relative z-10">
-          <h1 className="text-4xl font-bold text-white">
-            {t('appName')}
-          </h1>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 bg-white rounded-xl shadow-md flex items-center justify-center p-1.5">
+              <Image
+                src="/invoiceapp-logo.png"
+                alt="InvoiceApp Logo"
+                width={40}
+                height={40}
+                className="w-full h-full object-contain"
+              />
+            </div>
+            <h1 className="text-4xl font-bold text-white">
+              {t('appName')}
+            </h1>
+          </div>
           <p className="mt-2 text-primary-200 text-lg">
             {t('tagline')}
           </p>
@@ -167,6 +179,17 @@ export default function LoginPage({
           >
             {/* Mobile branding */}
             <div className="lg:hidden text-center mb-8">
+              <div className="flex items-center justify-center mb-3">
+                <div className="w-16 h-16 bg-white rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 flex items-center justify-center p-2">
+                  <Image
+                    src="/invoiceapp-logo.png"
+                    alt="InvoiceApp Logo"
+                    width={56}
+                    height={56}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              </div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {t('appName')}
               </h1>

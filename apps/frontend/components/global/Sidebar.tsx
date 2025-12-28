@@ -67,19 +67,16 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
       );
     }
 
-    // Fallback: iniciales de la empresa o ícono genérico
-    if (empresa?.nombre) {
-      return (
-        <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center text-white text-sm font-bold">
-          {getInitials(empresa.nombre)}
-        </div>
-      );
-    }
-
-    // Fallback por defecto
+    // Fallback: Logo de la app
     return (
-      <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-        <Building2 className="w-5 h-5 text-white" />
+      <div className="w-8 h-8 bg-white rounded-lg overflow-hidden flex items-center justify-center p-0.5">
+        <Image
+          src="/invoiceapp-logo.png"
+          alt="InvoiceApp Logo"
+          width={32}
+          height={32}
+          className="w-full h-full object-contain"
+        />
       </div>
     );
   };
