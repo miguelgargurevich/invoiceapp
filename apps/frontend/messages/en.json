@@ -271,7 +271,15 @@
       "cash": "Cash",
       "credit30": "30-day Credit",
       "credit60": "60-day Credit",
-      "credit90": "90-day Credit"
+      "credit90": "90-day Credit",
+      "EFECTIVO": "Cash",
+      "TRANSFERENCIA": "Bank Transfer",
+      "TARJETA": "Credit Card",
+      "CHEQUE": "Check",
+      "DEPOSITO": "Bank Deposit",
+      "YAPE": "Yape",
+      "PLIN": "Plin",
+      "OTRO": "Other"
     },
     "messages": {
       "created": "Invoice successfully created",

@@ -635,7 +635,7 @@ export default function FacturaDetailPage({
                         {formatCurrency(pago.monto)}
                       </p>
                       <p className="text-sm text-gray-500">
-                        {formatDate(pago.fecha)} • {pago.metodoPago}
+                        {formatDate(pago.fecha)} • {t(`paymentMethods.${pago.metodoPago}`)}
                         {pago.referencia && ` • ${pago.referencia}`}
                       </p>
                     </div>
@@ -676,7 +676,7 @@ export default function FacturaDetailPage({
                 </div>
               )}
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">IGV (18%)</span>
+                <span className="text-gray-500">{t('tax')}</span>
                 <span>{formatCurrency(factura.igv)}</span>
               </div>
               <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
@@ -839,7 +839,8 @@ export default function FacturaDetailPage({
           setSignatureRequestModal({ isOpen: false, signingUrl: '', email: '', emailSent: false });
           setUrlCopied(false);
         }}
-        title={signatureRequestModal.emailSent ? "Signature Request Sent!" : "Share Signature Link"}
+        title={signatureRequestModal.emailSent ? "Signature Request Sent!" : "Request Signature"}
+        size="lg"
       >
         <div className="text-center">
           {/* Success Icon - Only show if email sent */}
@@ -853,6 +854,40 @@ export default function FacturaDetailPage({
                 Email sent to <span className="font-medium text-gray-900 dark:text-gray-100">{signatureRequestModal.email}</span>
               </p>
             </>
+          )}
+
+          {/* Sign Now Option - Prominent */}
+          {!signatureRequestModal.emailSent && (
+            <div className="bg-primary-50 dark:bg-primary-900/20 rounded-xl p-4 mb-4 border-2 border-primary-200 dark:border-primary-700">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="p-2 bg-primary-100 dark:bg-primary-800 rounded-lg">
+                  <PenLine className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">Sign Now</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Open signature panel on this device (iPad, tablet, etc.)</p>
+                </div>
+              </div>
+              <Button
+                onClick={() => window.open(signatureRequestModal.signingUrl, '_blank')}
+                className="w-full"
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Open Signature Panel
+              </Button>
+            </div>
+          )}
+
+          {/* Divider */}
+          {!signatureRequestModal.emailSent && (
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="bg-white dark:bg-gray-800 px-3 text-gray-500 dark:text-gray-400">or send to client</span>
+              </div>
+            </div>
           )}
 
           {/* URL Box */}
@@ -888,7 +923,7 @@ export default function FacturaDetailPage({
                 ) : (
                   <>
                     <Copy className="w-4 h-4 mr-1" />
-                    Copy
+                    Copy Link
                   </>
                 )}
               </Button>
@@ -909,11 +944,10 @@ export default function FacturaDetailPage({
             <div className="flex gap-3">
               <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
               <div className="text-sm text-gray-700 dark:text-gray-300">
-                <p className="font-medium mb-1">What happens next?</p>
+                <p className="font-medium mb-1">Signature options:</p>
                 <ul className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
-                  <li>• The client will receive an email with the signing link</li>
-                  <li>• They can sign the document on any device (mobile-friendly)</li>
-                  <li>• You'll receive a notification when they complete the signature</li>
+                  <li>• <strong>Sign Now:</strong> Open the signature panel on your current device</li>
+                  <li>• <strong>Send to client:</strong> Email the link or share via messaging apps</li>
                   <li>• The link expires in 7 days</li>
                 </ul>
               </div>

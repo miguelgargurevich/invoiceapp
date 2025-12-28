@@ -422,8 +422,8 @@ export default function DashboardPage({
                       <td className="py-3 px-4 text-right font-medium text-gray-900 dark:text-gray-100">
                         {formatCurrency(invoice.total)}
                       </td>
-                      <td className="py-3 px-4 text-center">
-                        <div className="flex items-center justify-center gap-2">
+                      <td className="py-3 px-4">
+                        <div className="flex items-center justify-center gap-2 flex-nowrap">
                           <Badge variant={getStatusBadge(invoice.estado)}>
                             {getStatusLabel(invoice.estado)}
                           </Badge>

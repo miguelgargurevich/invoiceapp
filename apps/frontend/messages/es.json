@@ -271,7 +271,15 @@
       "cash": "Efectivo",
       "transfer": "Transferencia",
       "card": "Tarjeta",
-      "check": "Cheque"
+      "check": "Cheque",
+      "EFECTIVO": "Efectivo",
+      "TRANSFERENCIA": "Transferencia",
+      "TARJETA": "Tarjeta",
+      "CHEQUE": "Cheque",
+      "DEPOSITO": "Depósito",
+      "YAPE": "Yape",
+      "PLIN": "Plin",
+      "OTRO": "Otro"
     },
     "messages": {
       "created": "Factura creada exitosamente",

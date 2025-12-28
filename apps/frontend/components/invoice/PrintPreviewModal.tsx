@@ -258,13 +258,14 @@ export default function PrintPreviewModal({
         </div>
 
         {/* Preview Area - More Space */}
-        <div className="flex-1 overflow-auto bg-gray-200 dark:bg-gray-800 p-3">
+        <div className="flex-1 overflow-auto bg-gray-200 dark:bg-gray-800 p-3 min-h-0">
           <div
             data-preview-content
             className="mx-auto shadow-2xl transition-transform duration-200"
             style={{
               transform: `scale(${zoom})`,
-              transformOrigin: 'top center',
+              transformOrigin: 'center top',
+              minHeight: '297mm', // A4 height
             }}
           >
             <InvoicePreview ref={previewRef} factura={factura} empresa={empresa} />

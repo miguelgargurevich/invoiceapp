@@ -76,7 +76,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
       <div
         ref={ref}
         className="bg-white text-black p-6 max-w-[210mm] mx-auto"
-        style={{ fontFamily: 'Arial, sans-serif' }}
+        style={{ fontFamily: 'Arial, sans-serif', minHeight: '297mm' }}
       >
         {/* Header */}
         <div className="flex justify-between items-start mb-3 border-b border-gray-800 pb-2">
