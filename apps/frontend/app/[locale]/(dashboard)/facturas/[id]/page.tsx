@@ -978,22 +978,6 @@ export default function FacturaDetailPage({
                 value={paymentData.notas}
                 onChange={(e) => setPaymentData({ ...paymentData, notas: e.target.value })}
               />
-              
-              {/* DEBUG INFO - REMOVE AFTER TESTING */}
-              <div className="p-3 bg-yellow-100 dark:bg-yellow-900 rounded text-xs space-y-1 font-mono">
-                <p><strong>DEBUG v3:</strong></p>
-                <p>saldoPendiente (raw): {factura?.saldoPendiente}</p>
-                <p>saldoPendiente type: {typeof factura?.saldoPendiente}</p>
-                <p>monto (string): "{paymentData.monto}"</p>
-                <p>monto parsed: {parseFloat(paymentData.monto || '0')}</p>
-                <p>monto * 100: {Math.round(parseFloat(paymentData.monto || '0') * 100)}</p>
-                <p>saldo * 100: {Math.round((factura?.saldoPendiente || 0) * 100)}</p>
-                <p>exceeds?: {String(Math.round(parseFloat(paymentData.monto || '0') * 100) > Math.round((factura?.saldoPendiente || 0) * 100))}</p>
-                <p>savingPayment: {String(savingPayment)}</p>
-                <p>!monto: {String(!paymentData.monto)}</p>
-                <p>monto {'<='} 0: {String(parseFloat(paymentData.monto || '0') <= 0)}</p>
-                <p className="text-red-600 font-bold">DISABLED: {String(savingPayment || !paymentData.monto || parseFloat(paymentData.monto) <= 0)}</p>
-              </div>
             </>
           )}
           
@@ -1004,7 +988,7 @@ export default function FacturaDetailPage({
             {factura && factura.saldoPendiente > 0 && (
               <Button 
                 onClick={handleRegisterPayment} 
-                disabled={savingPayment || !paymentData.monto || parseFloat(paymentData.monto) <= 0}
+                disabled={savingPayment}
               >
                 {savingPayment ? t('saving') : t('save')}
               </Button>
