@@ -101,6 +101,8 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
   const { page = 1, limit = 20, search, estado, clienteId, fechaInicio, fechaFin } = req.query;
 
   try {
+    console.log('[FACTURAS] Query params:', { estado, search, clienteId, fechaInicio, fechaFin });
+    
     // Build where clause
     const where = {
       empresaId: req.empresa.id,
@@ -109,12 +111,15 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
     // Handle estado filter with case-insensitive comparison
     if (estado) {
       const estados = Array.isArray(estado) ? estado : [estado];
+      console.log('[FACTURAS] Estados to filter:', estados);
       if (estados.length === 1) {
         // Single estado - use equals with mode insensitive
         where.estado = { equals: estados[0], mode: 'insensitive' };
+        console.log('[FACTURAS] Single estado filter:', where.estado);
       } else {
         // Multiple estados - use OR
         where.OR = estados.map(e => ({ estado: { equals: e, mode: 'insensitive' } }));
+        console.log('[FACTURAS] Multiple estados filter:', where.OR);
       }
     }
 
@@ -136,6 +141,8 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
         { cliente: { razonSocial: { contains: search, mode: 'insensitive' } } }
       ];
     }
+
+    console.log('[FACTURAS] Final where clause:', JSON.stringify(where, null, 2));
 
     const [facturas, total] = await Promise.all([
       prisma.factura.findMany({
@@ -171,6 +178,9 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       }),
       prisma.factura.count({ where })
     ]);
+
+    console.log('[FACTURAS] Results count:', facturas.length, 'Total:', total);
+    console.log('[FACTURAS] First 3 estados from DB:', facturas.slice(0, 3).map(f => ({ serie: f.serie, estado: f.estado })));
 
     // Map facturas to include signatureStatus and calculate payment status
     const facturasWithSignatureStatus = facturas.map(factura => {
