@@ -125,7 +125,7 @@ router.put('/mi-empresa/config', authenticateToken, async (req, res) => {
       serieFactura: req.body.serieFactura,
       serieProforma: req.body.serieBoleta, // Map serieBoleta to serieProforma
       moneda: req.body.moneda,
-      taxRate: req.body.igv ? parseFloat(req.body.igv) : undefined
+      taxRate: req.body.igv !== undefined && req.body.igv !== null ? parseFloat(req.body.igv) : undefined
     };
 
     // Remove undefined values
