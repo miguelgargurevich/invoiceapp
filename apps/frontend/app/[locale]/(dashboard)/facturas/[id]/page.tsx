@@ -550,7 +550,7 @@ export default function FacturaDetailPage({
           )}
           {factura.estado !== 'PAGADA' && factura.estado !== 'ANULADA' && factura.saldoPendiente > 0 && (
             <Button size="sm" onClick={() => {
-              setPaymentData({ ...paymentData, monto: (factura.saldoPendiente || 0).toString() });
+              setPaymentData({ ...paymentData, monto: (factura.saldoPendiente || 0).toFixed(2) });
               setIsPaymentModalOpen(true);
             }}>
               <CreditCard className="w-4 h-4 mr-1" />
@@ -795,7 +795,7 @@ export default function FacturaDetailPage({
                   <Button
                     className="w-full"
                     onClick={() => {
-                      setPaymentData({ ...paymentData, monto: factura.saldoPendiente.toString() });
+                      setPaymentData({ ...paymentData, monto: factura.saldoPendiente.toFixed(2) });
                       setIsPaymentModalOpen(true);
                     }}
                   >
