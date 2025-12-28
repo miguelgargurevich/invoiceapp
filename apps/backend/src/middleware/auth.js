@@ -7,7 +7,7 @@ let supabase = null;
 function getSupabaseClient() {
   if (!supabase) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY;
     
     if (!supabaseUrl || !supabaseServiceKey) {
       throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables are required');
@@ -24,7 +24,7 @@ const authenticateToken = async (req, res, next) => {
 
   console.log('[AUTH] Checking token...');
   console.log('[AUTH] SUPABASE_URL configured:', !!(process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL));
-  console.log('[AUTH] SERVICE_KEY configured:', !!process.env.SUPABASE_SERVICE_ROLE_KEY);
+  console.log('[AUTH] SERVICE_KEY configured:', !!(process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY));
   console.log('[AUTH] Token received:', token ? `${token.substring(0, 20)}...` : 'NO TOKEN');
 
   if (!token) {
