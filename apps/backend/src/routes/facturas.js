@@ -101,42 +101,41 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
   const { page = 1, limit = 20, search, estado, clienteId, fechaInicio, fechaFin } = req.query;
 
   try {
-    // Handle multiple estado values with case-insensitive comparison
-    let estadoFilter;
+    // Build where clause
+    const where = {
+      empresaId: req.empresa.id,
+    };
+
+    // Handle estado filter with case-insensitive comparison
     if (estado) {
       const estados = Array.isArray(estado) ? estado : [estado];
       if (estados.length === 1) {
-        // Use case-insensitive comparison for single value
-        estadoFilter = { equals: estados[0], mode: 'insensitive' };
+        // Single estado - use equals with mode insensitive
+        where.estado = { equals: estados[0], mode: 'insensitive' };
       } else {
-        // For multiple values, use in with case handling
-        // Note: Prisma doesn't support mode: insensitive with 'in', so we need to handle this differently
-        // We'll use OR conditions instead
-        estadoFilter = undefined; // We'll handle this in the where clause
+        // Multiple estados - use OR
+        where.OR = estados.map(e => ({ estado: { equals: e, mode: 'insensitive' } }));
       }
     }
 
-    const where = {
-      empresaId: req.empresa.id,
-      ...(estadoFilter && { estado: estadoFilter }),
-      // Handle multiple estados with OR for case-insensitive matching
-      ...(estado && Array.isArray(estado) && estado.length > 1 && {
-        OR: estado.map(e => ({ estado: { equals: e, mode: 'insensitive' } }))
-      }),
-      ...(clienteId && { clienteId }),
-      ...(fechaInicio && fechaFin && {
-        fechaEmision: {
-          gte: new Date(fechaInicio),
-          lte: new Date(fechaFin)
-        }
-      }),
-      ...(search && {
-        OR: [
-          { serie: { contains: search } },
-          { cliente: { razonSocial: { contains: search, mode: 'insensitive' } } }
-        ]
-      })
-    };
+    // Add other filters
+    if (clienteId) {
+      where.clienteId = clienteId;
+    }
+
+    if (fechaInicio && fechaFin) {
+      where.fechaEmision = {
+        gte: new Date(fechaInicio),
+        lte: new Date(fechaFin)
+      };
+    }
+
+    if (search) {
+      where.OR = [
+        { serie: { contains: search } },
+        { cliente: { razonSocial: { contains: search, mode: 'insensitive' } } }
+      ];
+    }
 
     const [facturas, total] = await Promise.all([
       prisma.factura.findMany({
