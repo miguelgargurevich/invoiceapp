@@ -130,15 +130,42 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       empresaId: req.empresa.id,
     };
 
-    // Handle estado filter with case-insensitive comparison
+    // Handle estado filter
     if (estado) {
       const estados = Array.isArray(estado) ? estado : [estado];
-      if (estados.length === 1) {
-        // Single estado - use equals with mode insensitive
-        where.estado = { equals: estados[0], mode: 'insensitive' };
-      } else {
-        // Multiple estados - use OR
-        where.OR = estados.map(e => ({ estado: { equals: e, mode: 'insensitive' } }));
+      
+      // Separate vencida from other estados since it's calculated, not stored
+      const estadosDB = estados.filter(e => e.toLowerCase() !== 'vencida');
+      const includeVencida = estados.some(e => e.toLowerCase() === 'vencida');
+      
+      const conditions = [];
+      
+      // Add DB estados
+      if (estadosDB.length > 0) {
+        conditions.push(...estadosDB.map(e => ({ estado: { equals: e, mode: 'insensitive' } })));
+      }
+      
+      // Add vencida condition (pendiente + past due date)
+      if (includeVencida) {
+        conditions.push({
+          AND: [
+            { estado: { equals: 'pendiente', mode: 'insensitive' } },
+            { fechaVencimiento: { lt: new Date() } }
+          ]
+        });
+      }
+      
+      // Apply conditions
+      if (conditions.length === 1) {
+        // If it's only vencida, use the AND condition directly
+        if (includeVencida && estadosDB.length === 0) {
+          where.AND = conditions[0].AND;
+        } else {
+          // Single DB estado
+          where.estado = estadosDB.length > 0 ? { equals: estadosDB[0], mode: 'insensitive' } : conditions[0].estado;
+        }
+      } else if (conditions.length > 1) {
+        where.OR = conditions;
       }
     }
 
