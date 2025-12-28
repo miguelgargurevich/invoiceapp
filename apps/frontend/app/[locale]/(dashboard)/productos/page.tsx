@@ -188,7 +188,7 @@ export default function ProductosPage({
       header: t('unit'),
       render: (producto) => (
         <span className="text-gray-600 dark:text-gray-400">
-          {producto.unidadMedida}
+          {t(`units.${producto.unidadMedida}`) || producto.unidadMedida}
         </span>
       ),
     },

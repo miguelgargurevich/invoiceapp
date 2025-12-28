@@ -214,7 +214,7 @@ export default function ProductoDetailPage({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setFormData({ ...formData, tipo: 'SERVICIO' })}
+                    onClick={() => setFormData({ ...formData, tipo: 'SERVICIO', unidadMedida: 'SERVICIO' })}
                     className={`p-4 rounded-xl border-2 transition-all ${
                       formData.tipo === 'SERVICIO'
                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
