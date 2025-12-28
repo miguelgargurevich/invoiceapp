@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Plus, Search, Filter, Download, Printer, MoreHorizontal, Receipt, CheckCircle, Clock, XCircle, AlertTriangle } from 'lucide-react';
+import { Plus, Search, Filter, Download, Printer, MoreHorizontal, Receipt, CheckCircle, Clock, XCircle, AlertTriangle, FileText } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
@@ -465,17 +465,68 @@ export default function FacturasPage({
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card className="!p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">{t('totalInvoiced')}</div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-            {formatCurrency(totals.total)}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                {t('totalInvoiced')}
+              </div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                {formatCurrency(totals.total)}
+              </div>
+            </div>
+            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+              <Receipt className="w-5 h-5 text-green-600 dark:text-green-400" />
+            </div>
           </div>
         </Card>
-        <Card className="!p-4">
-          <div className="text-sm text-gray-500 dark:text-gray-400">{t('invoiceCount')}</div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">
-            {filteredFacturas.length}
+        
+        <Card>
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                {t('invoiceCount')}
+              </div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                {filteredFacturas.length}
+              </div>
+            </div>
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+              <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
+          </div>
+        </Card>
+        
+        <Card>
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                {t('pendingAmount')}
+              </div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                {formatCurrency(totals.pendiente)}
+              </div>
+            </div>
+            <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+              <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            </div>
+          </div>
+        </Card>
+        
+        <Card>
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                {t('collectionRate')}
+              </div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                {totals.total > 0 ? Math.round(((totals.total - totals.pendiente) / totals.total) * 100) : 0}%
+              </div>
+            </div>
+            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+              <CheckCircle className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            </div>
           </div>
         </Card>
       </div>
