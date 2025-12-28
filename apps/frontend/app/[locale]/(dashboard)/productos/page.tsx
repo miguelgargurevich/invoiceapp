@@ -159,15 +159,18 @@ export default function ProductosPage({
     {
       key: 'tipo',
       header: t('type'),
-      render: (producto) => (
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-          producto.tipo === 'PRODUCTO' 
-            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 
-            : 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
-        }`}>
-          {producto.tipo === 'PRODUCTO' ? t('typeProduct') : t('typeService')}
-        </span>
-      ),
+      render: (producto) => {
+        const isService = producto.tipo === 'SERVICIO';
+        return (
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+            isService 
+              ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+              : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 
+          }`}>
+            {isService ? t('typeService') : t('typeProduct')}
+          </span>
+        );
+      },
     },
     {
       key: 'precioVenta',
@@ -323,7 +326,7 @@ export default function ProductosPage({
                 variant={producto.tipo === 'SERVICIO' ? 'info' : 'success'}
                 size="sm"
               >
-                {producto.tipo}
+                {producto.tipo === 'SERVICIO' ? t('typeService') : t('typeProduct')}
               </Badge>
             </div>
             <div className="flex items-center justify-end">
