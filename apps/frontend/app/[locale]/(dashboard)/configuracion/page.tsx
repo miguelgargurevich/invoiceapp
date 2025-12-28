@@ -254,12 +254,20 @@ export default function ConfiguracionPage({
   };
 
   const handleChangeLanguage = async (newLocale: string) => {
-    // Guardar preferencia en BD y localStorage
-    await updatePreferences({ locale: newLocale as 'es' | 'en' });
-    
-    // Redirigir a la nueva ruta con el idioma
-    const newPath = pathname.replace(`/${locale}`, `/${newLocale}`);
-    router.push(newPath);
+    try {
+      // Guardar preferencia en BD, localStorage y cookie
+      await updatePreferences({ locale: newLocale as 'es' | 'en' });
+      
+      // Pequeña espera para asegurar que la cookie se haya guardado
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Redirigir a la nueva ruta con el idioma
+      const newPath = pathname.replace(`/${locale}`, `/${newLocale}`);
+      router.push(newPath);
+      router.refresh(); // Forzar refresh para que el middleware lea la nueva cookie
+    } catch (error) {
+      console.error('[CONFIG] Error changing language:', error);
+    }
   };
 
   const handleSaveInvoiceConfig = async () => {

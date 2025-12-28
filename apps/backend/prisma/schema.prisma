@@ -472,7 +472,7 @@ model UserPreferences {
   // Appearance settings
   theme       String   @default("light") // light, dark
   fontSize    String   @default("medium") @map("font_size") // small, medium, large
-  locale      String   @default("es") // es, en
+  locale      String   @default("en") // es, en
   
   // Notification settings
   emailFactura          Boolean  @default(true) @map("email_factura")

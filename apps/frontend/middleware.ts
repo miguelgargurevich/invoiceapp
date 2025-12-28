@@ -14,24 +14,18 @@ const intlMiddleware = createMiddleware({
 });
 
 export default function middleware(request: NextRequest) {
-  // Check for preferred locale cookie (set when user changes language)
-  const preferredLocale = request.cookies.get('preferredLocale')?.value;
-  
-  // If user has a preferred locale and is accessing root path, redirect to preferred locale
   const pathname = request.nextUrl.pathname;
   
-  if (preferredLocale && locales.includes(preferredLocale as any)) {
-    // Check if already on a locale path
-    const pathnameHasLocale = locales.some(
-      (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
-    );
-    
-    // If accessing root, redirect to preferred locale
-    if (pathname === '/') {
-      return NextResponse.redirect(new URL(`/${preferredLocale}`, request.url));
-    }
+  // Check for preferred locale cookie
+  const preferredLocale = request.cookies.get('preferredLocale')?.value;
+  
+  // If accessing root, redirect to preferred locale or default
+  if (pathname === '/') {
+    const targetLocale = preferredLocale && locales.includes(preferredLocale as any) ? preferredLocale : defaultLocale;
+    return NextResponse.redirect(new URL(`/${targetLocale}`, request.url));
   }
   
+  // Let next-intl middleware handle the rest
   return intlMiddleware(request);
 }
 
