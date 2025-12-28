@@ -405,7 +405,15 @@ export default function FacturasPage({
         `${f.serie || ''}-${f.numero || ''}`.toLowerCase().includes(searchLower) ||
         (f.cliente?.nombre || '').toLowerCase().includes(searchLower) ||
         (f.cliente?.documento || '').includes(search);
-      const matchesEstado = filterEstados.length === 0 || filterEstados.includes(f.estado.toLowerCase());
+      
+      const estadoLower = f.estado.toLowerCase();
+      const matchesEstado = filterEstados.length === 0 || filterEstados.includes(estadoLower);
+      
+      // Debug logging
+      if (filterEstados.length > 0) {
+        console.log('Factura:', f.serie + '-' + f.numero, 'Estado:', f.estado, 'EstadoLower:', estadoLower, 'Filters:', filterEstados, 'Matches:', matchesEstado);
+      }
+      
       return matchesSearch && matchesEstado;
     })
     .sort((a, b) => {

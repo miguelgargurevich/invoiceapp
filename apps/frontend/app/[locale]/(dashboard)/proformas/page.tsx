@@ -270,7 +270,13 @@ export default function ProformasPage({
         proforma.numero.toLowerCase().includes(search.toLowerCase()) ||
         proforma.cliente.nombre.toLowerCase().includes(search.toLowerCase());
       
-      const matchesEstado = filterEstados.length === 0 || filterEstados.includes(proforma.estado.toLowerCase());
+      const estadoLower = proforma.estado.toLowerCase();
+      const matchesEstado = filterEstados.length === 0 || filterEstados.includes(estadoLower);
+      
+      // Debug logging
+      if (filterEstados.length > 0) {
+        console.log('Proforma:', proforma.serie + '-' + proforma.numero, 'Estado:', proforma.estado, 'EstadoLower:', estadoLower, 'Filters:', filterEstados, 'Matches:', matchesEstado);
+      }
       
       return matchesSearch && matchesEstado;
     })
@@ -357,7 +363,7 @@ export default function ProformasPage({
                 { value: 'aceptada', label: t('statuses.aprobada'), color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' },
                 { value: 'rechazada', label: t('statuses.rechazada'), color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' },
                 { value: 'vencida', label: t('statuses.vencida'), color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' },
-                { value: 'facturada', label: t('statuses.convertida'), color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },
+                { value: 'facturada', label: t('statuses.facturada'), color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },
               ].map((status) => (
                 <button
                   key={status.value}
