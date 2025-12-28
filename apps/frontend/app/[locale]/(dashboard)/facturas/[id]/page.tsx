@@ -416,6 +416,18 @@ export default function FacturaDetailPage({
     return config[status] || { variant: 'neutral' as const, icon: null };
   };
 
+  const getStatusLabel = (status: string) => {
+    const normalizedStatus = status.toLowerCase();
+    const labels: Record<string, string> = {
+      pagada: t('statusPaid'),
+      emitida: t('statusIssued'),
+      pendiente: t('statusPending'),
+      vencida: t('statusOverdue'),
+      anulada: t('statusCancelled'),
+    };
+    return labels[normalizedStatus] || status;
+  };
+
   if (loading) {
     return <LoadingPage />;
   }
@@ -452,7 +464,7 @@ export default function FacturaDetailPage({
               <Badge variant={statusConfig.variant}>
                 <span className="flex items-center gap-1">
                   {statusConfig.icon}
-                  {factura.estado}
+                  {getStatusLabel(factura.estado)}
                 </span>
               </Badge>
               {factura.signatureStatus === 'SIGNED' && (
