@@ -125,16 +125,26 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
   const { page = 1, limit = 20, search, estado, clienteId, fechaInicio, fechaFin } = req.query;
 
   try {
-    // Handle multiple estado values
+    // Handle multiple estado values with case-insensitive comparison
     let estadoFilter;
     if (estado) {
       const estados = Array.isArray(estado) ? estado : [estado];
-      estadoFilter = estados.length === 1 ? estados[0] : { in: estados };
+      if (estados.length === 1) {
+        // Use case-insensitive comparison for single value
+        estadoFilter = { equals: estados[0], mode: 'insensitive' };
+      } else {
+        // For multiple values, use OR conditions for case-insensitive matching
+        estadoFilter = undefined; // We'll handle this in the where clause
+      }
     }
 
     const where = {
       empresaId: req.empresa.id,
       ...(estadoFilter && { estado: estadoFilter }),
+      // Handle multiple estados with OR for case-insensitive matching
+      ...(estado && Array.isArray(estado) && estado.length > 1 && {
+        OR: estado.map(e => ({ estado: { equals: e, mode: 'insensitive' } }))
+      }),
       ...(clienteId && { clienteId }),
       ...(fechaInicio && fechaFin && {
         fechaEmision: {

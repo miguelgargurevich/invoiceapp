@@ -171,6 +171,7 @@
     "pending": "Pending",
     "pendingAmount": "Pending Amount",
     "invoiceCount": "Invoice Count",
+    "collectionRate": "Collection Rate",
     "number": "Number",
     "export": "Export",
     "editInvoice": "Edit Invoice",

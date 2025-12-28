@@ -115,11 +115,14 @@ export default function FacturasPage({
       // Mapear los datos para asegurar que cliente tenga el formato correcto
       const facturasMapped = facturasData.map((f: any) => ({
         ...f,
+        estado: (f.estado || '').toLowerCase(), // Normalize estado to lowercase
         cliente: {
           nombre: f.cliente?.razonSocial || f.cliente?.nombre || '',
           documento: f.cliente?.numeroDocumento || f.cliente?.documento || '',
         },
       }));
+      
+      console.log('[FACTURAS] Sample estados:', facturasMapped.slice(0, 3).map((f: any) => ({ numero: f.numero, estado: f.estado })));
       
       setFacturas(facturasMapped);
       setTotalPages(response.pagination?.totalPages || 1);
@@ -406,8 +409,9 @@ export default function FacturasPage({
         (f.cliente?.nombre || '').toLowerCase().includes(searchLower) ||
         (f.cliente?.documento || '').includes(search);
       
-      const estadoLower = f.estado.toLowerCase();
-      const matchesEstado = filterEstados.length === 0 || filterEstados.some(fe => fe.toLowerCase() === estadoLower);
+      // Normalize both sides to lowercase for comparison
+      const estadoLower = (f.estado || '').toLowerCase().trim();
+      const matchesEstado = filterEstados.length === 0 || filterEstados.some(fe => fe.toLowerCase().trim() === estadoLower);
       
       return matchesSearch && matchesEstado;
     })

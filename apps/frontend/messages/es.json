@@ -171,6 +171,7 @@
     "pending": "Pendiente",
     "pendingAmount": "Monto Pendiente",
     "invoiceCount": "Cantidad de Facturas",
+    "collectionRate": "Tasa de Cobro",
     "number": "Número",
     "export": "Exportar",
     "editInvoice": "Editar Factura",
