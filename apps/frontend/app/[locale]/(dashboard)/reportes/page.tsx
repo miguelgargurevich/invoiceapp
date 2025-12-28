@@ -105,22 +105,22 @@ export default function ReportesPage({
           return (
             <Card
               key={report.id}
-              className={`cursor-pointer transition-all duration-200 border-2 border-transparent ${colors.hover} hover:shadow-lg`}
+              className={`cursor-pointer transition-all duration-200 border-2 border-transparent ${colors.hover} hover:shadow-lg !p-8`}
               onClick={() => router.push(report.href)}
             >
-              <div className="flex items-start gap-4">
-                <div className={`p-3 rounded-xl ${colors.bg}`}>
+              <div className="flex items-start gap-6">
+                <div className={`p-4 rounded-xl ${colors.bg}`}>
                   <div className={colors.icon}>{report.icon}</div>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                     {t(report.titleKey)}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  <p className="text-base text-gray-500 dark:text-gray-400 mt-2">
                     {t(report.descriptionKey)}
                   </p>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400 dark:text-gray-500 mt-1" />
+                <ArrowRight className="w-6 h-6 text-gray-400 dark:text-gray-500 mt-1" />
               </div>
             </Card>
           );

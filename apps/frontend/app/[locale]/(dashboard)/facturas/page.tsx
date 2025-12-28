@@ -85,7 +85,8 @@ export default function FacturasPage({
   const [facturas, setFacturas] = useState<Factura[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [filterEstado, setFilterEstado] = useState('');
+  const [filterEstados, setFilterEstados] = useState<string[]>([]);
+  const [showStatusFilter, setShowStatusFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [sortKey, setSortKey] = useState<string>('fechaEmision');
@@ -104,8 +105,10 @@ export default function FacturasPage({
         search,
         page: currentPage.toString(),
         limit: '10',
-        ...(filterEstado && { estado: filterEstado }),
       });
+      if (filterEstados.length > 0) {
+        filterEstados.forEach(estado => params.append('estado', estado));
+      }
       const response: any = await api.get(`/facturas?${params}`);
       const facturasData = response.data || [];
       
@@ -193,7 +196,7 @@ export default function FacturasPage({
     } finally {
       setLoading(false);
     }
-  }, [empresa?.id, search, filterEstado, currentPage]);
+  }, [empresa?.id, search, filterEstados, currentPage]);
 
   useEffect(() => {
     loadFacturas();
@@ -402,7 +405,7 @@ export default function FacturasPage({
         `${f.serie || ''}-${f.numero || ''}`.toLowerCase().includes(searchLower) ||
         (f.cliente?.nombre || '').toLowerCase().includes(searchLower) ||
         (f.cliente?.documento || '').includes(search);
-      const matchesEstado = !filterEstado || f.estado === filterEstado;
+      const matchesEstado = filterEstados.length === 0 || filterEstados.includes(f.estado);
       return matchesSearch && matchesEstado;
     })
     .sort((a, b) => {
@@ -476,33 +479,74 @@ export default function FacturasPage({
 
       {/* Search and filters */}
       <Card className="!p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={t('searchPlaceholder')}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
-            />
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={t('searchPlaceholder')}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                variant={showStatusFilter ? "primary" : "outline"}
+                onClick={() => setShowStatusFilter(!showStatusFilter)}
+              >
+                <Filter className="w-4 h-4 mr-2" />
+                {t('filterStatus')} {filterEstados.length > 0 && `(${filterEstados.length})`}
+              </Button>
+              <Button variant="outline" onClick={handleExport}>
+                <Download className="w-4 h-4 mr-2" />
+                {t('export')}
+              </Button>
+            </div>
           </div>
-          <select
-            value={filterEstado}
-            onChange={(e) => setFilterEstado(e.target.value)}
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
-            <option value="">{t('allStatuses')}</option>
-            <option value="EMITIDA">{t('statusIssued')}</option>
-            <option value="PAGADA">{t('statusPaid')}</option>
-            <option value="PENDIENTE">{t('statusPending')}</option>
-            <option value="VENCIDA">{t('statusOverdue')}</option>
-            <option value="ANULADA">{t('statusCancelled')}</option>
-          </select>
-          <Button variant="outline" onClick={handleExport}>
-            <Download className="w-4 h-4 mr-2" />
-            {t('export')}
-          </Button>
+          
+          {/* Status Filter Chips */}
+          {showStatusFilter && (
+            <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+              {[
+                { value: 'EMITIDA', label: t('statusIssued'), color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },
+                { value: 'PAGADA', label: t('statusPaid'), color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' },
+                { value: 'PENDIENTE', label: t('statusPending'), color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300' },
+                { value: 'VENCIDA', label: t('statusOverdue'), color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' },
+                { value: 'ANULADA', label: t('statusCancelled'), color: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300' },
+              ].map((status) => (
+                <button
+                  key={status.value}
+                  onClick={() => {
+                    setFilterEstados(prev =>
+                      prev.includes(status.value)
+                        ? prev.filter(s => s !== status.value)
+                        : [...prev, status.value]
+                    );
+                  }}
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                    filterEstados.includes(status.value)
+                      ? `${status.color} ring-2 ring-offset-2 ring-primary-500 dark:ring-offset-gray-900`
+                      : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600'
+                  }`}
+                >
+                  {filterEstados.includes(status.value) && (
+                    <CheckCircle className="w-3 h-3 inline mr-1" />
+                  )}
+                  {status.label}
+                </button>
+              ))}
+              {filterEstados.length > 0 && (
+                <button
+                  onClick={() => setFilterEstados([])}
+                  className="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                >
+                  {t('clearFilters') || 'Clear all'}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </Card>
 

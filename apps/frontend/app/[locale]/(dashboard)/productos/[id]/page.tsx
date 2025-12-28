@@ -238,7 +238,7 @@ export default function ProductoDetailPage({
               {/* Code & Name */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Input
-                  label={`${t('code')} *`}
+                  label={t('code')}
                   value={formData.codigo}
                   onChange={(e) => setFormData({ ...formData, codigo: e.target.value })}
                   placeholder="SKU-001"
@@ -246,7 +246,7 @@ export default function ProductoDetailPage({
                 />
                 
                 <Input
-                  label={`${t('name')} *`}
+                  label={t('name')}
                   value={formData.nombre}
                   onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                   placeholder="Product or service name"
