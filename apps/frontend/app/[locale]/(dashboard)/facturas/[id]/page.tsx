@@ -93,7 +93,8 @@ interface Factura {
   total: number;
   descuento: number;
   estado: string;
-  montoPendiente: number;
+  saldoPendiente: number;
+  totalPagado: number;
   observaciones?: string;
   detalles: DetalleFactura[];
   pagos: PagoFactura[];
@@ -233,8 +234,8 @@ export default function FacturaDetailPage({
       return;
     }
     
-    if (monto > factura.montoPendiente) {
-      showError(`${t('paymentExceedsPending') || 'Amount exceeds pending balance'}: ${formatCurrency(factura.montoPendiente)}`);
+    if (monto > factura.saldoPendiente) {
+      showError(`${t('paymentExceedsPending') || 'Amount exceeds pending balance'}: ${formatCurrency(factura.saldoPendiente)}`);
       return;
     }
 
@@ -823,88 +824,129 @@ export default function FacturaDetailPage({
         <div className="space-y-4">
           {/* Pending Balance Info */}
           {factura && (
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div className={`border rounded-lg p-4 ${
+              factura.saldoPendiente <= 0 
+                ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+            }`}>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-blue-700 dark:text-blue-300">{t('pendingBalance') || 'Pending Balance'}:</span>
-                <span className="text-lg font-bold text-blue-900 dark:text-blue-100">{formatCurrency(factura.montoPendiente)}</span>
+                <span className={`text-sm ${factura.saldoPendiente <= 0 ? 'text-green-700 dark:text-green-300' : 'text-blue-700 dark:text-blue-300'}`}>
+                  {t('pendingBalance') || 'Pending Balance'}:
+                </span>
+                <span className={`text-lg font-bold ${factura.saldoPendiente <= 0 ? 'text-green-900 dark:text-green-100' : 'text-blue-900 dark:text-blue-100'}`}>
+                  {formatCurrency(factura.saldoPendiente)}
+                </span>
               </div>
-              <div className="flex justify-between items-center mt-1 text-xs text-blue-600 dark:text-blue-400">
+              <div className="flex justify-between items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
                 <span>{t('totalInvoice') || 'Total Invoice'}:</span>
                 <span>{formatCurrency(factura.total)}</span>
               </div>
+              {factura.totalPagado > 0 && (
+                <div className="flex justify-between items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  <span>{t('totalPaid') || 'Total Paid'}:</span>
+                  <span>{formatCurrency(factura.totalPagado)}</span>
+                </div>
+              )}
             </div>
           )}
           
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('amount')} *
-            </label>
-            <div className="relative">
-              <input
-                type="number"
-                step="0.01"
-                min="0.01"
-                max={factura?.montoPendiente || 0}
-                value={paymentData.monto}
-                onChange={(e) => setPaymentData({ ...paymentData, monto: e.target.value })}
-                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 ${
-                  paymentData.monto && parseFloat(paymentData.monto) > (factura?.montoPendiente || 0)
-                    ? 'border-red-500 text-red-600'
-                    : 'border-gray-300 dark:border-gray-600'
-                }`}
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setPaymentData({ ...paymentData, monto: factura?.montoPendiente?.toFixed(2) || '0' })}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-2 py-1 rounded text-gray-600 dark:text-gray-300"
-              >
-                {t('payFull') || 'Pay Full'}
-              </button>
-            </div>
-            {paymentData.monto && parseFloat(paymentData.monto) > (factura?.montoPendiente || 0) && (
-              <p className="mt-1 text-xs text-red-500">
-                {t('amountExceedsPending') || 'Amount exceeds pending balance'}
+          {factura && factura.saldoPendiente <= 0 ? (
+            <div className="text-center py-4">
+              <p className="text-green-600 dark:text-green-400 font-medium">
+                {t('invoiceFullyPaid') || 'This invoice is fully paid'}
               </p>
-            )}
-          </div>
+            </div>
+          ) : (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {t('amount')} *
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    max={factura?.saldoPendiente || 0}
+                    value={paymentData.monto}
+                    onChange={(e) => setPaymentData({ ...paymentData, monto: e.target.value })}
+                    className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 ${
+                      paymentData.monto && parseFloat(paymentData.monto) > (factura?.saldoPendiente || 0)
+                        ? 'border-red-500 text-red-600'
+                        : 'border-gray-300 dark:border-gray-600'
+                    }`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setPaymentData({ ...paymentData, monto: factura?.saldoPendiente?.toFixed(2) || '0' })}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-2 py-1 rounded text-gray-600 dark:text-gray-300"
+                  >
+                    {t('payFull') || 'Pay Full'}
+                  </button>
+                </div>
+                {paymentData.monto && parseFloat(paymentData.monto) > (factura?.saldoPendiente || 0) && (
+                  <p className="mt-1 text-xs text-red-500">
+                    {t('amountExceedsPending') || 'Amount exceeds pending balance'}
+                  </p>
+                )}
+              </div>
+              
+              {/* Payment Method Cards */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('paymentMethod')}
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { value: 'TRANSFERENCIA', label: t('transfer'), icon: '🏦' },
+                    { value: 'EFECTIVO', label: t('cash'), icon: '💵' },
+                    { value: 'TARJETA', label: t('card'), icon: '💳' },
+                    { value: 'CHEQUE', label: t('check'), icon: '📝' },
+                  ].map((method) => (
+                    <button
+                      key={method.value}
+                      type="button"
+                      onClick={() => setPaymentData({ ...paymentData, metodoPago: method.value })}
+                      className={`flex items-center gap-2 p-3 rounded-lg border-2 transition-all ${
+                        paymentData.metodoPago === method.value
+                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800'
+                      }`}
+                    >
+                      <span className="text-xl">{method.icon}</span>
+                      <span className="text-sm font-medium">{method.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              <Input
+                label={t('reference')}
+                value={paymentData.referencia}
+                onChange={(e) => setPaymentData({ ...paymentData, referencia: e.target.value })}
+                placeholder={t('referencePlaceholder')}
+              />
+              <Input
+                label={t('notes')}
+                value={paymentData.notas}
+                onChange={(e) => setPaymentData({ ...paymentData, notas: e.target.value })}
+              />
+            </>
+          )}
           
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('paymentMethod')}
-            </label>
-            <select
-              value={paymentData.metodoPago}
-              onChange={(e) => setPaymentData({ ...paymentData, metodoPago: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
-            >
-              <option value="TRANSFERENCIA">{t('transfer')}</option>
-              <option value="EFECTIVO">{t('cash')}</option>
-              <option value="TARJETA">{t('card')}</option>
-              <option value="CHEQUE">{t('check')}</option>
-            </select>
-          </div>
-          <Input
-            label={t('reference')}
-            value={paymentData.referencia}
-            onChange={(e) => setPaymentData({ ...paymentData, referencia: e.target.value })}
-            placeholder={t('referencePlaceholder')}
-          />
-          <Input
-            label={t('notes')}
-            value={paymentData.notas}
-            onChange={(e) => setPaymentData({ ...paymentData, notas: e.target.value })}
-          />
           <div className="flex justify-end gap-3 pt-4 border-t">
             <Button variant="outline" onClick={() => setIsPaymentModalOpen(false)}>
-              {t('cancel')}
+              {factura && factura.saldoPendiente <= 0 ? (t('close') || 'Close') : t('cancel')}
             </Button>
-            <Button 
-              onClick={handleRegisterPayment} 
-              disabled={savingPayment || !paymentData.monto || parseFloat(paymentData.monto) <= 0 || parseFloat(paymentData.monto) > (factura?.montoPendiente || 0)}
-            >
-              {savingPayment ? t('saving') : t('save')}
-            </Button>
+            {factura && factura.saldoPendiente > 0 && (
+              <Button 
+                onClick={handleRegisterPayment} 
+                disabled={savingPayment || !paymentData.monto || parseFloat(paymentData.monto) <= 0 || parseFloat(paymentData.monto) > (factura?.saldoPendiente || 0)}
+              >
+                {savingPayment ? t('saving') : t('save')}
+              </Button>
+            )}
           </div>
         </div>
       </Modal>
