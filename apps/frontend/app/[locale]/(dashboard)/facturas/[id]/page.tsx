@@ -1289,14 +1289,25 @@ export default function FacturaDetailPage({
       <Modal
         isOpen={isPhotosModalOpen}
         onClose={() => setIsPhotosModalOpen(false)}
-        title={t('jobPhotos')}
-        size="xl"
+        title=""
+        size="full"
       >
         <JobPhotosGallery
           facturaId={factura.id}
           photos={jobPhotos}
           onPhotosChange={loadJobPhotos}
           readOnly={factura.estado === 'ANULADA'}
+          clientInfo={{
+            razonSocial: factura.cliente.razonSocial,
+            numeroDocumento: factura.cliente.numeroDocumento,
+            direccion: factura.cliente.direccion,
+            email: factura.cliente.email
+          }}
+          invoiceInfo={{
+            numero: factura.numero,
+            serie: factura.serie,
+            fechaEmision: factura.fechaEmision
+          }}
         />
       </Modal>
 
