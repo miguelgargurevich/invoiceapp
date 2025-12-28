@@ -38,6 +38,7 @@ interface Categoria {
   nombre: string;
   descripcion?: string;
   color?: string;
+  tipo?: string;
   _count?: {
     productos: number;
   };
@@ -324,11 +325,24 @@ export default function ProductosPage({
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <option value="">{t('allCategories')}</option>
-            {categorias.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.nombre}
-              </option>
-            ))}
+            {categorias.filter(cat => cat.tipo === 'PRODUCTO').length > 0 && (
+              <optgroup label={t('productSubcategories')}>
+                {categorias.filter(cat => cat.tipo === 'PRODUCTO').map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.nombre}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+            {categorias.filter(cat => cat.tipo === 'SERVICIO').length > 0 && (
+              <optgroup label={t('serviceSubcategories')}>
+                {categorias.filter(cat => cat.tipo === 'SERVICIO').map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.nombre}
+                  </option>
+                ))}
+              </optgroup>
+            )}
           </select>
           <Button variant="outline" onClick={() => setIsCategoryModalOpen(true)}>
             <Tag className="w-4 h-4 mr-2" />
@@ -438,16 +452,21 @@ function CategoryManagementModal({
   const [loading, setLoading] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Categoria | null>(null);
   const [isAddMode, setIsAddMode] = useState(false);
+  const [selectedTipo, setSelectedTipo] = useState<'PRODUCTO' | 'SERVICIO'>('PRODUCTO');
   const [formData, setFormData] = useState({
     nombre: '',
     descripcion: '',
     color: '#3B82F6',
+    tipo: 'PRODUCTO' as 'PRODUCTO' | 'SERVICIO',
   });
 
-  const handleAddClick = () => {
+  const productCategorias = categorias.filter(c => !c.tipo || c.tipo === 'PRODUCTO');
+  const serviceCategorias = categorias.filter(c => c.tipo === 'SERVICIO');
+
+  const handleAddClick = (tipo: 'PRODUCTO' | 'SERVICIO') => {
     setIsAddMode(true);
     setEditingCategory(null);
-    setFormData({ nombre: '', descripcion: '', color: '#3B82F6' });
+    setFormData({ nombre: '', descripcion: '', color: '#3B82F6', tipo });
   };
 
   const handleEditClick = (categoria: Categoria) => {
@@ -457,6 +476,7 @@ function CategoryManagementModal({
       nombre: categoria.nombre,
       descripcion: categoria.descripcion || '',
       color: categoria.color || '#3B82F6',
+      tipo: (categoria.tipo as 'PRODUCTO' | 'SERVICIO') || 'PRODUCTO',
     });
   };
 
@@ -471,7 +491,7 @@ function CategoryManagementModal({
       }
       setIsAddMode(false);
       setEditingCategory(null);
-      setFormData({ nombre: '', descripcion: '', color: '#3B82F6' });
+      setFormData({ nombre: '', descripcion: '', color: '#3B82F6', tipo: 'PRODUCTO' });
       onSave();
     } catch (error) {
       console.error('Error saving categoria:', error);
@@ -497,8 +517,65 @@ function CategoryManagementModal({
   const handleCancel = () => {
     setIsAddMode(false);
     setEditingCategory(null);
-    setFormData({ nombre: '', descripcion: '', color: '#3B82F6' });
+    setFormData({ nombre: '', descripcion: '', color: '#3B82F6', tipo: 'PRODUCTO' });
   };
+
+  const renderCategoryList = (cats: Categoria[], tipo: 'PRODUCTO' | 'SERVICIO') => (
+    <div className="space-y-2">
+      <div className="flex justify-between items-center">
+        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+          {tipo === 'PRODUCTO' ? t('productSubcategories') || 'Product Subcategories' : t('serviceSubcategories') || 'Service Subcategories'}
+        </h3>
+        <Button onClick={() => handleAddClick(tipo)} size="sm" variant="outline">
+          <Plus className="w-3 h-3 mr-1" />
+          Add
+        </Button>
+      </div>
+      {cats.length === 0 ? (
+        <p className="text-sm text-gray-400 py-2">No subcategories yet</p>
+      ) : (
+        cats.map((categoria) => (
+          <div
+            key={categoria.id}
+            className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="w-4 h-4 rounded"
+                style={{ backgroundColor: categoria.color || '#3B82F6' }}
+              />
+              <div>
+                <p className="font-medium text-gray-900 dark:text-gray-100">
+                  {categoria.nombre}
+                </p>
+                {categoria.descripcion && (
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {categoria.descripcion}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="flex gap-1">
+              <button
+                onClick={() => handleEditClick(categoria)}
+                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                title="Edit"
+              >
+                <Edit className="w-4 h-4 text-gray-500" />
+              </button>
+              <button
+                onClick={() => handleDelete(categoria)}
+                className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                title="Delete"
+              >
+                <Trash2 className="w-4 h-4 text-red-500" />
+              </button>
+            </div>
+          </div>
+        ))
+      )}
+    </div>
+  );
 
   return (
     <Modal
@@ -507,70 +584,25 @@ function CategoryManagementModal({
       title={t('categoryManagement')}
       size="lg"
     >
-      <div className="space-y-4">
+      <div className="space-y-6">
         {!isAddMode ? (
           <>
-            <div className="flex justify-between items-center mb-4">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {categorias.length} categories
-              </p>
-              <Button onClick={handleAddClick} size="sm">
-                <Plus className="w-4 h-4 mr-1" />
-                {t('addCategory')}
-              </Button>
-            </div>
-
-            {categorias.length === 0 ? (
-              <div className="text-center py-12">
-                <Tag className="w-12 h-12 mx-auto text-gray-400 mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">{t('createFirstCategory')}</p>
-              </div>
-            ) : (
-              <div className="space-y-2 max-h-96 overflow-y-auto">
-                {categorias.map((categoria) => (
-                  <div
-                    key={categoria.id}
-                    className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-4 h-4 rounded"
-                        style={{ backgroundColor: categoria.color || '#3B82F6' }}
-                      />
-                      <div>
-                        <p className="font-medium text-gray-900 dark:text-gray-100">
-                          {categoria.nombre}
-                        </p>
-                        {categoria.descripcion && (
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {categoria.descripcion}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex gap-1">
-                      <button
-                        onClick={() => handleEditClick(categoria)}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                        title="Edit"
-                      >
-                        <Edit className="w-4 h-4 text-gray-500" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(categoria)}
-                        className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            {/* Product Subcategories */}
+            {renderCategoryList(productCategorias, 'PRODUCTO')}
+            
+            <div className="border-t border-gray-200 dark:border-gray-700" />
+            
+            {/* Service Subcategories */}
+            {renderCategoryList(serviceCategorias, 'SERVICIO')}
           </>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {editingCategory ? 'Editing' : 'Adding'} subcategory for: <strong>{formData.tipo === 'PRODUCTO' ? t('typeProduct') : t('typeService')}</strong>
+              </p>
+            </div>
+            
             <Input
               label={t('categoryName')}
               value={formData.nombre}

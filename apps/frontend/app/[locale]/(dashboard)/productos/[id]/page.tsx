@@ -15,6 +15,7 @@ interface Categoria {
   id: string;
   nombre: string;
   color: string;
+  tipo: string;
 }
 
 interface Producto {
@@ -62,28 +63,42 @@ export default function ProductoDetailPage({
     loadData();
   }, [id]);
 
+  useEffect(() => {
+    // Reload categories when type changes
+    if (formData.tipo) {
+      loadCategorias(formData.tipo);
+    }
+  }, [formData.tipo]);
+
+  const loadCategorias = async (tipo: string) => {
+    try {
+      const categoriasResponse: any = await api.get(`/categorias?tipo=${tipo}`);
+      setCategorias(categoriasResponse || []);
+    } catch {
+      setCategorias([]);
+    }
+  };
+
   const loadData = async () => {
     try {
       setLoading(true);
       
-      // Load categories first
-      try {
-        const categoriasResponse: any = await api.get('/categorias');
-        setCategorias(categoriasResponse || []);
-      } catch {
-        setCategorias([]);
-      }
-      
       // Load product
       const response: any = await api.get(`/productos/${id}`);
       setProducto(response);
+      
+      const tipo = response.tipo || 'PRODUCTO';
+      
+      // Load categories for the product type
+      await loadCategorias(tipo);
+      
       setFormData({
         codigo: response.codigo || '',
         nombre: response.nombre || '',
         descripcion: response.descripcion || '',
         precioVenta: response.precioVenta?.toString() || '',
         unidadMedida: response.unidadMedida || 'UNIDAD',
-        tipo: response.tipo || 'PRODUCTO',
+        tipo: tipo,
         afectoIgv: response.afectoIgv ?? true,
         categoriaId: response.categoria?.id || '',
       });
@@ -316,14 +331,14 @@ export default function ProductoDetailPage({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('category')}
+                    {t('category')} ({formData.tipo === 'PRODUCTO' ? t('typeProduct') : t('typeService')})
                   </label>
                   <select
                     value={formData.categoriaId}
                     onChange={(e) => setFormData({ ...formData, categoriaId: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
                   >
-                    <option value="">{t('noCategory')}</option>
+                    <option value="">{t('selectCategory') || t('noCategory')}</option>
                     {categorias.map((cat) => (
                       <option key={cat.id} value={cat.id}>
                         {cat.nombre}

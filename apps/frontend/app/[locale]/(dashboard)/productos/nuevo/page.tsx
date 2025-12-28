@@ -14,6 +14,7 @@ interface Categoria {
   id: string;
   nombre: string;
   color: string;
+  tipo: string;
 }
 
 export default function NuevoProductoPage({
@@ -43,12 +44,14 @@ export default function NuevoProductoPage({
 
   useEffect(() => {
     loadCategorias();
-  }, []);
+  }, [formData.tipo]);
 
   const loadCategorias = async () => {
     try {
-      const response: any = await api.get('/categorias');
+      const response: any = await api.get(`/categorias?tipo=${formData.tipo}`);
       setCategorias(response || []);
+      // Reset category selection when type changes
+      setFormData(prev => ({ ...prev, categoriaId: '' }));
     } catch (error) {
       console.error('Error loading categorias:', error);
     }
@@ -243,14 +246,14 @@ export default function NuevoProductoPage({
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('category')}
+                {t('category')} ({formData.tipo === 'PRODUCTO' ? t('typeProduct') : t('typeService')})
               </label>
               <select
                 value={formData.categoriaId}
                 onChange={(e) => setFormData({ ...formData, categoriaId: e.target.value })}
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
               >
-                <option value="">{t('noCategory')}</option>
+                <option value="">{t('selectCategory') || t('noCategory')}</option>
                 {categorias.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.nombre}

@@ -144,13 +144,14 @@ model Categoria {
   nombre      String
   descripcion String?
   color       String?
+  tipo        String    @default("PRODUCTO") // PRODUCTO or SERVICIO
   activo      Boolean   @default(true)
   createdAt   DateTime  @default(now()) @map("created_at")
   
   empresa     Empresa   @relation(fields: [empresaId], references: [id], onDelete: Cascade)
   productos   Producto[]
   
-  @@unique([empresaId, nombre])
+  @@unique([empresaId, nombre, tipo])
   @@map("categorias")
 }
 

@@ -8,13 +8,15 @@ Toda la estructura de archivos se organiza por empresa/usuario dentro de un solo
 
 ```
 logos/
-├── {empresaId}/
+├── {userId}/
 │   ├── images/
 │   │   └── logo.{ext}           # Logo de la empresa
 │   ├── signatures/
 │   │   └── {token}-signature.png # Imagen de firma digital
-│   └── invoices/
-│       └── {serie}-{numero}-signed.pdf # PDF firmado
+│   ├── invoices/
+│   │   └── {serie}-{numero}-signed.pdf # PDF firmado
+│   └── job-photos/
+│       └── photo-{timestamp}-{random}.{ext} # Fotos del trabajo
 ```
 
 ### Ejemplos:
@@ -27,9 +29,12 @@ logos/
 │   ├── signatures/
 │   │   └── 307388666a2c8527-signature.png
 │   │   └── abc123xyz789-signature.png
-│   └── invoices/
-│       └── F001-2-signed.pdf
-│       └── F001-3-signed.pdf
+│   ├── invoices/
+│   │   └── F001-2-signed.pdf
+│   │   └── F001-3-signed.pdf
+│   └── job-photos/
+│       └── photo-1703679543234-845621349.jpg
+│       └── photo-1703679612456-123456789.png
 ```
 
 ### Permisos necesarios en Supabase:

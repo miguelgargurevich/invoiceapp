@@ -8,18 +8,20 @@ const { z } = require('zod');
 const categoriaSchema = z.object({
   nombre: z.string().min(2).max(100),
   descripcion: z.string().optional(),
-  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional()
+  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+  tipo: z.enum(['PRODUCTO', 'SERVICIO']).optional()
 });
 
 // GET /api/categorias - Listar categorías
 router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
-  const { activo } = req.query;
+  const { activo, tipo } = req.query;
 
   try {
     const categorias = await prisma.categoria.findMany({
       where: {
         empresaId: req.empresa.id,
-        ...(activo !== undefined && { activo: activo === 'true' })
+        ...(activo !== undefined && { activo: activo === 'true' }),
+        ...(tipo && { tipo: tipo.toUpperCase() })
       },
       include: {
         _count: {
@@ -43,7 +45,10 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
 
     const categoria = await prisma.categoria.create({
       data: {
-        ...validatedData,
+        nombre: validatedData.nombre,
+        descripcion: validatedData.descripcion,
+        color: validatedData.color,
+        tipo: validatedData.tipo || 'PRODUCTO',
         empresaId: req.empresa.id
       }
     });
@@ -55,7 +60,7 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       return res.status(400).json({ error: 'Datos inválidos', details: error.errors });
     }
     if (error.code === 'P2002') {
-      return res.status(400).json({ error: 'Ya existe una categoría con ese nombre' });
+      return res.status(400).json({ error: 'Ya existe una categoría con ese nombre para este tipo' });
     }
     res.status(500).json({ error: 'Error interno del servidor' });
   }

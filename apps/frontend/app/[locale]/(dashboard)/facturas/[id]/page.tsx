@@ -18,7 +18,9 @@ import {
   Send,
   ExternalLink,
   Calendar,
-  Edit2,  Share2,
+  Edit2,
+  Share2,
+  Camera,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -33,6 +35,7 @@ import {
   DatePicker,
 } from '@/components/common';
 import { PrintPreviewModal, SendEmailModal, InvoicePreview } from '@/components/invoice';
+import { JobPhotosGallery } from '@/components/job';
 import { formatDate } from '@/lib/utils';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
@@ -61,6 +64,14 @@ interface PagoFactura {
   metodoPago: string;
   referencia?: string;
   notas?: string;
+}
+
+interface JobPhoto {
+  id: string;
+  url: string;
+  descripcion?: string;
+  fecha: string;
+  orden: number;
 }
 
 interface Factura {
@@ -129,10 +140,27 @@ export default function FacturaDetailPage({
     notas: '',
   });
   const [savingPayment, setSavingPayment] = useState(false);
+  const [jobPhotos, setJobPhotos] = useState<JobPhoto[]>([]);
+  const [isPhotosModalOpen, setIsPhotosModalOpen] = useState(false);
 
   useEffect(() => {
     loadFactura();
   }, [id]);
+
+  useEffect(() => {
+    if (factura?.id) {
+      loadJobPhotos();
+    }
+  }, [factura?.id]);
+
+  const loadJobPhotos = async () => {
+    try {
+      const photos: any = await api.get(`/job-photos/factura/${id}`);
+      setJobPhotos(photos || []);
+    } catch (error) {
+      console.error('Error loading job photos:', error);
+    }
+  };
 
   const loadFactura = async () => {
     try {
@@ -510,6 +538,10 @@ export default function FacturaDetailPage({
               {t('registerPayment')}
             </Button>
           )}
+          <Button variant="outline" size="sm" onClick={() => setIsPhotosModalOpen(true)}>
+            <Camera className="w-4 h-4 mr-1" />
+            {t('jobPhotos')} {jobPhotos.length > 0 && `(${jobPhotos.length})`}
+          </Button>
         </div>
       </div>
 
@@ -1063,6 +1095,21 @@ export default function FacturaDetailPage({
             </Button>
           </div>
         </div>
+      </Modal>
+
+      {/* Job Photos Modal */}
+      <Modal
+        isOpen={isPhotosModalOpen}
+        onClose={() => setIsPhotosModalOpen(false)}
+        title={t('jobPhotos')}
+        size="xl"
+      >
+        <JobPhotosGallery
+          facturaId={factura.id}
+          photos={jobPhotos}
+          onPhotosChange={loadJobPhotos}
+          readOnly={factura.estado === 'ANULADA'}
+        />
       </Modal>
 
       {/* Hidden PDF Generator */}
