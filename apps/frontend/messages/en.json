@@ -272,7 +272,15 @@
       "cash": "Cash",
       "transfer": "Transfer",
       "card": "Card",
-      "check": "Check"
+      "check": "Check",
+      "EFECTIVO": "Cash",
+      "TRANSFERENCIA": "Transfer",
+      "TARJETA": "Card",
+      "CHEQUE": "Check",
+      "DEPOSITO": "Bank Deposit",
+      "YAPE": "Yape",
+      "PLIN": "Plin",
+      "OTRO": "Other"
     },
     "statuses": {
       "issued": "Issued",

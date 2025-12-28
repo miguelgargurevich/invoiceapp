@@ -258,7 +258,6 @@
     "check": "Cheque",
     "saving": "Guardando...",
     "payments": "Pagos",
-    "referencePlaceholder": "Referencia de pago o número de recibo...",
     "pendingBalance": "Saldo Pendiente",
     "totalInvoice": "Total Factura",
     "totalPaid": "Total Pagado",
