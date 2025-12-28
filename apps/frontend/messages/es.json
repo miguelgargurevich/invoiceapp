@@ -149,7 +149,9 @@
     "statusPaid": "Pagada",
     "statusPending": "Pendiente",
     "statusOverdue": "Vencida",
-    "statusCancelled": "Anulada"
+    "statusCancelled": "Anulada",
+    "signed": "Firmada",
+    "signaturePending": "Firma Pendiente"
   },
   "invoices": {
     "title": "Facturas",
@@ -261,6 +263,11 @@
       "voided": "Anulada",
       "overdue": "Vencida"
     },
+    "signed": "Firmada",
+    "signaturePending": "Firma Pendiente",
+    "requestSignature": "Solicitar Firma",
+    "resendSignature": "Reenviar Firma",
+    "loading": "Cargando...",
     "paymentMethods": {
       "cash": "Contado",
       "credit30": "Crédito 30 días",

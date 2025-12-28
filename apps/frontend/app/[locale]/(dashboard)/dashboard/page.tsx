@@ -430,7 +430,7 @@ export default function DashboardPage({
                           {invoice.signatureStatus === 'SIGNED' && (
                             <Badge variant="success">
                               <CheckCircle className="w-3 h-3 mr-1" />
-                              SIGNED
+                              {t('signed')}
                             </Badge>
                           )}
                         </div>
@@ -460,7 +460,7 @@ export default function DashboardPage({
                       {invoice.signatureStatus === 'SIGNED' && (
                         <Badge variant="success" size="sm">
                           <CheckCircle className="w-3 h-3 mr-1" />
-                          SIGNED
+                          {t('signed')}
                         </Badge>
                       )}
                     </div>

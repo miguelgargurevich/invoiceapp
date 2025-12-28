@@ -149,7 +149,9 @@
     "statusPaid": "Paid",
     "statusPending": "Pending",
     "statusOverdue": "Overdue",
-    "statusCancelled": "Cancelled"
+    "statusCancelled": "Cancelled",
+    "signed": "Signed",
+    "signaturePending": "Signature Pending"
   },
   "invoices": {
     "title": "Invoices",
@@ -267,6 +269,11 @@
       "voided": "Voided",
       "overdue": "Overdue"
     },
+    "signed": "Signed",
+    "signaturePending": "Signature Pending",
+    "requestSignature": "Request Signature",
+    "resendSignature": "Resend Signature",
+    "loading": "Loading...",
     "paymentMethods": {
       "cash": "Cash",
       "credit30": "30-day Credit",

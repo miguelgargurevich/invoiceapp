@@ -458,13 +458,13 @@ export default function FacturaDetailPage({
               {factura.signatureStatus === 'SIGNED' && (
                 <Badge variant="success">
                   <CheckCircle className="w-3 h-3 mr-1" />
-                  Signed
+                  {t('signed')}
                 </Badge>
               )}
               {factura.signatureStatus === 'PENDING' && (
                 <Badge variant="warning">
                   <Clock className="w-3 h-3 mr-1" />
-                  Signature Pending
+                  {t('signaturePending')}
                 </Badge>
               )}
             </div>
@@ -486,7 +486,7 @@ export default function FacturaDetailPage({
               disabled={requestingSignature}
             >
               <PenLine className="w-4 h-4 mr-1" />
-              {requestingSignature ? 'Loading...' : factura.signatureStatus === 'PENDING' ? 'Resend Signature' : 'Request Signature'}
+              {requestingSignature ? t('loading') : factura.signatureStatus === 'PENDING' ? t('resendSignature') : t('requestSignature')}
             </Button>
           )}
           {factura.estado !== 'PAGADA' && factura.estado !== 'ANULADA' && (
