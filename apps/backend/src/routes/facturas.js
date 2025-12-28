@@ -108,6 +108,11 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       empresaId: req.empresa.id,
     };
 
+    // Check if vencida filter is requested
+    const estadosArray = estado ? (Array.isArray(estado) ? estado : [estado]) : [];
+    const needsVencidaFilter = estadosArray.some(e => e.toLowerCase() === 'vencida');
+    const onlyVencida = estadosArray.length === 1 && needsVencidaFilter;
+
     // Handle estado filter
     if (estado) {
       const estados = Array.isArray(estado) ? estado : [estado];
@@ -125,6 +130,7 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       }
       
       // Add vencida condition (emitida + past due date)
+      // Note: We'll filter by montoPendiente > 0 after calculating payments
       if (includeVencida) {
         conditions.push({
           AND: [
@@ -207,10 +213,10 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
     ]);
 
     console.log('[FACTURAS] Results count:', facturas.length, 'Total:', total);
-    console.log('[FACTURAS] First 3 estados from DB:', facturas.slice(0, 3).map(f => ({ serie: f.serie, estado: f.estado })));
+    console.log('[FACTURAS] First 3 estados from DB:', facturas.slice(0, 3).map(f => ({ serie: f.serie, estado: f.estado, fechaVencimiento: f.fechaVencimiento })));
 
     // Map facturas to include signatureStatus and calculate payment status
-    const facturasWithSignatureStatus = facturas.map(factura => {
+    let facturasWithSignatureStatus = facturas.map(factura => {
       const signatureRequest = factura.signatureRequests?.[0];
       const totalPagado = factura.pagos.reduce((sum, pago) => sum + parseFloat(pago.monto), 0);
       const montoPendiente = parseFloat(factura.total) - totalPagado;
@@ -234,10 +240,20 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       };
     });
 
+    // If filtering ONLY by vencida, we need to filter out facturas with montoPendiente <= 0
+    // Because vencida means: emitida + past due + has pending amount
+    if (onlyVencida) {
+      facturasWithSignatureStatus = facturasWithSignatureStatus.filter(f => f.montoPendiente > 0);
+      console.log('[FACTURAS] After vencida filter, count:', facturasWithSignatureStatus.length);
+    }
+
+    // Recalculate total if we filtered by vencida
+    const finalTotal = onlyVencida ? facturasWithSignatureStatus.length : total;
+
     res.json({
       data: facturasWithSignatureStatus,
       pagination: {
-        total,
+        total: finalTotal,
         page: parseInt(page),
         limit: parseInt(limit),
         totalPages: Math.ceil(total / parseInt(limit))
