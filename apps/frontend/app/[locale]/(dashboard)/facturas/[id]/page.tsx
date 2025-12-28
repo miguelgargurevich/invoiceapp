@@ -1297,6 +1297,7 @@ export default function FacturaDetailPage({
           photos={jobPhotos}
           onPhotosChange={loadJobPhotos}
           readOnly={factura.estado === 'ANULADA'}
+          onClose={() => setIsPhotosModalOpen(false)}
           clientInfo={{
             razonSocial: factura.cliente.razonSocial,
             numeroDocumento: factura.cliente.numeroDocumento,

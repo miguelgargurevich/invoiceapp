@@ -68,7 +68,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
     return (
       <div
         ref={ref}
-        className="bg-white text-black p-6 max-w-[210mm] mx-auto"
+        className="bg-white text-black p-6 mx-auto"
         style={{ fontFamily: 'Arial, sans-serif' }}
       >
         {/* Header */}

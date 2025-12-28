@@ -36,6 +36,7 @@ interface JobPhotosGalleryProps {
   readOnly?: boolean;
   clientInfo?: ClientInfo;
   invoiceInfo?: InvoiceInfo;
+  onClose?: () => void;
 }
 
 export default function JobPhotosGallery({
@@ -45,7 +46,8 @@ export default function JobPhotosGallery({
   onPhotosChange,
   readOnly = false,
   clientInfo,
-  invoiceInfo
+  invoiceInfo,
+  onClose
 }: JobPhotosGalleryProps) {
   const t = useTranslations('invoices');
   const { showSuccess, showError } = useToast();
@@ -59,7 +61,9 @@ export default function JobPhotosGallery({
   // Group photos by date
   const photosByDate = useMemo(() => {
     const grouped = photos.reduce((acc, photo) => {
-      const dateStr = new Date(photo.fecha).toLocaleDateString('en-CA'); // YYYY-MM-DD format
+      // Parse date in local timezone to avoid day shifting
+      const photoDate = new Date(photo.fecha);
+      const dateStr = `${photoDate.getFullYear()}-${String(photoDate.getMonth() + 1).padStart(2, '0')}-${String(photoDate.getDate()).padStart(2, '0')}`;
       if (!acc[dateStr]) {
         acc[dateStr] = [];
       }
@@ -70,16 +74,21 @@ export default function JobPhotosGallery({
     // Sort dates descending (newest first)
     return Object.keys(grouped)
       .sort((a, b) => b.localeCompare(a))
-      .map(date => ({
-        date,
-        displayDate: new Date(date).toLocaleDateString(undefined, { 
-          weekday: 'long', 
-          year: 'numeric', 
-          month: 'long', 
-          day: 'numeric' 
-        }),
-        photos: grouped[date].sort((a, b) => a.orden - b.orden)
-      }));
+      .map(date => {
+        // Create date from components to avoid timezone issues
+        const [year, month, day] = date.split('-').map(Number);
+        const displayDate = new Date(year, month - 1, day);
+        return {
+          date,
+          displayDate: displayDate.toLocaleDateString(undefined, { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          }),
+          photos: grouped[date].sort((a, b) => a.orden - b.orden)
+        };
+      });
   }, [photos]);
 
   const formatDate = (dateString: string) => {
@@ -157,7 +166,18 @@ export default function JobPhotosGallery({
 
   return (
     <>
-      <div className="space-y-6">
+      <div className="space-y-6 relative">
+        {/* Close Button */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="absolute top-0 right-0 z-10 p-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors shadow-lg"
+            aria-label="Close"
+          >
+            <X className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+          </button>
+        )}
+
         {/* Client & Invoice Info Header */}
         {(clientInfo || invoiceInfo) && (
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">

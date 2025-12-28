@@ -74,7 +74,7 @@ export default function PrintPreviewModal({
   const t = useTranslations('invoices');
   const tCommon = useTranslations('common');
   const previewRef = useRef<HTMLDivElement>(null);
-  const [zoom, setZoom] = useState(0.85);
+  const [zoom, setZoom] = useState(1.05);
   const [downloading, setDownloading] = useState(false);
 
   const generatePDF = async (): Promise<jsPDF | null> => {
