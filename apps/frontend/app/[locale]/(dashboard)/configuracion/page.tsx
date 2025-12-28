@@ -72,7 +72,7 @@ export default function ConfiguracionPage({
     serieFactura: 'F001',
     correlativoBoleta: 1,
     correlativoFactura: 1,
-    igv: 18,
+    igv: 0,
     moneda: 'PEN',
     condicionesPago: '30 días',
     notasPie: '',
@@ -108,7 +108,7 @@ export default function ConfiguracionPage({
         serieFactura: empresa.serieFactura || 'F001',
         correlativoBoleta: 1,
         correlativoFactura: 1,
-        igv: empresa.taxRate ? parseFloat(empresa.taxRate.toString()) : 18,
+        igv: empresa.taxRate ? parseFloat(empresa.taxRate.toString()) : 0,
         moneda: empresa.moneda || 'PEN',
         condicionesPago: '30 días',
         notasPie: '',
@@ -677,15 +677,25 @@ export default function ConfiguracionPage({
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input
-                    label={t('taxRate')}
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    max="100"
-                    value={invoiceConfig.igv.toString()}
-                    onChange={(e) => setInvoiceConfig({ ...invoiceConfig, igv: parseFloat(e.target.value) || 18 })}
-                  />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      {t('taxRate')}
+                    </label>
+                    <input
+                      type="text"
+                      inputMode="decimal"
+                      pattern="[0-9]*\.?[0-9]*"
+                      value={invoiceConfig.igv.toString()}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                          setInvoiceConfig({ ...invoiceConfig, igv: value === '' ? 0 : parseFloat(value) || 0 });
+                        }
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      placeholder="0"
+                    />
+                  </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       {t('currency')}

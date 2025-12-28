@@ -184,8 +184,43 @@ export default function NuevoProductoPage({
             rows={3}
           />
 
-          {/* Price, Unit */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Price, Unit - different layout for Product vs Service */}
+          {formData.tipo === 'PRODUCTO' ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('unitPrice')} * ({currencySymbol})
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.precioVenta}
+                  onChange={(e) => setFormData({ ...formData, precioVenta: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
+                  placeholder="0.00"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('unitMeasure')} *
+                </label>
+                <select
+                  value={formData.unidadMedida}
+                  onChange={(e) => setFormData({ ...formData, unidadMedida: e.target.value })}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
+                >
+                  {unidades.map((u) => (
+                    <option key={u.value} value={u.value}>
+                      {u.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          ) : (
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t('unitPrice')} * ({currencySymbol})
@@ -201,24 +236,7 @@ export default function NuevoProductoPage({
                 required
               />
             </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('unitMeasure')} *
-              </label>
-              <select
-                value={formData.unidadMedida}
-                onChange={(e) => setFormData({ ...formData, unidadMedida: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
-              >
-                {unidades.map((u) => (
-                  <option key={u.value} value={u.value}>
-                    {u.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+          )}
 
           {/* Tax Checkbox */}
           <div className="flex items-center gap-3">

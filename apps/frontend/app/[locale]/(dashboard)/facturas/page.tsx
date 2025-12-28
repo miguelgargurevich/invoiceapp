@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Plus, Search, Filter, Download, Eye, Printer, MoreHorizontal, Receipt, CheckCircle, Clock, XCircle, AlertTriangle } from 'lucide-react';
+import { Plus, Search, Filter, Download, Printer, MoreHorizontal, Receipt, CheckCircle, Clock, XCircle, AlertTriangle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
@@ -369,63 +369,11 @@ export default function FacturasPage({
       ),
     },
     {
-      key: 'signatureStatus',
-      header: t('signature'),
-      render: (factura) => {
-        if (!factura.signatureStatus) {
-          return <span className="text-gray-400">—</span>;
-        }
-        if (factura.signatureStatus === 'SIGNED') {
-          return (
-            <Badge variant="success">
-              <CheckCircle className="w-3 h-3 mr-1" />
-              {t('signed')}
-            </Badge>
-          );
-        }
-        if (factura.signatureStatus === 'PENDING') {
-          return (
-            <Badge variant="warning">
-              <Clock className="w-3 h-3 mr-1" />
-              {t('signaturePending')}
-            </Badge>
-          );
-        }
-        if (factura.signatureStatus === 'EXPIRED') {
-          return (
-            <Badge variant="neutral">
-              <AlertTriangle className="w-3 h-3 mr-1" />
-              {t('signatureExpired')}
-            </Badge>
-          );
-        }
-        if (factura.signatureStatus === 'CANCELLED') {
-          return (
-            <Badge variant="neutral">
-              <XCircle className="w-3 h-3 mr-1" />
-              {t('signatureCancelled')}
-            </Badge>
-          );
-        }
-        return <span className="text-gray-400">—</span>;
-      },
-    },
-    {
       key: 'actions',
       header: '',
-      className: 'w-24',
+      className: 'w-12',
       render: (factura) => (
-        <div className="flex items-center gap-1">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              router.push(`/${locale}/facturas/${factura.id}`);
-            }}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            title={t('view')}
-          >
-            <Eye className="w-4 h-4 text-gray-500" />
-          </button>
+        <div className="flex items-center justify-end">
           <button
             onClick={(e) => {
               e.stopPropagation();

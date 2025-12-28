@@ -6,13 +6,13 @@ const { z } = require('zod');
 
 // Esquema de validación
 const clienteSchema = z.object({
-  tipoDocumento: z.enum(['RUC', 'DNI', 'CE', 'PASAPORTE']),
-  numeroDocumento: z.string().min(6).max(20),
+  tipoDocumento: z.enum(['SSN', 'EIN', 'ITIN', 'DRIVER_LICENSE', 'STATE_ID', 'PASSPORT', 'OTHER', 'RUC', 'DNI', 'CE', 'PASAPORTE']),
+  numeroDocumento: z.string().max(50).optional().nullable().or(z.literal('')),
   razonSocial: z.string().min(2).max(200),
   nombreComercial: z.string().optional().nullable(),
   direccion: z.string().optional().nullable(),
   email: z.string().email().optional().nullable().or(z.literal('')).or(z.literal(null)),
-  telefono: z.string().optional().nullable(),
+  telefono: z.string().min(1, 'Phone is required'),
   contacto: z.string().optional().nullable(),
   notas: z.string().optional().nullable()
 });

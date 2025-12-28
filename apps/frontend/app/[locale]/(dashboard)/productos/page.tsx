@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Search, Download, Trash2, Package, Eye } from 'lucide-react';
+import { Search, Download, Trash2, Package } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
@@ -195,19 +195,9 @@ export default function ProductosPage({
     {
       key: 'actions',
       header: '',
-      className: 'w-24',
+      className: 'w-12',
       render: (producto) => (
-        <div className="flex items-center gap-1">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleView(producto);
-            }}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            title="View"
-          >
-            <Eye className="w-4 h-4 text-gray-500" />
-          </button>
+        <div className="flex items-center justify-end">
           <button
             onClick={(e) => {
               e.stopPropagation();

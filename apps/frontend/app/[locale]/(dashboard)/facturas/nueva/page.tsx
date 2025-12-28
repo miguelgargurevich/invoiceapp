@@ -652,7 +652,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
   const { empresa } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    tipoDocumento: 'RUC',
+    tipoDocumento: 'OTHER',
     documento: '',
     nombre: '',
     direccion: '',
@@ -663,7 +663,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
   useEffect(() => {
     if (!isOpen) {
       setFormData({
-        tipoDocumento: 'RUC',
+        tipoDocumento: 'OTHER',
         documento: '',
         nombre: '',
         direccion: '',
@@ -694,6 +694,39 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
       size="xl"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Name */}
+        <Input
+          label={`${t('name')} *`}
+          value={formData.nombre}
+          onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+          required
+        />
+
+        {/* Phone & Email */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Input
+            label={`${t('phone')} *`}
+            value={formData.telefono}
+            onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+            required
+          />
+          
+          <Input
+            label={t('email')}
+            type="email"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          />
+        </div>
+
+        {/* Address */}
+        <Input
+          label={t('address')}
+          value={formData.direccion}
+          onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
+        />
+
+        {/* Document Type & Number (Optional) */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -704,10 +737,13 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
               onChange={(e) => setFormData({ ...formData, tipoDocumento: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
-              <option value="RUC">RUC</option>
-              <option value="DNI">DNI</option>
-              <option value="CE">Carnet de Extranjería</option>
-              <option value="PASAPORTE">Pasaporte</option>
+              <option value="OTHER">Other / None</option>
+              <option value="SSN">SSN</option>
+              <option value="EIN">EIN</option>
+              <option value="ITIN">ITIN</option>
+              <option value="DRIVER_LICENSE">Driver's License</option>
+              <option value="STATE_ID">State ID</option>
+              <option value="PASSPORT">Passport</option>
             </select>
           </div>
           
@@ -715,35 +751,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
             label={t('documentNumber')}
             value={formData.documento}
             onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
-            required
-          />
-        </div>
-
-        <Input
-          label={t('name')}
-          value={formData.nombre}
-          onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-          required
-        />
-
-        <Input
-          label={t('address')}
-          value={formData.direccion}
-          onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            label={t('email')}
-            type="email"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          />
-          
-          <Input
-            label={t('phone')}
-            value={formData.telefono}
-            onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+            placeholder="Optional"
           />
         </div>
 

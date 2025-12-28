@@ -336,7 +336,7 @@ export default function LoginPage({
             {/* Footer credit */}
             <div className="mt-6 text-center">
               <p className="text-xs text-gray-400 dark:text-gray-500">
-                ☕ Powered by coffee — <span className="font-medium">Gargurevich Dev</span>
+                ☕ Powered by — <span className="font-medium">Gargurevich Dev</span>
               </p>
             </div>
           </motion.div>

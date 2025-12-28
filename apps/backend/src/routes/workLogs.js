@@ -12,7 +12,7 @@ router.get('/factura/:facturaId', authenticateToken, async (req, res) => {
     const factura = await prisma.factura.findFirst({
       where: {
         id: facturaId,
-        empresa: { userId: req.user.userId }
+        empresa: { userId: req.user.id }
       }
     });
 
@@ -41,7 +41,7 @@ router.get('/proforma/:proformaId', authenticateToken, async (req, res) => {
     const proforma = await prisma.proforma.findFirst({
       where: {
         id: proformaId,
-        empresa: { userId: req.user.userId }
+        empresa: { userId: req.user.id }
       }
     });
 
@@ -76,7 +76,7 @@ router.post('/', authenticateToken, async (req, res) => {
       const factura = await prisma.factura.findFirst({
         where: {
           id: facturaId,
-          empresa: { userId: req.user.userId }
+          empresa: { userId: req.user.id }
         }
       });
       if (!factura) {
@@ -88,7 +88,7 @@ router.post('/', authenticateToken, async (req, res) => {
       const proforma = await prisma.proforma.findFirst({
         where: {
           id: proformaId,
-          empresa: { userId: req.user.userId }
+          empresa: { userId: req.user.id }
         }
       });
       if (!proforma) {
@@ -126,8 +126,8 @@ router.put('/:id', authenticateToken, async (req, res) => {
       where: {
         id,
         OR: [
-          { factura: { empresa: { userId: req.user.userId } } },
-          { proforma: { empresa: { userId: req.user.userId } } }
+          { factura: { empresa: { userId: req.user.id } } },
+          { proforma: { empresa: { userId: req.user.id } } }
         ]
       }
     });
@@ -164,8 +164,8 @@ router.delete('/:id', authenticateToken, async (req, res) => {
       where: {
         id,
         OR: [
-          { factura: { empresa: { userId: req.user.userId } } },
-          { proforma: { empresa: { userId: req.user.userId } } }
+          { factura: { empresa: { userId: req.user.id } } },
+          { proforma: { empresa: { userId: req.user.id } } }
         ]
       }
     });

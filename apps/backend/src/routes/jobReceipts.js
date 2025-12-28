@@ -40,7 +40,7 @@ router.get('/factura/:facturaId', authenticateToken, async (req, res) => {
     const factura = await prisma.factura.findFirst({
       where: {
         id: facturaId,
-        empresa: { userId: req.user.userId }
+        empresa: { userId: req.user.id }
       }
     });
 
@@ -68,7 +68,7 @@ router.get('/proforma/:proformaId', authenticateToken, async (req, res) => {
     const proforma = await prisma.proforma.findFirst({
       where: {
         id: proformaId,
-        empresa: { userId: req.user.userId }
+        empresa: { userId: req.user.id }
       }
     });
 
@@ -101,7 +101,7 @@ router.post('/', authenticateToken, upload.single('file'), async (req, res) => {
     // Verificar permisos
     if (facturaId) {
       const factura = await prisma.factura.findFirst({
-        where: { id: facturaId, empresa: { userId: req.user.userId } }
+        where: { id: facturaId, empresa: { userId: req.user.id } }
       });
       if (!factura) {
         return res.status(404).json({ error: 'Factura no encontrada' });
@@ -110,7 +110,7 @@ router.post('/', authenticateToken, upload.single('file'), async (req, res) => {
 
     if (proformaId) {
       const proforma = await prisma.proforma.findFirst({
-        where: { id: proformaId, empresa: { userId: req.user.userId } }
+        where: { id: proformaId, empresa: { userId: req.user.id } }
       });
       if (!proforma) {
         return res.status(404).json({ error: 'Proforma no encontrada' });
@@ -151,8 +151,8 @@ router.put('/:id', authenticateToken, async (req, res) => {
       where: {
         id,
         OR: [
-          { factura: { empresa: { userId: req.user.userId } } },
-          { proforma: { empresa: { userId: req.user.userId } } }
+          { factura: { empresa: { userId: req.user.id } } },
+          { proforma: { empresa: { userId: req.user.id } } }
         ]
       }
     });
@@ -190,8 +190,8 @@ router.delete('/:id', authenticateToken, async (req, res) => {
       where: {
         id,
         OR: [
-          { factura: { empresa: { userId: req.user.userId } } },
-          { proforma: { empresa: { userId: req.user.userId } } }
+          { factura: { empresa: { userId: req.user.id } } },
+          { proforma: { empresa: { userId: req.user.id } } }
         ]
       }
     });
@@ -237,7 +237,7 @@ router.get('/resumen/:documentType/:documentId', authenticateToken, async (req, 
     const document = await prisma[documentType].findFirst({
       where: {
         id: documentId,
-        empresa: { userId: req.user.userId }
+        empresa: { userId: req.user.id }
       }
     });
 

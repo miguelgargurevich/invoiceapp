@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Plus, Search, Filter, Eye, Printer, FileBarChart } from 'lucide-react';
+import { Plus, Search, Filter, Printer, FileBarChart } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
@@ -235,19 +235,16 @@ export default function ProformasPage({
     {
       key: 'actions',
       header: '',
+      className: 'w-12',
       render: (proforma) => (
-        <div className="flex gap-2">
+        <div className="flex items-center justify-end">
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => router.push(`/${locale}/proformas/${proforma.id}`)}
-          >
-            <Eye className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => loadProformaCompleta(proforma.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              loadProformaCompleta(proforma.id);
+            }}
             disabled={loadingProforma}
           >
             <Printer className="h-4 w-4" />
@@ -370,6 +367,7 @@ export default function ProformasPage({
             data={filteredProformas}
             columns={columns}
             keyExtractor={(proforma) => proforma.id}
+            onRowClick={(proforma) => router.push(`/${locale}/proformas/${proforma.id}`)}
             sortKey={sortKey}
             sortOrder={sortOrder}
             onSort={handleSort}

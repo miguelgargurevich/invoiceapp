@@ -49,7 +49,7 @@ export default function ClienteDetailPage({
   const [saving, setSaving] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [formData, setFormData] = useState({
-    tipoDocumento: 'RUC',
+    tipoDocumento: 'OTHER',
     documento: '',
     nombre: '',
     direccion: '',
@@ -67,7 +67,7 @@ export default function ClienteDetailPage({
       const response: any = await api.get(`/clientes/${id}`);
       setCliente(response);
       setFormData({
-        tipoDocumento: response.tipoDocumento || 'RUC',
+        tipoDocumento: response.tipoDocumento || 'OTHER',
         documento: response.documento || '',
         nombre: response.nombre || '',
         direccion: response.direccion || '',
@@ -193,33 +193,6 @@ export default function ClienteDetailPage({
                 </div>
               </div>
 
-              {/* Document Type & Number */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('documentType')} *
-                  </label>
-                  <select
-                    value={formData.tipoDocumento}
-                    onChange={(e) => setFormData({ ...formData, tipoDocumento: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
-                  >
-                    <option value="RUC">RUC</option>
-                    <option value="DNI">DNI</option>
-                    <option value="CE">Carnet de Extranjería</option>
-                    <option value="PASAPORTE">Pasaporte</option>
-                  </select>
-                </div>
-                
-                <Input
-                  label={`${t('documentNumber')} *`}
-                  value={formData.documento}
-                  onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
-                  placeholder="Enter document number"
-                  required
-                />
-              </div>
-
               {/* Name */}
               <Input
                 label={`${t('name')} *`}
@@ -229,16 +202,16 @@ export default function ClienteDetailPage({
                 required
               />
 
-              {/* Address */}
-              <Input
-                label={t('address')}
-                value={formData.direccion}
-                onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
-                placeholder="Full address"
-              />
-
-              {/* Email & Phone */}
+              {/* Phone & Email */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Input
+                  label={`${t('phone')} *`}
+                  value={formData.telefono}
+                  onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+                  placeholder="+1 (555) 123-4567"
+                  required
+                />
+                
                 <Input
                   label={t('email')}
                   type="email"
@@ -246,12 +219,72 @@ export default function ClienteDetailPage({
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="email@example.com"
                 />
+              </div>
+
+              {/* Address */}
+              <div className="space-y-3">
+                <Input
+                  label={t('address')}
+                  value={formData.direccion}
+                  onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
+                  placeholder="Full address"
+                />
+                
+                {/* Google Maps Preview */}
+                {formData.direccion && formData.direccion.trim().length > 5 && (
+                  <div className="relative w-full overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
+                    <div className="aspect-video sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-[16/7]">
+                      <iframe
+                        src={`https://www.google.com/maps?q=${encodeURIComponent(formData.direccion)}&output=embed`}
+                        className="w-full h-full"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                        title="Location Map"
+                      />
+                    </div>
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(formData.direccion)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="absolute bottom-2 right-2 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-gray-800 text-xs font-medium text-gray-700 dark:text-gray-300 rounded-lg shadow-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                      </svg>
+                      Open in Maps
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* Document Type & Number (Optional) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t('documentType')}
+                  </label>
+                  <select
+                    value={formData.tipoDocumento}
+                    onChange={(e) => setFormData({ ...formData, tipoDocumento: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
+                  >
+                    <option value="OTHER">Other / None</option>
+                    <option value="SSN">SSN (Social Security Number)</option>
+                    <option value="EIN">EIN (Employer ID Number)</option>
+                    <option value="ITIN">ITIN (Individual Tax ID)</option>
+                    <option value="DRIVER_LICENSE">Driver's License</option>
+                    <option value="STATE_ID">State ID</option>
+                    <option value="PASSPORT">Passport</option>
+                  </select>
+                </div>
                 
                 <Input
-                  label={t('phone')}
-                  value={formData.telefono}
-                  onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-                  placeholder="+1 (555) 123-4567"
+                  label={t('documentNumber')}
+                  value={formData.documento}
+                  onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
+                  placeholder="Optional"
                 />
               </div>
 

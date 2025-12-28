@@ -399,9 +399,6 @@ export default function DashboardPage({
                     <th className="text-center py-3 px-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                       {t('status')}
                     </th>
-                    <th className="text-center py-3 px-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
-                      {t('signature')}
-                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -430,20 +427,6 @@ export default function DashboardPage({
                           {getStatusLabel(invoice.estado)}
                         </Badge>
                       </td>
-                      <td className="py-3 px-4 text-center">
-                        {invoice.signatureStatus === 'SIGNED' ? (
-                          <Badge variant="success">
-                            <CheckCircle className="w-3 h-3 mr-1" />
-                            {t('signed')}
-                          </Badge>
-                        ) : invoice.signatureStatus === 'PENDING' ? (
-                          <Badge variant="warning">
-                            {t('signaturePending')}
-                          </Badge>
-                        ) : (
-                          <span className="text-gray-400">—</span>
-                        )}
-                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -462,17 +445,9 @@ export default function DashboardPage({
                     <span className="font-medium text-gray-900 dark:text-gray-100">
                       {invoice.numero}
                     </span>
-                    <div className="flex items-center gap-1.5">
-                      <Badge variant={getStatusBadge(invoice.estado)} size="sm">
-                        {getStatusLabel(invoice.estado)}
-                      </Badge>
-                      {invoice.signatureStatus === 'SIGNED' && (
-                        <Badge variant="success" size="sm">
-                          <CheckCircle className="w-3 h-3 mr-1" />
-                          {t('signed')}
-                        </Badge>
-                      )}
-                    </div>
+                    <Badge variant={getStatusBadge(invoice.estado)} size="sm">
+                      {getStatusLabel(invoice.estado)}
+                    </Badge>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                     {invoice.cliente.nombre}

@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter, useParams } from 'next/navigation';
-import { Search, Filter, Download, Trash2, UserPlus, Eye } from 'lucide-react';
+import { Search, Filter, Download, Trash2, UserPlus } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
@@ -175,19 +175,9 @@ export default function ClientesPage() {
     {
       key: 'actions',
       header: '',
-      className: 'w-24',
+      className: 'w-12',
       render: (cliente) => (
-        <div className="flex items-center gap-1">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleView(cliente);
-            }}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            title={t('edit')}
-          >
-            <Eye className="w-4 h-4 text-gray-500" />
-          </button>
+        <div className="flex items-center justify-end">
           <button
             onClick={(e) => {
               e.stopPropagation();

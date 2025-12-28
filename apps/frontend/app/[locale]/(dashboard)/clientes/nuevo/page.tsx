@@ -21,7 +21,7 @@ export default function NuevoClientePage({
   
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    tipoDocumento: 'RUC',
+    tipoDocumento: 'OTHER',
     documento: '',
     nombre: '',
     direccion: '',
@@ -32,8 +32,8 @@ export default function NuevoClientePage({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.nombre || !formData.documento) {
-      showError('Please fill in required fields');
+    if (!formData.nombre || !formData.telefono) {
+      showError('Please fill in required fields (Name and Phone)');
       return;
     }
 
@@ -88,33 +88,6 @@ export default function NuevoClientePage({
             </div>
           </div>
 
-          {/* Document Type & Number */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('documentType')} *
-              </label>
-              <select
-                value={formData.tipoDocumento}
-                onChange={(e) => setFormData({ ...formData, tipoDocumento: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
-              >
-                <option value="RUC">RUC</option>
-                <option value="DNI">DNI</option>
-                <option value="CE">Carnet de Extranjería</option>
-                <option value="PASAPORTE">Pasaporte</option>
-              </select>
-            </div>
-            
-            <Input
-              label={`${t('documentNumber')} *`}
-              value={formData.documento}
-              onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
-              placeholder="Enter document number"
-              required
-            />
-          </div>
-
           {/* Name */}
           <Input
             label={`${t('name')} *`}
@@ -124,6 +97,25 @@ export default function NuevoClientePage({
             required
           />
 
+          {/* Phone & Email */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Input
+              label={`${t('phone')} *`}
+              value={formData.telefono}
+              onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
+              placeholder="+1 (555) 123-4567"
+              required
+            />
+            
+            <Input
+              label={t('email')}
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              placeholder="email@example.com"
+            />
+          </div>
+
           {/* Address */}
           <Input
             label={t('address')}
@@ -132,21 +124,32 @@ export default function NuevoClientePage({
             placeholder="Full address"
           />
 
-          {/* Email & Phone */}
+          {/* Document Type & Number (Optional) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Input
-              label={t('email')}
-              type="email"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder="email@example.com"
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('documentType')}
+              </label>
+              <select
+                value={formData.tipoDocumento}
+                onChange={(e) => setFormData({ ...formData, tipoDocumento: e.target.value })}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
+              >
+                <option value="OTHER">Other / None</option>
+                <option value="SSN">SSN (Social Security Number)</option>
+                <option value="EIN">EIN (Employer ID Number)</option>
+                <option value="ITIN">ITIN (Individual Tax ID)</option>
+                <option value="DRIVER_LICENSE">Driver's License</option>
+                <option value="STATE_ID">State ID</option>
+                <option value="PASSPORT">Passport</option>
+              </select>
+            </div>
             
             <Input
-              label={t('phone')}
-              value={formData.telefono}
-              onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-              placeholder="+1 (555) 123-4567"
+              label={t('documentNumber')}
+              value={formData.documento}
+              onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
+              placeholder="Optional"
             />
           </div>
 
