@@ -407,12 +407,7 @@ export default function FacturasPage({
         (f.cliente?.documento || '').includes(search);
       
       const estadoLower = f.estado.toLowerCase();
-      const matchesEstado = filterEstados.length === 0 || filterEstados.includes(estadoLower);
-      
-      // Debug logging
-      if (filterEstados.length > 0) {
-        console.log('Factura:', f.serie + '-' + f.numero, 'Estado:', f.estado, 'EstadoLower:', estadoLower, 'Filters:', filterEstados, 'Matches:', matchesEstado);
-      }
+      const matchesEstado = filterEstados.length === 0 || filterEstados.some(fe => fe.toLowerCase() === estadoLower);
       
       return matchesSearch && matchesEstado;
     })
