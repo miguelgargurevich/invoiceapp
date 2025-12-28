@@ -504,6 +504,43 @@ router.put('/:id/dates', authenticateToken, getEmpresaFromUser, async (req, res)
   }
 });
 
+// PUT /api/facturas/:id/observations - Actualizar observaciones de factura
+router.put('/:id/observations', authenticateToken, getEmpresaFromUser, async (req, res) => {
+  try {
+    const { observaciones } = req.body;
+
+    // Verificar que la factura existe y pertenece a la empresa
+    const factura = await prisma.factura.findFirst({
+      where: {
+        id: req.params.id,
+        empresaId: req.empresa.id
+      }
+    });
+
+    if (!factura) {
+      return res.status(404).json({ error: 'Factura no encontrada' });
+    }
+
+    // No permitir editar facturas anuladas
+    if (factura.estado === 'ANULADA') {
+      return res.status(400).json({ error: 'No se pueden editar facturas anuladas' });
+    }
+
+    // Actualizar observaciones
+    const facturaActualizada = await prisma.factura.update({
+      where: { id: req.params.id },
+      data: {
+        observaciones: observaciones || null
+      }
+    });
+
+    res.json(facturaActualizada);
+  } catch (error) {
+    console.error('Error actualizando observaciones:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 // GET /api/facturas/:id/pdf - Generar PDF (placeholder)
 router.get('/:id/pdf', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {

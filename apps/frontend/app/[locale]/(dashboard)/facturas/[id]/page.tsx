@@ -133,6 +133,9 @@ export default function FacturaDetailPage({
   const [editingDates, setEditingDates] = useState(false);
   const [fechaEmisionEdit, setFechaEmisionEdit] = useState<Date | null>(null);
   const [fechaVencimientoEdit, setFechaVencimientoEdit] = useState<Date | null>(null);
+  const [isEditObservationsOpen, setIsEditObservationsOpen] = useState(false);
+  const [editingObservations, setEditingObservations] = useState(false);
+  const [observacionesEdit, setObservacionesEdit] = useState('');
   const pdfRef = useRef<HTMLDivElement>(null);
   const [paymentData, setPaymentData] = useState({
     monto: '',
@@ -405,6 +408,32 @@ export default function FacturaDetailPage({
       showError(error.response?.data?.error || 'Failed to update dates');
     } finally {
       setEditingDates(false);
+    }
+  };
+
+  const handleOpenEditObservations = () => {
+    if (!factura) return;
+    setObservacionesEdit(factura.observaciones || '');
+    setIsEditObservationsOpen(true);
+  };
+
+  const handleSaveObservations = async () => {
+    if (!factura) return;
+
+    try {
+      setEditingObservations(true);
+      await api.put(`/facturas/${factura.id}/observations`, {
+        observaciones: observacionesEdit,
+      });
+      
+      showSuccess(t('messages.updated') || 'Observations updated successfully');
+      setIsEditObservationsOpen(false);
+      loadFactura();
+    } catch (error: any) {
+      console.error('Error updating observations:', error);
+      showError(error.response?.data?.error || 'Failed to update observations');
+    } finally {
+      setEditingObservations(false);
     }
   };
 
@@ -710,14 +739,29 @@ export default function FacturaDetailPage({
           )}
 
           {/* Observations */}
-          {factura.observaciones && (
-            <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+          <Card>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 {t('observations')}
               </h2>
+              {factura.estado !== 'ANULADA' && (
+                <button
+                  onClick={handleOpenEditObservations}
+                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                  title="Edit observations"
+                >
+                  <Edit2 className="w-4 h-4 text-gray-500" />
+                </button>
+              )}
+            </div>
+            {factura.observaciones ? (
               <p className="text-gray-600 dark:text-gray-400">{factura.observaciones}</p>
-            </Card>
-          )}
+            ) : (
+              <p className="text-gray-400 dark:text-gray-500 italic text-sm">
+                {t('observationsPlaceholder') || 'No observations'}
+              </p>
+            )}
+          </Card>
         </div>
 
         {/* Sidebar */}
@@ -1195,6 +1239,47 @@ export default function FacturaDetailPage({
             >
               <Calendar className="w-4 h-4 mr-2" />
               {editingDates ? 'Saving...' : 'Save Dates'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Edit Observations Modal */}
+      <Modal
+        isOpen={isEditObservationsOpen}
+        onClose={() => !editingObservations && setIsEditObservationsOpen(false)}
+        title={t('observations')}
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('observations')}
+            </label>
+            <textarea
+              value={observacionesEdit}
+              onChange={(e) => setObservacionesEdit(e.target.value)}
+              disabled={editingObservations}
+              placeholder={t('observationsPlaceholder')}
+              rows={4}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+            />
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsEditObservationsOpen(false)}
+              disabled={editingObservations}
+              className="flex-1"
+            >
+              {t('cancel')}
+            </Button>
+            <Button
+              onClick={handleSaveObservations}
+              disabled={editingObservations}
+              className="flex-1"
+            >
+              {editingObservations ? t('saving') : t('save')}
             </Button>
           </div>
         </div>
