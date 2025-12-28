@@ -138,6 +138,11 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
             orderBy: { createdAt: 'desc' },
             take: 1
           },
+          pagos: {
+            select: {
+              monto: true
+            }
+          },
           _count: {
             select: { detalles: true, pagos: true }
           }
@@ -149,11 +154,27 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       prisma.factura.count({ where })
     ]);
 
-    // Map facturas to include signatureStatus
+    // Map facturas to include signatureStatus and calculate payment status
     const facturasWithSignatureStatus = facturas.map(factura => {
       const signatureRequest = factura.signatureRequests?.[0];
+      const totalPagado = factura.pagos.reduce((sum, pago) => sum + parseFloat(pago.monto), 0);
+      const montoPendiente = parseFloat(factura.total) - totalPagado;
+      
+      // Determine correct status based on payments
+      let estado = factura.estado;
+      if (factura.estado !== 'anulada') {
+        if (montoPendiente <= 0) {
+          estado = 'pagada';
+        } else if (new Date(factura.fechaVencimiento) < new Date() && montoPendiente > 0) {
+          estado = 'vencida';
+        }
+      }
+      
       return {
         ...factura,
+        estado,
+        montoPendiente,
+        totalPagado,
         signatureStatus: signatureRequest?.status || null
       };
     });

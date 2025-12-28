@@ -725,7 +725,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
       isOpen={isOpen}
       onClose={onClose}
       title={t('addClient')}
-      size="lg"
+      size="xl"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

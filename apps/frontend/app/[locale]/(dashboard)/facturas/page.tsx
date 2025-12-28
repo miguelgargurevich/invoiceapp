@@ -236,6 +236,7 @@ export default function FacturasPage({
   };
 
   const getStatusBadge = (status: string) => {
+    const normalizedStatus = status.toUpperCase();
     const variants: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'neutral'> = {
       PAGADA: 'success',
       EMITIDA: 'info',
@@ -243,7 +244,19 @@ export default function FacturasPage({
       VENCIDA: 'danger',
       ANULADA: 'neutral',
     };
-    return variants[status] || 'neutral';
+    return variants[normalizedStatus] || 'neutral';
+  };
+
+  const getStatusLabel = (status: string) => {
+    const normalizedStatus = status.toLowerCase();
+    const labels: Record<string, string> = {
+      pagada: t('statusPaid'),
+      emitida: t('statusIssued'),
+      pendiente: t('statusPending'),
+      vencida: t('statusOverdue'),
+      anulada: t('statusCancelled'),
+    };
+    return labels[normalizedStatus] || status;
   };
 
   const handleView = (factura: Factura) => {
@@ -352,7 +365,7 @@ export default function FacturasPage({
       render: (factura) => (
         <div className="flex items-center gap-2 flex-wrap">
           <Badge variant={getStatusBadge(factura.estado)}>
-            {factura.estado}
+            {getStatusLabel(factura.estado)}
           </Badge>
           {factura.signatureStatus === 'SIGNED' && (
             <Badge variant="success">

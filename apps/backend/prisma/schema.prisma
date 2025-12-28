@@ -23,6 +23,29 @@ enum SignatureRequestStatus {
   CANCELLED
 }
 
+// User roles for admin system
+enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+// 👤 User Profile (extends Supabase Auth)
+model UserProfile {
+  id        String    @id // Same as Supabase Auth user id
+  email     String    @unique
+  name      String?
+  role      UserRole  @default(USER)
+  isActive  Boolean   @default(true) @map("is_active")
+  lastLogin DateTime? @map("last_login")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  
+  empresa   Empresa?
+  
+  @@map("user_profiles")
+}
+
 // 🏢 Empresa/Organización del usuario
 model Empresa {
   id              String    @id @default(uuid())
@@ -41,10 +64,11 @@ model Empresa {
   taxRate         Decimal   @default(18) @map("tax_rate") @db.Decimal(5, 2) // Tax rate percentage (e.g., 18 for 18%, 10 for 10%)
   serieFactura    String    @default("F001") @map("serie_factura")
   serieProforma   String    @default("P001") @map("serie_proforma")
-  userId          String    @map("user_id")
+  userId          String    @unique @map("user_id")
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
   
+  user            UserProfile? @relation(fields: [userId], references: [id])
   clientes        Cliente[]
   productos       Producto[]
   facturas        Factura[]
