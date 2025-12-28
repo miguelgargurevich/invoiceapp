@@ -10,13 +10,6 @@ import { Button, Card, Input, Textarea } from '@/components/common';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
 
-interface Categoria {
-  id: string;
-  nombre: string;
-  color: string;
-  tipo: string;
-}
-
 export default function NuevoProductoPage({
   params: { locale },
 }: {
@@ -30,7 +23,6 @@ export default function NuevoProductoPage({
   const { currencySymbol } = useCurrency();
   
   const [loading, setLoading] = useState(false);
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [formData, setFormData] = useState({
     codigo: '',
     nombre: '',
@@ -39,23 +31,7 @@ export default function NuevoProductoPage({
     unidadMedida: 'UNIDAD',
     tipo: 'PRODUCTO',
     afectoIgv: true,
-    categoriaId: '',
   });
-
-  useEffect(() => {
-    loadCategorias();
-  }, [formData.tipo]);
-
-  const loadCategorias = async () => {
-    try {
-      const response: any = await api.get(`/categorias?tipo=${formData.tipo}`);
-      setCategorias(response || []);
-      // Reset category selection when type changes
-      setFormData(prev => ({ ...prev, categoriaId: '' }));
-    } catch (error) {
-      console.error('Error loading categorias:', error);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +46,6 @@ export default function NuevoProductoPage({
       const payload = {
         ...formData,
         precioVenta: parseFloat(formData.precioVenta),
-        categoriaId: formData.categoriaId || null,
       };
       
       await api.post('/productos', payload);
@@ -209,8 +184,8 @@ export default function NuevoProductoPage({
             rows={3}
           />
 
-          {/* Price, Unit, Category */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Price, Unit */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t('unitPrice')} * ({currencySymbol})
@@ -239,24 +214,6 @@ export default function NuevoProductoPage({
                 {unidades.map((u) => (
                   <option key={u.value} value={u.value}>
                     {u.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('category')} ({formData.tipo === 'PRODUCTO' ? t('typeProduct') : t('typeService')})
-              </label>
-              <select
-                value={formData.categoriaId}
-                onChange={(e) => setFormData({ ...formData, categoriaId: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
-              >
-                <option value="">{t('selectCategory') || t('noCategory')}</option>
-                {categorias.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.nombre}
                   </option>
                 ))}
               </select>

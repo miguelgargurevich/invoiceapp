@@ -11,13 +11,6 @@ import { formatDate } from '@/lib/utils';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
 
-interface Categoria {
-  id: string;
-  nombre: string;
-  color: string;
-  tipo: string;
-}
-
 interface Producto {
   id: string;
   codigo: string;
@@ -27,7 +20,6 @@ interface Producto {
   unidadMedida: string;
   tipo: string;
   afectoIgv: boolean;
-  categoria?: Categoria | null;
   createdAt: string;
 }
 
@@ -44,7 +36,6 @@ export default function ProductoDetailPage({
   const { currencySymbol, formatCurrency } = useCurrency();
   
   const [producto, setProducto] = useState<Producto | null>(null);
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -56,28 +47,11 @@ export default function ProductoDetailPage({
     unidadMedida: 'UNIDAD',
     tipo: 'PRODUCTO',
     afectoIgv: true,
-    categoriaId: '',
   });
 
   useEffect(() => {
     loadData();
   }, [id]);
-
-  useEffect(() => {
-    // Reload categories when type changes
-    if (formData.tipo) {
-      loadCategorias(formData.tipo);
-    }
-  }, [formData.tipo]);
-
-  const loadCategorias = async (tipo: string) => {
-    try {
-      const categoriasResponse: any = await api.get(`/categorias?tipo=${tipo}`);
-      setCategorias(categoriasResponse || []);
-    } catch {
-      setCategorias([]);
-    }
-  };
 
   const loadData = async () => {
     try {
@@ -89,9 +63,6 @@ export default function ProductoDetailPage({
       
       const tipo = response.tipo || 'PRODUCTO';
       
-      // Load categories for the product type
-      await loadCategorias(tipo);
-      
       setFormData({
         codigo: response.codigo || '',
         nombre: response.nombre || '',
@@ -100,7 +71,6 @@ export default function ProductoDetailPage({
         unidadMedida: response.unidadMedida || 'UNIDAD',
         tipo: tipo,
         afectoIgv: response.afectoIgv ?? true,
-        categoriaId: response.categoria?.id || '',
       });
     } catch (error) {
       console.error('Error loading producto:', error);
@@ -124,7 +94,6 @@ export default function ProductoDetailPage({
       const payload = {
         ...formData,
         precioVenta: parseFloat(formData.precioVenta),
-        categoriaId: formData.categoriaId || null,
       };
       
       await api.put(`/productos/${id}`, payload);
@@ -294,8 +263,8 @@ export default function ProductoDetailPage({
                 rows={3}
               />
 
-              {/* Price, Unit, Category */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Price, Unit */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {t('unitPrice')} * ({currencySymbol})
@@ -324,24 +293,6 @@ export default function ProductoDetailPage({
                     {unidades.map((u) => (
                       <option key={u.value} value={u.value}>
                         {u.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t('category')} ({formData.tipo === 'PRODUCTO' ? t('typeProduct') : t('typeService')})
-                  </label>
-                  <select
-                    value={formData.categoriaId}
-                    onChange={(e) => setFormData({ ...formData, categoriaId: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
-                  >
-                    <option value="">{t('selectCategory') || t('noCategory')}</option>
-                    {categorias.map((cat) => (
-                      <option key={cat.id} value={cat.id}>
-                        {cat.nombre}
                       </option>
                     ))}
                   </select>
@@ -400,14 +351,6 @@ export default function ProductoDetailPage({
                 <Badge variant={formData.tipo === 'PRODUCTO' ? 'info' : 'success'}>
                   {formData.tipo}
                 </Badge>
-                {producto?.categoria && (
-                  <span 
-                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                    style={{ backgroundColor: producto.categoria.color + '20', color: producto.categoria.color }}
-                  >
-                    {producto.categoria.nombre}
-                  </span>
-                )}
               </div>
             </div>
           </Card>

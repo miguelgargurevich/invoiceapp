@@ -3,17 +3,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Plus, Search, Download, Edit, Trash2, Tag, Package, Eye } from 'lucide-react';
+import { Search, Download, Trash2, Package, Eye } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
   DataTable,
   Badge,
   Card,
-  Modal,
   ConfirmDialog,
-  Input,
-  Textarea,
   EmptyProducts,
   type Column,
 } from '@/components/common';
@@ -29,20 +26,10 @@ interface Producto {
   unidadMedida: string;
   tipo: string;
   afectoIgv: boolean;
-  categoria?: { id: string; nombre: string; color?: string };
   createdAt: string;
 }
 
-interface Categoria {
-  id: string;
-  nombre: string;
-  descripcion?: string;
-  color?: string;
-  tipo?: string;
-  _count?: {
-    productos: number;
-  };
-}
+
 
 export default function ProductosPage({
   params: { locale },
@@ -55,11 +42,8 @@ export default function ProductosPage({
   const { formatCurrency } = useCurrency();
   
   const [productos, setProductos] = useState<Producto[]>([]);
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [filterCategoria, setFilterCategoria] = useState('');
-  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedProducto, setSelectedProducto] = useState<Producto | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -77,7 +61,6 @@ export default function ProductosPage({
         search,
         page: currentPage.toString(),
         limit: '10',
-        ...(filterCategoria && { categoriaId: filterCategoria }),
       });
       const response: any = await api.get(`/productos?${params}`);
       setProductos(response.data || []);
@@ -88,26 +71,11 @@ export default function ProductosPage({
     } finally {
       setLoading(false);
     }
-  }, [empresa?.id, search, filterCategoria, currentPage]);
-
-  const loadCategorias = useCallback(async () => {
-    if (!empresa?.id) return;
-    
-    try {
-      const params = new URLSearchParams({ empresaId: empresa.id });
-      const response: any = await api.get(`/categorias?${params}`);
-      const cats = response.data || response || [];
-      setCategorias(cats);
-    } catch (error) {
-      console.error('Error loading categorias:', error);
-      setCategorias([]);
-    }
-  }, [empresa?.id]);
+  }, [empresa?.id, search, currentPage]);
 
   useEffect(() => {
     loadProductos();
-    loadCategorias();
-  }, [loadProductos, loadCategorias]);
+  }, [loadProductos]);
 
   const handleView = (producto: Producto) => {
     router.push(`/${locale}/productos/${producto.id}`);
@@ -133,13 +101,12 @@ export default function ProductosPage({
   };
 
   const handleExport = () => {
-    const headers = ['Code', 'Name', 'Description', 'Category', 'Unit', 'Price', 'Type'];
+    const headers = ['Code', 'Name', 'Description', 'Unit', 'Price', 'Type'];
 
     const rows = filteredProductos.map(producto => [
       producto.codigo || '',
       producto.nombre || '',
       producto.descripcion || '',
-      producto.categoria?.nombre || '',
       producto.unidadMedida || '',
       producto.precioVenta?.toString() || '0',
       producto.tipo || ''
@@ -263,9 +230,7 @@ export default function ProductosPage({
       const matchesSearch =
         (p.nombre || '').toLowerCase().includes(search.toLowerCase()) ||
         (p.codigo || '').toLowerCase().includes(search.toLowerCase());
-      const matchesCategoria =
-        !filterCategoria || p.categoria?.id === filterCategoria;
-      return matchesSearch && matchesCategoria;
+      return matchesSearch;
     })
     .sort((a, b) => {
       let aVal: any = a[sortKey as keyof Producto];
@@ -313,35 +278,6 @@ export default function ProductosPage({
               className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
-          <select
-            value={filterCategoria}
-            onChange={(e) => setFilterCategoria(e.target.value)}
-            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
-          >
-            <option value="">{t('allCategories')}</option>
-            {categorias.filter(cat => cat.tipo === 'PRODUCTO').length > 0 && (
-              <optgroup label={t('productSubcategories')}>
-                {categorias.filter(cat => cat.tipo === 'PRODUCTO').map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.nombre}
-                  </option>
-                ))}
-              </optgroup>
-            )}
-            {categorias.filter(cat => cat.tipo === 'SERVICIO').length > 0 && (
-              <optgroup label={t('serviceSubcategories')}>
-                {categorias.filter(cat => cat.tipo === 'SERVICIO').map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.nombre}
-                  </option>
-                ))}
-              </optgroup>
-            )}
-          </select>
-          <Button variant="outline" onClick={() => setIsCategoryModalOpen(true)}>
-            <Tag className="w-4 h-4 mr-2" />
-            {t('manageCategories')}
-          </Button>
           <Button variant="outline" onClick={handleExport}>
             <Download className="w-4 h-4 mr-2" />
             {t('export')}
@@ -390,28 +326,13 @@ export default function ProductosPage({
                 {producto.tipo}
               </Badge>
             </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                {producto.categoria?.nombre}
-              </span>
+            <div className="flex items-center justify-end">
               <span className="font-medium text-gray-900 dark:text-gray-100">
                 {formatCurrency(producto.precioVenta)} / {producto.unidadMedida}
               </span>
             </div>
           </div>
         )}
-      />
-
-      {/* Category Management Modal */}
-      <CategoryManagementModal
-        isOpen={isCategoryModalOpen}
-        onClose={() => setIsCategoryModalOpen(false)}
-        categorias={categorias}
-        empresa={empresa}
-        onSave={() => {
-          loadCategorias();
-          loadProductos();
-        }}
       />
 
       {/* Delete Confirmation */}
@@ -425,215 +346,5 @@ export default function ProductosPage({
         variant="danger"
       />
     </div>
-  );
-}
-
-// Category Management Modal Component
-function CategoryManagementModal({
-  isOpen,
-  onClose,
-  categorias,
-  empresa,
-  onSave,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: () => void;
-  categorias: Categoria[];
-  empresa: any;
-}) {
-  const t = useTranslations('products');
-  const [loading, setLoading] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<Categoria | null>(null);
-  const [isAddMode, setIsAddMode] = useState(false);
-  const [selectedTipo, setSelectedTipo] = useState<'PRODUCTO' | 'SERVICIO'>('PRODUCTO');
-  const [formData, setFormData] = useState({
-    nombre: '',
-    descripcion: '',
-    color: '#3B82F6',
-    tipo: 'PRODUCTO' as 'PRODUCTO' | 'SERVICIO',
-  });
-
-  const productCategorias = categorias.filter(c => !c.tipo || c.tipo === 'PRODUCTO');
-  const serviceCategorias = categorias.filter(c => c.tipo === 'SERVICIO');
-
-  const handleAddClick = (tipo: 'PRODUCTO' | 'SERVICIO') => {
-    setIsAddMode(true);
-    setEditingCategory(null);
-    setFormData({ nombre: '', descripcion: '', color: '#3B82F6', tipo });
-  };
-
-  const handleEditClick = (categoria: Categoria) => {
-    setIsAddMode(true);
-    setEditingCategory(categoria);
-    setFormData({
-      nombre: categoria.nombre,
-      descripcion: categoria.descripcion || '',
-      color: categoria.color || '#3B82F6',
-      tipo: (categoria.tipo as 'PRODUCTO' | 'SERVICIO') || 'PRODUCTO',
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      setLoading(true);
-      if (editingCategory) {
-        await api.put(`/categorias/${editingCategory.id}`, formData);
-      } else {
-        await api.post('/categorias', { ...formData, empresaId: empresa?.id });
-      }
-      setIsAddMode(false);
-      setEditingCategory(null);
-      setFormData({ nombre: '', descripcion: '', color: '#3B82F6', tipo: 'PRODUCTO' });
-      onSave();
-    } catch (error) {
-      console.error('Error saving categoria:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (categoria: Categoria) => {
-    if (!confirm(`Are you sure you want to delete "${categoria.nombre}"?`)) return;
-
-    try {
-      await api.delete(`/categorias/${categoria.id}`);
-      onSave();
-    } catch (error: any) {
-      if (error.response?.status === 400) {
-        alert('Cannot delete category with products');
-      }
-      console.error('Error deleting categoria:', error);
-    }
-  };
-
-  const handleCancel = () => {
-    setIsAddMode(false);
-    setEditingCategory(null);
-    setFormData({ nombre: '', descripcion: '', color: '#3B82F6', tipo: 'PRODUCTO' });
-  };
-
-  const renderCategoryList = (cats: Categoria[], tipo: 'PRODUCTO' | 'SERVICIO') => (
-    <div className="space-y-2">
-      <div className="flex justify-between items-center">
-        <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-          {tipo === 'PRODUCTO' ? t('productSubcategories') || 'Product Subcategories' : t('serviceSubcategories') || 'Service Subcategories'}
-        </h3>
-        <Button onClick={() => handleAddClick(tipo)} size="sm" variant="outline">
-          <Plus className="w-3 h-3 mr-1" />
-          Add
-        </Button>
-      </div>
-      {cats.length === 0 ? (
-        <p className="text-sm text-gray-400 py-2">No subcategories yet</p>
-      ) : (
-        cats.map((categoria) => (
-          <div
-            key={categoria.id}
-            className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
-          >
-            <div className="flex items-center gap-3">
-              <div
-                className="w-4 h-4 rounded"
-                style={{ backgroundColor: categoria.color || '#3B82F6' }}
-              />
-              <div>
-                <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {categoria.nombre}
-                </p>
-                {categoria.descripcion && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {categoria.descripcion}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="flex gap-1">
-              <button
-                onClick={() => handleEditClick(categoria)}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                title="Edit"
-              >
-                <Edit className="w-4 h-4 text-gray-500" />
-              </button>
-              <button
-                onClick={() => handleDelete(categoria)}
-                className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
-                title="Delete"
-              >
-                <Trash2 className="w-4 h-4 text-red-500" />
-              </button>
-            </div>
-          </div>
-        ))
-      )}
-    </div>
-  );
-
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={t('categoryManagement')}
-      size="lg"
-    >
-      <div className="space-y-6">
-        {!isAddMode ? (
-          <>
-            {/* Product Subcategories */}
-            {renderCategoryList(productCategorias, 'PRODUCTO')}
-            
-            <div className="border-t border-gray-200 dark:border-gray-700" />
-            
-            {/* Service Subcategories */}
-            {renderCategoryList(serviceCategorias, 'SERVICIO')}
-          </>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                {editingCategory ? 'Editing' : 'Adding'} subcategory for: <strong>{formData.tipo === 'PRODUCTO' ? t('typeProduct') : t('typeService')}</strong>
-              </p>
-            </div>
-            
-            <Input
-              label={t('categoryName')}
-              value={formData.nombre}
-              onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-              required
-            />
-
-            <Textarea
-              label={t('categoryDescription')}
-              value={formData.descripcion}
-              onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
-              rows={2}
-            />
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {t('categoryColor')}
-              </label>
-              <input
-                type="color"
-                value={formData.color}
-                onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                className="w-20 h-10 rounded border border-gray-300 dark:border-gray-600 cursor-pointer"
-              />
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-              <Button type="button" variant="outline" onClick={handleCancel}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? 'Saving...' : 'Save'}
-              </Button>
-            </div>
-          </form>
-        )}
-      </div>
-    </Modal>
   );
 }
