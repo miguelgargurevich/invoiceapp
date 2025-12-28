@@ -105,13 +105,19 @@ export default function SignDocumentPage() {
       // Generate PDF with signature
       let signedPdfBase64 = null;
       if (pdfRef.current) {
+        // Wait for fonts to load
+        await document.fonts.ready;
+        
         const canvas = await html2canvas(pdfRef.current, {
-          scale: 1.5, // Reduced from 2 to decrease file size
+          scale: 3, // Increased from 1.5 for better quality
           useCORS: true,
           logging: false,
+          backgroundColor: '#ffffff',
+          windowWidth: pdfRef.current.scrollWidth,
+          windowHeight: pdfRef.current.scrollHeight,
         });
 
-        const imgData = canvas.toDataURL('image/jpeg', 0.85); // Use JPEG with 85% quality
+        const imgData = canvas.toDataURL('image/png', 1.0); // Use PNG with maximum quality
         const pdf = new jsPDF({
           orientation: 'portrait',
           unit: 'mm',
@@ -123,20 +129,37 @@ export default function SignDocumentPage() {
         const pdfHeight = pdf.internal.pageSize.getHeight();
         const imgWidth = canvas.width;
         const imgHeight = canvas.height;
-        const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-        const imgX = (pdfWidth - imgWidth * ratio) / 2;
-        const imgY = 0;
+        
+        // Calculate dimensions maintaining aspect ratio
+        const ratio = pdfWidth / imgWidth;
+        const scaledWidth = imgWidth * ratio;
+        const scaledHeight = imgHeight * ratio;
 
-        pdf.addImage(
-          imgData,
-          'JPEG',
-          imgX,
-          imgY,
-          imgWidth * ratio,
-          imgHeight * ratio,
-          undefined,
-          'FAST' // Use fast compression
-        );
+        // If image is taller than page, we need to split it
+        let position = 0;
+        let remainingHeight = scaledHeight;
+
+        while (remainingHeight > 0) {
+          if (position > 0) {
+            pdf.addPage();
+          }
+
+          const pageHeight = Math.min(pdfHeight, remainingHeight);
+          
+          pdf.addImage(
+            imgData,
+            'PNG',
+            0,
+            -position,
+            scaledWidth,
+            scaledHeight,
+            undefined,
+            'SLOW' // Use slow compression for better quality
+          );
+
+          position += pdfHeight;
+          remainingHeight -= pdfHeight;
+        }
 
         // Convert PDF to base64
         signedPdfBase64 = pdf.output('datauristring');

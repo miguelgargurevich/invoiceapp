@@ -270,7 +270,7 @@ export default function ProformasPage({
         proforma.numero.toLowerCase().includes(search.toLowerCase()) ||
         proforma.cliente.nombre.toLowerCase().includes(search.toLowerCase());
       
-      const matchesEstado = filterEstados.length === 0 || filterEstados.includes(proforma.estado);
+      const matchesEstado = filterEstados.length === 0 || filterEstados.includes(proforma.estado.toLowerCase());
       
       return matchesSearch && matchesEstado;
     })

@@ -405,7 +405,7 @@ export default function FacturasPage({
         `${f.serie || ''}-${f.numero || ''}`.toLowerCase().includes(searchLower) ||
         (f.cliente?.nombre || '').toLowerCase().includes(searchLower) ||
         (f.cliente?.documento || '').includes(search);
-      const matchesEstado = filterEstados.length === 0 || filterEstados.includes(f.estado);
+      const matchesEstado = filterEstados.length === 0 || filterEstados.includes(f.estado.toLowerCase());
       return matchesSearch && matchesEstado;
     })
     .sort((a, b) => {

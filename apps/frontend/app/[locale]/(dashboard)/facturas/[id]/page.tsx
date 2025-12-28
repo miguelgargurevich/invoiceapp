@@ -442,18 +442,24 @@ export default function FacturaDetailPage({
 
     try {
       setDownloadingPdf(true);
+      // Wait for fonts to load
+      await document.fonts.ready;
+      
       const canvas = await html2canvas(pdfRef.current, {
-        scale: 2,
+        scale: 3,
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
+        windowWidth: pdfRef.current.scrollWidth,
+        windowHeight: pdfRef.current.scrollHeight,
       });
 
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/png', 1.0);
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4',
+        compress: true,
       });
 
       const pdfWidth = pdf.internal.pageSize.getWidth();
