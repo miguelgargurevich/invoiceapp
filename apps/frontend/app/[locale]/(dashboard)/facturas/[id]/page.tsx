@@ -944,7 +944,7 @@ export default function FacturaDetailPage({
             {factura && factura.saldoPendiente > 0 && (
               <Button 
                 onClick={handleRegisterPayment} 
-                disabled={savingPayment || !paymentData.monto || parseFloat(paymentData.monto) <= 0 || parseFloat(paymentData.monto) > (factura?.saldoPendiente || 0)}
+                disabled={savingPayment || !paymentData.monto || parseFloat(paymentData.monto) <= 0 || Math.round(parseFloat(paymentData.monto) * 100) > Math.round((factura?.saldoPendiente || 0) * 100)}
               >
                 {savingPayment ? t('saving') : t('save')}
               </Button>
