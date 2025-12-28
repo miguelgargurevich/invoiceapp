@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const { authenticateToken, supabase } = require('../middleware/auth');
+const { authenticateToken, getSupabaseClient } = require('../middleware/auth');
 const prisma = require('../utils/prisma');
 
 // Configuración de multer para upload temporal
@@ -186,7 +186,7 @@ router.post('/logo', authenticateToken, upload.single('logo'), async (req, res) 
     console.log('[LOGO] Service Role Key:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'Set (length: ' + process.env.SUPABASE_SERVICE_ROLE_KEY.length + ')' : 'NOT SET');
 
     // Subir a Supabase Storage
-    const { data, error } = await supabase.storage
+    const { data, error } = await getSupabaseClient().storage
       .from('logos')
       .upload(fileName, req.file.buffer, {
         contentType: req.file.mimetype,
@@ -201,7 +201,7 @@ router.post('/logo', authenticateToken, upload.single('logo'), async (req, res) 
     console.log('[LOGO] Upload successful:', data);
 
     // Obtener URL pública
-    const { data: publicUrl } = supabase.storage
+    const { data: publicUrl } = getSupabaseClient().storage
       .from('logos')
       .getPublicUrl(fileName);
 

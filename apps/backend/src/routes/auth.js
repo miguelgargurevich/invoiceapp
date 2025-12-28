@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { supabase } = require('../middleware/auth');
+const { getSupabaseClient } = require('../middleware/auth');
 const prisma = require('../utils/prisma');
 
 // POST /api/auth/login - No necesario, Supabase maneja login
@@ -8,7 +8,7 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await getSupabaseClient().auth.signInWithPassword({
       email,
       password
     });
@@ -33,7 +33,7 @@ router.post('/register', async (req, res) => {
 
   try {
     // Crear usuario en Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+    const { data: authData, error: authError } = await getSupabaseClient().auth.admin.createUser({
       email,
       password,
       email_confirm: true,
@@ -88,7 +88,7 @@ router.get('/me', async (req, res) => {
   }
 
   try {
-    const { data: { user }, error } = await supabase.auth.getUser(token);
+    const { data: { user }, error } = await getSupabaseClient().auth.getUser(token);
 
     if (error || !user) {
       return res.status(403).json({ error: 'Token inválido' });
