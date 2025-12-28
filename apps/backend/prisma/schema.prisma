@@ -73,7 +73,6 @@ model Empresa {
   productos       Producto[]
   facturas        Factura[]
   proformas       Proforma[]
-  categorias      Categoria[]
   signatureRequests SignatureRequest[]
   
   @@index([userId], map: "idx_empresa_user_id")
@@ -118,7 +117,6 @@ model Producto {
   unidadMedida    String    @default("UND") @map("unidad_medida")
   precioUnitario  Decimal   @map("precio_unitario") @db.Decimal(10, 2)
   precioConIgv    Boolean   @default(true) @map("precio_con_igv")
-  categoriaId     String?   @map("categoria_id")
   stockActual     Int?      @map("stock_actual")
   stockMinimo     Int?      @map("stock_minimo")
   activo          Boolean   @default(true)
@@ -126,33 +124,13 @@ model Producto {
   updatedAt       DateTime  @updatedAt @map("updated_at")
   
   empresa         Empresa    @relation(fields: [empresaId], references: [id], onDelete: Cascade)
-  categoria       Categoria? @relation(fields: [categoriaId], references: [id])
   detallesFactura DetalleFactura[]
   detallesProforma DetalleProforma[]
   
   @@unique([empresaId, codigo])
   @@index([empresaId], map: "idx_producto_empresa_id")
-  @@index([categoriaId], map: "idx_producto_categoria_id")
   @@index([nombre], map: "idx_producto_nombre")
   @@map("productos")
-}
-
-// 🏷️ Categorías de productos
-model Categoria {
-  id          String    @id @default(uuid())
-  empresaId   String    @map("empresa_id")
-  nombre      String
-  descripcion String?
-  color       String?
-  tipo        String    @default("PRODUCTO") // PRODUCTO or SERVICIO
-  activo      Boolean   @default(true)
-  createdAt   DateTime  @default(now()) @map("created_at")
-  
-  empresa     Empresa   @relation(fields: [empresaId], references: [id], onDelete: Cascade)
-  productos   Producto[]
-  
-  @@unique([empresaId, nombre, tipo])
-  @@map("categorias")
 }
 
 // 🧾 Facturas

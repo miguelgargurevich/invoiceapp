@@ -12,20 +12,18 @@ const productoSchema = z.object({
   unidadMedida: z.string().default('UND'),
   precioUnitario: z.number().positive(),
   precioConIgv: z.boolean().default(true),
-  categoriaId: z.string().uuid().optional(),
   stockActual: z.number().int().optional(),
   stockMinimo: z.number().int().optional()
 });
 
 // GET /api/productos - Listar productos
 router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
-  const { page = 1, limit = 20, search, categoriaId, activo } = req.query;
+  const { page = 1, limit = 20, search, activo } = req.query;
 
   try {
     const where = {
       empresaId: req.empresa.id,
       ...(activo !== undefined && { activo: activo === 'true' }),
-      ...(categoriaId && { categoriaId }),
       ...(search && {
         OR: [
           { nombre: { contains: search, mode: 'insensitive' } },
@@ -38,11 +36,6 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
     const [productos, total] = await Promise.all([
       prisma.producto.findMany({
         where,
-        include: {
-          categoria: {
-            select: { id: true, nombre: true, color: true }
-          }
-        },
         orderBy: { nombre: 'asc' },
         skip: (parseInt(page) - 1) * parseInt(limit),
         take: parseInt(limit)
@@ -79,9 +72,6 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
       where: {
         id: req.params.id,
         empresaId: req.empresa.id
-      },
-      include: {
-        categoria: true
       }
     });
 
@@ -114,7 +104,6 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       unidadMedida: req.body.unidadMedida,
       precioUnitario: req.body.precioUnitario || req.body.precioVenta,
       precioConIgv: req.body.precioConIgv !== undefined ? req.body.precioConIgv : (req.body.afectoIgv !== undefined ? req.body.afectoIgv : true),
-      categoriaId: req.body.categoriaId,
       stockActual: req.body.stockActual,
       stockMinimo: req.body.stockMinimo
     };
@@ -125,9 +114,6 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       data: {
         ...validatedData,
         empresaId: req.empresa.id
-      },
-      include: {
-        categoria: true
       }
     });
 
@@ -162,7 +148,6 @@ router.put('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
       unidadMedida: req.body.unidadMedida,
       precioUnitario: req.body.precioUnitario || req.body.precioVenta,
       precioConIgv: req.body.precioConIgv !== undefined ? req.body.precioConIgv : (req.body.afectoIgv !== undefined ? req.body.afectoIgv : undefined),
-      categoriaId: req.body.categoriaId,
       stockActual: req.body.stockActual,
       stockMinimo: req.body.stockMinimo
     };
@@ -182,10 +167,7 @@ router.put('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
 
     const producto = await prisma.producto.update({
       where: { id: req.params.id },
-      data: validatedData,
-      include: {
-        categoria: true
-      }
+      data: validatedData
     });
 
     // Return with frontend field names
