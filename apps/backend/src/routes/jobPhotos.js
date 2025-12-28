@@ -140,8 +140,8 @@ router.post('/', authenticateToken, upload.single('photo'), async (req, res) => 
     const ext = path.extname(req.file.originalname);
     const fileName = `photo-${uniqueSuffix}${ext}`;
     
-    // Estructura: invoices/{empresaId}/job-photos/{fileName}
-    const storagePath = `invoices/${empresaId}/job-photos/${fileName}`;
+    // Estructura: {empresaId}/job-photos/{fileName}
+    const storagePath = `${empresaId}/job-photos/${fileName}`;
     
     // Subir a Supabase Storage
     const { data: uploadData, error: uploadError } = await getSupabaseClient().storage
