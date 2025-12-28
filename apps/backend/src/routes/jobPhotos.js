@@ -6,10 +6,22 @@ const { authenticateToken } = require('../middleware/auth');
 const prisma = require('../utils/prisma');
 const { createClient } = require('@supabase/supabase-js');
 
-// Initialize Supabase client
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+// Lazy initialization of Supabase client
+let supabase = null;
+
+function getSupabaseClient() {
+  if (!supabase) {
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    
+    if (!supabaseUrl || !supabaseServiceKey) {
+      throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables are required for photo uploads');
+    }
+    
+    supabase = createClient(supabaseUrl, supabaseServiceKey);
+  }
+  return supabase;
+}
 
 // Configurar multer para memoria (para subir a Supabase)
 const upload = multer({
@@ -127,7 +139,7 @@ router.post('/', authenticateToken, upload.single('photo'), async (req, res) => 
     const storagePath = `${userId}/job-photos/${fileName}`;
     
     // Subir a Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { data: uploadData, error: uploadError } = await getSupabaseClient().storage
       .from('logos')
       .upload(storagePath, req.file.buffer, {
         contentType: req.file.mimetype,
@@ -140,7 +152,7 @@ router.post('/', authenticateToken, upload.single('photo'), async (req, res) => 
     }
 
     // Obtener URL pública
-    const { data: urlData } = supabase.storage
+    const { data: urlData } = getSupabaseClient().storage
       .from('logos')
       .getPublicUrl(storagePath);
 
@@ -225,7 +237,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
         const pathMatch = url.match(/\/logos\/(.+)$/);
         if (pathMatch) {
           const storagePath = pathMatch[1];
-          await supabase.storage.from('logos').remove([storagePath]);
+          await getSupabaseClient().storage.from('logos').remove([storagePath]);
         }
       } catch (storageError) {
         console.error('Error deleting from Supabase storage:', storageError);
