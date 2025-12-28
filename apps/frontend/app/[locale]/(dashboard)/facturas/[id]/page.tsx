@@ -981,6 +981,22 @@ export default function FacturaDetailPage({
             </>
           )}
           
+          {/* Debug info - PROD */}
+          {factura && (
+            <div className="text-xs bg-yellow-100 dark:bg-yellow-900 p-2 rounded mb-2 font-mono">
+              <p>saldoPendiente: {factura.saldoPendiente}</p>
+              <p>saldoPendienteType: {typeof factura.saldoPendiente}</p>
+              <p>saldoPendiente &gt; 0: {String(factura.saldoPendiente > 0)}</p>
+              <p>monto: "{paymentData.monto}"</p>
+              <p>montoType: {typeof paymentData.monto}</p>
+              <p>parseFloat(monto): {parseFloat(paymentData.monto)}</p>
+              <p>!monto: {String(!paymentData.monto)}</p>
+              <p>parseFloat &lt;= 0: {String(parseFloat(paymentData.monto) <= 0)}</p>
+              <p>savingPayment: {String(savingPayment)}</p>
+              <p className="font-bold text-red-600">DISABLED: {String(savingPayment || !paymentData.monto || parseFloat(paymentData.monto) <= 0)}</p>
+            </div>
+          )}
+          
           <div className="flex justify-end gap-3 pt-4 border-t">
             <Button variant="outline" onClick={() => setIsPaymentModalOpen(false)}>
               {factura && factura.saldoPendiente <= 0 ? (t('close') || 'Close') : t('cancel')}
