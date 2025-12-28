@@ -33,6 +33,9 @@ export default function JobPhotosGallery({
   const t = useTranslations('invoices');
   const { showSuccess, showError } = useToast();
   
+  // Debug: Log photos URLs
+  console.log('JobPhotosGallery - Photos:', photos);
+  
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [viewerOpen, setViewerOpen] = useState(false);

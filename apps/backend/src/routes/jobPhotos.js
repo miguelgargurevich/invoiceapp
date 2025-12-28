@@ -104,30 +104,35 @@ router.post('/', authenticateToken, upload.single('photo'), async (req, res) => 
     }
 
     const { facturaId, proformaId, descripcion, orden } = req.body;
-    const userId = req.user.id;
 
     // Validar que se proporcione facturaId o proformaId (pero no ambos)
     if ((!facturaId && !proformaId) || (facturaId && proformaId)) {
       return res.status(400).json({ error: 'Debe proporcionar facturaId o proformaId (no ambos)' });
     }
 
-    // Verificar permisos
+    // Verificar permisos y obtener empresaId
+    let empresaId;
+    
     if (facturaId) {
       const factura = await prisma.factura.findFirst({
-        where: { id: facturaId, empresa: { userId: req.user.id } }
+        where: { id: facturaId, empresa: { userId: req.user.id } },
+        include: { empresa: true }
       });
       if (!factura) {
         return res.status(404).json({ error: 'Factura no encontrada' });
       }
+      empresaId = factura.empresaId;
     }
 
     if (proformaId) {
       const proforma = await prisma.proforma.findFirst({
-        where: { id: proformaId, empresa: { userId: req.user.id } }
+        where: { id: proformaId, empresa: { userId: req.user.id } },
+        include: { empresa: true }
       });
       if (!proforma) {
         return res.status(404).json({ error: 'Proforma no encontrada' });
       }
+      empresaId = proforma.empresaId;
     }
 
     // Generar nombre único para el archivo
@@ -135,8 +140,8 @@ router.post('/', authenticateToken, upload.single('photo'), async (req, res) => 
     const ext = path.extname(req.file.originalname);
     const fileName = `photo-${uniqueSuffix}${ext}`;
     
-    // Estructura: logos/{userId}/job-photos/{fileName}
-    const storagePath = `${userId}/job-photos/${fileName}`;
+    // Estructura: invoices/{empresaId}/job-photos/{fileName}
+    const storagePath = `invoices/${empresaId}/job-photos/${fileName}`;
     
     // Subir a Supabase Storage
     const { data: uploadData, error: uploadError } = await getSupabaseClient().storage

@@ -286,7 +286,15 @@
       "cash": "Contado",
       "credit30": "Crédito 30 días",
       "credit60": "Crédito 60 días",
-      "credit90": "Crédito 90 días"
+      "credit90": "Crédito 90 días",
+      "EFECTIVO": "Efectivo",
+      "TRANSFERENCIA": "Transferencia",
+      "TARJETA": "Tarjeta",
+      "CHEQUE": "Cheque",
+      "DEPOSITO": "Depósito",
+      "YAPE": "Yape",
+      "PLIN": "Plin",
+      "OTRO": "Otro"
     },
     "methods": {
       "cash": "Efectivo",
