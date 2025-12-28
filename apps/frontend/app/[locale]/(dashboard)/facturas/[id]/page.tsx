@@ -225,15 +225,29 @@ export default function FacturaDetailPage({
   const handleRegisterPayment = async () => {
     if (!factura || !paymentData.monto) return;
 
+    const monto = parseFloat(paymentData.monto);
+    
+    // Client-side validation
+    if (monto <= 0) {
+      showError(t('paymentAmountMustBePositive') || 'Payment amount must be greater than 0');
+      return;
+    }
+    
+    if (monto > factura.montoPendiente) {
+      showError(`${t('paymentExceedsPending') || 'Amount exceeds pending balance'}: ${formatCurrency(factura.montoPendiente)}`);
+      return;
+    }
+
     try {
       setSavingPayment(true);
       await api.post(`/facturas/${factura.id}/pagos`, {
-        monto: parseFloat(paymentData.monto),
+        monto: monto,
         metodoPago: paymentData.metodoPago,
         referencia: paymentData.referencia || null,
         notas: paymentData.notas || null,
       });
       
+      showSuccess(t('paymentRegistered') || 'Payment registered successfully');
       setIsPaymentModalOpen(false);
       setPaymentData({
         monto: '',
@@ -242,8 +256,10 @@ export default function FacturaDetailPage({
         notas: '',
       });
       loadFactura();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error registering payment:', error);
+      const errorMessage = error.response?.data?.error || error.message || 'Error registering payment';
+      showError(errorMessage);
     } finally {
       setSavingPayment(false);
     }
@@ -805,14 +821,54 @@ export default function FacturaDetailPage({
         title={t('registerPayment')}
       >
         <div className="space-y-4">
-          <Input
-            label={t('amount')}
-            type="number"
-            step="0.01"
-            value={paymentData.monto}
-            onChange={(e) => setPaymentData({ ...paymentData, monto: e.target.value })}
-            required
-          />
+          {/* Pending Balance Info */}
+          {factura && (
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-blue-700 dark:text-blue-300">{t('pendingBalance') || 'Pending Balance'}:</span>
+                <span className="text-lg font-bold text-blue-900 dark:text-blue-100">{formatCurrency(factura.montoPendiente)}</span>
+              </div>
+              <div className="flex justify-between items-center mt-1 text-xs text-blue-600 dark:text-blue-400">
+                <span>{t('totalInvoice') || 'Total Invoice'}:</span>
+                <span>{formatCurrency(factura.total)}</span>
+              </div>
+            </div>
+          )}
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('amount')} *
+            </label>
+            <div className="relative">
+              <input
+                type="number"
+                step="0.01"
+                min="0.01"
+                max={factura?.montoPendiente || 0}
+                value={paymentData.monto}
+                onChange={(e) => setPaymentData({ ...paymentData, monto: e.target.value })}
+                className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 ${
+                  paymentData.monto && parseFloat(paymentData.monto) > (factura?.montoPendiente || 0)
+                    ? 'border-red-500 text-red-600'
+                    : 'border-gray-300 dark:border-gray-600'
+                }`}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setPaymentData({ ...paymentData, monto: factura?.montoPendiente?.toFixed(2) || '0' })}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-2 py-1 rounded text-gray-600 dark:text-gray-300"
+              >
+                {t('payFull') || 'Pay Full'}
+              </button>
+            </div>
+            {paymentData.monto && parseFloat(paymentData.monto) > (factura?.montoPendiente || 0) && (
+              <p className="mt-1 text-xs text-red-500">
+                {t('amountExceedsPending') || 'Amount exceeds pending balance'}
+              </p>
+            )}
+          </div>
+          
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               {t('paymentMethod')}
@@ -843,7 +899,10 @@ export default function FacturaDetailPage({
             <Button variant="outline" onClick={() => setIsPaymentModalOpen(false)}>
               {t('cancel')}
             </Button>
-            <Button onClick={handleRegisterPayment} disabled={savingPayment}>
+            <Button 
+              onClick={handleRegisterPayment} 
+              disabled={savingPayment || !paymentData.monto || parseFloat(paymentData.monto) <= 0 || parseFloat(paymentData.monto) > (factura?.montoPendiente || 0)}
+            >
               {savingPayment ? t('saving') : t('save')}
             </Button>
           </div>
