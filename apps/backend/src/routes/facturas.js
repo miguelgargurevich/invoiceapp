@@ -213,7 +213,13 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
     ]);
 
     console.log('[FACTURAS] Results count:', facturas.length, 'Total:', total);
-    console.log('[FACTURAS] First 3 estados from DB:', facturas.slice(0, 3).map(f => ({ serie: f.serie, estado: f.estado, fechaVencimiento: f.fechaVencimiento })));
+    console.log('[FACTURAS] All facturas with dates:', facturas.map(f => ({ 
+      numero: f.numero, 
+      estado: f.estado, 
+      fechaVencimiento: f.fechaVencimiento,
+      total: f.total,
+      pagosCount: f.pagos.length
+    })));
 
     // Map facturas to include signatureStatus and calculate payment status
     let facturasWithSignatureStatus = facturas.map(factura => {
@@ -226,7 +232,7 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       if (factura.estado !== 'anulada') {
         if (montoPendiente <= 0) {
           estado = 'pagada';
-        } else if (new Date(factura.fechaVencimiento) < new Date() && montoPendiente > 0) {
+        } else if (factura.fechaVencimiento && new Date(factura.fechaVencimiento) < new Date() && montoPendiente > 0) {
           estado = 'vencida';
         }
       }
@@ -239,6 +245,14 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
         signatureStatus: signatureRequest?.status || null
       };
     });
+
+    console.log('[FACTURAS] After estado calculation:', facturasWithSignatureStatus.map(f => ({
+      numero: f.numero,
+      estadoDB: facturas.find(db => db.numero === f.numero)?.estado,
+      estadoCalculated: f.estado,
+      fechaVencimiento: f.fechaVencimiento,
+      montoPendiente: f.montoPendiente
+    })));
 
     // If filtering ONLY by vencida, we need to filter out facturas with montoPendiente <= 0
     // Because vencida means: emitida + past due + has pending amount
