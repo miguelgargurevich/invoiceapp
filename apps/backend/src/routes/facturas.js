@@ -428,7 +428,11 @@ router.post('/:id/pagos', authenticateToken, getEmpresaFromUser, async (req, res
     const totalPagado = factura.pagos.reduce((acc, pago) => acc + parseFloat(pago.monto), 0);
     const saldoPendiente = parseFloat(factura.total) - totalPagado;
 
-    if (monto > saldoPendiente) {
+    // Use cents comparison to avoid floating point precision issues
+    const montoEnCentavos = Math.round(parseFloat(monto) * 100);
+    const saldoEnCentavos = Math.round(saldoPendiente * 100);
+    
+    if (montoEnCentavos > saldoEnCentavos) {
       return res.status(400).json({ 
         error: `El monto excede el saldo pendiente (S/ ${saldoPendiente.toFixed(2)})` 
       });
@@ -446,8 +450,11 @@ router.post('/:id/pagos', authenticateToken, getEmpresaFromUser, async (req, res
     });
 
     // Si el total pagado alcanza el total, marcar como pagada
-    const nuevoTotalPagado = totalPagado + monto;
-    if (nuevoTotalPagado >= parseFloat(factura.total)) {
+    const nuevoTotalPagado = totalPagado + parseFloat(monto);
+    const nuevoTotalEnCentavos = Math.round(nuevoTotalPagado * 100);
+    const totalFacturaEnCentavos = Math.round(parseFloat(factura.total) * 100);
+    
+    if (nuevoTotalEnCentavos >= totalFacturaEnCentavos) {
       await prisma.factura.update({
         where: { id: req.params.id },
         data: { estado: 'pagada' }
