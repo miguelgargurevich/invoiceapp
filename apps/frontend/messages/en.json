@@ -151,7 +151,8 @@
     "statusOverdue": "Overdue",
     "statusCancelled": "Cancelled",
     "signed": "Signed",
-    "signaturePending": "Signature Pending"
+    "signaturePending": "Pending",
+    "signature": "Signature"
   },
   "invoices": {
     "title": "Invoices",
@@ -270,7 +271,10 @@
       "overdue": "Overdue"
     },
     "signed": "Signed",
-    "signaturePending": "Signature Pending",
+    "signaturePending": "Pending",
+    "signatureExpired": "Expired",
+    "signatureCancelled": "Cancelled",
+    "signature": "Signature",
     "requestSignature": "Request Signature",
     "resendSignature": "Resend Signature",
     "loading": "Loading...",

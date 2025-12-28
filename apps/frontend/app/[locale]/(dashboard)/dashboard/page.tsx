@@ -399,6 +399,9 @@ export default function DashboardPage({
                     <th className="text-center py-3 px-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                       {t('status')}
                     </th>
+                    <th className="text-center py-3 px-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                      {t('signature')}
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
@@ -422,18 +425,24 @@ export default function DashboardPage({
                       <td className="py-3 px-4 text-right font-medium text-gray-900 dark:text-gray-100">
                         {formatCurrency(invoice.total)}
                       </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center justify-center gap-2 flex-nowrap">
-                          <Badge variant={getStatusBadge(invoice.estado)}>
-                            {getStatusLabel(invoice.estado)}
+                      <td className="py-3 px-4 text-center">
+                        <Badge variant={getStatusBadge(invoice.estado)}>
+                          {getStatusLabel(invoice.estado)}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        {invoice.signatureStatus === 'SIGNED' ? (
+                          <Badge variant="success">
+                            <CheckCircle className="w-3 h-3 mr-1" />
+                            {t('signed')}
                           </Badge>
-                          {invoice.signatureStatus === 'SIGNED' && (
-                            <Badge variant="success">
-                              <CheckCircle className="w-3 h-3 mr-1" />
-                              {t('signed')}
-                            </Badge>
-                          )}
-                        </div>
+                        ) : invoice.signatureStatus === 'PENDING' ? (
+                          <Badge variant="warning">
+                            {t('signaturePending')}
+                          </Badge>
+                        ) : (
+                          <span className="text-gray-400">—</span>
+                        )}
                       </td>
                     </tr>
                   ))}

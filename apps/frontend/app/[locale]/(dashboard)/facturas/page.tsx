@@ -363,36 +363,52 @@ export default function FacturasPage({
       key: 'estado',
       header: t('status'),
       render: (factura) => (
-        <div className="flex items-center gap-2 flex-wrap">
-          <Badge variant={getStatusBadge(factura.estado)}>
-            {getStatusLabel(factura.estado)}
-          </Badge>
-          {factura.signatureStatus === 'SIGNED' && (
+        <Badge variant={getStatusBadge(factura.estado)}>
+          {getStatusLabel(factura.estado)}
+        </Badge>
+      ),
+    },
+    {
+      key: 'signatureStatus',
+      header: t('signature'),
+      render: (factura) => {
+        if (!factura.signatureStatus) {
+          return <span className="text-gray-400">—</span>;
+        }
+        if (factura.signatureStatus === 'SIGNED') {
+          return (
             <Badge variant="success">
               <CheckCircle className="w-3 h-3 mr-1" />
-              SIGNED
+              {t('signed')}
             </Badge>
-          )}
-          {factura.signatureStatus === 'PENDING' && (
+          );
+        }
+        if (factura.signatureStatus === 'PENDING') {
+          return (
             <Badge variant="warning">
               <Clock className="w-3 h-3 mr-1" />
-              PENDING
+              {t('signaturePending')}
             </Badge>
-          )}
-          {factura.signatureStatus === 'EXPIRED' && (
+          );
+        }
+        if (factura.signatureStatus === 'EXPIRED') {
+          return (
             <Badge variant="neutral">
               <AlertTriangle className="w-3 h-3 mr-1" />
-              EXPIRED
+              {t('signatureExpired')}
             </Badge>
-          )}
-          {factura.signatureStatus === 'CANCELLED' && (
+          );
+        }
+        if (factura.signatureStatus === 'CANCELLED') {
+          return (
             <Badge variant="neutral">
               <XCircle className="w-3 h-3 mr-1" />
-              CANCELLED
+              {t('signatureCancelled')}
             </Badge>
-          )}
-        </div>
-      ),
+          );
+        }
+        return <span className="text-gray-400">—</span>;
+      },
     },
     {
       key: 'actions',
