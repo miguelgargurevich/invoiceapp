@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Plus, Search, Filter, Download, Edit, Trash2, Tag, Package } from 'lucide-react';
+import { Plus, Search, Download, Edit, Trash2, Tag, Package, Eye } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
@@ -13,7 +13,6 @@ import {
   Modal,
   ConfirmDialog,
   Input,
-  Select,
   Textarea,
   EmptyProducts,
   type Column,
@@ -50,6 +49,7 @@ export default function ProductosPage({
   params: { locale: string };
 }) {
   const t = useTranslations('products');
+  const router = useRouter();
   const { empresa } = useAuth();
   const { formatCurrency } = useCurrency();
   
@@ -58,7 +58,6 @@ export default function ProductosPage({
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filterCategoria, setFilterCategoria] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedProducto, setSelectedProducto] = useState<Producto | null>(null);
@@ -84,45 +83,7 @@ export default function ProductosPage({
       setTotalPages(response.pagination?.totalPages || 1);
     } catch (error) {
       console.error('Error loading productos:', error);
-      // Mock data for development
-      setProductos([
-        {
-          id: '1',
-          codigo: 'PROD001',
-          nombre: 'Servicio de Consultoría',
-          descripcion: 'Servicio de consultoría empresarial por hora',
-          precioVenta: 150.00,
-          unidadMedida: 'HORA',
-          tipo: 'SERVICIO',
-          afectoIgv: true,
-          categoria: { id: '1', nombre: 'Servicios' },
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: '2',
-          codigo: 'PROD002',
-          nombre: 'Laptop HP ProBook',
-          descripcion: 'Laptop HP ProBook 450 G8, Core i5, 8GB RAM',
-          precioVenta: 2500.00,
-          unidadMedida: 'UNIDAD',
-          tipo: 'PRODUCTO',
-          afectoIgv: true,
-          categoria: { id: '2', nombre: 'Equipos' },
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: '3',
-          codigo: 'PROD003',
-          nombre: 'Mantenimiento Mensual',
-          descripcion: 'Servicio de mantenimiento de sistemas mensual',
-          precioVenta: 800.00,
-          unidadMedida: 'MES',
-          tipo: 'SERVICIO',
-          afectoIgv: true,
-          categoria: { id: '1', nombre: 'Servicios' },
-          createdAt: new Date().toISOString(),
-        },
-      ]);
+      setProductos([]);
     } finally {
       setLoading(false);
     }
@@ -135,11 +96,9 @@ export default function ProductosPage({
       const params = new URLSearchParams({ empresaId: empresa.id });
       const response: any = await api.get(`/categorias?${params}`);
       const cats = response.data || response || [];
-      console.log('[PRODUCTOS] Categorias loaded:', cats);
       setCategorias(cats);
     } catch (error) {
-      console.error('[PRODUCTOS] Error loading categorias:', error);
-      // Set empty array to ensure filter works
+      console.error('Error loading categorias:', error);
       setCategorias([]);
     }
   }, [empresa?.id]);
@@ -149,9 +108,8 @@ export default function ProductosPage({
     loadCategorias();
   }, [loadProductos, loadCategorias]);
 
-  const handleEdit = (producto: Producto) => {
-    setSelectedProducto(producto);
-    setIsModalOpen(true);
+  const handleView = (producto: Producto) => {
+    router.push(`/${locale}/productos/${producto.id}`);
   };
 
   const handleDelete = (producto: Producto) => {
@@ -174,15 +132,7 @@ export default function ProductosPage({
   };
 
   const handleExport = () => {
-    const headers = [
-      t('productos.codigo'),
-      t('productos.nombre'),
-      t('productos.descripcion'),
-      t('productos.categoria'),
-      t('productos.unidadMedida'),
-      t('productos.precioVenta'),
-      t('productos.tipo')
-    ];
+    const headers = ['Code', 'Name', 'Description', 'Category', 'Unit', 'Price', 'Type'];
 
     const rows = filteredProductos.map(producto => [
       producto.codigo || '',
@@ -280,18 +230,18 @@ export default function ProductosPage({
     {
       key: 'actions',
       header: '',
-      className: 'w-20',
+      className: 'w-24',
       render: (producto) => (
         <div className="flex items-center gap-1">
           <button
             onClick={(e) => {
               e.stopPropagation();
-              handleEdit(producto);
+              handleView(producto);
             }}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            title={t('edit')}
+            title="View"
           >
-            <Edit className="w-4 h-4 text-gray-500" />
+            <Eye className="w-4 h-4 text-gray-500" />
           </button>
           <button
             onClick={(e) => {
@@ -299,7 +249,7 @@ export default function ProductosPage({
               handleDelete(producto);
             }}
             className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-            title={t('delete')}
+            title="Delete"
           >
             <Trash2 className="w-4 h-4 text-red-500" />
           </button>
@@ -347,10 +297,7 @@ export default function ProductosPage({
           </p>
         </div>
         <Button
-          onClick={() => {
-            setSelectedProducto(null);
-            setIsModalOpen(true);
-          }}
+          onClick={() => router.push(`/${locale}/productos/nuevo`)}
           className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
         >
           <Package className="w-5 h-5 mr-2" />
@@ -403,14 +350,14 @@ export default function ProductosPage({
         emptyState={
           <EmptyProducts
             action={
-              <Button onClick={() => setIsModalOpen(true)}>
+              <Button onClick={() => router.push(`/${locale}/productos/nuevo`)}>
                 <Package className="w-4 h-4 mr-2" />
                 {t('addFirstProduct')}
               </Button>
             }
           />
         }
-        onRowClick={(p) => handleEdit(p)}
+        onRowClick={(p) => handleView(p)}
         sortKey={sortKey}
         sortOrder={sortOrder}
         onSort={handleSort}
@@ -447,23 +394,6 @@ export default function ProductosPage({
         )}
       />
 
-      {/* Product Modal */}
-      <ProductModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedProducto(null);
-        }}
-        producto={selectedProducto}
-        categorias={categorias}
-        onSave={() => {
-          setIsModalOpen(false);
-          setSelectedProducto(null);
-          loadProductos();
-        }}
-        locale={locale}
-      />
-
       {/* Category Management Modal */}
       <CategoryManagementModal
         isOpen={isCategoryModalOpen}
@@ -481,208 +411,12 @@ export default function ProductosPage({
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={confirmDelete}
-        title={t('deleteTitle')}
-        message={t('deleteMessage', { name: selectedProducto?.nombre || '' })}
-        confirmLabel={t('delete')}
+        title="Delete Product"
+        message={`Are you sure you want to delete "${selectedProducto?.nombre}"? This action cannot be undone.`}
+        confirmLabel="Delete"
         variant="danger"
       />
     </div>
-  );
-}
-
-// Product Modal Component
-interface ProductModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  producto: Producto | null;
-  categorias: Categoria[];
-  onSave: () => void;
-  locale: string;
-}
-
-function ProductModal({ isOpen, onClose, producto, categorias, onSave, locale }: ProductModalProps) {
-  const t = useTranslations('products');
-  const tUnits = useTranslations('products.units');
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    codigo: '',
-    nombre: '',
-    descripcion: '',
-    precioVenta: '',
-    unidadMedida: 'UNIDAD',
-    tipo: 'PRODUCTO',
-    afectoIgv: true,
-    categoriaId: '',
-  });
-
-  useEffect(() => {
-    if (producto) {
-      setFormData({
-        codigo: producto.codigo,
-        nombre: producto.nombre,
-        descripcion: producto.descripcion || '',
-        precioVenta: producto.precioVenta.toString(),
-        unidadMedida: producto.unidadMedida,
-        tipo: producto.tipo,
-        afectoIgv: producto.afectoIgv,
-        categoriaId: producto.categoria?.id || '',
-      });
-    } else {
-      setFormData({
-        codigo: '',
-        nombre: '',
-        descripcion: '',
-        precioVenta: '',
-        unidadMedida: 'UNIDAD',
-        tipo: 'PRODUCTO',
-        afectoIgv: true,
-        categoriaId: '',
-      });
-    }
-  }, [producto, isOpen]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      setLoading(true);
-      const payload = {
-        ...formData,
-        precioVenta: parseFloat(formData.precioVenta),
-        categoriaId: formData.categoriaId || null,
-      };
-      
-      console.log('[PRODUCTO MODAL] Saving product:', payload);
-      
-      if (producto) {
-        await api.put(`/productos/${producto.id}`, payload);
-        console.log('[PRODUCTO MODAL] Product updated successfully');
-      } else {
-        await api.post('/productos', payload);
-        console.log('[PRODUCTO MODAL] Product created successfully');
-      }
-      onSave();
-      onClose();
-    } catch (error: any) {
-      console.error('[PRODUCTO MODAL] Error saving producto:', error);
-      alert(error.response?.data?.error || 'Error al guardar el producto');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const unidades = [
-    { value: 'UNIDAD', label: tUnits('UNIDAD') },
-    { value: 'HORA', label: tUnits('HORA') },
-    { value: 'DIA', label: tUnits('DIA') },
-    { value: 'MES', label: tUnits('MES') },
-    { value: 'KG', label: tUnits('KG') },
-    { value: 'LT', label: tUnits('LT') },
-    { value: 'MT', label: tUnits('MT') },
-    { value: 'M2', label: tUnits('M2') },
-    { value: 'SERVICIO', label: tUnits('SERVICIO') },
-  ];
-
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={producto ? t('editProduct') : t('addProduct')}
-      size="xl"
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            label={t('code')}
-            value={formData.codigo}
-            onChange={(e) => setFormData({ ...formData, codigo: e.target.value })}
-            required
-          />
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('category')}
-            </label>
-            <select
-              value={formData.categoriaId}
-              onChange={(e) => setFormData({ ...formData, categoriaId: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              <option value="">{t('noCategory')}</option>
-              {categorias.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.nombre}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <Input
-          label={t('name')}
-          value={formData.nombre}
-          onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-          required
-        />
-
-        <Textarea
-          label={t('description')}
-          value={formData.descripcion}
-          onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
-          rows={2}
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            label={t('price')}
-            type="number"
-            step="0.01"
-            min="0"
-            value={formData.precioVenta}
-            onChange={(e) => setFormData({ ...formData, precioVenta: e.target.value })}
-            required
-          />
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('unit')}
-            </label>
-            <select
-              value={formData.unidadMedida}
-              onChange={(e) => setFormData({ ...formData, unidadMedida: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              {unidades.map((u) => (
-                <option key={u.value} value={u.value}>
-                  {u.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="afectoIgv"
-            checked={formData.afectoIgv}
-            onChange={(e) => setFormData({ ...formData, afectoIgv: e.target.checked })}
-            className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-          />
-          <label htmlFor="afectoIgv" className="text-sm text-gray-700 dark:text-gray-300">
-            {t('taxable')}
-          </label>
-        </div>
-
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <Button type="button" variant="outline" onClick={onClose}>
-            {t('cancel')}
-          </Button>
-          <Button type="submit" disabled={loading}>
-            {loading ? t('saving') : t('save')}
-          </Button>
-        </div>
-      </form>
-    </Modal>
   );
 }
 
@@ -690,9 +424,9 @@ function ProductModal({ isOpen, onClose, producto, categorias, onSave, locale }:
 function CategoryManagementModal({
   isOpen,
   onClose,
-  onSave,
   categorias,
   empresa,
+  onSave,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -732,10 +466,8 @@ function CategoryManagementModal({
       setLoading(true);
       if (editingCategory) {
         await api.put(`/categorias/${editingCategory.id}`, formData);
-        alert(t('messages.categoryUpdated'));
       } else {
         await api.post('/categorias', { ...formData, empresaId: empresa?.id });
-        alert(t('messages.categoryCreated'));
       }
       setIsAddMode(false);
       setEditingCategory(null);
@@ -749,17 +481,14 @@ function CategoryManagementModal({
   };
 
   const handleDelete = async (categoria: Categoria) => {
-    if (!confirm(t('deleteCategoryMessage', { name: categoria.nombre }))) return;
+    if (!confirm(`Are you sure you want to delete "${categoria.nombre}"?`)) return;
 
     try {
       await api.delete(`/categorias/${categoria.id}`);
-      alert(t('messages.categoryDeleted'));
       onSave();
     } catch (error: any) {
       if (error.response?.status === 400) {
-        alert(t('messages.categoryHasProducts'));
-      } else {
-        alert('Error al eliminar categoría');
+        alert('Cannot delete category with products');
       }
       console.error('Error deleting categoria:', error);
     }
@@ -783,7 +512,7 @@ function CategoryManagementModal({
           <>
             <div className="flex justify-between items-center mb-4">
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {categorias.length === 0 ? t('noCategoriesYet') : t('productsCount', { count: categorias.length })}
+                {categorias.length} categories
               </p>
               <Button onClick={handleAddClick} size="sm">
                 <Plus className="w-4 h-4 mr-1" />
@@ -823,14 +552,14 @@ function CategoryManagementModal({
                       <button
                         onClick={() => handleEditClick(categoria)}
                         className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                        title={t('edit')}
+                        title="Edit"
                       >
                         <Edit className="w-4 h-4 text-gray-500" />
                       </button>
                       <button
                         onClick={() => handleDelete(categoria)}
                         className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
-                        title={t('delete')}
+                        title="Delete"
                       >
                         <Trash2 className="w-4 h-4 text-red-500" />
                       </button>
@@ -870,10 +599,10 @@ function CategoryManagementModal({
 
             <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
               <Button type="button" variant="outline" onClick={handleCancel}>
-                {t('cancel')}
+                Cancel
               </Button>
               <Button type="submit" disabled={loading}>
-                {loading ? t('saving') : t('save')}
+                {loading ? 'Saving...' : 'Save'}
               </Button>
             </div>
           </form>

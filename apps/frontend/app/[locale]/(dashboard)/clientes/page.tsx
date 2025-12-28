@@ -2,15 +2,14 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import { Plus, Search, Filter, Download, Edit, Trash2, UserPlus } from 'lucide-react';
+import { useRouter, useParams } from 'next/navigation';
+import { Search, Filter, Download, Trash2, UserPlus, Eye } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
   DataTable,
   Card,
-  Modal,
   ConfirmDialog,
-  Input,
   EmptyClients,
   type Column,
 } from '@/components/common';
@@ -29,12 +28,14 @@ interface Cliente {
 
 export default function ClientesPage() {
   const t = useTranslations('clients');
+  const router = useRouter();
+  const params = useParams();
+  const locale = params.locale as string;
   const { empresa } = useAuth();
   
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -57,39 +58,7 @@ export default function ClientesPage() {
       setTotalPages((response as any).pagination?.totalPages || 1);
     } catch (error) {
       console.error('Error loading clientes:', error);
-      // Mock data for development
-      setClientes([
-        {
-          id: '1',
-          tipoDocumento: 'RUC',
-          documento: '20123456789',
-          nombre: 'Empresa ABC S.A.C.',
-          direccion: 'Av. Principal 123, Lima',
-          email: 'contacto@empresaabc.com',
-          telefono: '01-1234567',
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: '2',
-          tipoDocumento: 'RUC',
-          documento: '20987654321',
-          nombre: 'Comercial Lima E.I.R.L.',
-          direccion: 'Jr. Comercio 456, San Isidro',
-          email: 'ventas@comerciallima.com',
-          telefono: '01-9876543',
-          createdAt: new Date().toISOString(),
-        },
-        {
-          id: '3',
-          tipoDocumento: 'DNI',
-          documento: '12345678',
-          nombre: 'Juan Pérez García',
-          direccion: 'Calle Las Flores 789, Miraflores',
-          email: 'juan.perez@email.com',
-          telefono: '987654321',
-          createdAt: new Date().toISOString(),
-        },
-      ]);
+      setClientes([]);
     } finally {
       setLoading(false);
     }
@@ -99,9 +68,8 @@ export default function ClientesPage() {
     loadClientes();
   }, [loadClientes]);
 
-  const handleEdit = (cliente: Cliente) => {
-    setSelectedCliente(cliente);
-    setIsModalOpen(true);
+  const handleView = (cliente: Cliente) => {
+    router.push(`/${locale}/clientes/${cliente.id}`);
   };
 
   const handleDelete = (cliente: Cliente) => {
@@ -125,7 +93,6 @@ export default function ClientesPage() {
 
   const handleExport = () => {
     try {
-      // Prepare CSV data
       const headers = [
         t('documentType'),
         t('documentNumber'),
@@ -144,13 +111,11 @@ export default function ClientesPage() {
         c.telefono || ''
       ]);
 
-      // Create CSV content
       const csvContent = [
         headers.join(','),
         ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
       ].join('\n');
 
-      // Create blob and download
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       const url = URL.createObjectURL(blob);
@@ -210,18 +175,18 @@ export default function ClientesPage() {
     {
       key: 'actions',
       header: '',
-      className: 'w-20',
+      className: 'w-24',
       render: (cliente) => (
         <div className="flex items-center gap-1">
           <button
             onClick={(e) => {
               e.stopPropagation();
-              handleEdit(cliente);
+              handleView(cliente);
             }}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             title={t('edit')}
           >
-            <Edit className="w-4 h-4 text-gray-500" />
+            <Eye className="w-4 h-4 text-gray-500" />
           </button>
           <button
             onClick={(e) => {
@@ -274,10 +239,7 @@ export default function ClientesPage() {
           </p>
         </div>
         <Button
-          onClick={() => {
-            setSelectedCliente(null);
-            setIsModalOpen(true);
-          }}
+          onClick={() => router.push(`/${locale}/clientes/nuevo`)}
           className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
         >
           <UserPlus className="w-5 h-5 mr-2" />
@@ -320,14 +282,14 @@ export default function ClientesPage() {
         emptyState={
           <EmptyClients
             action={
-              <Button onClick={() => setIsModalOpen(true)}>
+              <Button onClick={() => router.push(`/${locale}/clientes/nuevo`)}>
                 <UserPlus className="w-4 h-4 mr-2" />
                 {t('addFirstClient')}
               </Button>
             }
           />
         }
-        onRowClick={(c) => handleEdit(c)}
+        onRowClick={(c) => handleView(c)}
         sortKey={sortKey}
         sortOrder={sortOrder}
         onSort={handleSort}
@@ -360,21 +322,6 @@ export default function ClientesPage() {
         )}
       />
 
-      {/* Client Modal */}
-      <ClientModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setSelectedCliente(null);
-        }}
-        cliente={selectedCliente}
-        onSave={() => {
-          setIsModalOpen(false);
-          setSelectedCliente(null);
-          loadClientes();
-        }}
-      />
-
       {/* Delete Confirmation */}
       <ConfirmDialog
         isOpen={isDeleteDialogOpen}
@@ -385,137 +332,5 @@ export default function ClientesPage() {
         variant="danger"
       />
     </div>
-  );
-}
-
-// Client Modal Component
-interface ClientModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  cliente: Cliente | null;
-  onSave: () => void;
-}
-
-function ClientModal({ isOpen, onClose, cliente, onSave }: ClientModalProps) {
-  const t = useTranslations('clients');
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    tipoDocumento: 'RUC',
-    documento: '',
-    nombre: '',
-    direccion: '',
-    email: '',
-    telefono: '',
-  });
-
-  useEffect(() => {
-    if (cliente) {
-      setFormData({
-        tipoDocumento: cliente.tipoDocumento,
-        documento: cliente.documento,
-        nombre: cliente.nombre,
-        direccion: cliente.direccion || '',
-        email: cliente.email || '',
-        telefono: cliente.telefono || '',
-      });
-    } else {
-      setFormData({
-        tipoDocumento: 'RUC',
-        documento: '',
-        nombre: '',
-        direccion: '',
-        email: '',
-        telefono: '',
-      });
-    }
-  }, [cliente, isOpen]);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      setLoading(true);
-      if (cliente) {
-        await api.put(`/clientes/${cliente.id}`, formData);
-      } else {
-        await api.post('/clientes', formData);
-      }
-      onSave();
-    } catch (error) {
-      console.error('Error saving cliente:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={cliente ? t('editClient') : t('addClient')}
-      size="xl"
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('documentType')}
-            </label>
-            <select
-              value={formData.tipoDocumento}
-              onChange={(e) => setFormData({ ...formData, tipoDocumento: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
-            >
-              <option value="RUC">RUC</option>
-              <option value="DNI">DNI</option>
-              <option value="CE">Carnet de Extranjería</option>
-              <option value="PASAPORTE">Pasaporte</option>
-            </select>
-          </div>
-          
-          <Input
-            label={t('documentNumber')}
-            value={formData.documento}
-            onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
-          />
-        </div>
-
-        <Input
-          label={t('name')}
-          value={formData.nombre}
-          onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-          required
-        />
-
-        <Input
-          label={t('address')}
-          value={formData.direccion}
-          onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
-        />
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            label={t('email')}
-            type="email"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          />
-          
-          <Input
-            label={t('phone')}
-            value={formData.telefono}
-            onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-          />
-        </div>
-
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
-          <Button type="button" variant="outline" onClick={onClose}>
-            {t('cancel')}
-          </Button>
-          <Button type="submit" disabled={loading}>
-            {loading ? t('saving') : t('save')}
-          </Button>
-        </div>
-      </form>
-    </Modal>
   );
 }
