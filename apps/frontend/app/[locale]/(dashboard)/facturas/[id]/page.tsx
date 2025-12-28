@@ -235,7 +235,8 @@ export default function FacturaDetailPage({
       return;
     }
     
-    if (monto > factura.saldoPendiente) {
+    // Use cents comparison to avoid floating point precision issues
+    if (Math.round(monto * 100) > Math.round(factura.saldoPendiente * 100)) {
       showError(`${t('paymentExceedsPending') || 'Amount exceeds pending balance'}: ${formatCurrency(factura.saldoPendiente)}`);
       return;
     }
@@ -872,7 +873,7 @@ export default function FacturaDetailPage({
                     value={paymentData.monto}
                     onChange={(e) => setPaymentData({ ...paymentData, monto: e.target.value })}
                     className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 ${
-                      paymentData.monto && parseFloat(paymentData.monto) > (factura?.saldoPendiente || 0)
+                      paymentData.monto && Math.round(parseFloat(paymentData.monto) * 100) > Math.round((factura?.saldoPendiente || 0) * 100)
                         ? 'border-red-500 text-red-600'
                         : 'border-gray-300 dark:border-gray-600'
                     }`}
@@ -886,7 +887,7 @@ export default function FacturaDetailPage({
                     {t('payFull') || 'Pay Full'}
                   </button>
                 </div>
-                {paymentData.monto && parseFloat(paymentData.monto) > (factura?.saldoPendiente || 0) && (
+                {paymentData.monto && Math.round(parseFloat(paymentData.monto) * 100) > Math.round((factura?.saldoPendiente || 0) * 100) && (
                   <p className="mt-1 text-xs text-red-500">
                     {t('amountExceedsPending') || 'Amount exceeds pending balance'}
                   </p>
