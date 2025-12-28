@@ -271,12 +271,7 @@ export default function ProformasPage({
         proforma.cliente.nombre.toLowerCase().includes(search.toLowerCase());
       
       const estadoLower = proforma.estado.toLowerCase();
-      const matchesEstado = filterEstados.length === 0 || filterEstados.includes(estadoLower);
-      
-      // Debug logging
-      if (filterEstados.length > 0) {
-        console.log('Proforma:', proforma.serie + '-' + proforma.numero, 'Estado:', proforma.estado, 'EstadoLower:', estadoLower, 'Filters:', filterEstados, 'Matches:', matchesEstado);
-      }
+      const matchesEstado = filterEstados.length === 0 || filterEstados.some(f => f.toLowerCase() === estadoLower);
       
       return matchesSearch && matchesEstado;
     })

@@ -101,9 +101,16 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
   const { page = 1, limit = 20, search, estado, clienteId, fechaInicio, fechaFin } = req.query;
 
   try {
+    // Handle multiple estado values
+    let estadoFilter;
+    if (estado) {
+      const estados = Array.isArray(estado) ? estado : [estado];
+      estadoFilter = estados.length === 1 ? estados[0] : { in: estados };
+    }
+
     const where = {
       empresaId: req.empresa.id,
-      ...(estado && { estado }),
+      ...(estadoFilter && { estado: estadoFilter }),
       ...(clienteId && { clienteId }),
       ...(fechaInicio && fechaFin && {
         fechaEmision: {
