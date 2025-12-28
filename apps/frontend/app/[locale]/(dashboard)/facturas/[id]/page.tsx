@@ -190,7 +190,8 @@ export default function FacturaDetailPage({
         total: 2450.00,
         descuento: 0,
         estado: 'EMITIDA',
-        montoPendiente: 2450.00,
+        saldoPendiente: 2450.00,
+        totalPagado: 0,
         observaciones: 'Factura por servicios de consultoría',
         detalles: [
           {
@@ -546,9 +547,9 @@ export default function FacturaDetailPage({
               {requestingSignature ? t('loading') : factura.signatureStatus === 'PENDING' ? t('resendSignature') : t('requestSignature')}
             </Button>
           )}
-          {factura.estado !== 'PAGADA' && factura.estado !== 'ANULADA' && (
+          {factura.estado !== 'PAGADA' && factura.estado !== 'ANULADA' && factura.saldoPendiente > 0 && (
             <Button size="sm" onClick={() => {
-              setPaymentData({ ...paymentData, monto: (factura.montoPendiente || 0).toString() });
+              setPaymentData({ ...paymentData, monto: (factura.saldoPendiente || 0).toString() });
               setIsPaymentModalOpen(true);
             }}>
               <CreditCard className="w-4 h-4 mr-1" />
@@ -748,10 +749,10 @@ export default function FacturaDetailPage({
                   </span>
                 </div>
               </div>
-              {factura.montoPendiente > 0 && factura.estado !== 'ANULADA' && (
+              {factura.saldoPendiente > 0 && factura.estado !== 'ANULADA' && (
                 <div className="flex justify-between text-orange-600 pt-2">
                   <span className="font-medium">{t('pending')}</span>
-                  <span className="font-bold">{formatCurrency(factura.montoPendiente)}</span>
+                  <span className="font-bold">{formatCurrency(factura.saldoPendiente)}</span>
                 </div>
               )}
             </div>
@@ -789,11 +790,11 @@ export default function FacturaDetailPage({
           {factura.estado !== 'ANULADA' && (
             <Card className="!p-4">
               <div className="space-y-2">
-                {factura.montoPendiente > 0 && (
+                {factura.saldoPendiente > 0 && (
                   <Button
                     className="w-full"
                     onClick={() => {
-                      setPaymentData({ ...paymentData, monto: factura.montoPendiente.toString() });
+                      setPaymentData({ ...paymentData, monto: factura.saldoPendiente.toString() });
                       setIsPaymentModalOpen(true);
                     }}
                   >

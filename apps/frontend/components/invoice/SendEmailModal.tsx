@@ -25,7 +25,8 @@ interface Factura {
   total: number;
   descuento: number;
   estado: string;
-  montoPendiente: number;
+  saldoPendiente?: number;
+  totalPagado?: number;
   observaciones?: string;
 }
 
