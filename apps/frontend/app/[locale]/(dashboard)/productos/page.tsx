@@ -190,22 +190,16 @@ export default function ProductosPage({
       ),
     },
     {
-      key: 'categoria',
-      header: t('category'),
+      key: 'tipo',
+      header: t('type'),
       render: (producto) => (
-        producto.categoria ? (
-          <div className="flex items-center gap-2">
-            <div
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: producto.categoria.color || '#9ca3af' }}
-            />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {producto.categoria.nombre}
-            </span>
-          </div>
-        ) : (
-          <span className="text-sm text-gray-400">-</span>
-        )
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+          producto.tipo === 'PRODUCTO' 
+            ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 
+            : 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+        }`}>
+          {producto.tipo === 'PRODUCTO' ? t('typeProduct') : t('typeService')}
+        </span>
       ),
     },
     {
