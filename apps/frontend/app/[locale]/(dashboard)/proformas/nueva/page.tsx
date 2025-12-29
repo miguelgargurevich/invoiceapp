@@ -537,7 +537,7 @@ export default function NuevaProformaPage({
               {t('jobInformation')}
             </h2>
             <div className="space-y-4">
-              <Input
+              {/* <Input
                 label={t('jobName')}
                 value={jobName}
                 onChange={(e) => setJobName(e.target.value)}
@@ -554,7 +554,7 @@ export default function NuevaProformaPage({
                 value={telefonoTrabajo}
                 onChange={(e) => setTelefonoTrabajo(e.target.value)}
                 placeholder="Job site phone"
-              />
+              /> */}
               <Textarea
                 label={t('workDescription')}
                 value={workDescription}
@@ -578,7 +578,7 @@ export default function NuevaProformaPage({
               {t('contractorDetails')}
             </h2>
             <div className="space-y-4">
-              <Input
+              {/* <Input
                 label={t('architectName')}
                 value={arquitectoNombre}
                 onChange={(e) => setArquitectoNombre(e.target.value)}
@@ -589,7 +589,7 @@ export default function NuevaProformaPage({
                 value={fechaPlanos}
                 onChange={setFechaPlanos}
                 locale={locale as 'es' | 'en'}
-              />
+              /> */}
               <Input
                 label={t('validityDays')}
                 type="number"
