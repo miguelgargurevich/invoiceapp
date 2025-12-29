@@ -58,6 +58,7 @@ model Empresa {
   email           String?
   web             String?
   logoUrl         String?   @map("logo_url")
+  firmaEmpresa    String?   @map("firma_empresa") @db.Text // Digital signature of the company for proposals
   licencia        String?   // License number (contractor license, etc.)
   tituloProfesional String? @map("titulo_profesional") // Professional title (e.g., "MASTER ELECTRICIAN")
   moneda          String    @default("PEN")

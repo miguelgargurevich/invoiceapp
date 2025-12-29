@@ -24,6 +24,7 @@ import { Button, Card, Input, Textarea, LoadingSpinner } from '@/components/comm
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import { supabase } from '@/lib/supabase';
+import SignatureCanvas from '@/components/signature/SignatureCanvas';
 
 type Tab = 'empresa' | 'usuario' | 'apariencia' | 'facturacion' | 'notificaciones';
 
@@ -45,6 +46,8 @@ export default function ConfiguracionPage({
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [companySignature, setCompanySignature] = useState<string | null>(null);
+  const [uploadingSignature, setUploadingSignature] = useState(false);
 
   // Company form
   const [empresaForm, setEmpresaForm] = useState({
@@ -100,6 +103,11 @@ export default function ConfiguracionPage({
       // Establecer el logo actual si existe
       if (empresa.logoUrl) {
         setLogoPreview(empresa.logoUrl);
+      }
+      
+      // Establecer la firma actual si existe
+      if (empresa.firmaEmpresa) {
+        setCompanySignature(empresa.firmaEmpresa);
       }
       
       // Cargar configuración de facturación desde empresa
@@ -233,6 +241,49 @@ export default function ConfiguracionPage({
     setLogoPreview(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+
+  const handleSignatureChange = async (dataUrl: string | null) => {
+    if (!dataUrl) {
+      setCompanySignature(null);
+      return;
+    }
+
+    try {
+      setUploadingSignature(true);
+      
+      const response = await api.post('/empresas/firma', {
+        signatureDataUrl: dataUrl
+      }) as any;
+      
+      setCompanySignature(response.firmaEmpresa);
+      await refreshEmpresa?.();
+      setMessage(t('signatureSaved'));
+      setTimeout(() => setMessage(''), 3000);
+    } catch (error) {
+      console.error('Error saving signature:', error);
+      setMessage(t('errorSavingSignature'));
+      setTimeout(() => setMessage(''), 3000);
+    } finally {
+      setUploadingSignature(false);
+    }
+  };
+
+  const handleDeleteSignature = async () => {
+    try {
+      setUploadingSignature(true);
+      await api.delete('/empresas/firma');
+      setCompanySignature(null);
+      await refreshEmpresa?.();
+      setMessage(t('signatureDeleted'));
+      setTimeout(() => setMessage(''), 3000);
+    } catch (error) {
+      console.error('Error deleting signature:', error);
+      setMessage(t('errorDeletingSignature'));
+      setTimeout(() => setMessage(''), 3000);
+    } finally {
+      setUploadingSignature(false);
     }
   };
 
@@ -466,6 +517,66 @@ export default function ConfiguracionPage({
                         <Upload className="w-4 h-4 mr-2" />
                         {t('selectFile')}
                       </Button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Company Signature */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Company Signature
+                  </label>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                    This signature will appear on your proposals in the "Authorized Signature" section
+                  </p>
+                  
+                  {companySignature ? (
+                    <div className="space-y-3">
+                      <div className="border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Current Signature:</span>
+                          <button
+                            type="button"
+                            onClick={handleDeleteSignature}
+                            disabled={uploadingSignature}
+                            className="text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 disabled:opacity-50"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                        <div className="bg-gray-50 dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-700 p-3 flex items-center justify-center min-h-[100px]">
+                          <Image
+                            src={companySignature}
+                            alt="Company Signature"
+                            width={200}
+                            height={80}
+                            className="max-h-20 w-auto object-contain"
+                            unoptimized
+                          />
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCompanySignature(null)}
+                        disabled={uploadingSignature}
+                        className="w-full"
+                      >
+                        Create New Signature
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
+                      <SignatureCanvas
+                        onSignatureChange={handleSignatureChange}
+                        disabled={uploadingSignature}
+                      />
+                      {uploadingSignature && (
+                        <div className="flex items-center justify-center mt-2">
+                          <LoadingSpinner size="sm" className="mr-2" />
+                          <span className="text-sm text-gray-600 dark:text-gray-400">Saving signature...</span>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

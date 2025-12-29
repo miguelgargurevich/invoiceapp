@@ -222,6 +222,121 @@ router.post('/logo', authenticateToken, upload.single('logo'), async (req, res) 
   }
 });
 
+// POST /api/empresas/firma - Upload company signature
+router.post('/firma', authenticateToken, async (req, res) => {
+  try {
+    console.log('[FIRMA] Starting signature upload process...');
+    console.log('[FIRMA] User ID:', req.user.id);
+    
+    const empresa = await prisma.empresa.findFirst({
+      where: { userId: req.user.id }
+    });
+
+    if (!empresa) {
+      console.log('[FIRMA] Empresa not found for user:', req.user.id);
+      return res.status(404).json({ error: 'Empresa no encontrada' });
+    }
+
+    console.log('[FIRMA] Empresa found:', empresa.id);
+
+    const { signatureDataUrl } = req.body;
+
+    if (!signatureDataUrl) {
+      console.log('[FIRMA] No signature data provided');
+      return res.status(400).json({ error: 'No se proporcionó la firma' });
+    }
+
+    console.log('[FIRMA] Signature data received');
+
+    let firmaUrl;
+
+    // Upload signature to Supabase Storage
+    if (getSupabaseClient()) {
+      try {
+        const signatureBuffer = Buffer.from(signatureDataUrl.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+        const fileName = `${empresa.id}/signatures/company-signature.png`;
+        
+        console.log('[FIRMA] Uploading to Supabase Storage as:', fileName);
+
+        const { error: uploadError } = await getSupabaseClient().storage
+          .from('logos')
+          .upload(fileName, signatureBuffer, {
+            contentType: 'image/png',
+            upsert: true
+          });
+
+        if (uploadError) {
+          console.error('[FIRMA] Supabase upload error:', uploadError);
+          firmaUrl = signatureDataUrl; // Fallback to data URL
+        } else {
+          const { data: publicUrl } = getSupabaseClient().storage
+            .from('logos')
+            .getPublicUrl(fileName);
+          firmaUrl = publicUrl.publicUrl;
+          console.log('[FIRMA] Upload successful:', firmaUrl);
+        }
+      } catch (error) {
+        console.error('[FIRMA] Error with Supabase upload:', error);
+        firmaUrl = signatureDataUrl; // Fallback to data URL
+      }
+    } else {
+      console.log('[FIRMA] Storing signature as data URL (Supabase not configured)');
+      firmaUrl = signatureDataUrl;
+    }
+
+    // Update empresa with signature URL
+    await prisma.empresa.update({
+      where: { id: empresa.id },
+      data: { firmaEmpresa: firmaUrl }
+    });
+
+    console.log('[FIRMA] Signature URL updated in database');
+
+    res.json({ firmaEmpresa: firmaUrl });
+  } catch (error) {
+    console.error('[FIRMA] Error uploading signature:', error);
+    res.status(500).json({ error: 'Error al subir firma: ' + error.message });
+  }
+});
+
+// DELETE /api/empresas/firma - Delete company signature
+router.delete('/firma', authenticateToken, async (req, res) => {
+  try {
+    console.log('[FIRMA DELETE] Starting signature deletion...');
+    console.log('[FIRMA DELETE] User ID:', req.user.id);
+    
+    const empresa = await prisma.empresa.findFirst({
+      where: { userId: req.user.id }
+    });
+
+    if (!empresa) {
+      return res.status(404).json({ error: 'Empresa no encontrada' });
+    }
+
+    // Delete from Supabase if it's stored there
+    if (empresa.firmaEmpresa && !empresa.firmaEmpresa.startsWith('data:') && getSupabaseClient()) {
+      const fileName = `${empresa.id}/signatures/company-signature.png`;
+      await getSupabaseClient().storage
+        .from('logos')
+        .remove([fileName]);
+      console.log('[FIRMA DELETE] Signature deleted from Supabase');
+    }
+
+    // Update empresa to remove signature
+    await prisma.empresa.update({
+      where: { id: empresa.id },
+      data: { firmaEmpresa: null }
+    });
+
+    console.log('[FIRMA DELETE] Signature removed from database');
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('[FIRMA DELETE] Error deleting signature:', error);
+    res.status(500).json({ error: 'Error al eliminar firma: ' + error.message });
+  }
+});
+
 // POST /api/empresas - Crear empresa (solo si no tiene una)
 router.post('/', authenticateToken, async (req, res) => {
   const { nombre, ruc, direccion, telefono, email, moneda } = req.body;

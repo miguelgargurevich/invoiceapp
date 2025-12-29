@@ -12,9 +12,12 @@ logos/
 │   ├── images/
 │   │   └── logo.{ext}           # Logo de la empresa
 │   ├── signatures/
-│   │   └── {token}-signature.png # Imagen de firma digital
+│   │   ├── company-signature.png     # Firma digital de la empresa
+│   │   └── {token}-signature.png     # Firma digital del cliente
 │   ├── invoices/
-│   │   └── {serie}-{numero}-signed.pdf # PDF firmado
+│   │   └── {serie}-{numero}-signed.pdf # PDF de factura firmado
+│   ├── proposals/
+│   │   └── {serie}-{numero}-signed.pdf # PDF de propuesta firmado
 │   └── job-photos/
 │       └── photo-{timestamp}-{random}.{ext} # Fotos del trabajo
 ```
@@ -27,11 +30,15 @@ logos/
 │   ├── images/
 │   │   └── logo.png
 │   ├── signatures/
+│   │   ├── company-signature.png
 │   │   └── 307388666a2c8527-signature.png
 │   │   └── abc123xyz789-signature.png
 │   ├── invoices/
 │   │   └── F001-2-signed.pdf
 │   │   └── F001-3-signed.pdf
+│   ├── proposals/
+│   │   └── P001-1-signed.pdf
+│   │   └── P001-2-signed.pdf
 │   └── job-photos/
 │       └── photo-1703679543234-845621349.jpg
 │       └── photo-1703679612456-123456789.png
@@ -99,7 +106,22 @@ WITH CHECK (
 );
 ```
 
-#### 5. Authenticated can update their files (UPDATE)
+#### 5. Public can upload proposals (INSERT)
+```sql
+-- Policy name: Public can upload proposals
+-- Command: INSERT
+-- Target roles: public
+
+CREATE POLICY "Public can upload proposals"
+ON storage.objects FOR INSERT
+TO public
+WITH CHECK (
+  bucket_id = 'logos' AND
+  (storage.foldername(name))[2] = 'proposals'
+);
+```
+
+#### 6. Authenticated can update their files (UPDATE)
 ```sql
 -- Policy name: Authenticated can update their files
 -- Command: UPDATE
@@ -111,7 +133,7 @@ TO authenticated
 USING (bucket_id = 'logos');
 ```
 
-#### 6. Service role has full access (ALL)
+#### 7. Service role has full access (ALL)
 ```sql
 -- Policy name: Service role has full access
 -- Command: ALL

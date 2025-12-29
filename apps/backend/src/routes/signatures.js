@@ -381,7 +381,10 @@ router.post('/submit', async (req, res) => {
           
           const pdfBuffer = Buffer.from(signedPdfDataUrl.replace(/^data:application\/pdf;filename=generated\.pdf;base64,/, ''), 'base64');
           const pdfFileName = `${document.serie}-${document.numero}-signed.pdf`;
-          const pdfFilePath = `${signatureRequest.empresaId}/invoices/${pdfFileName}`;
+          
+          // Use 'proposals' folder for proformas, 'invoices' for invoices
+          const folderName = signatureRequest.documentType === 'PROFORMA' ? 'proposals' : 'invoices';
+          const pdfFilePath = `${signatureRequest.empresaId}/${folderName}/${pdfFileName}`;
           
           const { error: pdfUploadError } = await supabase.storage
             .from('logos')
