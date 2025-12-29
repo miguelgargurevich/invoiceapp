@@ -1,24 +1,112 @@
-# 🧾 InvoiceApp
+# 🧾 InvoiceApp - Professional Invoice & Proposal Management System
 
-A modern, full-featured invoicing and billing system built with Next.js 14 and Express.js. Designed for freelancers, contractors, and small businesses to manage invoices, proposals, clients, and digital signatures.
+[![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
+[![Express.js](https://img.shields.io/badge/Express.js-4-green?logo=express)](https://expressjs.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma)](https://www.prisma.io/)
+[![Supabase](https://img.shields.io/badge/Supabase-Auth-3ECF8E?logo=supabase)](https://supabase.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)
-![Express.js](https://img.shields.io/badge/Express.js-4-green?logo=express)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
-![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma)
-![Supabase](https://img.shields.io/badge/Supabase-Auth-3ECF8E?logo=supabase)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?logo=tailwind-css)
+> **A comprehensive, production-ready invoicing and billing system for contractors, freelancers, and small businesses.** Create professional invoices, manage proposals, track payments, collect digital signatures, and streamline your entire billing workflow.
 
-## 🎯 Why InvoiceApp?
+🌐 **Live Demo**: [https://invoiceapp.vercel.app](https://invoiceapp.vercel.app)  
+📚 **Documentation**: [View Full Features](./FEATURES.md)  
+🤖 **AI-Friendly**: Optimized for ChatGPT, Claude, and other AI assistants
 
-InvoiceApp solves the common pain points of freelancers and small businesses:
+---
 
-- **No more spreadsheets** - Professional invoicing without Excel headaches
-- **Get paid faster** - Digital signatures and email delivery reduce payment delays
-- **Stay organized** - All clients, products, and invoices in one place
-- **Look professional** - Beautiful PDF invoices that impress clients
-- **Work anywhere** - Fully responsive, works on desktop, tablet, and mobile
-- **Multi-currency** - Bill international clients in their preferred currency
+## 🎯 Why Choose InvoiceApp?
+
+InvoiceApp is built specifically for contractors and service providers who need more than basic invoicing:
+
+- ✅ **No more spreadsheets** - Professional invoicing without Excel headaches
+- ✅ **Get paid faster** - Digital signatures and email delivery reduce payment delays
+- ✅ **Stay organized** - All clients, products, and invoices in one centralized system
+- ✅ **Look professional** - Beautiful PDF invoices that impress clients
+- ✅ **Work anywhere** - Fully responsive, optimized for desktop, tablet, and iPad
+- ✅ **Multi-language** - Full English and Spanish support
+- ✅ **Track everything** - Job photos, work logs, receipts, and payment history
+- ✅ **Scale with you** - From solo contractor to growing business
+
+## 🚀 Key Capabilities
+
+### 📊 Invoice Management
+Create, manage, and track professional invoices with ease
+- Intuitive invoice builder with live preview
+- Auto-fill client and product information
+- Automatic tax calculations (configurable tax rates)
+- Multiple order types (Day Work, Contract, Extra)
+- Multi-currency support (USD, PEN, EUR, and more)
+- Sequential numbering with multiple series
+- Payment tracking and history
+- Overdue invoice notifications
+
+### 📋 Proposal System
+Win more business with professional proposals
+- Create detailed proposals with work descriptions
+- Include job information and payment terms
+- Convert approved proposals to invoices instantly
+- Digital signature collection
+- Proposal validity tracking
+- Custom branding and templates
+
+### 👥 Client Management
+Keep all client information organized
+- Comprehensive client database
+- Contact and document management
+- Billing history per client
+- Outstanding balance tracking
+- Client-specific reports
+
+### 🔨 Job Tracking
+Document work and track progress
+- Work log entries with hours and workers
+- Job site photo documentation organized by date
+- Receipt and expense tracking
+- Job profitability analysis
+- Progress monitoring
+
+### ✍️ Digital Signatures
+Collect client signatures electronically
+- Email signature requests
+- Secure signature collection
+- Signature status tracking
+- Timestamped and legally compliant
+- Company signature support
+
+### 📱 Mobile-First Design
+Work from any device
+- Responsive design for all screen sizes
+- iPad-optimized PDF generation
+- Touch-friendly interface
+- Offline capabilities
+- Mobile photo uploads
+
+## 🛠️ Technology Stack
+
+**Frontend**
+- [Next.js 14](https://nextjs.org/) - React framework with App Router
+- [TypeScript](https://www.typescriptlang.org/) - Type-safe development
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first styling
+- [next-intl](https://next-intl-docs.vercel.app/) - Internationalization
+
+**Backend**
+- [Node.js](https://nodejs.org/) - JavaScript runtime
+- [Express.js](https://expressjs.com/) - Web framework
+- [Prisma](https://www.prisma.io/) - Modern database ORM
+- [PostgreSQL](https://www.postgresql.org/) - Relational database
+
+**Services**
+- [Supabase](https://supabase.com/) - Authentication & file storage
+- [Resend](https://resend.com/) - Email delivery
+- [Vercel](https://vercel.com/) - Hosting & deployment
+
+**Key Libraries**
+- html2canvas + jsPDF - PDF generation
+- Zod - Schema validation
+- JWT - Authentication tokens
+- Framer Motion - Animations
 
 ## ✨ Features
 

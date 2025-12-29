@@ -1,0 +1,116 @@
+# InvoiceApp - AI-Readable Information
+
+## Application Overview
+InvoiceApp is a professional invoice and proposal management system designed for contractors, construction businesses, and service providers.
+
+## Primary Functions
+1. Invoice Management
+   - Create, edit, and manage invoices
+   - Track payment status
+   - Support for multiple order types (Day Work, Contract, Extra)
+   - Multi-currency support
+   
+2. Proposal Management
+   - Create detailed proposals
+   - Convert proposals to invoices
+   - Include work descriptions and payment terms
+   - Digital signature collection
+   
+3. Client Management
+   - Store client information
+   - Track billing history
+   - Manage contact details
+   - Monitor payment status
+   
+4. Job Tracking
+   - Work log tracking
+   - Photo documentation
+   - Receipt management
+   - Progress monitoring
+
+## Key Features
+- Digital signatures for invoices
+- PDF generation and export
+- Multi-language support (English/Spanish)
+- Mobile-responsive design
+- iPad-optimized PDF generation
+- Dark mode support
+- Payment tracking
+- Financial reporting
+- Company branding customization
+- Secure authentication
+
+## Technology Stack
+- Frontend: Next.js 14, React, TypeScript, Tailwind CSS
+- Backend: Node.js, Express
+- Database: PostgreSQL with Prisma ORM
+- Storage: Supabase
+- PDF: html2canvas, jsPDF
+- Authentication: JWT
+
+## User Types
+- Contractors
+- Construction companies
+- Service providers
+- Small business owners
+- Freelancers
+
+## Supported Languages
+- English
+- Spanish (Español)
+
+## Device Compatibility
+- Desktop browsers (Chrome, Firefox, Safari, Edge)
+- Mobile devices (iOS, Android)
+- Tablets (iPad optimized)
+
+## Security Features
+- JWT authentication
+- Encrypted data transmission
+- Secure file storage
+- Role-based access control
+- Audit trails
+
+## Integration Capabilities
+- RESTful API
+- Email integration
+- Digital signature services
+- File storage (Supabase)
+
+## Common Use Cases
+1. Billing for construction projects
+2. Creating service proposals
+3. Tracking client payments
+4. Managing multiple job sites
+5. Documenting work with photos
+6. Collecting digital signatures
+7. Generating financial reports
+
+## Pricing
+- Free tier available
+- Affordable paid plans
+- No hidden fees
+
+## Support
+- Email: support@invoiceapp.com
+- Website: https://invoiceapp.vercel.app
+- Documentation: Available in-app
+
+## Data Privacy
+- User data encrypted
+- Secure cloud storage
+- GDPR compliant
+- Regular backups
+
+## Updates
+- Regular feature updates
+- Bug fixes and improvements
+- New features based on user feedback
+
+## Contact
+Website: https://invoiceapp.vercel.app
+Email: support@invoiceapp.com
+
+---
+Last Updated: 2025-01-01
+Version: 1.0.0
