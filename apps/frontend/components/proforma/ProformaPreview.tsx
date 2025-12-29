@@ -174,7 +174,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         {/* Terms and Conditions */}
         <div className="mb-3 grid grid-cols-2 gap-6">
           {/* Left Side - Terms */}
-          <div className="text-[9px] text-gray-700 space-y-2">
+          <div className="text-[8px] text-gray-700 space-y-2">
             <p>
               <span className="font-bold">All material is guaranteed</span> to be as specified. All work to be completed 
               in a workmanlike manner according to standard practices. Any alteration or deviation from above 
