@@ -18,6 +18,7 @@ import {
   Receipt,
   FileBarChart,
   CheckCircle,
+  FileCheck,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -304,24 +305,24 @@ export default function DashboardPage({
 
       {/* Giant Action Buttons */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Create Invoice Button */}
+        {/* Create Proposal Button */}
         <motion.button
-          onClick={() => router.push(`/${locale}/facturas/nueva`)}
+          onClick={() => router.push(`/${locale}/proformas/nueva`)}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-8 shadow-xl hover:shadow-2xl transition-all duration-300"
+          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-8 shadow-xl hover:shadow-2xl transition-all duration-300"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="relative flex flex-col items-center justify-center text-white space-y-4">
             <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm group-hover:bg-white/30 transition-colors">
-              <Receipt className="w-12 h-12" />
+              <FileCheck className="w-12 h-12" />
             </div>
             <div className="text-center">
-              <h3 className="text-2xl font-bold mb-1">Create Invoice</h3>
-              <p className="text-blue-100 text-sm">New customer invoice</p>
+              <h3 className="text-2xl font-bold mb-1">Create Proposal</h3>
+              <p className="text-emerald-100 text-sm">New quote for client</p>
             </div>
             <div className="flex items-center gap-2 text-sm font-medium opacity-90 group-hover:opacity-100">
               <span>Start now</span>
@@ -330,24 +331,24 @@ export default function DashboardPage({
           </div>
         </motion.button>
 
-        {/* Create Proposal Button */}
+        {/* Create Invoice Button */}
         <motion.button
-          onClick={() => router.push(`/${locale}/proformas/nueva`)}
+          onClick={() => router.push(`/${locale}/facturas/nueva`)}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-8 shadow-xl hover:shadow-2xl transition-all duration-300"
+          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-8 shadow-xl hover:shadow-2xl transition-all duration-300"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="relative flex flex-col items-center justify-center text-white space-y-4">
             <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm group-hover:bg-white/30 transition-colors">
-              <FileBarChart className="w-12 h-12" />
+              <FileText className="w-12 h-12" />
             </div>
             <div className="text-center">
-              <h3 className="text-2xl font-bold mb-1">Create Proposal</h3>
-              <p className="text-emerald-100 text-sm">New quote for client</p>
+              <h3 className="text-2xl font-bold mb-1">Create Invoice</h3>
+              <p className="text-blue-100 text-sm">New customer invoice</p>
             </div>
             <div className="flex items-center gap-2 text-sm font-medium opacity-90 group-hover:opacity-100">
               <span>Start now</span>
