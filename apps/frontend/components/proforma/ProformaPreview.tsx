@@ -23,6 +23,8 @@ interface Empresa {
   id: string;
   nombre: string;
   ruc: string;
+  razonSocial?: string;
+  nombreComercial?: string;
   direccion?: string;
   telefono?: string;
   email?: string;
@@ -69,119 +71,90 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
     return (
       <div
         ref={ref}
-        className="bg-white text-black p-6 mx-auto"
-        style={{ fontFamily: 'Arial, sans-serif' }}
+        className="bg-white text-black p-8 mx-auto"
+        style={{ fontFamily: 'Arial, sans-serif', maxWidth: '850px' }}
       >
-        {/* Header */}
-        <div className="flex justify-between items-start mb-3 border-b border-gray-800 pb-2">
+        {/* Header Section */}
+        <div className="flex justify-between items-start mb-4">
+          {/* Left Side - Company Info */}
           <div className="flex-1">
-            {empresa?.logo ? (
-              <img
-                src={empresa.logo}
-                alt={empresa.nombre}
-                className="h-12 w-auto mb-1.5"
-              />
-            ) : (
-              <div className="text-[11px] font-bold text-gray-800 mb-1.5">
-                {empresa?.nombre || 'Mi Empresa'}
-              </div>
-            )}
-            <div className="text-[9px] text-gray-600 space-y-0.5">
-              {empresa?.ruc && <p>RUC: {empresa.ruc}</p>}
-              {empresa?.direccion && <p>{empresa.direccion}</p>}
-              {empresa?.telefono && <p>Tel: {empresa.telefono}</p>}
-              {empresa?.email && <p>{empresa.email}</p>}
+            <h1 className="text-2xl font-bold text-gray-900 mb-3">PROPOSAL</h1>
+            <div className="text-sm space-y-1">
+              <p className="font-bold text-gray-900">{empresa?.razonSocial || empresa?.nombre}</p>
+              {empresa?.nombreComercial && (
+                <p className="text-gray-700">{empresa.nombreComercial}</p>
+              )}
+              <p className="text-gray-700">
+                {empresa?.telefono && empresa.telefono}
+                {empresa?.telefono && empresa?.direccion && ' | '}
+                {empresa?.direccion && empresa.direccion}
+              </p>
+              {empresa?.email && <p className="text-gray-700">{empresa.email}</p>}
             </div>
           </div>
+
+          {/* Right Side - Proposal Info */}
           <div className="text-right">
-            <div className="bg-gray-800 text-white px-3 py-1.5 rounded mb-1.5">
-              <div className="text-[9px] font-bold">{t('proforma')}</div>
-              <div className="text-[10px] font-bold">
+            <div className="bg-gray-800 text-white px-4 py-2 rounded mb-2">
+              <div className="text-xs font-bold">PROPOSAL</div>
+              <div className="text-lg font-bold">
                 {proforma.serie}-{proforma.numero.toString().padStart(6, '0')}
               </div>
             </div>
-            <div className="text-[9px] text-gray-600">
-              <p>
-                <span className="font-medium">{t('issueDate')}</span>{' '}
-                {formatDate(proforma.fechaEmision)}
-              </p>
-              <p>
-                <span className="font-medium">{t('validUntil')}</span>{' '}
-                {formatDate(proforma.fechaValidez)}
-              </p>
+            <div className="text-sm text-gray-600">
+              <p><span className="font-medium">Date:</span> {formatDate(proforma.fechaEmision)}</p>
+              <p><span className="font-medium">Valid Until:</span> {formatDate(proforma.fechaValidez)}</p>
             </div>
           </div>
         </div>
 
-        {/* Client Info */}
-        <div className="mb-3 bg-gray-50 p-1.5 rounded" style={{ pageBreakInside: 'avoid' }}>
-          <div className="text-[10px] font-medium text-gray-800 mb-0.5 uppercase">
-            {t('clientData')}
-          </div>
-          <div className="grid grid-cols-2 gap-1.5 text-[9px]">
+        {/* Separator Line */}
+        <div className="border-t-2 border-gray-800 mb-4"></div>
+
+        {/* Client Information */}
+        <div className="mb-4">
+          <div className="text-xs font-bold text-gray-800 mb-2 uppercase">Client Information</div>
+          <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-gray-500">{t('companyName')}</span>
-              <p className="font-medium">{proforma.cliente.razonSocial}</p>
-            </div>
-            <div>
-              <span className="text-gray-500">
-                {proforma.cliente.numeroDocumento && proforma.cliente.tipoDocumento !== 'OTHER'
-                  ? `${proforma.cliente.tipoDocumento}:`
-                  : t('document')}
-              </span>
-              <p className="font-medium">
+              <p className="font-bold text-gray-900">{proforma.cliente.razonSocial}</p>
+              <p className="text-gray-700">
+                {proforma.cliente.tipoDocumento !== 'OTHER' && `${proforma.cliente.tipoDocumento}: `}
                 {proforma.cliente.numeroDocumento || '-'}
               </p>
             </div>
             {proforma.cliente.direccion && (
-              <div className="col-span-2">
-                <span className="text-gray-500">{t('document')}</span>
-                <p className="font-medium">{proforma.cliente.direccion}</p>
+              <div>
+                <p className="text-gray-700">{proforma.cliente.direccion}</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Items Table */}
-        <div className="mb-3" style={{ pageBreakInside: 'avoid' }}>
-          <table className="w-full border-collapse">
+        <div className="mb-4">
+          <table className="w-full border-collapse border border-gray-300">
             <thead>
-              <tr className="bg-gray-800 text-white">
-                <th className="py-1 px-2 text-left text-[10px] font-medium">
-                  {t('description')}
-                </th>
-                <th className="py-1 px-2 text-center text-[10px] font-medium w-14">
-                  {t('quantity')}
-                </th>
-                <th className="py-1 px-2 text-right text-[10px] font-medium w-20">
-                  {t('unitPrice')}
-                </th>
-                <th className="py-1 px-2 text-right text-[10px] font-medium w-20">
-                  {t('lineSubtotal')}
-                </th>
+              <tr className="bg-gray-200">
+                <th className="py-2 px-3 text-left text-sm font-bold border border-gray-300">Description</th>
+                <th className="py-2 px-3 text-center text-sm font-bold border border-gray-300 w-24">Qty</th>
+                <th className="py-2 px-3 text-right text-sm font-bold border border-gray-300 w-32">Unit Price</th>
+                <th className="py-2 px-3 text-right text-sm font-bold border border-gray-300 w-32">Amount</th>
               </tr>
             </thead>
             <tbody>
-              {proforma.detalles.map((detalle, index) => (
-                <tr
-                  key={detalle.id}
-                  className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
-                >
-                  <td className="py-1 px-2 text-[10px] border-b border-gray-200">
+              {proforma.detalles.map((detalle) => (
+                <tr key={detalle.id}>
+                  <td className="py-2 px-3 text-sm border border-gray-300">
                     {detalle.producto && (
-                      <span className="text-[8px] text-gray-500 block">
-                        {detalle.producto.codigo}
-                      </span>
+                      <span className="text-xs text-gray-500 block">{detalle.producto.codigo}</span>
                     )}
                     {detalle.descripcion}
                   </td>
-                  <td className="py-1 px-2 text-center text-[10px] border-b border-gray-200">
-                    {detalle.cantidad}
-                  </td>
-                  <td className="py-1 px-2 text-right text-[10px] border-b border-gray-200">
+                  <td className="py-2 px-3 text-center text-sm border border-gray-300">{detalle.cantidad}</td>
+                  <td className="py-2 px-3 text-right text-sm border border-gray-300">
                     {formatCurrency(detalle.precioUnitario)}
                   </td>
-                  <td className="py-1 px-2 text-right text-[10px] font-medium border-b border-gray-200">
+                  <td className="py-2 px-3 text-right text-sm font-medium border border-gray-300">
                     {formatCurrency(detalle.subtotal)}
                   </td>
                 </tr>
@@ -191,65 +164,124 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         </div>
 
         {/* Totals */}
-        <div className="flex justify-end mb-3" style={{ pageBreakInside: 'avoid' }}>
-          <div className="w-56">
-            <div className="flex justify-between py-1 text-[10px]">
-              <span className="text-gray-600">{t('subtotal')}</span>
-              <span>{formatCurrency(proforma.subtotal)}</span>
+        <div className="flex justify-end mb-4">
+          <div className="w-64">
+            <div className="flex justify-between py-1 text-sm">
+              <span className="text-gray-700">Subtotal:</span>
+              <span className="font-medium">{formatCurrency(proforma.subtotal)}</span>
             </div>
             {proforma.descuento > 0 && (
-              <div className="flex justify-between py-1 text-[10px]">
-                <span className="text-gray-600">{t('discount')}</span>
-                <span className="text-red-600">
-                  -{formatCurrency(proforma.descuento)}
-                </span>
+              <div className="flex justify-between py-1 text-sm">
+                <span className="text-gray-700">Discount:</span>
+                <span className="text-red-600 font-medium">-{formatCurrency(proforma.descuento)}</span>
               </div>
             )}
-            <div className="flex justify-between py-1 text-[10px]">
-              <span className="text-gray-600">
-                {t('tax')}
-                {empresa?.taxRate && Number(empresa.taxRate) > 0 ? ` (${empresa.taxRate}%)` : ''}
+            <div className="flex justify-between py-1 text-sm">
+              <span className="text-gray-700">
+                Tax{empresa?.taxRate && Number(empresa.taxRate) > 0 ? ` (${empresa.taxRate}%)` : ''}:
               </span>
-              <span>{formatCurrency(proforma.igv)}</span>
+              <span className="font-medium">{formatCurrency(proforma.igv)}</span>
             </div>
-            <div className="flex justify-between py-1.5 border-t border-gray-800 mt-1">
-              <span className="text-xs font-bold">{t('total')}</span>
-              <span className="text-xs font-bold text-gray-800">
-                {formatCurrency(proforma.total)}
-              </span>
+            <div className="flex justify-between py-2 border-t-2 border-gray-800 mt-1">
+              <span className="text-base font-bold">TOTAL:</span>
+              <span className="text-base font-bold">{formatCurrency(proforma.total)}</span>
             </div>
           </div>
         </div>
 
-        {/* Conditions */}
-        {proforma.condiciones && (
-          <div className="mb-2 p-1.5 bg-yellow-50 border border-yellow-200 rounded" style={{ pageBreakInside: 'avoid' }}>
-            <h3 className="text-[8px] font-medium text-yellow-800 mb-0.5">
-              {t('conditions')}
-            </h3>
-            <p className="text-[10px] text-gray-700 whitespace-pre-wrap">{proforma.condiciones}</p>
-          </div>
-        )}
-
         {/* Observations */}
         {proforma.observaciones && (
-          <div className="mb-2 p-1.5 bg-gray-50 rounded" style={{ pageBreakInside: 'avoid' }}>
-            <div className="text-[10px] font-medium text-gray-800 mb-0.5">
-              {t('observations')}
-            </div>
-            <p className="text-[10px] text-gray-600">{proforma.observaciones}</p>
+          <div className="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
+            <div className="text-sm font-bold text-gray-800 mb-1">Observations:</div>
+            <p className="text-sm text-gray-700 whitespace-pre-wrap">{proforma.observaciones}</p>
           </div>
         )}
 
-        {/* Footer */}
-        <div className="border-t border-gray-300 pt-2 text-center text-[8px] text-gray-500">
-          <p className="font-medium text-gray-800 mb-0.5">
-            {t('validUntilDate')} {formatDate(proforma.fechaValidez)}
+        {/* Attorney Fees Clause */}
+        <div className="mb-4 text-center">
+          <p className="text-xs italic text-gray-700">
+            If an attorney is used to enforce or collect any obligations due on this obligation, 
+            then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.
           </p>
-          <p>{t('thankYou')}</p>
-          <p className="mt-1">
-            {t('quotationNote')}
+        </div>
+
+        {/* Separator Line */}
+        <div className="border-t border-gray-400 mb-4"></div>
+
+        {/* Proposal Statement */}
+        <div className="mb-4 text-center">
+          <p className="text-sm font-medium text-gray-800">
+            We Propose hereby to furnish material and labor - complete in accordance with above specifications, for the sum of:
           </p>
+        </div>
+
+        {/* Payment Terms */}
+        <div className="mb-6 p-4 bg-gray-50 border border-gray-300 rounded">
+          <div className="text-sm">
+            <p className="font-bold text-gray-900 mb-2">Payment to be made as follows:</p>
+            <p className="text-gray-800">
+              <span className="font-bold">Total Amount:</span> {formatCurrency(proforma.total)}
+            </p>
+            {proforma.condiciones && (
+              <p className="text-gray-700 mt-2 text-xs whitespace-pre-wrap">{proforma.condiciones}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Terms and Conditions */}
+        <div className="mb-4 grid grid-cols-2 gap-6">
+          {/* Left Side - Terms */}
+          <div className="text-xs text-gray-700 space-y-2">
+            <p>
+              <span className="font-bold">All material is guaranteed</span> to be as specified. All work to be completed 
+              in a workmanlike manner according to standard practices. Any alteration or deviation from above 
+              specifications involving extra costs will be executed only upon written orders, and will become an 
+              extra charge over and above the estimate.
+            </p>
+            <p>
+              All agreements contingent upon strikes, accidents or delays beyond our control. Owner to carry fire, 
+              windstorm and other necessary insurance.
+            </p>
+            <p>
+              <span className="font-bold">Our workers are fully covered by Workman's Compensation Insurance.</span>
+            </p>
+          </div>
+
+          {/* Right Side - Signature */}
+          <div className="text-center">
+            <p className="text-sm font-bold text-gray-900 mb-8">Authorized Signature</p>
+            <div className="border-t border-gray-800 mb-2"></div>
+            <p className="text-xs italic text-gray-600">
+              This proposal may be withdrawn by us if not accepted within 30 days.
+            </p>
+          </div>
+        </div>
+
+        {/* Separator Line */}
+        <div className="border-t-2 border-gray-800 mb-4"></div>
+
+        {/* Acceptance Section */}
+        <div className="mb-4">
+          <p className="text-sm font-bold text-gray-900 mb-2">Acceptance of Proposal</p>
+          <p className="text-xs text-gray-700 mb-4">
+            The above prices, specifications and conditions are satisfactory and are hereby accepted. 
+            You are authorized to do the work as specified. Payment will be made as outlined above.
+          </p>
+        </div>
+
+        {/* Signature Lines */}
+        <div className="border-t border-gray-400 mb-4"></div>
+        <div className="grid grid-cols-2 gap-8">
+          <div>
+            <p className="text-xs font-bold text-gray-800 mb-6">Signature:</p>
+            <div className="border-t border-gray-800 mb-1"></div>
+            <p className="text-xs text-gray-600">Customer Signature</p>
+          </div>
+          <div>
+            <p className="text-xs font-bold text-gray-800 mb-6">Date of Acceptance:</p>
+            <div className="border-t border-gray-800 mb-1"></div>
+            <p className="text-xs text-gray-600">Date</p>
+          </div>
         </div>
       </div>
     );
