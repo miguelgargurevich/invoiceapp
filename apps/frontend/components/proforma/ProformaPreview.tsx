@@ -54,6 +54,7 @@ interface Proforma {
   estado: string;
   observaciones?: string;
   condiciones?: string;
+  workDescription?: string;
   detalles: DetalleProforma[];
 }
 
@@ -133,10 +134,10 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         </div>
 
         {/* Specifications and Estimates */}
-        {proforma.observaciones && (
+        {proforma.workDescription && (
           <div className="mb-3 p-3 bg-gray-50 rounded border border-gray-200">
             <div className="text-[10px] font-bold text-gray-800 mb-1">We Hereby submit specifications and estimates for:</div>
-            <p className="text-[9px] text-gray-700 whitespace-pre-wrap">{proforma.observaciones}</p>
+            <p className="text-[9px] text-gray-700 whitespace-pre-wrap">{proforma.workDescription}</p>
           </div>
         )}
 

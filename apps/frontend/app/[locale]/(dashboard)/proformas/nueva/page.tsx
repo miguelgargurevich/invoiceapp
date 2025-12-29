@@ -519,7 +519,7 @@ export default function NuevaProformaPage({
           </Card>
 
           {/* Observations */}
-          <Card>
+          {/* <Card>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
               {t('observations')}
             </h2>
@@ -529,7 +529,7 @@ export default function NuevaProformaPage({
               placeholder="Condiciones, términos u otras observaciones..."
               rows={3}
             />
-          </Card>
+          </Card> */}
 
           {/* Job Information */}
           <Card>
