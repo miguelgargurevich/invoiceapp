@@ -781,7 +781,11 @@
     "daysBeforeDue": "Días Antes del Vencimiento",
     "messages": {
       "saved": "Configuración guardada exitosamente",
-      "logoUploaded": "Logo subido exitosamente"
+      "logoUploaded": "Logo subido exitosamente",
+      "signatureSaved": "Firma guardada exitosamente",
+      "signatureDeleted": "Firma eliminada exitosamente",
+      "errorSavingSignature": "Error al guardar la firma",
+      "errorDeletingSignature": "Error al eliminar la firma"
     }
   },
   "payments": {

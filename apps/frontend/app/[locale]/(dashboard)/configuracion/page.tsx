@@ -48,6 +48,7 @@ export default function ConfiguracionPage({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [companySignature, setCompanySignature] = useState<string | null>(null);
   const [uploadingSignature, setUploadingSignature] = useState(false);
+  const [signatureKey, setSignatureKey] = useState(0); // Key to force remount of SignatureCanvas
 
   // Company form
   const [empresaForm, setEmpresaForm] = useState({
@@ -259,11 +260,11 @@ export default function ConfiguracionPage({
       
       setCompanySignature(response.firmaEmpresa);
       await refreshEmpresa?.();
-      setMessage(t('signatureSaved'));
+      setMessage(t('messages.signatureSaved'));
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       console.error('Error saving signature:', error);
-      setMessage(t('errorSavingSignature'));
+      setMessage(t('messages.errorSavingSignature'));
       setTimeout(() => setMessage(''), 3000);
     } finally {
       setUploadingSignature(false);
@@ -276,11 +277,11 @@ export default function ConfiguracionPage({
       await api.delete('/empresas/firma');
       setCompanySignature(null);
       await refreshEmpresa?.();
-      setMessage(t('signatureDeleted'));
+      setMessage(t('messages.signatureDeleted'));
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       console.error('Error deleting signature:', error);
-      setMessage(t('errorDeletingSignature'));
+      setMessage(t('messages.errorDeletingSignature'));
       setTimeout(() => setMessage(''), 3000);
     } finally {
       setUploadingSignature(false);
@@ -558,7 +559,10 @@ export default function ConfiguracionPage({
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setCompanySignature(null)}
+                        onClick={() => {
+                          setCompanySignature(null);
+                          setSignatureKey(prev => prev + 1); // Force remount
+                        }}
                         disabled={uploadingSignature}
                         className="w-full"
                       >
@@ -568,6 +572,7 @@ export default function ConfiguracionPage({
                   ) : (
                     <div className="border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
                       <SignatureCanvas
+                        key={signatureKey}
                         onSignatureChange={handleSignatureChange}
                         disabled={uploadingSignature}
                       />
