@@ -125,10 +125,16 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
     console.log('[CLIENTES] Creating client, body:', JSON.stringify(req.body, null, 2));
     
+    // Generate unique document number if empty
+    const documentNumber = req.body.numeroDocumento || req.body.documento || '';
+    const uniqueDocNumber = documentNumber.trim() === '' 
+      ? `NODOC-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      : documentNumber;
+    
     // Map frontend fields to backend schema
     const mappedData = {
       tipoDocumento: req.body.tipoDocumento || 'RUC',
-      numeroDocumento: req.body.numeroDocumento || req.body.documento || '',
+      numeroDocumento: uniqueDocNumber,
       razonSocial: req.body.razonSocial || req.body.nombre || '',
       nombreComercial: req.body.nombreComercial || null,
       direccion: req.body.direccion || null,
