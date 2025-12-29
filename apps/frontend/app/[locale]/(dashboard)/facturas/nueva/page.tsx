@@ -255,6 +255,7 @@ export default function NuevaFacturaPage({
         fechaVencimiento: fechaVencimiento?.toISOString(),
         observaciones,
         orderType: orderType || null,
+        moneda: empresa?.moneda || 'USD',
         detalles: lineas.map((linea) => ({
           productoId: linea.productoId || null,
           descripcion: linea.descripcion,

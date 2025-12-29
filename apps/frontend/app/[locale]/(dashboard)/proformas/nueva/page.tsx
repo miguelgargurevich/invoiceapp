@@ -218,6 +218,7 @@ export default function NuevaProformaPage({
         fechaEmision: fechaEmision?.toISOString(),
         fechaValidez: fechaValidez?.toISOString(),
         observaciones,
+        moneda: empresa?.moneda || 'USD',
         // Job information
         jobName: jobName || null,
         jobLocation: jobLocation || null,
