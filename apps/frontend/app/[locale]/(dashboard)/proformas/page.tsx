@@ -29,6 +29,7 @@ interface ProformaListItem {
   igv: number;
   total: number;
   estado: string;
+  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
 }
 
 interface DetalleProforma {
@@ -92,7 +93,9 @@ export default function ProformasPage({
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filterEstados, setFilterEstados] = useState<string[]>([]);
+  const [filterSignature, setFilterSignature] = useState<string>('');
   const [showStatusFilter, setShowStatusFilter] = useState(false);
+  const [showSignatureFilter, setShowSignatureFilter] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [sortKey, setSortKey] = useState<string>('fechaEmision');
@@ -110,6 +113,7 @@ export default function ProformasPage({
         page: currentPage.toString(),
         limit: '10',
         ...(search && { search }),
+        ...(filterSignature && { signatureStatus: filterSignature }),
       });
       if (filterEstados.length > 0) {
         filterEstados.forEach(estado => params.append('estado', estado));
@@ -134,7 +138,7 @@ export default function ProformasPage({
     } finally {
       setLoading(false);
     }
-  }, [empresa?.id, currentPage, search, filterEstados]);
+  }, [empresa?.id, currentPage, search, filterEstados, filterSignature]);
 
   useEffect(() => {
     loadProformas();
@@ -235,6 +239,30 @@ export default function ProformasPage({
           {t(`statuses.${proforma.estado}`)}
         </Badge>
       ),
+    },
+    {
+      key: 'signatureStatus',
+      header: t('signature'),
+      render: (proforma) => {
+        if (!proforma.signatureStatus) return <span className="text-gray-400 text-sm">-</span>;
+        const signatureVariants = {
+          PENDING: 'warning' as const,
+          SIGNED: 'success' as const,
+          EXPIRED: 'danger' as const,
+          CANCELLED: 'default' as const,
+        };
+        const signatureLabels = {
+          PENDING: t('signaturePending') || 'Pending',
+          SIGNED: t('signed') || 'Signed',
+          EXPIRED: t('signatureExpired') || 'Expired',
+          CANCELLED: t('signatureCancelled') || 'Cancelled',
+        };
+        return (
+          <Badge variant={signatureVariants[proforma.signatureStatus]}>
+            {signatureLabels[proforma.signatureStatus]}
+          </Badge>
+        );
+      },
     },
     {
       key: 'actions',
@@ -348,6 +376,13 @@ export default function ProformasPage({
               <Filter className="w-4 h-4 mr-2" />
               {t('filterStatus') || 'Filter Status'} {filterEstados.length > 0 && `(${filterEstados.length})`}
             </Button>
+            <Button 
+              variant={showSignatureFilter ? "primary" : "outline"}
+              onClick={() => setShowSignatureFilter(!showSignatureFilter)}
+            >
+              <CheckCircle className="w-4 h-4 mr-2" />
+              {t('filterSignature') || 'Signature'} {filterSignature && '(1)'}
+            </Button>
           </div>
           
           {/* Status Filter Chips */}
@@ -388,6 +423,33 @@ export default function ProformasPage({
                   {t('clearFilters') || 'Clear all'}
                 </button>
               )}
+            </div>
+          )}
+          
+          {/* Signature Filter Chips */}
+          {showSignatureFilter && (
+            <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+              {[
+                { value: '', label: t('all') || 'All', color: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300' },
+                { value: 'PENDING', label: t('signaturePending') || 'Pending', color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300' },
+                { value: 'SIGNED', label: t('signed') || 'Signed', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' },
+                { value: 'EXPIRED', label: t('signatureExpired') || 'Expired', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' },
+              ].map((status) => (
+                <button
+                  key={status.value}
+                  onClick={() => setFilterSignature(status.value)}
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                    filterSignature === status.value
+                      ? `${status.color} ring-2 ring-offset-2 ring-primary-500 dark:ring-offset-gray-900`
+                      : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600'
+                  }`}
+                >
+                  {filterSignature === status.value && (
+                    <CheckCircle className="w-3 h-3 inline mr-1" />
+                  )}
+                  {status.label}
+                </button>
+              ))}
             </div>
           )}
         </div>

@@ -57,6 +57,14 @@ interface Proforma {
   workDescription?: string;
   paymentTerms?: string;
   detalles: DetalleProforma[];
+  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureRequest?: {
+    signature?: {
+      signatureImageUrl?: string;
+      signerName?: string;
+      signedAt?: string;
+    };
+  };
 }
 
 interface ProformaPreviewProps {
@@ -77,43 +85,47 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         style={{ fontFamily: 'Arial, sans-serif', maxWidth: '850px' }}
       >
         {/* Header Section */}
-        <div className="flex justify-between items-start mb-4">
-          {/* Left Side - Company Info */}
+        <div className="flex justify-between items-start mb-4 border-b-2 border-gray-800 pb-3">
+          {/* Left Side - Proposal Info */}
           <div className="flex-1">
-            <div className="text-[14px] font-bold text-gray-900 mb-3">PROPOSAL</div>
-            <div className="text-[11px] space-y-1">
-              <p className="font-bold text-gray-900">
-                {empresa?.razonSocial || empresa?.nombre}
-                {empresa?.nombreComercial && (
-                  <span className="font-bold text-gray-700"> | {empresa.nombreComercial}</span>
-                )}
-              </p>
-              <p className="text-gray-700">
-                {empresa?.telefono && empresa.telefono}
-                {empresa?.telefono && empresa?.direccion && ' | '}
-                {empresa?.direccion && empresa.direccion}
-              </p>
-              {empresa?.email && <p className="text-gray-700">{empresa.email}</p>}
-            </div>
-          </div>
-
-          {/* Right Side - Proposal Info */}
-          <div className="text-right">
-            <div className="bg-gray-800 text-white px-4 py-2 rounded mb-2">
-              <div className="text-[9px] font-bold">PROPOSAL</div>
-              <div className="text-[11px] font-bold">
+            <div className="bg-gray-800 text-white px-4 py-2 rounded inline-block mb-2">
+              <div className="text-[10px] font-bold">PROPOSAL</div>
+              <div className="text-[13px] font-bold">
                 {proforma.serie}-{proforma.numero.toString().padStart(6, '0')}
               </div>
             </div>
-            <div className="text-[9px] text-gray-600">
-              <p><span className="font-medium">Date:</span> {formatDate(proforma.fechaEmision)}</p>
-              <p><span className="font-medium">Valid Until:</span> {formatDate(proforma.fechaValidez)}</p>
+            <div className="text-[9px] text-gray-700 space-y-0.5">
+              <p><span className="font-semibold">Date:</span> {formatDate(proforma.fechaEmision)}</p>
+              <p><span className="font-semibold">Valid Until:</span> {formatDate(proforma.fechaValidez)}</p>
+            </div>
+          </div>
+
+          {/* Right Side - Company Logo & Info */}
+          <div className="text-right">
+            {empresa?.logoUrl ? (
+              <img
+                src={empresa.logoUrl}
+                alt={empresa?.nombre}
+                className="h-16 w-auto ml-auto mb-2"
+              />
+            ) : (
+              <div className="text-[12px] font-bold text-gray-800 mb-2">
+                {empresa?.razonSocial || empresa?.nombre || 'Mi Empresa'}
+              </div>
+            )}
+            <div className="text-[9px] text-gray-600 space-y-0.5">
+              <p className="font-bold text-gray-900">
+                {empresa?.razonSocial || empresa?.nombre}
+                {empresa?.nombreComercial && (
+                  <span className="text-gray-700"> | {empresa.nombreComercial}</span>
+                )}
+              </p>
+              {empresa?.telefono && <p>Tel: {empresa.telefono}</p>}
+              {empresa?.direccion && <p>{empresa.direccion}</p>}
+              {empresa?.email && <p>{empresa.email}</p>}
             </div>
           </div>
         </div>
-
-        {/* Separator Line */}
-        <div className="border-t-2 border-gray-800 mb-4"></div>
 
         {/* Client Information */}
         <div className="mb-4">
@@ -217,18 +229,49 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         </div>
 
         {/* Signature Lines */}
-        <div className="grid grid-cols-2 gap-8 mb-6">
-          <div>
-            <p className="text-[9px] font-bold text-gray-800 mb-12">Signature:</p>
-            <div className="border-t border-gray-800 mb-1"></div>
-            <p className="text-[9px] text-gray-600">Customer Signature</p>
+        {proforma.signatureRequest?.signature?.signatureImageUrl ? (
+          // Digital signature exists
+          <div className="grid grid-cols-2 gap-8 mb-6">
+            <div>
+              <p className="text-[9px] font-bold text-gray-800 mb-2">Customer Signature:</p>
+              <div className="mb-1">
+                <img 
+                  src={proforma.signatureRequest.signature.signatureImageUrl} 
+                  alt="Customer Signature" 
+                  className="h-16 w-auto object-contain"
+                />
+              </div>
+              <div className="border-t border-gray-800 mb-1"></div>
+              <p className="text-[9px] text-gray-600">
+                {proforma.signatureRequest.signature.signerName || proforma.cliente.razonSocial}
+              </p>
+            </div>
+            <div>
+              <p className="text-[9px] font-bold text-gray-800 mb-12">Date of Acceptance:</p>
+              <div className="border-t border-gray-800 mb-1"></div>
+              <p className="text-[9px] text-gray-600">
+                {proforma.signatureRequest.signature.signedAt 
+                  ? formatDate(proforma.signatureRequest.signature.signedAt)
+                  : formatDate(proforma.fechaEmision)
+                }
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="text-[9px] font-bold text-gray-800 mb-12">Date of Acceptance:</p>
-            <div className="border-t border-gray-800 mb-1"></div>
-            <p className="text-[9px] text-gray-600">{formatDate(proforma.fechaEmision)}</p>
+        ) : (
+          // No signature yet - show empty signature lines
+          <div className="grid grid-cols-2 gap-8 mb-6">
+            <div>
+              <p className="text-[9px] font-bold text-gray-800 mb-12">Signature:</p>
+              <div className="border-t border-gray-800 mb-1"></div>
+              <p className="text-[9px] text-gray-600">Customer Signature</p>
+            </div>
+            <div>
+              <p className="text-[9px] font-bold text-gray-800 mb-12">Date of Acceptance:</p>
+              <div className="border-t border-gray-800 mb-1"></div>
+              <p className="text-[9px] text-gray-600">{formatDate(proforma.fechaEmision)}</p>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Attorney Fees Clause - Bottom of Page */}
         <div className="text-center mt-6">

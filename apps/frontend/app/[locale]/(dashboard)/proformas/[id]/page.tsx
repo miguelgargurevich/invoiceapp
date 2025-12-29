@@ -13,6 +13,10 @@ import {
   XCircle,
   Clock,
   AlertTriangle,
+  PenLine,
+  Copy,
+  Send,
+  ExternalLink,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -21,6 +25,7 @@ import {
   Badge,
   LoadingPage,
   ConfirmDialog,
+  Modal,
 } from '@/components/common';
 import {
   ProformaPrintPreviewModal,
@@ -79,6 +84,8 @@ interface Proforma {
   telefonoTrabajo?: string;
   diasValidez?: number;
   detalles: DetalleProforma[];
+  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureRequest?: any;
 }
 
 export default function ProformaDetailPage({
@@ -100,6 +107,15 @@ export default function ProformaDetailPage({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const [converting, setConverting] = useState(false);
+  const [requestingSignature, setRequestingSignature] = useState(false);
+  const [signatureRequestModal, setSignatureRequestModal] = useState<{
+    isOpen: boolean;
+    signingUrl: string;
+    email: string;
+    emailSent: boolean;
+  }>({ isOpen: false, signingUrl: '', email: '', emailSent: false });
+  const [urlCopied, setUrlCopied] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
   const pdfRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -228,7 +244,105 @@ export default function ProformaDetailPage({
       setDownloadingPdf(false);
     }
   };
+  const handleRequestSignature = async () => {
+    if (!proforma) return;
 
+    try {
+      setRequestingSignature(true);
+      
+      let token;
+      
+      // If signature is already pending, reuse existing token
+      if (proforma.signatureStatus === 'PENDING' && proforma.signatureRequest?.token) {
+        token = proforma.signatureRequest.token;
+      } else {
+        // Create new signature request
+        // Use placeholder email if client doesn't have one
+        const signerEmail = proforma.cliente.email || 'no-email@placeholder.com';
+        
+        const response: any = await api.post('/signatures/request', {
+          documentType: 'PROFORMA',
+          documentId: proforma.id,
+          signerEmail: signerEmail,
+          signerName: proforma.cliente.razonSocial,
+          sendEmail: false, // Don't send email yet
+        });
+        token = response.token;
+      }
+
+      // Show modal with signing URL (email not sent yet)
+      const signingUrl = `${window.location.origin}/${locale}/sign/${token}`;
+      setSignatureRequestModal({
+        isOpen: true,
+        signingUrl,
+        email: proforma.cliente.email || '',
+        emailSent: false
+      });
+      
+      // Reload to show signature status
+      if (proforma.signatureStatus !== 'PENDING') {
+        loadProforma();
+      }
+    } catch (error: any) {
+      console.error('Error requesting signature:', error);
+      alert(error.response?.data?.error || 'Failed to request signature');
+    } finally {
+      setRequestingSignature(false);
+    }
+  };
+
+  const handleSendSignatureEmail = async () => {
+    if (!proforma || !signatureRequestModal.signingUrl) return;
+
+    try {
+      setSendingEmail(true);
+      
+      // Extract token from URL
+      const token = signatureRequestModal.signingUrl.split('/').pop();
+      
+      await api.post(`/signatures/${token}/send-email`, {
+        signerEmail: proforma.cliente.email || '',
+        signerName: proforma.cliente.razonSocial,
+      });
+
+      // Update modal to show email sent
+      setSignatureRequestModal(prev => ({
+        ...prev,
+        emailSent: true
+      }));
+      
+      alert('Email sent successfully!');
+    } catch (error: any) {
+      console.error('Error sending email:', error);
+      alert(error.response?.data?.error || 'Failed to send email');
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
+  const handleShareLink = async () => {
+    try {
+      const shareData = {
+        title: `Signature Request - Proposal ${proforma?.serie}-${proforma?.numero}`,
+        text: `Please sign this proposal for ${proforma?.cliente.razonSocial}`,
+        url: signatureRequestModal.signingUrl,
+      };
+
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback: copy to clipboard
+        await navigator.clipboard.writeText(signatureRequestModal.signingUrl);
+        setUrlCopied(true);
+        setTimeout(() => setUrlCopied(false), 2000);
+      }
+    } catch (error: any) {
+      // User cancelled or error occurred
+      if (error.name !== 'AbortError') {
+        console.error('Error sharing:', error);
+      }
+    }
+  };
   const handleConvertToInvoice = async () => {
     if (!proforma) return;
 
@@ -319,6 +433,22 @@ export default function ProformaDetailPage({
             <Printer className="w-4 h-4 mr-1" />
             {t('print')}
           </Button>
+          {proforma.estado !== 'ANULADA' && proforma.signatureStatus !== 'SIGNED' && (
+            <Button 
+              size="sm" 
+              onClick={handleRequestSignature}
+              disabled={requestingSignature}
+              variant="outline"
+            >
+              <PenLine className="w-4 h-4 mr-1" />
+              {requestingSignature 
+                ? t('requesting...') 
+                : proforma.signatureStatus === 'PENDING' 
+                  ? t('resendSignature')
+                  : t('requestSignature')
+              }
+            </Button>
+          )}
           {canConvert && (
             <Button size="sm" onClick={() => setIsConvertDialogOpen(true)}>
               <FileText className="w-4 h-4 mr-1" />
@@ -640,6 +770,96 @@ export default function ProformaDetailPage({
         onClose={() => setIsSendEmailOpen(false)}
         proforma={proforma}
       />
+
+      {/* Signature Request Modal */}
+      {signatureRequestModal.isOpen && (
+        <Modal
+          isOpen={signatureRequestModal.isOpen}
+          onClose={() => {
+            setSignatureRequestModal({ isOpen: false, signingUrl: '', email: '', emailSent: false });
+            setUrlCopied(false);
+          }}
+          title={t('signatureRequestCreated')}
+        >
+          <div className="space-y-4">
+            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+              <p className="text-sm text-green-800 dark:text-green-200">
+                {t('signatureRequestInfo')}
+              </p>
+            </div>
+
+            {/* Signing URL */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                {t('signingUrl')}
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  readOnly
+                  value={signatureRequestModal.signingUrl}
+                  className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(signatureRequestModal.signingUrl);
+                    setUrlCopied(true);
+                    setTimeout(() => setUrlCopied(false), 2000);
+                  }}
+                >
+                  <Copy className="w-4 h-4" />
+                  {urlCopied ? t('copied') : t('copy')}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleShareLink}
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  {t('share')}
+                </Button>
+              </div>
+            </div>
+
+            {/* Email option */}
+            {signatureRequestModal.email && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t('sendViaEmail')}
+                </label>
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="email"
+                    readOnly
+                    value={signatureRequestModal.email}
+                    className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  />
+                  <Button
+                    size="sm"
+                    onClick={handleSendSignatureEmail}
+                    disabled={sendingEmail || signatureRequestModal.emailSent}
+                  >
+                    <Send className="w-4 h-4 mr-1" />
+                    {sendingEmail 
+                      ? t('sending...') 
+                      : signatureRequestModal.emailSent 
+                        ? t('emailSent')
+                        : t('sendEmail')
+                    }
+                  </Button>
+                </div>
+                {signatureRequestModal.emailSent && (
+                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                    {t('emailSentSuccessfully')}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </Modal>
+      )}
 
       {/* Convert to Invoice Confirmation */}
       <ConfirmDialog

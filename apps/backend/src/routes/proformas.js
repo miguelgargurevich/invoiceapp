@@ -122,7 +122,7 @@ async function obtenerSiguienteNumero(empresaId, serie, prismaClient = prisma) {
 
 // GET /api/proformas - Listar proformas
 router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
-  const { page = 1, limit = 20, search, estado, clienteId, fechaInicio, fechaFin } = req.query;
+  const { page = 1, limit = 20, search, estado, clienteId, fechaInicio, fechaFin, signatureStatus } = req.query;
 
   try {
     // Build where clause
@@ -169,6 +169,15 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       }
     }
 
+    // Add signature status filter
+    if (signatureStatus) {
+      where.signatureRequests = {
+        some: {
+          status: signatureStatus,
+        }
+      };
+    }
+
     // Add other filters
     if (clienteId) {
       where.clienteId = clienteId;
@@ -199,6 +208,18 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
               numeroDocumento: true
             }
           },
+          signatureRequests: {
+            where: {
+              status: { in: ['PENDING', 'SIGNED'] }
+            },
+            orderBy: {
+              createdAt: 'desc'
+            },
+            take: 1,
+            select: {
+              status: true
+            }
+          },
           _count: {
             select: { detalles: true, facturasGeneradas: true }
           }
@@ -210,8 +231,14 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       prisma.proforma.count({ where })
     ]);
 
+    // Map signature status to each proforma
+    const proformasWithSignatureStatus = proformas.map(proforma => ({
+      ...proforma,
+      signatureStatus: proforma.signatureRequests?.[0]?.status || null
+    }));
+
     res.json({
-      data: proformas,
+      data: proformasWithSignatureStatus,
       pagination: {
         total,
         page: parseInt(page),
@@ -246,6 +273,16 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
         },
         facturasGeneradas: {
           select: { id: true, serie: true, numero: true, estado: true }
+        },
+        signatureRequests: {
+          where: {
+            status: { in: ['PENDING', 'SIGNED'] }
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+          include: {
+            signature: true
+          }
         }
       }
     });
@@ -254,7 +291,15 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
       return res.status(404).json({ error: 'Proforma no encontrada' });
     }
 
-    res.json(proforma);
+    // Add signature status similar to invoices
+    const signatureRequest = proforma.signatureRequests[0];
+    const proformaWithSignature = {
+      ...proforma,
+      signatureStatus: signatureRequest?.status || null,
+      signatureRequest: signatureRequest || null
+    };
+
+    res.json(proformaWithSignature);
   } catch (error) {
     console.error('Error obteniendo proforma:', error);
     res.status(500).json({ error: 'Error interno del servidor' });

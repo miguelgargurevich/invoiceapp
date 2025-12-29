@@ -86,16 +86,68 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         style={{ fontFamily: 'Arial, sans-serif', minHeight: '297mm' }}
       >
         {/* Header */}
-        <div className="flex justify-between items-start mb-3 border-b border-gray-800 pb-2">
+        <div className="flex justify-between items-start mb-3 border-b-2 border-gray-800 pb-3">
+          {/* Left Side - Invoice Info */}
           <div className="flex-1">
+            <div className="bg-gray-800 text-white px-4 py-2 rounded inline-block mb-2">
+              <div className="text-[10px] font-bold">{t('invoice')}</div>
+              <div className="text-[13px] font-bold">
+                {factura.serie}-{factura.numero.toString().padStart(6, '0')}
+              </div>
+            </div>
+            <div className="text-[9px] text-gray-700 space-y-0.5">
+              <p>
+                <span className="font-semibold">{t('issueDate')}</span>{' '}
+                {formatDate(factura.fechaEmision)}
+              </p>
+              <p>
+                <span className="font-semibold">{t('dueDate')}</span>{' '}
+                {formatDate(factura.fechaVencimiento)}
+              </p>
+            </div>
+            {factura.orderType && (
+              <div className="mt-2 flex items-center gap-2 text-[8px]">
+                <label className="flex items-center gap-1">
+                  <input 
+                    type="checkbox" 
+                    checked={factura.orderType === 'day_work'} 
+                    readOnly 
+                    className="w-2.5 h-2.5"
+                  />
+                  <span>Day Work</span>
+                </label>
+                <label className="flex items-center gap-1">
+                  <input 
+                    type="checkbox" 
+                    checked={factura.orderType === 'contract'} 
+                    readOnly 
+                    className="w-2.5 h-2.5"
+                  />
+                  <span>Contract</span>
+                </label>
+                <label className="flex items-center gap-1">
+                  <input 
+                    type="checkbox" 
+                    checked={factura.orderType === 'extra'} 
+                    readOnly 
+                    className="w-2.5 h-2.5"
+                  />
+                  <span>Extra</span>
+                </label>
+              </div>
+            )}
+          </div>
+          
+          {/* Right Side - Company Logo & Info */}
+          <div className="text-right">
             {empresa?.logo ? (
               <img
                 src={empresa.logo}
                 alt={empresa.nombre}
-                className="h-12 w-auto mb-1.5"
+                className="h-16 w-auto ml-auto mb-2"
               />
             ) : (
-              <div className="text-[11px] font-bold text-gray-800 mb-1.5">
+              <div className="text-[12px] font-bold text-gray-800 mb-2">
                 {empresa?.nombre || 'Mi Empresa'}
               </div>
             )}
@@ -104,49 +156,6 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
               {empresa?.direccion && <p>{empresa.direccion}</p>}
               {empresa?.telefono && <p>Tel: {empresa.telefono}</p>}
               {empresa?.email && <p>{empresa.email}</p>}
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="bg-gray-800 text-white px-3 py-1.5 rounded mb-1.5">
-              <div className="text-[9px] font-bold">{t('invoice')}</div>
-              <div className="text-[10px] font-bold">
-                {factura.serie}-{factura.numero.toString().padStart(6, '0')}
-              </div>
-            </div>
-            <div className="text-[9px] text-gray-600">
-              <p>
-                <span className="font-medium">{t('issueDate')}</span>{' '}
-                {formatDate(factura.fechaEmision)}
-              </p>
-              <p>
-                <span className="font-medium">{t('dueDate')}</span>{' '}
-                {formatDate(factura.fechaVencimiento)}
-              </p>
-              {factura.orderType && (
-                <div className="mt-1 flex items-center gap-1 text-[8px]">
-                  <input 
-                    type="checkbox" 
-                    checked={factura.orderType === 'day_work'} 
-                    readOnly 
-                    className="w-2.5 h-2.5"
-                  />
-                  <span>Day Work</span>
-                  <input 
-                    type="checkbox" 
-                    checked={factura.orderType === 'contract'} 
-                    readOnly 
-                    className="w-2.5 h-2.5 ml-2"
-                  />
-                  <span>Contract</span>
-                  <input 
-                    type="checkbox" 
-                    checked={factura.orderType === 'extra'} 
-                    readOnly 
-                    className="w-2.5 h-2.5 ml-2"
-                  />
-                  <span>Extra</span>
-                </div>
-              )}
             </div>
           </div>
         </div>
