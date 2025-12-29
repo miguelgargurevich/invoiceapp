@@ -31,8 +31,8 @@ router.get('/mi-empresa', authenticateToken, async (req, res) => {
     // Return with frontend field names
     const empresaResponse = {
       ...empresa,
-      razonSocial: empresa.nombre,
-      nombreComercial: empresa.nombre
+      razonSocial: empresa.razonSocial || empresa.nombre,
+      nombreComercial: empresa.nombreComercial || empresa.nombre
     };
 
     res.json(empresaResponse);

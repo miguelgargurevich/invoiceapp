@@ -130,10 +130,7 @@ export default function ConfiguracionPage({
       const response = await api.put('/empresas/mi-empresa', empresaForm) as any;
       console.log('[CONFIG] Save response:', response);
       
-      // Actualizar el contexto
-      await refreshEmpresa?.();
-      
-      // Actualizar el formulario con la respuesta para asegurar sincronización
+      // Actualizar el formulario con la respuesta ANTES de refrescar el contexto
       setEmpresaForm({
         ruc: response.ruc || '',
         razonSocial: response.razonSocial || '',
@@ -143,6 +140,9 @@ export default function ConfiguracionPage({
         email: response.email || '',
         web: response.web || '',
       });
+      
+      // Luego actualizar el contexto
+      await refreshEmpresa?.();
       
       setMessage(t('savedSuccessfully'));
       setTimeout(() => setMessage(''), 3000);
