@@ -55,6 +55,11 @@ interface Factura {
   saldoPendiente?: number;
   totalPagado?: number;
   observaciones?: string;
+  orderType?: string;
+  jobName?: string;
+  jobLocation?: string;
+  workDescription?: string;
+  paymentTerms?: string;
   detalles: DetalleFactura[];
 }
 

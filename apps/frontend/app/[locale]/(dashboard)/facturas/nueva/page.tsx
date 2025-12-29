@@ -89,6 +89,12 @@ export default function NuevaFacturaPage({
   const [observaciones, setObservaciones] = useState('');
   const [orderType, setOrderType] = useState<string>('');
   const [lineas, setLineas] = useState<LineaDetalle[]>([]);
+  
+  // Job information fields
+  const [jobName, setJobName] = useState('');
+  const [jobLocation, setJobLocation] = useState('');
+  const [workDescription, setWorkDescription] = useState('');
+  const [paymentTerms, setPaymentTerms] = useState('');
 
   // Load data
   useEffect(() => {
@@ -255,6 +261,10 @@ export default function NuevaFacturaPage({
         fechaVencimiento: fechaVencimiento?.toISOString(),
         observaciones,
         orderType: orderType || null,
+        jobName: jobName || null,
+        jobLocation: jobLocation || null,
+        workDescription: workDescription || null,
+        paymentTerms: paymentTerms || null,
         moneda: empresa?.moneda || 'USD',
         detalles: lineas.map((linea) => ({
           productoId: linea.productoId || null,
@@ -566,6 +576,41 @@ export default function NuevaFacturaPage({
               placeholder={t('observationsPlaceholder')}
               rows={3}
             />
+          </Card>
+
+          {/* Job Information */}
+          <Card>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              Job Information
+            </h2>
+            <div className="space-y-4">
+              <Input
+                label="Job Name"
+                value={jobName}
+                onChange={(e) => setJobName(e.target.value)}
+                placeholder="e.g., Kitchen Renovation"
+              />
+              <Input
+                label="Job Location"
+                value={jobLocation}
+                onChange={(e) => setJobLocation(e.target.value)}
+                placeholder="Job site address"
+              />
+              <Textarea
+                label="Work Description"
+                value={workDescription}
+                onChange={(e) => setWorkDescription(e.target.value)}
+                placeholder="Detailed description of work to be performed..."
+                rows={4}
+              />
+              <Textarea
+                label="Payment Terms"
+                value={paymentTerms}
+                onChange={(e) => setPaymentTerms(e.target.value)}
+                placeholder="Payment schedule and terms..."
+                rows={3}
+              />
+            </div>
           </Card>
         </div>
 

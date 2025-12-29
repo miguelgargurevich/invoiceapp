@@ -25,6 +25,10 @@ const facturaSchema = z.object({
   tipoCambio: z.number().positive().optional(),
   observaciones: z.string().optional(),
   orderType: z.string().optional().nullable(),
+  jobName: z.string().optional().nullable(),
+  jobLocation: z.string().optional().nullable(),
+  workDescription: z.string().optional().nullable(),
+  paymentTerms: z.string().optional().nullable(),
   detalles: z.array(detalleSchema).min(1)
 });
 
@@ -370,6 +374,10 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
         tipoCambio: facturaData.tipoCambio,
         observaciones: facturaData.observaciones,
         orderType: facturaData.orderType || null,
+        jobName: facturaData.jobName || null,
+        jobLocation: facturaData.jobLocation || null,
+        workDescription: facturaData.workDescription || null,
+        paymentTerms: facturaData.paymentTerms || null,
         subtotal: montosCalculados.subtotal,
         descuento: montosCalculados.descuento,
         igv: montosCalculados.igv,

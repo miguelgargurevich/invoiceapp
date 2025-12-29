@@ -61,6 +61,10 @@ interface Factura {
   totalPagado?: number;
   observaciones?: string;
   orderType?: string;
+  jobName?: string;
+  jobLocation?: string;
+  workDescription?: string;
+  paymentTerms?: string;
   detalles: DetalleFactura[];
 }
 
@@ -169,12 +173,44 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
             </div>
             {factura.cliente.direccion && (
               <div className="col-span-2">
-                <span className="text-gray-500">{t('document')}</span>
+                <span className="text-gray-500">{t('address')}</span>
                 <p className="font-medium">{factura.cliente.direccion}</p>
               </div>
             )}
           </div>
         </div>
+
+        {/* Work Description */}
+        {factura.workDescription && (
+          <div className="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
+            <div className="text-[10px] font-bold text-gray-800 mb-1">We Hereby submit specifications and estimates for:</div>
+            <p className="text-[9px] text-gray-700 whitespace-pre-wrap">{factura.workDescription}</p>
+          </div>
+        )}
+
+        {/* Separator Line */}
+        {factura.workDescription && (
+          <>
+            <div className="border-t border-gray-400 mb-3"></div>
+            <div className="mb-3 text-center">
+              <p className="text-[10px] font-bold text-gray-800">
+                We Propose hereby to furnish material and labor - complete in accordance with above specifications, for the sum of:
+              </p>
+            </div>
+          </>
+        )}
+
+        {/* Payment Terms */}
+        {factura.paymentTerms && (
+          <div className="mb-4 p-3 bg-gray-50 border border-gray-300 rounded">
+            <div className="text-[10px]">
+              <p className="text-gray-800 mb-2">
+                <span className="font-bold text-gray-900">Payment to be made as follows:</span>
+                <span className="ml-1">{factura.paymentTerms}</span>
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Items Table */}
         <div className="mb-3" style={{ pageBreakInside: 'avoid' }}>

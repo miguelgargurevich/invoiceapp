@@ -97,6 +97,10 @@ interface Factura {
   totalPagado: number;
   observaciones?: string;
   orderType?: string;
+  jobName?: string;
+  jobLocation?: string;
+  workDescription?: string;
+  paymentTerms?: string;
   detalles: DetalleFactura[];
   pagos: PagoFactura[];
   signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
@@ -802,6 +806,41 @@ export default function FacturaDetailPage({
               </p>
             )}
           </Card>
+
+          {/* Job Information */}
+          {(factura.jobName || factura.jobLocation || factura.workDescription || factura.paymentTerms) && (
+            <Card>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                Job Information
+              </h2>
+              <div className="space-y-3">
+                {factura.jobName && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Job Name</p>
+                    <p className="text-gray-900 dark:text-gray-100">{factura.jobName}</p>
+                  </div>
+                )}
+                {factura.jobLocation && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Job Location</p>
+                    <p className="text-gray-900 dark:text-gray-100">{factura.jobLocation}</p>
+                  </div>
+                )}
+                {factura.workDescription && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Work Description</p>
+                    <p className="text-gray-900 dark:text-gray-100 whitespace-pre-wrap">{factura.workDescription}</p>
+                  </div>
+                )}
+                {factura.paymentTerms && (
+                  <div>
+                    <p className="text-sm text-gray-500 mb-1">Payment Terms</p>
+                    <p className="text-gray-900 dark:text-gray-100 whitespace-pre-wrap">{factura.paymentTerms}</p>
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
         </div>
 
         {/* Sidebar */}
