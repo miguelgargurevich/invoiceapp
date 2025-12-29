@@ -132,9 +132,13 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
             </div>
             <div>
               <span className="text-gray-500">
-                {factura.cliente.tipoDocumento}:
+                {factura.cliente.numeroDocumento && factura.cliente.tipoDocumento !== 'OTHER'
+                  ? `${factura.cliente.tipoDocumento}:`
+                  : t('document')}
               </span>
-              <p className="font-medium">{factura.cliente.numeroDocumento}</p>
+              <p className="font-medium">
+                {factura.cliente.numeroDocumento || '-'}
+              </p>
             </div>
             {factura.cliente.direccion && (
               <div className="col-span-2">

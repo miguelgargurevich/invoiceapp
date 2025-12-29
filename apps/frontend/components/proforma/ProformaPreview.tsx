@@ -124,9 +124,13 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
             </div>
             <div>
               <span className="text-gray-500">
-                {proforma.cliente.tipoDocumento}:
+                {proforma.cliente.numeroDocumento && proforma.cliente.tipoDocumento !== 'OTHER'
+                  ? `${proforma.cliente.tipoDocumento}:`
+                  : t('document')}
               </span>
-              <p className="font-medium">{proforma.cliente.numeroDocumento}</p>
+              <p className="font-medium">
+                {proforma.cliente.numeroDocumento || '-'}
+              </p>
             </div>
             {proforma.cliente.direccion && (
               <div className="col-span-2">

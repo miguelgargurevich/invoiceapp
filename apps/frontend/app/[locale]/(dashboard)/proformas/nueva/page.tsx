@@ -316,7 +316,13 @@ export default function NuevaProformaPage({
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-gray-500 dark:text-gray-400">{t('document')}:</span>
-                    <p className="font-medium">{selectedCliente.tipoDocumento}: {selectedCliente.documento}</p>
+                    <p className="font-medium">
+                      {selectedCliente.documento ? (
+                        selectedCliente.tipoDocumento !== 'OTHER'
+                          ? `${selectedCliente.tipoDocumento}: ${selectedCliente.documento}`
+                          : selectedCliente.documento
+                      ) : '-'}
+                    </p>
                   </div>
                   <div>
                     <span className="text-gray-500 dark:text-gray-400">{t('address')}:</span>

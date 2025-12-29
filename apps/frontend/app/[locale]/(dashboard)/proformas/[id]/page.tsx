@@ -346,7 +346,11 @@ export default function ProformaDetailPage({
               <div>
                 <span className="text-sm text-gray-500 dark:text-gray-400">{t('document')}</span>
                 <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {proforma.cliente.tipoDocumento}: {proforma.cliente.numeroDocumento}
+                  {proforma.cliente.numeroDocumento ? (
+                    proforma.cliente.tipoDocumento !== 'OTHER'
+                      ? `${proforma.cliente.tipoDocumento}: ${proforma.cliente.numeroDocumento}`
+                      : proforma.cliente.numeroDocumento
+                  ) : '-'}
                 </p>
               </div>
               {proforma.cliente.direccion && (

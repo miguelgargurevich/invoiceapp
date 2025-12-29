@@ -617,7 +617,11 @@ export default function FacturaDetailPage({
               <div>
                 <span className="text-sm text-gray-500 dark:text-gray-400">{t('document')}</span>
                 <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {factura.cliente.tipoDocumento}: {factura.cliente.numeroDocumento}
+                  {factura.cliente.numeroDocumento ? (
+                    factura.cliente.tipoDocumento !== 'OTHER' 
+                      ? `${factura.cliente.tipoDocumento}: ${factura.cliente.numeroDocumento}`
+                      : factura.cliente.numeroDocumento
+                  ) : '-'}
                 </p>
               </div>
               {factura.cliente.direccion && (
