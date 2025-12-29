@@ -189,7 +189,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
           <div className="text-center">
             <p className="text-[10px] font-bold text-gray-900 mb-2">Authorized Signature</p>
             {empresa?.firmaEmpresa ? (
-              <div className="flex justify-center my-3 pl-4 ml-6">
+              <div className="flex justify-center my-3">
                 <Image
                   src={empresa.firmaEmpresa}
                   alt="Company Signature"
