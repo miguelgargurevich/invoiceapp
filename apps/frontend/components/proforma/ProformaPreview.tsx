@@ -78,12 +78,12 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         <div className="flex justify-between items-start mb-4">
           {/* Left Side - Company Info */}
           <div className="flex-1">
-            <h1 className="text-2xl font-bold text-gray-900 mb-3">PROPOSAL</h1>
-            <div className="text-sm space-y-1">
+            <h1 className="text-xl font-bold text-gray-900 mb-3">PROPOSAL</h1>
+            <div className="text-base space-y-1">
               <p className="font-bold text-gray-900">
                 {empresa?.razonSocial || empresa?.nombre}
                 {empresa?.nombreComercial && (
-                  <span className="font-normal text-gray-700"> | {empresa.nombreComercial}</span>
+                  <span className="font-bold text-gray-700"> | {empresa.nombreComercial}</span>
                 )}
               </p>
               <p className="text-gray-700">
