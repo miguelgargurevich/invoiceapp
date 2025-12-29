@@ -218,20 +218,16 @@ export default function PrintPreviewModal({
       <div className="flex flex-col h-[85vh]">
         {/* Compact Controls Bar */}
         <div className="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-900 border-b dark:border-gray-700">
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              {factura.serie}-{factura.numero}
-            </span>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={handleZoomOut}
-                className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-                title="Zoom out"
-              >
-                <ZoomOut className="w-4 h-4" />
-              </button>
-              <span className="text-xs text-gray-500 min-w-[50px] text-center">
-                {Math.round(zoom * 100)}%
+          <div className="flex items-center gap-1">
+            <button
+              onClick={handleZoomOut}
+              className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+              title="Zoom out"
+            >
+              <ZoomOut className="w-4 h-4" />
+            </button>
+            <span className="text-xs text-gray-500 min-w-[50px] text-center">
+              {Math.round(zoom * 100)}%
               </span>
               <button
                 onClick={handleZoomIn}
@@ -241,10 +237,7 @@ export default function PrintPreviewModal({
                 <ZoomIn className="w-4 h-4" />
               </button>
             </div>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleShare} disabled={downloading}>
+
               <Share2 className="w-4 h-4 sm:mr-1.5" />
               <span className="hidden sm:inline">{t('share')}</span>
             </Button>
