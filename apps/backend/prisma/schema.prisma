@@ -85,7 +85,7 @@ model Cliente {
   id              String    @id @default(uuid())
   empresaId       String    @map("empresa_id")
   tipoDocumento   String    @map("tipo_documento") // RUC, DNI, CE
-  numeroDocumento String    @map("numero_documento")
+  numeroDocumento String?   @map("numero_documento")
   razonSocial     String    @map("razon_social")
   nombreComercial String?   @map("nombre_comercial")
   direccion       String?
@@ -101,7 +101,6 @@ model Cliente {
   facturas        Factura[]
   proformas       Proforma[]
   
-  @@unique([empresaId, numeroDocumento])
   @@index([empresaId], map: "idx_cliente_empresa_id")
   @@index([numeroDocumento], map: "idx_cliente_documento")
   @@map("clientes")
