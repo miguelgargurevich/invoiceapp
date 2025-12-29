@@ -137,6 +137,9 @@ export default function FacturaDetailPage({
   const [isEditObservationsOpen, setIsEditObservationsOpen] = useState(false);
   const [editingObservations, setEditingObservations] = useState(false);
   const [observacionesEdit, setObservacionesEdit] = useState('');
+  const [isEditOrderTypeOpen, setIsEditOrderTypeOpen] = useState(false);
+  const [editingOrderType, setEditingOrderType] = useState(false);
+  const [orderTypeEdit, setOrderTypeEdit] = useState<string>('');
   const pdfRef = useRef<HTMLDivElement>(null);
   const [paymentData, setPaymentData] = useState({
     monto: '',
@@ -435,6 +438,32 @@ export default function FacturaDetailPage({
       showError(error.response?.data?.error || 'Failed to update observations');
     } finally {
       setEditingObservations(false);
+    }
+  };
+
+  const handleOpenEditOrderType = () => {
+    if (!factura) return;
+    setOrderTypeEdit(factura.orderType || '');
+    setIsEditOrderTypeOpen(true);
+  };
+
+  const handleSaveOrderType = async () => {
+    if (!factura) return;
+
+    try {
+      setEditingOrderType(true);
+      await api.put(`/facturas/${factura.id}/order-type`, {
+        orderType: orderTypeEdit || null,
+      });
+      
+      showSuccess('Order type updated successfully');
+      setIsEditOrderTypeOpen(false);
+      loadFactura();
+    } catch (error: any) {
+      console.error('Error updating order type:', error);
+      showError(error.response?.data?.error || 'Failed to update order type');
+    } finally {
+      setEditingOrderType(false);
     }
   };
 
@@ -819,9 +848,20 @@ export default function FacturaDetailPage({
 
           {/* Order Type */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              Order Type
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Order Type
+              </h2>
+              {factura.estado !== 'ANULADA' && (
+                <button
+                  onClick={handleOpenEditOrderType}
+                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                  title="Edit order type"
+                >
+                  <Edit2 className="w-4 h-4 text-gray-500" />
+                </button>
+              )}
+            </div>
             {factura.orderType ? (
               <div className="flex items-center gap-2">
                 <div className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
@@ -833,20 +873,9 @@ export default function FacturaDetailPage({
                 </div>
               </div>
             ) : (
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                  <input type="checkbox" disabled className="w-4 h-4" />
-                  <span>Day Work</span>
-                </label>
-                <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                  <input type="checkbox" disabled className="w-4 h-4" />
-                  <span>Contract</span>
-                </label>
-                <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                  <input type="checkbox" disabled className="w-4 h-4" />
-                  <span>Extra</span>
-                </label>
-              </div>
+              <p className="text-gray-400 dark:text-gray-500 italic text-sm">
+                No order type set
+              </p>
             )}
           </Card>
 
@@ -1325,6 +1354,89 @@ export default function FacturaDetailPage({
               className="flex-1"
             >
               {editingObservations ? t('saving') : t('save')}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Edit Order Type Modal */}
+      <Modal
+        isOpen={isEditOrderTypeOpen}
+        onClose={() => !editingOrderType && setIsEditOrderTypeOpen(false)}
+        title="Order Type"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+              Select order type
+            </label>
+            <div className="space-y-2">
+              <label className="flex items-center gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors">
+                <input
+                  type="radio"
+                  name="orderType"
+                  value="day_work"
+                  checked={orderTypeEdit === 'day_work'}
+                  onChange={(e) => setOrderTypeEdit(e.target.value)}
+                  disabled={editingOrderType}
+                  className="w-4 h-4 text-primary-600"
+                />
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Day Work</span>
+              </label>
+              <label className="flex items-center gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors">
+                <input
+                  type="radio"
+                  name="orderType"
+                  value="contract"
+                  checked={orderTypeEdit === 'contract'}
+                  onChange={(e) => setOrderTypeEdit(e.target.value)}
+                  disabled={editingOrderType}
+                  className="w-4 h-4 text-primary-600"
+                />
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Contract</span>
+              </label>
+              <label className="flex items-center gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors">
+                <input
+                  type="radio"
+                  name="orderType"
+                  value="extra"
+                  checked={orderTypeEdit === 'extra'}
+                  onChange={(e) => setOrderTypeEdit(e.target.value)}
+                  disabled={editingOrderType}
+                  className="w-4 h-4 text-primary-600"
+                />
+                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Extra</span>
+              </label>
+              <label className="flex items-center gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors">
+                <input
+                  type="radio"
+                  name="orderType"
+                  value=""
+                  checked={orderTypeEdit === ''}
+                  onChange={(e) => setOrderTypeEdit(e.target.value)}
+                  disabled={editingOrderType}
+                  className="w-4 h-4 text-primary-600"
+                />
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-400 italic">None</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsEditOrderTypeOpen(false)}
+              disabled={editingOrderType}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveOrderType}
+              disabled={editingOrderType}
+              className="flex-1"
+            >
+              {editingOrderType ? 'Saving...' : 'Save'}
             </Button>
           </div>
         </div>

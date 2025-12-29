@@ -228,16 +228,18 @@ export default function PrintPreviewModal({
             </button>
             <span className="text-xs text-gray-500 min-w-[50px] text-center">
               {Math.round(zoom * 100)}%
-              </span>
-              <button
-                onClick={handleZoomIn}
-                className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-                title="Zoom in"
-              >
-                <ZoomIn className="w-4 h-4" />
-              </button>
-            </div>
-
+            </span>
+            <button
+              onClick={handleZoomIn}
+              className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+              title="Zoom in"
+            >
+              <ZoomIn className="w-4 h-4" />
+            </button>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={handleShare} disabled={downloading}>
               <Share2 className="w-4 h-4 sm:mr-1.5" />
               <span className="hidden sm:inline">{t('share')}</span>
             </Button>
