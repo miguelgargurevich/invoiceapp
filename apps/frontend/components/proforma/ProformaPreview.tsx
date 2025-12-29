@@ -142,14 +142,6 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
           </div>
         )}
 
-        {/* Attorney Fees Clause */}
-        <div className="mb-2 text-center">
-          <p className="text-[8px] italic text-gray-700">
-            If an attorney is used to enforce or collect any obligations due on this obligation, 
-            then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.
-          </p>
-        </div>
-
         {/* Separator Line */}
         <div className="border-t border-gray-400 mb-2"></div>
 
@@ -163,10 +155,10 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         {/* Payment Terms */}
         <div className="mb-4 p-3 bg-gray-50 border border-gray-300 rounded">
           <div className="text-[10px]">
-            <p className="font-bold text-gray-900 mb-2">Payment to be made as follows:</p>
-            {proforma.paymentTerms && (
-              <p className="text-gray-800 mb-2 whitespace-pre-wrap">{proforma.paymentTerms}</p>
-            )}
+            <p className="text-gray-800 mb-2">
+              <span className="font-bold text-gray-900">Payment to be made as follows:</span>
+              {proforma.paymentTerms && <span className="ml-1">{proforma.paymentTerms}</span>}
+            </p>
             <p className="text-gray-800 mt-2">
               <span className="font-bold">Total Amount:</span> {formatCurrency(proforma.total)}
             </p>
@@ -215,7 +207,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         </div>
 
         {/* Signature Lines */}
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 gap-8 mb-6">
           <div>
             <p className="text-[9px] font-bold text-gray-800 mb-6">Signature:</p>
             <div className="border-t border-gray-800 mb-1"></div>
@@ -226,6 +218,14 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
             <div className="border-t border-gray-800 mb-1"></div>
             <p className="text-[9px] text-gray-600">{formatDate(proforma.fechaEmision)}</p>
           </div>
+        </div>
+
+        {/* Attorney Fees Clause - Bottom of Page */}
+        <div className="text-center mt-6">
+          <p className="text-[8px] italic text-gray-700">
+            If an attorney is used to enforce or collect any obligations due on this obligation, 
+            then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.
+          </p>
         </div>
       </div>
     );
