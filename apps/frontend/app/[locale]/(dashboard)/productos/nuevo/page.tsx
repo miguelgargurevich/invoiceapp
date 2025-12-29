@@ -36,7 +36,7 @@ export default function NuevoProductoPage({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.codigo || !formData.nombre || !formData.precioVenta) {
+    if (!formData.nombre || !formData.precioVenta) {
       showError('Please fill in required fields');
       return;
     }
@@ -45,6 +45,7 @@ export default function NuevoProductoPage({
       setLoading(true);
       const payload = {
         ...formData,
+        codigo: '', // Backend will auto-generate
         precioVenta: parseFloat(formData.precioVenta),
       };
       
@@ -156,16 +157,8 @@ export default function NuevoProductoPage({
             </div>
           </div>
 
-          {/* Code & Name */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Input
-              label={t('code')}
-              value={formData.codigo}
-              onChange={(e) => setFormData({ ...formData, codigo: e.target.value })}
-              placeholder="SKU-001"
-              required
-            />
-            
+          {/* Name */}
+          <div>
             <Input
               label={t('name')}
               value={formData.nombre}
@@ -173,6 +166,9 @@ export default function NuevoProductoPage({
               placeholder="Product or service name"
               required
             />
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+              {formData.tipo === 'PRODUCTO' ? 'Product code will be auto-generated (PRD-0001)' : 'Service code will be auto-generated (SRV-0001)'}
+            </p>
           </div>
 
           {/* Description */}

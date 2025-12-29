@@ -31,8 +31,8 @@ interface SidebarProps {
 
 const menuItems = [
   { href: '/dashboard', icon: LayoutDashboard, labelKey: 'dashboard' },
-  { href: '/facturas', icon: Receipt, labelKey: 'invoices' },
   { href: '/proformas', icon: FileBarChart, labelKey: 'quotes' },
+  { href: '/facturas', icon: Receipt, labelKey: 'invoices' },
   { href: '/clientes', icon: Users, labelKey: 'clients' },
   { href: '/productos', icon: Package, labelKey: 'products' },
   { href: '/reportes', icon: BarChart3, labelKey: 'reports' },

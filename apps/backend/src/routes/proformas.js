@@ -463,6 +463,7 @@ router.post('/:id/convertir-factura', authenticateToken, getEmpresaFromUser, asy
         moneda: proforma.moneda,
         tipoCambio: proforma.tipoCambio,
         observaciones: proforma.observaciones,
+        orderType: 'contract',
         jobName: proforma.jobName,
         jobLocation: proforma.jobLocation,
         workDescription: proforma.workDescription,
