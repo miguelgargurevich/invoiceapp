@@ -213,7 +213,6 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         </div>
 
         {/* Signature Lines */}
-        <div className="border-t border-gray-400 mb-3"></div>
         <div className="grid grid-cols-2 gap-8">
           <div>
             <p className="text-[9px] font-bold text-gray-800 mb-6">Signature:</p>
