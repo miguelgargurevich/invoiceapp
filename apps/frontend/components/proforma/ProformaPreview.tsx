@@ -193,8 +193,8 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
           {/* Right Side - Signature */}
           <div className="text-center">
             <p className="text-[10px] font-bold text-gray-900 mb-8">Authorized Signature</p>
-            <div className="border-t border-gray-800 mb-2 mt-10"></div>
-            <p className="text-[8px] italic text-gray-600 mt-2">
+            <div className="border-t border-gray-800 mb-2 mt-16"></div>
+            <p className="text-[8px] italic text-gray-600 mt-4">
               This proposal may be withdrawn by us if not accepted within 30 days.
             </p>
           </div>
