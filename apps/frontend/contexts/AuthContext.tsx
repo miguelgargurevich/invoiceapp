@@ -16,6 +16,7 @@ export interface Empresa {
   email?: string;
   web?: string;
   logoUrl?: string;
+  firmaEmpresa?: string; // Company digital signature
   moneda: string;
   taxRate?: number | string; // Tax rate percentage (e.g., 18 for 18%)
   serieFactura: string;

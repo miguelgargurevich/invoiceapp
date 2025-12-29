@@ -33,10 +33,6 @@ interface Empresa {
   logoUrl?: string;
   firmaEmpresa?: string; // Company digital signature
 }
-  logo?: string;
-  moneda?: string;
-  taxRate?: number | string;
-}
 
 interface Proforma {
   id: string;
@@ -191,21 +187,8 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
 
           {/* Right Side - Signature */}
           <div className="text-center">
-            <p className="text-[10px] font-bold text-gray-900 mb-2">Authorized Signature</p>
-            {empresa?.firmaEmpresa ? (
-              <div className="flex items-center justify-center min-h-[64px] mb-2">
-                <Image
-                  src={empresa.firmaEmpresa}
-                  alt="Authorized Signature"
-                  width={150}
-                  height={60}
-                  className="max-h-16 w-auto object-contain"
-                  unoptimized
-                />
-              </div>
-            ) : (
-              <div className="border-t border-gray-800 mb-2 mt-16"></div>
-            )}
+            <p className="text-[10px] font-bold text-gray-900 mb-8">Authorized Signature</p>
+            <div className="border-t border-gray-800 mb-2 mt-16"></div>
             <p className="text-[8px] italic text-gray-600 mt-4">
               This proposal may be withdrawn by us if not accepted within 30 days.
             </p>
