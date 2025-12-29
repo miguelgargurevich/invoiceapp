@@ -3,7 +3,6 @@
 import { forwardRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { formatCurrency as baseFormatCurrency, formatDate } from '@/lib/utils';
-import Image from 'next/image';
 
 interface DetalleProforma {
   id: string;
@@ -190,13 +189,10 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
             <p className="text-[10px] font-bold text-gray-900 mb-2">Authorized Signature</p>
             {empresa?.firmaEmpresa ? (
               <div className="flex justify-center my-3">
-                <Image
+                <img
                   src={empresa.firmaEmpresa}
                   alt="Company Signature"
-                  width={150}
-                  height={60}
-                  className="max-h-16 w-auto object-contain"
-                  unoptimized
+                  style={{ width: '150px', height: '60px', maxHeight: '64px', objectFit: 'contain' }}
                 />
               </div>
             ) : (
