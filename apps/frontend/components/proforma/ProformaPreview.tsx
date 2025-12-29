@@ -250,7 +250,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
           <div className="text-center">
             <p className="text-sm font-bold text-gray-900 mb-8">Authorized Signature</p>
             <div className="border-t border-gray-800 mb-2"></div>
-            <p className="text-xs italic text-gray-600">
+            <p className="text-xs italic text-gray-600 mt-6">
               This proposal may be withdrawn by us if not accepted within 30 days.
             </p>
           </div>
@@ -279,7 +279,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
           <div>
             <p className="text-xs font-bold text-gray-800 mb-6">Date of Acceptance:</p>
             <div className="border-t border-gray-800 mb-1"></div>
-            <p className="text-xs text-gray-600">Date</p>
+            <p className="text-xs text-gray-600">{formatDate(proforma.fechaEmision)}</p>
           </div>
         </div>
       </div>
