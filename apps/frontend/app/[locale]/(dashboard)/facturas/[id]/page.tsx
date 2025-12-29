@@ -606,7 +606,7 @@ export default function FacturaDetailPage({
             <Printer className="w-4 h-4 mr-1" />
             {t('print')}
           </Button>
-          {factura.cliente.email && factura.estado !== 'ANULADA' && factura.signatureStatus !== 'SIGNED' && (
+          {factura.estado !== 'ANULADA' && factura.signatureStatus !== 'SIGNED' && (
             <Button 
               variant="outline" 
               size="sm" 

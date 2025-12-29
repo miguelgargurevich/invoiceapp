@@ -17,6 +17,36 @@ const productoSchema = z.object({
   stockMinimo: z.number().int().optional()
 });
 
+// Función para generar código automático de producto
+async function generarCodigoProducto(empresaId, tipo = 'PRODUCTO') {
+  const prefijo = tipo === 'SERVICIO' ? 'SRV' : 'PRD';
+  
+  // Buscar el último producto de la empresa con ese prefijo
+  const ultimoProducto = await prisma.producto.findFirst({
+    where: {
+      empresaId,
+      codigo: {
+        startsWith: prefijo
+      }
+    },
+    orderBy: {
+      codigo: 'desc'
+    }
+  });
+
+  let numero = 1;
+  if (ultimoProducto) {
+    // Extraer el número del último código (ej: PRD-0001 -> 1)
+    const match = ultimoProducto.codigo.match(/\d+$/);
+    if (match) {
+      numero = parseInt(match[0]) + 1;
+    }
+  }
+
+  // Generar código con padding (ej: PRD-0001, PRD-0002, etc)
+  return `${prefijo}-${numero.toString().padStart(4, '0')}`;
+}
+
 // GET /api/productos - Listar productos
 router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
   const { page = 1, limit = 20, search, activo } = req.query;
@@ -116,6 +146,11 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       stockActual: req.body.stockActual,
       stockMinimo: req.body.stockMinimo
     };
+
+    // Generar código automáticamente si no se proporciona
+    if (!mappedData.codigo || mappedData.codigo.trim() === '') {
+      mappedData.codigo = await generarCodigoProducto(req.empresa.id, mappedData.tipo || 'PRODUCTO');
+    }
 
     const validatedData = productoSchema.parse(mappedData);
 
