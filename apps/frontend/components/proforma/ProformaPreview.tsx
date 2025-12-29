@@ -77,11 +77,11 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         style={{ fontFamily: 'Arial, sans-serif', maxWidth: '850px' }}
       >
         {/* Header Section */}
-        <div className="flex justify-between items-start mb-3">
+        <div className="flex justify-between items-start mb-4">
           {/* Left Side - Company Info */}
           <div className="flex-1">
-            <div className="text-[13px] font-bold text-gray-900 mb-3">PROPOSAL</div>
-            <div className="text-[10px] space-y-1">
+            <div className="text-[14px] font-bold text-gray-900 mb-3">PROPOSAL</div>
+            <div className="text-[11px] space-y-1">
               <p className="font-bold text-gray-900">
                 {empresa?.razonSocial || empresa?.nombre}
                 {empresa?.nombreComercial && (
@@ -113,10 +113,10 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         </div>
 
         {/* Separator Line */}
-        <div className="border-t-2 border-gray-800 mb-3"></div>
+        <div className="border-t-2 border-gray-800 mb-4"></div>
 
         {/* Client Information */}
-        <div className="mb-3">
+        <div className="mb-4">
           <div className="text-[9px] font-bold text-gray-800 mb-2 uppercase">Client Information</div>
           <div className="grid grid-cols-2 gap-4 text-[10px]">
             <div>
@@ -136,17 +136,17 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
 
         {/* Specifications and Estimates */}
         {proforma.workDescription && (
-          <div className="mb-3 p-3 bg-gray-50 rounded border border-gray-200">
+          <div className="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
             <div className="text-[10px] font-bold text-gray-800 mb-1">We Hereby submit specifications and estimates for:</div>
             <p className="text-[9px] text-gray-700 whitespace-pre-wrap">{proforma.workDescription}</p>
           </div>
         )}
 
         {/* Separator Line */}
-        <div className="border-t border-gray-400 mb-2"></div>
+        <div className="border-t border-gray-400 mb-3"></div>
 
         {/* Proposal Statement */}
-        <div className="mb-2 text-center">
+        <div className="mb-3 text-center">
           <p className="text-[10px] font-bold text-gray-800">
             We Propose hereby to furnish material and labor - complete in accordance with above specifications, for the sum of:
           </p>
