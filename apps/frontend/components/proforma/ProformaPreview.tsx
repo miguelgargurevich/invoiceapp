@@ -153,7 +153,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
 
         {/* Proposal Statement */}
         <div className="mb-2 text-center">
-          <p className="text-[10px] font-medium text-gray-800">
+          <p className="text-[10px] font-bold text-gray-800">
             We Propose hereby to furnish material and labor - complete in accordance with above specifications, for the sum of:
           </p>
         </div>
