@@ -110,6 +110,8 @@ export default function ConfiguracionPage({
       // Establecer la firma actual si existe
       if (empresa.firmaEmpresa) {
         setCompanySignature(empresa.firmaEmpresa);
+      } else {
+        setCompanySignature(null);
       }
       
       // Cargar configuración de facturación desde empresa
@@ -260,9 +262,15 @@ export default function ConfiguracionPage({
         signatureDataUrl: pendingSignature
       }) as any;
       
+      console.log('[SIGNATURE] Saved signature response:', response.firmaEmpresa);
+      
+      // Update local state first
       setCompanySignature(response.firmaEmpresa);
       setPendingSignature(null);
+      
+      // Refresh empresa context to update all components
       await refreshEmpresa?.();
+      
       setMessage(t('messages.signatureSaved'));
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
@@ -279,6 +287,8 @@ export default function ConfiguracionPage({
       setUploadingSignature(true);
       await api.delete('/empresas/firma');
       setCompanySignature(null);
+      setPendingSignature(null);
+      setSignatureKey(prev => prev + 1); // Force remount for new signature creation
       await refreshEmpresa?.();
       setMessage(t('messages.signatureDeleted'));
       setTimeout(() => setMessage(''), 3000);
