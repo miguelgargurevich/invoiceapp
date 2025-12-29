@@ -234,11 +234,11 @@ export default function SignDocumentPage() {
   const daysUntilExpiry = Math.ceil((expiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-4 px-4">
+      <div className="max-w-4xl mx-auto space-y-4">
         {/* Header */}
-        <Card className="p-6">
-          <div className="flex items-start gap-4">
+        <Card className="p-4">
+          <div className="flex items-start gap-3">
             {data.empresa.logoUrl && (
               <img 
                 src={data.empresa.logoUrl} 
@@ -247,7 +247,7 @@ export default function SignDocumentPage() {
               />
             )}
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center gap-2 mb-1">
                 <Building2 className="w-5 h-5 text-gray-500" />
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   {data.empresa.nombre}
@@ -259,25 +259,52 @@ export default function SignDocumentPage() {
             </div>
           </div>
 
-          <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+          <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
             <div className="flex items-start gap-3">
-              <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
-              <div>
-                <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                  {data.signatureRequest.documentType === 'INVOICE' ? 'Invoice' : 'Proposal'}{' '}
-                  {data.document.serie}-{data.document.numero}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  Amount: ${Number(data.document.total).toFixed(2)}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Date: {new Date(data.document.fechaEmision).toLocaleDateString()}
-                </p>
+              <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+              <div className="flex-1 grid grid-cols-2 gap-4">
+                {/* Left Column - Invoice & Client */}
+                <div className="space-y-1">
+                  <div className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    {data.signatureRequest.documentType === 'INVOICE' ? 'Invoice' : 'Proposal'}{' '}
+                    {data.document.serie}-{data.document.numero}
+                  </div>
+                  
+                  {/* Client Information - Compact */}
+                  <div className="text-xs">
+                    <span className="font-medium text-gray-500 dark:text-gray-400">CLIENT: </span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                      {data.document.cliente.razonSocial}
+                    </span>
+                    <div className="text-gray-600 dark:text-gray-400 mt-0.5">
+                      {data.document.cliente.tipoDocumento}: {data.document.cliente.numeroDocumento}
+                      {data.document.cliente.direccion && (
+                        <div className="mt-0.5">{data.document.cliente.direccion}</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column - Amount & Date */}
+                <div className="space-y-1 text-right">
+                  <div className="text-xs">
+                    <div className="text-gray-600 dark:text-gray-400">Amount</div>
+                    <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                      ${Number(data.document.total).toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="text-xs">
+                    <div className="text-gray-600 dark:text-gray-400">Issue Date</div>
+                    <div className="font-medium text-gray-900 dark:text-gray-100">
+                      {new Date(data.document.fechaEmision).toLocaleDateString()}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-4 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+          <div className="mt-2 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
             <Clock className="w-4 h-4" />
             <span>
               Expires in {daysUntilExpiry} {daysUntilExpiry === 1 ? 'day' : 'days'}

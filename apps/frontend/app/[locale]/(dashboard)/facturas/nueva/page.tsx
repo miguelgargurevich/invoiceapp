@@ -87,6 +87,7 @@ export default function NuevaFacturaPage({
     new Date(Date.now() + 30 * 86400000)
   );
   const [observaciones, setObservaciones] = useState('');
+  const [orderType, setOrderType] = useState<string>('');
   const [lineas, setLineas] = useState<LineaDetalle[]>([]);
 
   // Load data
@@ -253,6 +254,7 @@ export default function NuevaFacturaPage({
         fechaEmision: fechaEmision?.toISOString(),
         fechaVencimiento: fechaVencimiento?.toISOString(),
         observaciones,
+        orderType: orderType || null,
         detalles: lineas.map((linea) => ({
           productoId: linea.productoId || null,
           descripcion: linea.descripcion,
@@ -568,6 +570,42 @@ export default function NuevaFacturaPage({
 
         {/* Sidebar */}
         <div className="space-y-6">
+          {/* Order Type */}
+          <Card>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              Order Type
+            </h2>
+            <div className="space-y-3">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={orderType === 'day_work'}
+                  onChange={(e) => setOrderType(e.target.checked ? 'day_work' : '')}
+                  className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Day Work</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={orderType === 'contract'}
+                  onChange={(e) => setOrderType(e.target.checked ? 'contract' : '')}
+                  className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Contract</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={orderType === 'extra'}
+                  onChange={(e) => setOrderType(e.target.checked ? 'extra' : '')}
+                  className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Extra</span>
+              </label>
+            </div>
+          </Card>
+
           {/* Dates */}
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">

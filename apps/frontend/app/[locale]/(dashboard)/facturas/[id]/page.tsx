@@ -96,6 +96,7 @@ interface Factura {
   saldoPendiente: number;
   totalPagado: number;
   observaciones?: string;
+  orderType?: string;
   detalles: DetalleFactura[];
   pagos: PagoFactura[];
   signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
@@ -793,7 +794,10 @@ export default function FacturaDetailPage({
                 </div>
               )}
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">{t('tax')}</span>
+                <span className="text-gray-500">
+                  {t('tax')}
+                  {empresa?.taxRate && Number(empresa.taxRate) > 0 ? ` (${empresa.taxRate}%)` : ''}
+                </span>
                 <span>{formatCurrency(factura.igv)}</span>
               </div>
               <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
@@ -811,6 +815,39 @@ export default function FacturaDetailPage({
                 </div>
               )}
             </div>
+          </Card>
+
+          {/* Order Type */}
+          <Card>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              Order Type
+            </h2>
+            {factura.orderType ? (
+              <div className="flex items-center gap-2">
+                <div className="px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                  <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+                    {factura.orderType === 'day_work' && 'Day Work'}
+                    {factura.orderType === 'contract' && 'Contract'}
+                    {factura.orderType === 'extra' && 'Extra'}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                  <input type="checkbox" disabled className="w-4 h-4" />
+                  <span>Day Work</span>
+                </label>
+                <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                  <input type="checkbox" disabled className="w-4 h-4" />
+                  <span>Contract</span>
+                </label>
+                <label className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                  <input type="checkbox" disabled className="w-4 h-4" />
+                  <span>Extra</span>
+                </label>
+              </div>
+            )}
           </Card>
 
           {/* Dates */}

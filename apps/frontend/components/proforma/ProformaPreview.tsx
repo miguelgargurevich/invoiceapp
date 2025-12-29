@@ -28,6 +28,7 @@ interface Empresa {
   email?: string;
   logo?: string;
   moneda?: string;
+  taxRate?: number | string;
 }
 
 interface Proforma {
@@ -114,9 +115,9 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
 
         {/* Client Info */}
         <div className="mb-3 bg-gray-50 p-1.5 rounded" style={{ pageBreakInside: 'avoid' }}>
-          <h3 className="text-[7px] font-medium text-gray-800 mb-0.5 uppercase">
+          <div className="text-[10px] font-medium text-gray-800 mb-0.5 uppercase">
             {t('clientData')}
-          </h3>
+          </div>
           <div className="grid grid-cols-2 gap-1.5 text-[9px]">
             <div>
               <span className="text-gray-500">{t('companyName')}</span>
@@ -205,7 +206,10 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
               </div>
             )}
             <div className="flex justify-between py-1 text-[10px]">
-              <span className="text-gray-600">{t('tax')}</span>
+              <span className="text-gray-600">
+                {t('tax')}
+                {empresa?.taxRate && Number(empresa.taxRate) > 0 ? ` (${empresa.taxRate}%)` : ''}
+              </span>
               <span>{formatCurrency(proforma.igv)}</span>
             </div>
             <div className="flex justify-between py-1.5 border-t border-gray-800 mt-1">
@@ -230,9 +234,9 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         {/* Observations */}
         {proforma.observaciones && (
           <div className="mb-2 p-1.5 bg-gray-50 rounded" style={{ pageBreakInside: 'avoid' }}>
-            <h3 className="text-[8px] font-medium text-gray-800 mb-0.5">
+            <div className="text-[10px] font-medium text-gray-800 mb-0.5">
               {t('observations')}
-            </h3>
+            </div>
             <p className="text-[10px] text-gray-600">{proforma.observaciones}</p>
           </div>
         )}

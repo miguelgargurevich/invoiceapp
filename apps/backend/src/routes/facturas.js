@@ -24,6 +24,7 @@ const facturaSchema = z.object({
   moneda: z.string().default('PEN'),
   tipoCambio: z.number().positive().optional(),
   observaciones: z.string().optional(),
+  orderType: z.string().optional().nullable(),
   detalles: z.array(detalleSchema).min(1)
 });
 
@@ -198,7 +199,11 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
           },
           pagos: {
             select: {
-              monto: true
+              id: true,
+              monto: true,
+              fecha: true,
+              metodoPago: true,
+              referencia: true
             }
           },
           _count: {
@@ -355,11 +360,16 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
 
     const factura = await prisma.factura.create({
       data: {
-        ...facturaData,
+        clienteId: facturaData.clienteId,
         serie: req.empresa.serieFactura,
         numero,
         fechaEmision: facturaData.fechaEmision ? new Date(facturaData.fechaEmision) : new Date(),
         fechaVencimiento: facturaData.fechaVencimiento ? new Date(facturaData.fechaVencimiento) : null,
+        formaPago: facturaData.formaPago,
+        moneda: facturaData.moneda,
+        tipoCambio: facturaData.tipoCambio,
+        observaciones: facturaData.observaciones,
+        orderType: facturaData.orderType || null,
         subtotal: montosCalculados.subtotal,
         descuento: montosCalculados.descuento,
         igv: montosCalculados.igv,

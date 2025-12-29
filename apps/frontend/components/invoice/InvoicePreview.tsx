@@ -28,6 +28,7 @@ interface Empresa {
   email?: string;
   logo?: string;
   moneda?: string;
+  taxRate?: number | string;
 }
 
 interface Factura {
@@ -59,6 +60,7 @@ interface Factura {
   saldoPendiente?: number;
   totalPagado?: number;
   observaciones?: string;
+  orderType?: string;
   detalles: DetalleFactura[];
 }
 
@@ -116,15 +118,40 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
                 <span className="font-medium">{t('dueDate')}</span>{' '}
                 {formatDate(factura.fechaVencimiento)}
               </p>
+              {factura.orderType && (
+                <div className="mt-1 flex items-center gap-1 text-[8px]">
+                  <input 
+                    type="checkbox" 
+                    checked={factura.orderType === 'day_work'} 
+                    readOnly 
+                    className="w-2.5 h-2.5"
+                  />
+                  <span>Day Work</span>
+                  <input 
+                    type="checkbox" 
+                    checked={factura.orderType === 'contract'} 
+                    readOnly 
+                    className="w-2.5 h-2.5 ml-2"
+                  />
+                  <span>Contract</span>
+                  <input 
+                    type="checkbox" 
+                    checked={factura.orderType === 'extra'} 
+                    readOnly 
+                    className="w-2.5 h-2.5 ml-2"
+                  />
+                  <span>Extra</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* Client Info */}
         <div className="mb-3 bg-gray-50 p-1.5 rounded" style={{ pageBreakInside: 'avoid' }}>
-          <h3 className="text-[7px] font-medium text-gray-800 mb-0.5 uppercase">
+          <div className="text-[10px] font-medium text-gray-800 mb-0.5 uppercase">
             {t('clientData')}
-          </h3>
+          </div>
           <div className="grid grid-cols-2 gap-1.5 text-[9px]">
             <div>
               <span className="text-gray-500">{t('companyName')}</span>
@@ -213,7 +240,10 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
               </div>
             )}
             <div className="flex justify-between py-1 text-[10px]">
-              <span className="text-gray-600">{t('tax')}</span>
+              <span className="text-gray-600">
+                {t('tax')}
+                {empresa?.taxRate && Number(empresa.taxRate) > 0 ? ` (${empresa.taxRate}%)` : ''}
+              </span>
               <span>{formatCurrency(factura.igv)}</span>
             </div>
             <div className="flex justify-between py-1.5 border-t border-gray-800 mt-1">
@@ -228,9 +258,9 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         {/* Observations */}
         {factura.observaciones && (
           <div className="mb-2 p-1.5 bg-gray-50 rounded" style={{ pageBreakInside: 'avoid' }}>
-            <h3 className="text-[8px] font-medium text-gray-800 mb-0.5">
+            <div className="text-[10px] font-medium text-gray-800 mb-0.5">
               {t('observations')}
-            </h3>
+            </div>
             <p className="text-[10px] text-gray-600">{factura.observaciones}</p>
           </div>
         )}

@@ -86,38 +86,44 @@ export default function PaymentsReportPage({
       // Get sales data that includes payment info
       const [ventasData, facturasData] = await Promise.all([
         api.get<any>(`/reportes/ventas?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&agrupacion=mes`),
-        api.get<any>(`/facturas`),
+        api.get<any>(`/facturas?limit=1000`), // Get all invoices with payments
       ]);
+
+      console.log('Facturas data received:', facturasData);
 
       // Build payments from invoices
       const pagos: PagoReporte[] = [];
       const metodosCount: Record<string, number> = {};
       
-      (facturasData.facturas || facturasData || []).forEach((factura: any) => {
-        if (factura.pagos && factura.pagos.length > 0) {
-          factura.pagos.forEach((pago: any) => {
-            const fechaPago = new Date(pago.fechaPago);
-            if (fechaPago >= dateRange.from && fechaPago <= dateRange.to) {
-              pagos.push({
-                id: pago.id,
-                fechaPago: pago.fechaPago,
-                monto: pago.monto,
-                metodoPago: pago.metodoPago || 'EFECTIVO',
-                referencia: pago.referencia,
-                factura: {
-                  numero: factura.numero,
-                  cliente: {
-                    razonSocial: factura.cliente?.razonSocial || factura.cliente?.nombre || 'Unknown',
+      const facturas = facturasData.data || [];
+      if (Array.isArray(facturas)) {
+        facturas.forEach((factura: any) => {
+          if (factura.pagos && factura.pagos.length > 0) {
+            factura.pagos.forEach((pago: any) => {
+              const fechaPago = new Date(pago.fecha);
+              if (fechaPago >= dateRange.from && fechaPago <= dateRange.to) {
+                const montoNumerico = parseFloat(pago.monto) || 0;
+                pagos.push({
+                  id: pago.id,
+                  fechaPago: pago.fecha,
+                  monto: montoNumerico,
+                  metodoPago: pago.metodoPago || 'EFECTIVO',
+                  referencia: pago.referencia,
+                  factura: {
+                    numero: factura.numero,
+                    cliente: {
+                      razonSocial: factura.cliente?.razonSocial || factura.cliente?.nombre || 'Unknown',
+                    },
                   },
-                },
-              });
-              
-              const metodo = pago.metodoPago || 'EFECTIVO';
-              metodosCount[metodo] = (metodosCount[metodo] || 0) + pago.monto;
-            }
-          });
-        }
-      });
+                });
+                
+                const metodo = pago.metodoPago || 'EFECTIVO';
+                metodosCount[metodo] = (metodosCount[metodo] || 0) + montoNumerico;
+              }
+            });
+          }
+        });
+      }
 
       // Sort by date descending
       pagos.sort((a, b) => new Date(b.fechaPago).getTime() - new Date(a.fechaPago).getTime());
@@ -140,7 +146,7 @@ export default function PaymentsReportPage({
       
       const pagosMensuales = (ventasData.datos || []).map((item: any) => ({
         mes: monthNames[item.periodo.split('-')[1]] || item.periodo,
-        monto: item.pagado || 0,
+        monto: parseFloat(item.pagado) || 0,
       }));
       setPagosPorMes(pagosMensuales);
 
