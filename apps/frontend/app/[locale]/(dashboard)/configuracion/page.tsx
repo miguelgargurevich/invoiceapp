@@ -47,6 +47,7 @@ export default function ConfiguracionPage({
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [companySignature, setCompanySignature] = useState<string | null>(null);
+  const [pendingSignature, setPendingSignature] = useState<string | null>(null);
   const [uploadingSignature, setUploadingSignature] = useState(false);
   const [signatureKey, setSignatureKey] = useState(0); // Key to force remount of SignatureCanvas
 
@@ -245,20 +246,22 @@ export default function ConfiguracionPage({
     }
   };
 
-  const handleSignatureChange = async (dataUrl: string | null) => {
-    if (!dataUrl) {
-      setCompanySignature(null);
-      return;
-    }
+  const handleSignatureChange = (dataUrl: string | null) => {
+    setPendingSignature(dataUrl);
+  };
+
+  const saveSignature = async () => {
+    if (!pendingSignature) return;
 
     try {
       setUploadingSignature(true);
       
       const response = await api.post('/empresas/firma', {
-        signatureDataUrl: dataUrl
+        signatureDataUrl: pendingSignature
       }) as any;
       
       setCompanySignature(response.firmaEmpresa);
+      setPendingSignature(null);
       await refreshEmpresa?.();
       setMessage(t('messages.signatureSaved'));
       setTimeout(() => setMessage(''), 3000);
@@ -561,6 +564,7 @@ export default function ConfiguracionPage({
                         size="sm"
                         onClick={() => {
                           setCompanySignature(null);
+                          setPendingSignature(null);
                           setSignatureKey(prev => prev + 1); // Force remount
                         }}
                         disabled={uploadingSignature}
@@ -570,18 +574,31 @@ export default function ConfiguracionPage({
                       </Button>
                     </div>
                   ) : (
-                    <div className="border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
-                      <SignatureCanvas
-                        key={signatureKey}
-                        onSignatureChange={handleSignatureChange}
-                        disabled={uploadingSignature}
-                      />
-                      {uploadingSignature && (
-                        <div className="flex items-center justify-center mt-2">
-                          <LoadingSpinner size="sm" className="mr-2" />
-                          <span className="text-sm text-gray-600 dark:text-gray-400">Saving signature...</span>
-                        </div>
-                      )}
+                    <div className="space-y-3">
+                      <div className="border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
+                        <SignatureCanvas
+                          key={signatureKey}
+                          onSignatureChange={handleSignatureChange}
+                          disabled={uploadingSignature}
+                        />
+                      </div>
+                      <Button
+                        onClick={saveSignature}
+                        disabled={!pendingSignature || uploadingSignature}
+                        className="w-full"
+                      >
+                        {uploadingSignature ? (
+                          <>
+                            <LoadingSpinner size="sm" className="mr-2" />
+                            Saving...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="w-4 h-4 mr-2" />
+                            Save Signature
+                          </>
+                        )}
+                      </Button>
                     </div>
                   )}
                 </div>

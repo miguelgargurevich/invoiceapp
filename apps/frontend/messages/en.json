@@ -443,7 +443,7 @@
     "emailSubject": "Subject",
     "emailMessage": "Message",
     "emailPlaceholder": "recipient@email.com",
-    "emailSubjectPlaceholder": "Proposal {number}",
+    "emailSubjectPlaceholder": "Proposal - New Quote",
     "emailMessagePlaceholder": "Dear customer, attached is the proposal for the requested services...",
     "emailAttachment": "The proposal will be attached as a PDF",
     "emailSentSuccess": "Email sent successfully",

@@ -187,8 +187,21 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
 
           {/* Right Side - Signature */}
           <div className="text-center">
-            <p className="text-[10px] font-bold text-gray-900 mb-8">Authorized Signature</p>
-            <div className="border-t border-gray-800 mb-2 mt-16"></div>
+            <p className="text-[10px] font-bold text-gray-900 mb-2">Authorized Signature</p>
+            {empresa?.firmaEmpresa ? (
+              <div className="flex justify-center my-3 pl-4 ml-6">
+                <Image
+                  src={empresa.firmaEmpresa}
+                  alt="Company Signature"
+                  width={150}
+                  height={60}
+                  className="max-h-16 w-auto object-contain"
+                  unoptimized
+                />
+              </div>
+            ) : (
+              <div className="border-t border-gray-800 mb-2 mt-16"></div>
+            )}
             <p className="text-[8px] italic text-gray-600 mt-4">
               This proposal may be withdrawn by us if not accepted within 30 days.
             </p>
@@ -210,12 +223,12 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         {/* Signature Lines */}
         <div className="grid grid-cols-2 gap-8 mb-6">
           <div>
-            <p className="text-[9px] font-bold text-gray-800 mb-6">Signature:</p>
+            <p className="text-[9px] font-bold text-gray-800 mb-12">Signature:</p>
             <div className="border-t border-gray-800 mb-1"></div>
             <p className="text-[9px] text-gray-600">Customer Signature</p>
           </div>
           <div>
-            <p className="text-[9px] font-bold text-gray-800 mb-6">Date of Acceptance:</p>
+            <p className="text-[9px] font-bold text-gray-800 mb-12">Date of Acceptance:</p>
             <div className="border-t border-gray-800 mb-1"></div>
             <p className="text-[9px] text-gray-600">{formatDate(proforma.fechaEmision)}</p>
           </div>
