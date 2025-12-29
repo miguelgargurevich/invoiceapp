@@ -162,12 +162,12 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         <div className="mb-4 p-3 bg-gray-50 border border-gray-300 rounded">
           <div className="text-[10px]">
             <p className="font-bold text-gray-900 mb-2">Payment to be made as follows:</p>
-            <p className="text-gray-800">
+            {proforma.condiciones && (
+              <p className="text-gray-800 mb-2 whitespace-pre-wrap">{proforma.condiciones}</p>
+            )}
+            <p className="text-gray-800 mt-2">
               <span className="font-bold">Total Amount:</span> {formatCurrency(proforma.total)}
             </p>
-            {proforma.condiciones && (
-              <p className="text-gray-700 mt-2 text-[9px] whitespace-pre-wrap">{proforma.condiciones}</p>
-            )}
           </div>
         </div>
 
