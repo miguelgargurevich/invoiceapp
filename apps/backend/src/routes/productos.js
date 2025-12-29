@@ -22,6 +22,8 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
   const { page = 1, limit = 20, search, activo } = req.query;
 
   try {
+    console.log('[PRODUCTOS] Request params:', { page, limit, search, activo, empresaId: req.empresa?.id });
+    
     const where = {
       empresaId: req.empresa.id,
       ...(activo !== undefined && { activo: activo === 'true' }),
@@ -34,6 +36,8 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       })
     };
 
+    console.log('[PRODUCTOS] Where clause:', JSON.stringify(where, null, 2));
+
     const [productos, total] = await Promise.all([
       prisma.producto.findMany({
         where,
@@ -43,6 +47,8 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       }),
       prisma.producto.count({ where })
     ]);
+
+    console.log('[PRODUCTOS] Found:', total, 'productos');
 
     // Map to frontend field names
     const productosResponse = productos.map(p => ({
@@ -61,7 +67,8 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error listando productos:', error);
+    console.error('[PRODUCTOS] Error listando productos:', error);
+    console.error('[PRODUCTOS] Error stack:', error.stack);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 });

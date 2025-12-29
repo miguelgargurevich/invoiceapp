@@ -196,9 +196,12 @@ export default function ProformaPrintPreviewModal({
           handleDownloadPDF();
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sharing:', error);
-      handleDownloadPDF();
+      // Only download if it's not a user cancellation
+      if (error.name !== 'AbortError') {
+        handleDownloadPDF();
+      }
     } finally {
       setDownloading(false);
     }

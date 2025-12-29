@@ -203,7 +203,7 @@
     "registerPayment": "Registrar Pago",
     "voidInvoice": "Anular Factura",
     "cancelInvoice": "Cancelar Factura",
-    "issuedOn": "Emitida el",
+    "issuedOn": "Emitida el {date}",
     "send": "Enviar",
     "clientInfo": "Información del Cliente",
     "addClient": "Agregar Cliente",
@@ -452,7 +452,7 @@
     "emailSentSuccess": "Email enviado exitosamente",
     "emailRequired": "El email del destinatario es requerido",
     "sendEmailError": "Error al enviar el email",
-    "issuedOn": "Emitida el",
+    "issuedOn": "Emitida el {date}",
     "notFound": "Proforma no encontrada",
     "statuses": {
       "pending": "Pendiente",

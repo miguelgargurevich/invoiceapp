@@ -271,9 +271,8 @@ export default function ProductoDetailPage({
                       {t('unitPrice')} * ({currencySymbol})
                     </label>
                     <input
-                      type="number"
-                      step="0.01"
-                      min="0"
+                      type="text"
+                      inputMode="decimal"
                       value={formData.precioVenta}
                       onChange={(e) => setFormData({ ...formData, precioVenta: e.target.value })}
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
@@ -305,9 +304,8 @@ export default function ProductoDetailPage({
                     {t('unitPrice')} * ({currencySymbol})
                   </label>
                   <input
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    type="text"
+                    inputMode="decimal"
                     value={formData.precioVenta}
                     onChange={(e) => setFormData({ ...formData, precioVenta: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"

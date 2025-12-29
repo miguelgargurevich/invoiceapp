@@ -64,8 +64,12 @@ router.get('/resumen', authenticateToken, getEmpresaFromUser, async (req, res) =
           empresaId: req.empresa.id,
           estado: 'emitida',
           fechaVencimiento: {
-            lt: hoy
+            lt: hoy,
+            not: null  // Solo facturas con fecha de vencimiento
           }
+        },
+        include: {
+          pagos: true
         }
       })
     ]);
@@ -85,8 +89,13 @@ router.get('/resumen', authenticateToken, getEmpresaFromUser, async (req, res) =
     // Calcular totales del año
     const ventasDelAnio = facturasDelAnio.reduce((acc, f) => acc + parseFloat(f.total), 0);
 
-    // Total vencido
-    const totalVencido = facturasVencidas.reduce((acc, f) => acc + parseFloat(f.total), 0);
+    // Total vencido - solo facturas con saldo pendiente
+    const totalVencido = facturasVencidas
+      .filter(f => {
+        const totalPagado = f.pagos.reduce((sum, p) => sum + parseFloat(p.monto), 0);
+        return parseFloat(f.total) - totalPagado > 0;
+      })
+      .reduce((acc, f) => acc + parseFloat(f.total), 0);
 
     res.json({
       mes: {
@@ -283,7 +292,7 @@ router.get('/ultimas-facturas', authenticateToken, getEmpresaFromUser, async (re
       if (factura.estado !== 'anulada') {
         if (montoPendiente <= 0) {
           estado = 'pagada';
-        } else if (new Date(factura.fechaVencimiento) < new Date() && montoPendiente > 0) {
+        } else if (factura.fechaVencimiento && new Date(factura.fechaVencimiento) < new Date() && montoPendiente > 0) {
           estado = 'vencida';
         }
       }

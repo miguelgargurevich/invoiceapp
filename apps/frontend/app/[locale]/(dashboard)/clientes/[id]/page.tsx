@@ -195,7 +195,7 @@ export default function ClienteDetailPage({
 
               {/* Name */}
               <Input
-                label={`${t('name')} *`}
+                label={t('name')}
                 value={formData.nombre}
                 onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                 placeholder="Client name or business name"
@@ -205,7 +205,7 @@ export default function ClienteDetailPage({
               {/* Phone & Email */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Input
-                  label={`${t('phone')} *`}
+                  label={t('phone')}
                   value={formData.telefono}
                   onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
                   placeholder="+1 (555) 123-4567"

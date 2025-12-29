@@ -916,10 +916,8 @@ export default function FacturaDetailPage({
                 </label>
                 <div className="relative">
                   <input
-                    type="number"
-                    step="0.01"
-                    min="0.01"
-                    max={Number((factura?.saldoPendiente || 0).toFixed(2))}
+                    type="text"
+                    inputMode="decimal"
                     value={paymentData.monto}
                     onChange={(e) => setPaymentData({ ...paymentData, monto: e.target.value })}
                     className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 ${

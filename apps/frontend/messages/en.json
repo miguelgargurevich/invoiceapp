@@ -203,7 +203,7 @@
     "registerPayment": "Register Payment",
     "voidInvoice": "Void Invoice",
     "cancelInvoice": "Cancel Invoice",
-    "issuedOn": "Issued on",
+    "issuedOn": "Issued on {date}",
     "send": "Send",
     "clientInfo": "Client Information",
     "addClient": "Add Client",
@@ -449,7 +449,7 @@
     "emailSentSuccess": "Email sent successfully",
     "emailRequired": "Recipient email is required",
     "sendEmailError": "Error sending email",
-    "issuedOn": "Issued on",
+    "issuedOn": "Issued on {date}",
     "notFound": "Proposal not found",
     "statuses": {
       "pendiente": "Pending",

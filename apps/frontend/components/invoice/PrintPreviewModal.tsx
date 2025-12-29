@@ -198,10 +198,13 @@ export default function PrintPreviewModal({
           handleDownloadPDF();
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sharing:', error);
-      // If share fails, try download
-      handleDownloadPDF();
+      // Only download if it's not a user cancellation
+      if (error.name !== 'AbortError') {
+        // If share fails, try download
+        handleDownloadPDF();
+      }
     } finally {
       setDownloading(false);
     }

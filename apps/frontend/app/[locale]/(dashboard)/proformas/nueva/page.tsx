@@ -387,8 +387,9 @@ export default function NuevaProformaPage({
                           </td>
                           <td className="py-2 px-1">
                             <input
-                              type="number"
-                              min="1"
+                              type="text"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
                               value={linea.cantidad}
                               onChange={(e) =>
                                 updateLinea(linea.id, { cantidad: parseInt(e.target.value) || 1 })
@@ -398,9 +399,8 @@ export default function NuevaProformaPage({
                           </td>
                           <td className="py-2 px-1">
                             <input
-                              type="number"
-                              step="0.01"
-                              min="0"
+                              type="text"
+                              inputMode="decimal"
                               value={linea.precioUnitario}
                               onChange={(e) =>
                                 updateLinea(linea.id, { precioUnitario: parseFloat(e.target.value) || 0 })
@@ -410,9 +410,8 @@ export default function NuevaProformaPage({
                           </td>
                           <td className="py-2 px-1">
                             <input
-                              type="number"
-                              step="0.01"
-                              min="0"
+                              type="text"
+                              inputMode="decimal"
                               value={linea.descuento}
                               onChange={(e) =>
                                 updateLinea(linea.id, { descuento: parseFloat(e.target.value) || 0 })
@@ -466,8 +465,9 @@ export default function NuevaProformaPage({
                         <div>
                           <label className="text-xs text-gray-500">{t('quantity')}</label>
                           <input
-                            type="number"
-                            min="1"
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             value={linea.cantidad}
                             onChange={(e) =>
                               updateLinea(linea.id, { cantidad: parseInt(e.target.value) || 1 })
@@ -478,8 +478,8 @@ export default function NuevaProformaPage({
                         <div>
                           <label className="text-xs text-gray-500">{t('price')}</label>
                           <input
-                            type="number"
-                            step="0.01"
+                            type="text"
+                            inputMode="decimal"
                             value={linea.precioUnitario}
                             onChange={(e) =>
                               updateLinea(linea.id, { precioUnitario: parseFloat(e.target.value) || 0 })
@@ -490,8 +490,8 @@ export default function NuevaProformaPage({
                         <div>
                           <label className="text-xs text-gray-500">{t('discount')}</label>
                           <input
-                            type="number"
-                            step="0.01"
+                            type="text"
+                            inputMode="decimal"
                             value={linea.descuento}
                             onChange={(e) =>
                               updateLinea(linea.id, { descuento: parseFloat(e.target.value) || 0 })
@@ -635,7 +635,10 @@ export default function NuevaProformaPage({
                 </div>
               )}
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">{t('tax')}</span>
+                <span className="text-gray-500 dark:text-gray-400">
+                  {t('tax').replace(' (18%)', '')}
+                  {empresa?.taxRate && Number(empresa.taxRate) > 0 ? ` (${empresa.taxRate}%)` : ''}
+                </span>
                 <span>{formatCurrency(totals.igv)}</span>
               </div>
               <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
@@ -730,7 +733,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name */}
         <Input
-          label={`${t('name')} *`}
+          label={t('name')}
           value={formData.nombre}
           onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
           required
@@ -739,7 +742,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
         {/* Phone & Email */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
-            label={`${t('phone')} *`}
+            label={t('phone')}
             value={formData.telefono}
             onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
             required

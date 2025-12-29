@@ -150,13 +150,20 @@ export function SearchableSelect({
 
         <div className="flex items-center gap-1">
           {clearable && value && !disabled && (
-            <button
-              type="button"
+            <div
+              role="button"
+              tabIndex={0}
               onClick={handleClear}
-              className="p-0.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleClear(e as any);
+                }
+              }}
+              className="p-0.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded cursor-pointer"
             >
               <X className="w-4 h-4 text-gray-400" />
-            </button>
+            </div>
           )}
           <ChevronDown
             className={cn(
