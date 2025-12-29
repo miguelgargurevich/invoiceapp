@@ -80,10 +80,12 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-gray-900 mb-3">PROPOSAL</h1>
             <div className="text-sm space-y-1">
-              <p className="font-bold text-gray-900">{empresa?.razonSocial || empresa?.nombre}</p>
-              {empresa?.nombreComercial && (
-                <p className="text-gray-700">{empresa.nombreComercial}</p>
-              )}
+              <p className="font-bold text-gray-900">
+                {empresa?.razonSocial || empresa?.nombre}
+                {empresa?.nombreComercial && (
+                  <span className="font-normal text-gray-700"> | {empresa.nombreComercial}</span>
+                )}
+              </p>
               <p className="text-gray-700">
                 {empresa?.telefono && empresa.telefono}
                 {empresa?.telefono && empresa?.direccion && ' | '}
@@ -145,9 +147,6 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
               {proforma.detalles.map((detalle) => (
                 <tr key={detalle.id}>
                   <td className="py-2 px-3 text-sm border border-gray-300">
-                    {detalle.producto && (
-                      <span className="text-xs text-gray-500 block">{detalle.producto.codigo}</span>
-                    )}
                     {detalle.descripcion}
                   </td>
                   <td className="py-2 px-3 text-center text-sm border border-gray-300">{detalle.cantidad}</td>
