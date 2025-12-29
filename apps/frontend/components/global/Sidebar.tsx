@@ -7,8 +7,8 @@ import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
-  FileText,
-  FileCheck,
+  Receipt,
+  FileBarChart,
   Users,
   Package,
   BarChart3,
@@ -31,8 +31,8 @@ interface SidebarProps {
 
 const menuItems = [
   { href: '/dashboard', icon: LayoutDashboard, labelKey: 'dashboard' },
-  { href: '/facturas', icon: FileText, labelKey: 'invoices' },
-  { href: '/proformas', icon: FileCheck, labelKey: 'quotes' },
+  { href: '/facturas', icon: Receipt, labelKey: 'invoices' },
+  { href: '/proformas', icon: FileBarChart, labelKey: 'quotes' },
   { href: '/clientes', icon: Users, labelKey: 'clients' },
   { href: '/productos', icon: Package, labelKey: 'products' },
   { href: '/reportes', icon: BarChart3, labelKey: 'reports' },

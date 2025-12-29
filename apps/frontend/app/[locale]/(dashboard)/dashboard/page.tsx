@@ -18,7 +18,6 @@ import {
   Receipt,
   FileBarChart,
   CheckCircle,
-  FileCheck,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -259,7 +258,7 @@ export default function DashboardPage({
                 </div>
               </div>
               <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <Receipt className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
             </div>
           </Card>
@@ -318,7 +317,7 @@ export default function DashboardPage({
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="relative flex flex-col items-center justify-center text-white space-y-4">
             <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm group-hover:bg-white/30 transition-colors">
-              <FileCheck className="w-12 h-12" />
+              <FileBarChart className="w-12 h-12" />
             </div>
             <div className="text-center">
               <h3 className="text-2xl font-bold mb-1">Create Proposal</h3>
@@ -344,7 +343,7 @@ export default function DashboardPage({
           <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="relative flex flex-col items-center justify-center text-white space-y-4">
             <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm group-hover:bg-white/30 transition-colors">
-              <FileText className="w-12 h-12" />
+              <Receipt className="w-12 h-12" />
             </div>
             <div className="text-center">
               <h3 className="text-2xl font-bold mb-1">Create Invoice</h3>
