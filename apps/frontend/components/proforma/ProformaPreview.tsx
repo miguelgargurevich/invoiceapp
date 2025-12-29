@@ -55,6 +55,7 @@ interface Proforma {
   observaciones?: string;
   condiciones?: string;
   workDescription?: string;
+  paymentTerms?: string;
   detalles: DetalleProforma[];
 }
 
@@ -163,8 +164,8 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         <div className="mb-4 p-3 bg-gray-50 border border-gray-300 rounded">
           <div className="text-[10px]">
             <p className="font-bold text-gray-900 mb-2">Payment to be made as follows:</p>
-            {proforma.condiciones && (
-              <p className="text-gray-800 mb-2 whitespace-pre-wrap">{proforma.condiciones}</p>
+            {proforma.paymentTerms && (
+              <p className="text-gray-800 mb-2 whitespace-pre-wrap">{proforma.paymentTerms}</p>
             )}
             <p className="text-gray-800 mt-2">
               <span className="font-bold">Total Amount:</span> {formatCurrency(proforma.total)}
