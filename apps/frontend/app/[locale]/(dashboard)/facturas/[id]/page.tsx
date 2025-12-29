@@ -292,10 +292,13 @@ export default function FacturaDetailPage({
         token = factura.signatureRequest.token;
       } else {
         // Create new signature request
+        // Use placeholder email if client doesn't have one
+        const signerEmail = factura.cliente.email || 'no-email@placeholder.com';
+        
         const response: any = await api.post('/signatures/request', {
           documentType: 'INVOICE',
           documentId: factura.id,
-          signerEmail: factura.cliente.email || '',
+          signerEmail: signerEmail,
           signerName: factura.cliente.razonSocial,
           sendEmail: false, // Don't send email yet
         });
