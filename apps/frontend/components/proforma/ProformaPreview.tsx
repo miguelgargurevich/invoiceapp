@@ -132,66 +132,10 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
           </div>
         </div>
 
-        {/* Items Table */}
-        <div className="mb-4">
-          <table className="w-full border-collapse border border-gray-300">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="py-2 px-3 text-left text-[10px] font-bold border border-gray-300">Description</th>
-                <th className="py-2 px-3 text-center text-[10px] font-bold border border-gray-300 w-24">Qty</th>
-                <th className="py-2 px-3 text-right text-[10px] font-bold border border-gray-300 w-32">Unit Price</th>
-                <th className="py-2 px-3 text-right text-[10px] font-bold border border-gray-300 w-32">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {proforma.detalles.map((detalle) => (
-                <tr key={detalle.id}>
-                  <td className="py-2 px-3 text-[10px] border border-gray-300">
-                    {detalle.descripcion}
-                  </td>
-                  <td className="py-2 px-3 text-center text-[10px] border border-gray-300">{detalle.cantidad}</td>
-                  <td className="py-2 px-3 text-right text-[10px] border border-gray-300">
-                    {formatCurrency(detalle.precioUnitario)}
-                  </td>
-                  <td className="py-2 px-3 text-right text-[10px] font-medium border border-gray-300">
-                    {formatCurrency(detalle.subtotal)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Totals */}
-        <div className="flex justify-end mb-4">
-          <div className="w-64">
-            <div className="flex justify-between py-1 text-[10px]">
-              <span className="text-gray-700">Subtotal:</span>
-              <span className="font-medium">{formatCurrency(proforma.subtotal)}</span>
-            </div>
-            {proforma.descuento > 0 && (
-              <div className="flex justify-between py-1 text-[10px]">
-                <span className="text-gray-700">Discount:</span>
-                <span className="text-red-600 font-medium">-{formatCurrency(proforma.descuento)}</span>
-              </div>
-            )}
-            <div className="flex justify-between py-1 text-[10px]">
-              <span className="text-gray-700">
-                Tax{empresa?.taxRate && Number(empresa.taxRate) > 0 ? ` (${empresa.taxRate}%)` : ''}:
-              </span>
-              <span className="font-medium">{formatCurrency(proforma.igv)}</span>
-            </div>
-            <div className="flex justify-between py-2 border-t-2 border-gray-800 mt-1">
-              <span className="text-[11px] font-bold">TOTAL:</span>
-              <span className="text-[11px] font-bold">{formatCurrency(proforma.total)}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Observations */}
+        {/* Specifications and Estimates */}
         {proforma.observaciones && (
           <div className="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
-            <div className="text-[10px] font-bold text-gray-800 mb-1">Observations:</div>
+            <div className="text-[10px] font-bold text-gray-800 mb-1">We Hereby submit specifications and estimates for:</div>
             <p className="text-[9px] text-gray-700 whitespace-pre-wrap">{proforma.observaciones}</p>
           </div>
         )}
