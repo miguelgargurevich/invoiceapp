@@ -245,12 +245,12 @@ export default function PrintPreviewModal({
           
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={handleShare} disabled={downloading}>
-              <Share2 className="w-4 h-4 mr-1.5" />
-              {t('share')}
+              <Share2 className="w-4 h-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">{t('share')}</span>
             </Button>
             <Button size="sm" onClick={handleDownloadPDF} disabled={downloading}>
-              <Download className="w-4 h-4 mr-1.5" />
-              {downloading ? tCommon('loading') : t('downloadPdf')}
+              <Download className="w-4 h-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">{downloading ? tCommon('loading') : t('downloadPdf')}</span>
             </Button>
             <button
               onClick={onClose}
