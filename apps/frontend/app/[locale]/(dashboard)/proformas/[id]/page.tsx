@@ -310,7 +310,7 @@ export default function ProformaDetailPage({
               </Badge>
             </div>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
-              {t('issuedOn')} {formatDate(proforma.fechaEmision)}
+              {t('issuedOn', { date: formatDate(proforma.fechaEmision) })}
             </p>
           </div>
         </div>

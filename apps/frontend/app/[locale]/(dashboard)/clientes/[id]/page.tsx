@@ -94,8 +94,8 @@ export default function ClienteDetailPage({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.nombre || !formData.documento) {
-      showError('Please fill in required fields');
+    if (!formData.nombre || !formData.telefono) {
+      showError('Please fill in required fields (Name and Phone)');
       return;
     }
 

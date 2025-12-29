@@ -1139,7 +1139,7 @@ export default function FacturaDetailPage({
           </div>
 
           {/* Info Message */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-6 text-left">
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 text-left">
             <div className="flex gap-3">
               <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
               <div className="text-sm text-gray-700 dark:text-gray-300">
@@ -1153,8 +1153,8 @@ export default function FacturaDetailPage({
             </div>
           </div>
 
-          {/* Actions */}
-          <div className="flex gap-3">
+          {/* Actions - Hidden */}
+          <div className="hidden">
             {!signatureRequestModal.emailSent ? (
               <>
                 <Button
