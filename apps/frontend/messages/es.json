@@ -48,7 +48,8 @@
     "errorSaving": "Error al guardar. Por favor, intente nuevamente.",
     "errorDeleting": "Error al eliminar. Por favor, intente nuevamente.",
     "pleaseCompleteRequired": "Por favor complete todos los campos requeridos",
-    "couldNotLoadData": "No se pudieron cargar los datos"
+    "couldNotLoadData": "No se pudieron cargar los datos",
+    "for": "para"
   },
   "auth": {
     "appName": "Sistema de Facturación",

@@ -48,7 +48,8 @@
     "errorSaving": "Error saving. Please try again.",
     "errorDeleting": "Error deleting. Please try again.",
     "pleaseCompleteRequired": "Please complete all required fields",
-    "couldNotLoadData": "Could not load data"
+    "couldNotLoadData": "Could not load data",
+    "for": "for"
   },
   "auth": {
     "appName": "Billing System",
