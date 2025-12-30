@@ -207,7 +207,7 @@
     "issuedOn": "Emitida el {date}",
     "send": "Enviar",
     "clientInfo": "Información del Cliente",
-    "addClient": "Agregar Cliente",
+    "addClient": "Crear Cliente",
     "document": "Documento",
     "address": "Dirección",
     "email": "Correo",
