@@ -11,6 +11,7 @@ import {
   Calculator,
   Search,
   Receipt,
+  Users,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -339,7 +340,7 @@ export default function NuevaFacturaPage({
           <Card>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                {t('clientInfo')}
+                {t('client')}
               </h2>
               <Button
                 size="md"
@@ -347,7 +348,7 @@ export default function NuevaFacturaPage({
                 onClick={() => setIsClientModalOpen(true)}
                 type="button"
               >
-                <Plus className="w-5 h-5 mr-2" />
+                <Users className="w-5 h-5 mr-2" />
                 {t('addClient')}
               </Button>
             </div>
@@ -356,7 +357,7 @@ export default function NuevaFacturaPage({
               value={clienteId}
               onChange={setClienteId}
               loading={loadingClientes}
-              required
+              placeholder={t('selectClient')}
             />
             {selectedCliente && (
               <div
