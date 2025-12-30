@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Plus, Search, Filter, Download, Printer, MoreHorizontal, Receipt, CheckCircle, Clock, XCircle, AlertTriangle, FileText } from 'lucide-react';
+import { Plus, Search, Filter, Download, MoreHorizontal, Receipt, CheckCircle, Clock, XCircle, AlertTriangle, FileText } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
@@ -13,7 +13,7 @@ import {
   EmptyInvoices,
   type Column,
 } from '@/components/common';
-import { PrintPreviewModal } from '@/components/invoice';
+
 import { formatDate } from '@/lib/utils';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
@@ -91,9 +91,6 @@ export default function FacturasPage({
   const [totalPages, setTotalPages] = useState(1);
   const [sortKey, setSortKey] = useState<string>('fechaEmision');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
-  const [selectedFactura, setSelectedFactura] = useState<FacturaCompleta | null>(null);
-  const [loadingFactura, setLoadingFactura] = useState(false);
 
   const loadFacturas = useCallback(async () => {
     if (!empresa?.id) return;
@@ -204,42 +201,6 @@ export default function FacturasPage({
   useEffect(() => {
     loadFacturas();
   }, [loadFacturas]);
-
-  const loadFacturaCompleta = async (id: string) => {
-    try {
-      setLoadingFactura(true);
-      const response: any = await api.get(`/facturas/${id}`);
-      
-      const facturaData = response.data || response;
-      
-      // Validar que los datos existan
-      if (!facturaData || !facturaData.cliente) {
-        console.error('Invalid factura data:', facturaData);
-        alert('Error: No se pudieron cargar los datos de la factura');
-        return;
-      }
-      
-      const facturaCompleta: FacturaCompleta = {
-        ...facturaData,
-        cliente: {
-          id: facturaData.cliente.id || '',
-          razonSocial: facturaData.cliente.razonSocial || facturaData.cliente.nombre || '',
-          numeroDocumento: facturaData.cliente.numeroDocumento || facturaData.cliente.documento || '',
-          tipoDocumento: facturaData.cliente.tipoDocumento || 'RUC',
-          direccion: facturaData.cliente.direccion || '',
-          email: facturaData.cliente.email || '',
-        },
-      };
-      
-      setSelectedFactura(facturaCompleta);
-      setIsPrintPreviewOpen(true);
-    } catch (error) {
-      console.error('Error loading factura:', error);
-      alert('Error al cargar la factura. Por favor, intente nuevamente.');
-    } finally {
-      setLoadingFactura(false);
-    }
-  };
 
   const getStatusBadge = (status: string) => {
     const normalizedStatus = status.toUpperCase();
@@ -372,26 +333,6 @@ export default function FacturasPage({
         <Badge variant={getStatusBadge(factura.estado)}>
           {getStatusLabel(factura.estado)}
         </Badge>
-      ),
-    },
-    {
-      key: 'actions',
-      header: '',
-      className: 'w-12',
-      render: (factura) => (
-        <div className="flex items-center justify-end">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              loadFacturaCompleta(factura.id);
-            }}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-            title={t('print')}
-            disabled={loadingFactura}
-          >
-            <Printer className="w-4 h-4 text-gray-500" />
-          </button>
-        </div>
       ),
     },
   ];
@@ -661,19 +602,6 @@ export default function FacturasPage({
           </div>
         )}
       />
-
-      {/* Print Preview Modal */}
-      {selectedFactura && (
-        <PrintPreviewModal
-          isOpen={isPrintPreviewOpen}
-          onClose={() => {
-            setIsPrintPreviewOpen(false);
-            setSelectedFactura(null);
-          }}
-          factura={selectedFactura}
-          empresa={empresa!}
-        />
-      )}
     </div>
   );
 }

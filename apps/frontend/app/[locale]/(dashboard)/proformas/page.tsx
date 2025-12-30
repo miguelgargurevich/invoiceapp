@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Plus, Search, Filter, Printer, FileBarChart, CheckCircle, FileText, Clock, TrendingUp } from 'lucide-react';
+import { Plus, Search, Filter, FileBarChart, CheckCircle, FileText, Clock, TrendingUp } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
@@ -13,7 +13,7 @@ import {
   EmptyState,
   type Column,
 } from '@/components/common';
-import { ProformaPrintPreviewModal } from '@/components/proforma';
+
 import { formatDate } from '@/lib/utils';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
@@ -98,9 +98,6 @@ export default function ProformasPage({
   const [totalPages, setTotalPages] = useState(1);
   const [sortKey, setSortKey] = useState<string>('fechaEmision');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-  const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
-  const [selectedProforma, setSelectedProforma] = useState<ProformaCompleta | null>(null);
-  const [loadingProforma, setLoadingProforma] = useState(false);
 
   const loadProformas = useCallback(async () => {
     if (!empresa?.id) return;
@@ -140,42 +137,6 @@ export default function ProformasPage({
   useEffect(() => {
     loadProformas();
   }, [loadProformas]);
-
-  const loadProformaCompleta = async (id: string) => {
-    try {
-      setLoadingProforma(true);
-      const response: any = await api.get(`/proformas/${id}`);
-      
-      const proformaData = response.data || response;
-      
-      // Validar que los datos existan
-      if (!proformaData || !proformaData.cliente) {
-        console.error('Invalid proforma data:', proformaData);
-        alert('Error: No se pudieron cargar los datos de la proforma');
-        return;
-      }
-      
-      const proformaCompleta: ProformaCompleta = {
-        ...proformaData,
-        cliente: {
-          id: proformaData.cliente.id || '',
-          razonSocial: proformaData.cliente.razonSocial || proformaData.cliente.nombre || '',
-          numeroDocumento: proformaData.cliente.numeroDocumento || proformaData.cliente.documento || '',
-          tipoDocumento: proformaData.cliente.tipoDocumento || 'RUC',
-          direccion: proformaData.cliente.direccion || '',
-          email: proformaData.cliente.email || '',
-        },
-      };
-      
-      setSelectedProforma(proformaCompleta);
-      setIsPrintPreviewOpen(true);
-    } catch (error) {
-      console.error('Error loading proforma:', error);
-      alert('Error al cargar la proforma. Por favor, intente nuevamente.');
-    } finally {
-      setLoadingProforma(false);
-    }
-  };
 
   const getEstadoBadge = (estado: string) => {
     const variants = {
@@ -229,26 +190,6 @@ export default function ProformasPage({
         <Badge variant={getEstadoBadge(proforma.estado)}>
           {t(`statuses.${proforma.estado}`)}
         </Badge>
-      ),
-    },
-    {
-      key: 'actions',
-      header: '',
-      className: 'w-12',
-      render: (proforma) => (
-        <div className="flex items-center justify-end">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              loadProformaCompleta(proforma.id);
-            }}
-            disabled={loadingProforma}
-          >
-            <Printer className="h-4 w-4" />
-          </Button>
-        </div>
       ),
     },
   ];
@@ -496,19 +437,6 @@ export default function ProformasPage({
           />
         )}
       </Card>
-
-      {/* Print Preview Modal */}
-      {selectedProforma && (
-        <ProformaPrintPreviewModal
-          isOpen={isPrintPreviewOpen}
-          onClose={() => {
-            setIsPrintPreviewOpen(false);
-            setSelectedProforma(null);
-          }}
-          proforma={selectedProforma}
-          empresa={empresa!}
-        />
-      )}
     </div>
   );
 }
