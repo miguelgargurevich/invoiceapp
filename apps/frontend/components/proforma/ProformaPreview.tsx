@@ -85,12 +85,12 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         style={{ fontFamily: 'Arial, sans-serif', maxWidth: '850px' }}
       >
         {/* Header Section */}
-        <div className="flex justify-between items-start mb-4 border-b-2 border-gray-800 pb-3">
-          {/* Left Side - Proposal Info */}
-          <div className="flex-1">
-            <div className="bg-gray-800 text-white px-4 py-2 rounded inline-block mb-2">
-              <div className="text-[10px] font-bold">PROPOSAL</div>
-              <div className="text-[13px] font-bold">
+        <div className="grid grid-cols-12 gap-4 items-start mb-4 border-b-2 border-gray-800 pb-3">
+          {/* Left Side - Proposal Number & Dates */}
+          <div className="col-span-3">
+            <div className="bg-gray-800 text-white px-3 py-2 rounded inline-block mb-2">
+              <div className="text-[9px] font-bold">PROPOSAL</div>
+              <div className="text-[12px] font-bold">
                 {proforma.serie}-{proforma.numero.toString().padStart(6, '0')}
               </div>
             </div>
@@ -100,30 +100,35 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
             </div>
           </div>
 
-          {/* Right Side - Company Logo & Info */}
-          <div className="text-right">
+          {/* Center - Company Info */}
+          <div className="col-span-6 text-center">
+            <div className="text-[16px] font-bold text-gray-900 mb-2">
+              {empresa?.razonSocial || empresa?.nombre || 'Mi Empresa'}
+            </div>
+            <div className="text-[9px] text-gray-600 space-y-0.5">
+              {empresa?.nombreComercial && (
+                <p className="text-gray-700">{empresa.nombreComercial}</p>
+              )}
+              {empresa?.ruc && <p>Tax ID: {empresa.ruc}</p>}
+              {empresa?.direccion && <p>{empresa.direccion}</p>}
+              {empresa?.telefono && <p>Tel: {empresa.telefono}</p>}
+              {empresa?.email && <p>{empresa.email}</p>}
+            </div>
+          </div>
+
+          {/* Right Side - Company Logo */}
+          <div className="col-span-3 flex justify-end">
             {empresa?.logoUrl ? (
               <img
                 src={empresa.logoUrl}
                 alt={empresa?.nombre}
-                className="h-16 w-auto ml-auto mb-2"
+                className="h-20 w-auto object-contain"
               />
             ) : (
-              <div className="text-[12px] font-bold text-gray-800 mb-2">
-                {empresa?.razonSocial || empresa?.nombre || 'Mi Empresa'}
+              <div className="h-20 w-20 bg-gray-200 rounded flex items-center justify-center">
+                <span className="text-[8px] text-gray-400">Logo</span>
               </div>
             )}
-            <div className="text-[9px] text-gray-600 space-y-0.5">
-              <p className="font-bold text-gray-900">
-                {empresa?.razonSocial || empresa?.nombre}
-                {empresa?.nombreComercial && (
-                  <span className="text-gray-700"> | {empresa.nombreComercial}</span>
-                )}
-              </p>
-              {empresa?.telefono && <p>Tel: {empresa.telefono}</p>}
-              {empresa?.direccion && <p>{empresa.direccion}</p>}
-              {empresa?.email && <p>{empresa.email}</p>}
-            </div>
           </div>
         </div>
 

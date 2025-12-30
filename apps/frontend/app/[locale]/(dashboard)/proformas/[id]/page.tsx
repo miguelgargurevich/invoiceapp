@@ -17,6 +17,7 @@ import {
   Copy,
   Send,
   ExternalLink,
+  Share2,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -779,27 +780,72 @@ export default function ProformaDetailPage({
             setSignatureRequestModal({ isOpen: false, signingUrl: '', email: '', emailSent: false });
             setUrlCopied(false);
           }}
-          title={t('signatureRequestCreated')}
+          title={signatureRequestModal.emailSent ? "Signature Request Sent!" : "Request Signature"}
+          size="lg"
         >
-          <div className="space-y-4">
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-              <p className="text-sm text-green-800 dark:text-green-200">
-                {t('signatureRequestInfo')}
-              </p>
-            </div>
+          <div className="text-center">
+            {/* Success Icon - Only show if email sent */}
+            {signatureRequestModal.emailSent && (
+              <>
+                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
+                  <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
+                </div>
+                {/* Email Info */}
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                  Email sent to <span className="font-medium text-gray-900 dark:text-gray-100">{signatureRequestModal.email}</span>
+                </p>
+              </>
+            )}
 
-            {/* Signing URL */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t('signingUrl')}
+            {/* Sign Now Option - Prominent */}
+            {!signatureRequestModal.emailSent && (
+              <div className="bg-primary-50 dark:bg-primary-900/20 rounded-xl p-4 mb-4 border-2 border-primary-200 dark:border-primary-700">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="p-2 bg-primary-100 dark:bg-primary-800 rounded-lg">
+                    <PenLine className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">Sign Now</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Open signature panel on this device (iPad, tablet, etc.)</p>
+                  </div>
+                </div>
+                <Button
+                  onClick={() => window.open(signatureRequestModal.signingUrl, '_blank')}
+                  className="w-full"
+                >
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  Open Signature Panel
+                </Button>
+              </div>
+            )}
+
+            {/* Divider */}
+            {!signatureRequestModal.emailSent && (
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="bg-white dark:bg-gray-800 px-3 text-gray-500 dark:text-gray-400">or send to client</span>
+                </div>
+              </div>
+            )}
+
+            {/* URL Box */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 text-left">
+                Signing URL
               </label>
-              <div className="flex gap-2">
+              <div className="flex gap-2 mb-2">
                 <input
                   type="text"
                   readOnly
                   value={signatureRequestModal.signingUrl}
-                  className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="flex-1 px-3 py-2 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 font-mono"
+                  onClick={(e) => e.currentTarget.select()}
                 />
+              </div>
+              <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -808,55 +854,46 @@ export default function ProformaDetailPage({
                     setUrlCopied(true);
                     setTimeout(() => setUrlCopied(false), 2000);
                   }}
+                  className="flex-1"
                 >
-                  <Copy className="w-4 h-4" />
-                  {urlCopied ? t('copied') : t('copy')}
+                  {urlCopied ? (
+                    <>
+                      <CheckCircle className="w-4 h-4 mr-1" />
+                      Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4 mr-1" />
+                      Copy Link
+                    </>
+                  )}
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleShareLink}
+                  className="flex-1"
                 >
-                  <ExternalLink className="w-4 h-4" />
-                  {t('share')}
+                  <Share2 className="w-4 h-4 mr-1" />
+                  Share
                 </Button>
               </div>
             </div>
 
-            {/* Email option */}
-            {signatureRequestModal.email && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {t('sendViaEmail')}
-                </label>
-                <div className="flex gap-2 items-center">
-                  <input
-                    type="email"
-                    readOnly
-                    value={signatureRequestModal.email}
-                    className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                  />
-                  <Button
-                    size="sm"
-                    onClick={handleSendSignatureEmail}
-                    disabled={sendingEmail || signatureRequestModal.emailSent}
-                  >
-                    <Send className="w-4 h-4 mr-1" />
-                    {sendingEmail 
-                      ? t('sending...') 
-                      : signatureRequestModal.emailSent 
-                        ? t('emailSent')
-                        : t('sendEmail')
-                    }
-                  </Button>
+            {/* Info Message */}
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 text-left">
+              <div className="flex gap-3">
+                <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                <div className="text-sm text-gray-700 dark:text-gray-300">
+                  <p className="font-medium mb-1">Signature options:</p>
+                  <ul className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
+                    <li>• <strong>Sign Now:</strong> Open the signature panel on your current device</li>
+                    <li>• <strong>Send to client:</strong> Email the link or share via messaging apps</li>
+                    <li>• The link expires in 7 days</li>
+                  </ul>
                 </div>
-                {signatureRequestModal.emailSent && (
-                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                    {t('emailSentSuccessfully')}
-                  </p>
-                )}
               </div>
-            )}
+            </div>
           </div>
         </Modal>
       )}
