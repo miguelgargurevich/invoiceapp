@@ -109,7 +109,6 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
               {empresa?.nombreComercial && (
                 <p className="text-gray-700">{empresa.nombreComercial}</p>
               )}
-              {empresa?.ruc && <p>Tax ID: {empresa.ruc}</p>}
               {empresa?.direccion && <p>{empresa.direccion}</p>}
               {empresa?.telefono && <p>Tel: {empresa.telefono}</p>}
               {empresa?.email && <p>{empresa.email}</p>}
@@ -205,7 +204,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
           <div className="text-center">
             <p className="text-[10px] font-bold text-gray-900 mb-2">Authorized Signature</p>
             {empresa?.firmaEmpresa ? (
-              <div className="flex justify-center my-3">
+              <div className="flex justify-center">
                 <img
                   src={empresa.firmaEmpresa}
                   alt="Company Signature"
@@ -215,7 +214,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
             ) : (
               <div className="border-t border-gray-800 mb-2 mt-16"></div>
             )}
-            <p className="text-[8px] italic text-gray-600 mt-4">
+            <p className="text-[8px] italic text-gray-600 mt-2">
               This proposal may be withdrawn by us if not accepted within 30 days.
             </p>
           </div>
