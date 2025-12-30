@@ -2,6 +2,7 @@
 
 import { forwardRef } from 'react';
 import { useTranslations } from 'next-intl';
+import { Building2 } from 'lucide-react';
 import { formatCurrency as baseFormatCurrency, formatDate } from '@/lib/utils';
 
 interface DetalleProforma {
@@ -102,7 +103,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
 
           {/* Center - Company Info */}
           <div className="col-span-6 text-center">
-            <div className="text-[16px] font-bold text-gray-900 mb-2">
+            <div className="text-[16px] font-bold text-gray-900">
               {empresa?.razonSocial || empresa?.nombre || 'Mi Empresa'}
             </div>
             <div className="text-[9px] text-gray-600 space-y-0.5">
@@ -125,7 +126,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
               />
             ) : (
               <div className="h-20 w-20 bg-gray-200 rounded flex items-center justify-center">
-                <span className="text-[8px] text-gray-400">Logo</span>
+                <Building2 className="w-12 h-12 text-gray-400" />
               </div>
             )}
           </div>

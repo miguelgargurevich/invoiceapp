@@ -239,16 +239,19 @@ export default function SignDocumentPage() {
         {/* Header */}
         <Card className="p-4">
           <div className="flex items-start gap-3">
-            {data.empresa.logoUrl && (
+            {data.empresa.logoUrl ? (
               <img 
                 src={data.empresa.logoUrl} 
                 alt={data.empresa.nombre}
                 className="w-16 h-16 object-contain"
               />
+            ) : (
+              <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center">
+                <Building2 className="w-8 h-8 text-gray-400" />
+              </div>
             )}
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
-                <Building2 className="w-5 h-5 text-gray-500" />
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   {data.empresa.nombre}
                 </h2>
