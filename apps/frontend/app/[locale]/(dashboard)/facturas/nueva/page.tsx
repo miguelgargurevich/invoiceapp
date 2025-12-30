@@ -566,37 +566,12 @@ export default function NuevaFacturaPage({
             )}
           </Card>
 
-          {/* Observations */}
-          <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              {t('observations')}
-            </h2>
-            <Textarea
-              value={observaciones}
-              onChange={(e) => setObservaciones(e.target.value)}
-              placeholder={t('observationsPlaceholder')}
-              rows={3}
-            />
-          </Card>
-
           {/* Job Information */}
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
               Job Information
             </h2>
             <div className="space-y-4">
-              <Input
-                label="Job Name"
-                value={jobName}
-                onChange={(e) => setJobName(e.target.value)}
-                placeholder="e.g., Kitchen Renovation"
-              />
-              <Input
-                label="Job Location"
-                value={jobLocation}
-                onChange={(e) => setJobLocation(e.target.value)}
-                placeholder="Job site address"
-              />
               <Textarea
                 label="Work Description"
                 value={workDescription}
