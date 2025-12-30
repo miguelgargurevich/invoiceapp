@@ -423,6 +423,12 @@ export default function ProformaDetailPage({
                   {t(`statuses.${proforma.estado}`)}
                 </span>
               </Badge>
+              {proforma.signatureStatus === 'SIGNED' && (
+                <Badge variant="success">
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  {t('signed')}
+                </Badge>
+              )}
             </div>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
               {t('issuedOn', { date: formatDate(proforma.fechaEmision) })}
@@ -443,7 +449,7 @@ export default function ProformaDetailPage({
             >
               <PenLine className="w-4 h-4 mr-1" />
               {requestingSignature 
-                ? t('requesting...') 
+                ? t('requestingSignature') 
                 : proforma.signatureStatus === 'PENDING' 
                   ? t('resendSignature')
                   : t('requestSignature')

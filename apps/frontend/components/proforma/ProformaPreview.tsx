@@ -235,45 +235,69 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
 
         {/* Signature Lines */}
         {proforma.signatureRequest?.signature?.signatureImageUrl ? (
-          // Digital signature exists
-          <div className="grid grid-cols-2 gap-8 mb-6">
-            <div>
-              <p className="text-[9px] font-bold text-gray-800 mb-2">Customer Signature:</p>
-              <div className="mb-1">
-                <img 
-                  src={proforma.signatureRequest.signature.signatureImageUrl} 
-                  alt="Customer Signature" 
-                  className="h-16 w-auto object-contain"
-                />
+          // Digital signature exists - show both customer and company signatures
+          <div className="mb-6">
+            <div className="grid grid-cols-2 gap-8">
+              {/* Customer Signature */}
+              <div>
+                <p className="text-[9px] font-bold text-gray-800 mb-2">Customer Signature:</p>
+                <div className="mb-1">
+                  <img 
+                    src={proforma.signatureRequest.signature.signatureImageUrl} 
+                    alt="Customer Signature" 
+                    className="h-16 w-auto object-contain"
+                  />
+                </div>
+                <div className="border-t border-gray-800 mb-1"></div>
+                <p className="text-[9px] text-gray-600 mb-4">
+                  {proforma.signatureRequest.signature.signerName || proforma.cliente.razonSocial}
+                </p>
+                <p className="text-[9px] text-gray-800">
+                  <span className="font-bold">Date:</span>{' '}
+                  {proforma.signatureRequest.signature.signedAt 
+                    ? formatDate(proforma.signatureRequest.signature.signedAt)
+                    : formatDate(new Date().toISOString())
+                  }
+                </p>
               </div>
-              <div className="border-t border-gray-800 mb-1"></div>
-              <p className="text-[9px] text-gray-600">
-                {proforma.signatureRequest.signature.signerName || proforma.cliente.razonSocial}
-              </p>
-            </div>
-            <div>
-              <p className="text-[9px] font-bold text-gray-800 mb-12">Date of Acceptance:</p>
-              <div className="border-t border-gray-800 mb-1"></div>
-              <p className="text-[9px] text-gray-600">
-                {proforma.signatureRequest.signature.signedAt 
-                  ? formatDate(proforma.signatureRequest.signature.signedAt)
-                  : formatDate(proforma.fechaEmision)
-                }
-              </p>
+              
+              {/* Company Signature - only shown when customer has signed */}
+              {empresa?.firmaEmpresa ? (
+                <div>
+                  <p className="text-[9px] font-bold text-gray-800 mb-2">Authorized Signature:</p>
+                  <div className="mb-1">
+                    <img 
+                      src={empresa.firmaEmpresa} 
+                      alt="Company Signature" 
+                      className="h-16 w-auto object-contain"
+                    />
+                  </div>
+                  <div className="border-t border-gray-800 mb-1"></div>
+                  <p className="text-[9px] text-gray-600">{empresa.razonSocial || empresa.nombre}</p>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-[9px] font-bold text-gray-800 mb-12">Authorized Signature:</p>
+                  <div className="border-t border-gray-800 mb-1"></div>
+                  <p className="text-[9px] text-gray-600">{empresa?.razonSocial || empresa?.nombre || 'Company'}</p>
+                </div>
+              )}
             </div>
           </div>
         ) : (
-          // No signature yet - show empty signature lines
-          <div className="grid grid-cols-2 gap-8 mb-6">
+          // No signature yet - show only empty customer signature line
+          <div className="mb-6">
             <div>
-              <p className="text-[9px] font-bold text-gray-800 mb-12">Signature:</p>
-              <div className="border-t border-gray-800 mb-1"></div>
-              <p className="text-[9px] text-gray-600">Customer Signature</p>
-            </div>
-            <div>
-              <p className="text-[9px] font-bold text-gray-800 mb-12">Date of Acceptance:</p>
-              <div className="border-t border-gray-800 mb-1"></div>
-              <p className="text-[9px] text-gray-600">{formatDate(proforma.fechaEmision)}</p>
+              {/* Customer Signature Only */}
+              <div>
+                <p className="text-[9px] font-bold text-gray-800 mb-12">Customer Signature:</p>
+                <div className="border-t border-gray-800 mb-1"></div>
+                <p className="text-[9px] text-gray-600 mb-4">Customer Name</p>
+                <p className="text-[9px] text-gray-800">
+                  <span className="font-bold">Date:</span>{' '}
+                  {formatDate(new Date().toISOString())}
+                </p>
+              </div>
             </div>
           </div>
         )}

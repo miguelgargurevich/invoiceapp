@@ -474,8 +474,8 @@
     "sendEmail": "Enviar Email",
     "emailSent": "Email Enviado",
     "emailSentSuccessfully": "Email enviado exitosamente",
-    "sending...": "Enviando...",
-    "requesting...": "Solicitando...",
+    "sendingRequest": "Enviando...",
+    "requestingSignature": "Solicitando...",
     "statuses": {
       "pending": "Pendiente",
       "pendiente": "Pendiente",
