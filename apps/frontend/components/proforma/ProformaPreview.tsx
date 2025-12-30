@@ -110,7 +110,6 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
               {empresa?.nombreComercial && (
                 <p className="text-gray-700">{empresa.nombreComercial}</p>
               )}
-              {empresa?.direccion && <p>{empresa.direccion}</p>}
               {empresa?.telefono && <p>Tel: {empresa.telefono}</p>}
               {empresa?.email && <p>{empresa.email}</p>}
             </div>
