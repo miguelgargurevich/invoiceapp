@@ -3,7 +3,7 @@
 import { useState, useRef, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { Camera, X, Plus, Trash2, Maximize2, ChevronLeft, ChevronRight, Image, Calendar, User, FileText } from 'lucide-react';
-import { Button, Modal, Input, LoadingSpinner } from '@/components/common';
+import { Button, Modal, LoadingSpinner } from '@/components/common';
 import { useToast } from '@/contexts/ToastContext';
 import api from '@/lib/api';
 
@@ -177,16 +177,6 @@ export default function JobPhotosGallery({
   return (
     <>
       <div className="space-y-6 relative">
-        {/* Close Button */}
-        {onClose && (
-          <button
-            onClick={onClose}
-            className="absolute top-0 right-0 z-10 p-2.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors shadow-lg"
-            aria-label="Close"
-          >
-            <X className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-          </button>
-        )}
 
         {/* Client & Invoice Info Header */}
         {(clientInfo || invoiceInfo) && (
@@ -349,7 +339,7 @@ export default function JobPhotosGallery({
           <div className="text-center py-12 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800/50">
             <Camera className="w-16 h-16 mx-auto text-gray-400 mb-4" />
             <p className="text-gray-600 dark:text-gray-400 text-lg font-medium mb-2">{t('noPhotosYet')}</p>
-            <p className="text-gray-500 dark:text-gray-500 text-sm mb-4">Add photos to document your work progress</p>
+            <p className="text-gray-500 dark:text-gray-500 text-sm mb-4">{t('noPhotosDescription')}</p>
             {!readOnly && (
               <Button
                 size="sm"

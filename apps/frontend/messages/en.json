@@ -335,6 +335,7 @@
     "viewPhoto": "View Photo",
     "deletePhoto": "Delete",
     "noPhotosYet": "No photos uploaded yet",
+    "noPhotosDescription": "Add photos to document your work progress",
     "addFirstPhoto": "Add First Photo",
     "photosUploadedSuccess": "Photos uploaded successfully",
     "photoUploadedSuccess": "Photo uploaded successfully",

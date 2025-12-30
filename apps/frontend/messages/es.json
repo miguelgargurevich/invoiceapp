@@ -337,6 +337,7 @@
     "viewPhoto": "Ver Foto",
     "deletePhoto": "Eliminar",
     "noPhotosYet": "Aún no hay fotos subidas",
+    "noPhotosDescription": "Agrega fotos para documentar el progreso del trabajo",
     "addFirstPhoto": "Agregar Primera Foto",
     "photosUploadedSuccess": "Fotos subidas exitosamente",
     "photoUploadedSuccess": "Foto subida exitosamente",
