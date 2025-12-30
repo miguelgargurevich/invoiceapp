@@ -13,14 +13,8 @@ import {
   CheckCircle,
   XCircle,
   Clock,
-  PenLine,
-  Copy,
-  Send,
-  ExternalLink,
   Calendar,
   Edit2,
-  Share2,
-  Camera,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -35,7 +29,6 @@ import {
   DatePicker,
 } from '@/components/common';
 import { PrintPreviewModal, SendEmailModal, InvoicePreview } from '@/components/invoice';
-import { JobPhotosGallery } from '@/components/job';
 import { formatDate } from '@/lib/utils';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
@@ -64,14 +57,6 @@ interface PagoFactura {
   metodoPago: string;
   referencia?: string;
   notas?: string;
-}
-
-interface JobPhoto {
-  id: string;
-  url: string;
-  descripcion?: string;
-  fecha: string;
-  orden: number;
 }
 
 interface Factura {
@@ -105,6 +90,7 @@ interface Factura {
   pagos: PagoFactura[];
   signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
   signatureRequest?: any;
+  proformaOrigenId?: string | null;
 }
 
 export default function FacturaDetailPage({
@@ -125,15 +111,6 @@ export default function FacturaDetailPage({
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [isSendEmailOpen, setIsSendEmailOpen] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
-  const [requestingSignature, setRequestingSignature] = useState(false);
-  const [signatureRequestModal, setSignatureRequestModal] = useState<{
-    isOpen: boolean;
-    signingUrl: string;
-    email: string;
-    emailSent: boolean;
-  }>({ isOpen: false, signingUrl: '', email: '', emailSent: false });
-  const [urlCopied, setUrlCopied] = useState(false);
-  const [sendingEmail, setSendingEmail] = useState(false);
   const [isEditDatesOpen, setIsEditDatesOpen] = useState(false);
   const [editingDates, setEditingDates] = useState(false);
   const [fechaEmisionEdit, setFechaEmisionEdit] = useState<Date | null>(null);
@@ -152,27 +129,10 @@ export default function FacturaDetailPage({
     notas: '',
   });
   const [savingPayment, setSavingPayment] = useState(false);
-  const [jobPhotos, setJobPhotos] = useState<JobPhoto[]>([]);
-  const [isPhotosModalOpen, setIsPhotosModalOpen] = useState(false);
 
   useEffect(() => {
     loadFactura();
   }, [id]);
-
-  useEffect(() => {
-    if (factura?.id) {
-      loadJobPhotos();
-    }
-  }, [factura?.id]);
-
-  const loadJobPhotos = async () => {
-    try {
-      const photos: any = await api.get(`/job-photos/factura/${id}`);
-      setJobPhotos(photos || []);
-    } catch (error) {
-      console.error('Error loading job photos:', error);
-    }
-  };
 
   const loadFactura = async () => {
     try {
@@ -279,104 +239,6 @@ export default function FacturaDetailPage({
     }
   };
 
-  const handleRequestSignature = async () => {
-    if (!factura) return;
-
-    try {
-      setRequestingSignature(true);
-      
-      let token;
-      
-      // If signature is already pending, reuse existing token
-      if (factura.signatureStatus === 'PENDING' && factura.signatureRequest?.token) {
-        token = factura.signatureRequest.token;
-      } else {
-        // Create new signature request
-        // Use placeholder email if client doesn't have one
-        const signerEmail = factura.cliente.email || 'no-email@placeholder.com';
-        
-        const response: any = await api.post('/signatures/request', {
-          documentType: 'INVOICE',
-          documentId: factura.id,
-          signerEmail: signerEmail,
-          signerName: factura.cliente.razonSocial,
-          sendEmail: false, // Don't send email yet
-        });
-        token = response.token;
-      }
-
-      // Show modal with signing URL (email not sent yet)
-      const signingUrl = `${window.location.origin}/${locale}/sign/${token}`;
-      setSignatureRequestModal({
-        isOpen: true,
-        signingUrl,
-        email: factura.cliente.email || '',
-        emailSent: false
-      });
-      
-      // Reload to show signature status
-      if (factura.signatureStatus !== 'PENDING') {
-        loadFactura();
-      }
-    } catch (error: any) {
-      console.error('Error requesting signature:', error);
-      showError(error.response?.data?.error || 'Failed to request signature');
-    } finally {
-      setRequestingSignature(false);
-    }
-  };
-
-  const handleSendSignatureEmail = async () => {
-    if (!factura || !signatureRequestModal.signingUrl) return;
-
-    try {
-      setSendingEmail(true);
-      
-      // Extract token from URL
-      const token = signatureRequestModal.signingUrl.split('/').pop();
-      
-      await api.post(`/signatures/${token}/send-email`, {
-        signerEmail: factura.cliente.email || '',
-        signerName: factura.cliente.razonSocial,
-      });
-
-      // Update modal to show email sent
-      setSignatureRequestModal(prev => ({
-        ...prev,
-        emailSent: true
-      }));
-      
-      showSuccess('Email sent successfully!');
-    } catch (error: any) {
-      console.error('Error sending email:', error);
-      showError(error.response?.data?.error || 'Failed to send email');
-    } finally {
-      setSendingEmail(false);
-    }
-  };
-  const handleShareLink = async () => {
-    try {
-      const shareData = {
-        title: `Signature Request - Invoice ${factura?.serie}-${factura?.numero}`,
-        text: `Please sign this invoice for ${factura?.cliente.razonSocial}`,
-        url: signatureRequestModal.signingUrl,
-      };
-
-      if (navigator.share) {
-        await navigator.share(shareData);
-      } else {
-        // Fallback: copy to clipboard
-        await navigator.clipboard.writeText(signatureRequestModal.signingUrl);
-        setUrlCopied(true);
-        setTimeout(() => setUrlCopied(false), 2000);
-      }
-    } catch (error: any) {
-      // User cancelled or error occurred
-      if (error.name !== 'AbortError') {
-        console.error('Error sharing:', error);
-      }
-    }
-  };
   const handleCancelInvoice = async () => {
     if (!factura) return;
 
@@ -570,7 +432,13 @@ export default function FacturaDetailPage({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
           <button
-            onClick={() => router.back()}
+            onClick={() => {
+              if (factura.proformaOrigenId) {
+                router.push(`/${locale}/proformas/${factura.proformaOrigenId}`);
+              } else {
+                router.back();
+              }
+            }}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -609,17 +477,6 @@ export default function FacturaDetailPage({
             <Printer className="w-4 h-4 mr-1" />
             {t('print')}
           </Button>
-          {factura.estado !== 'ANULADA' && factura.signatureStatus !== 'SIGNED' && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleRequestSignature}
-              disabled={requestingSignature}
-            >
-              <PenLine className="w-4 h-4 mr-1" />
-              {requestingSignature ? t('loading') : factura.signatureStatus === 'PENDING' ? t('resendSignature') : t('requestSignature')}
-            </Button>
-          )}
           {factura.estado !== 'PAGADA' && factura.estado !== 'ANULADA' && factura.saldoPendiente > 0 && (
             <Button size="sm" onClick={() => {
               setPaymentData({ ...paymentData, monto: (factura.saldoPendiente || 0).toFixed(2) });
@@ -629,10 +486,6 @@ export default function FacturaDetailPage({
               {t('registerPayment')}
             </Button>
           )}
-          <Button variant="outline" size="sm" onClick={() => setIsPhotosModalOpen(true)}>
-            <Camera className="w-4 h-4 mr-1" />
-            {t('jobPhotos')} {jobPhotos.length > 0 && `(${jobPhotos.length})`}
-          </Button>
         </div>
       </div>
 
@@ -1139,177 +992,6 @@ export default function FacturaDetailPage({
         factura={factura}
       />
 
-      {/* Signature Request Modal */}
-      <Modal
-        isOpen={signatureRequestModal.isOpen}
-        onClose={() => {
-          setSignatureRequestModal({ isOpen: false, signingUrl: '', email: '', emailSent: false });
-          setUrlCopied(false);
-        }}
-        title={signatureRequestModal.emailSent ? "Signature Request Sent!" : "Request Signature"}
-        size="lg"
-      >
-        <div className="text-center">
-          {/* Success Icon - Only show if email sent */}
-          {signatureRequestModal.emailSent && (
-            <>
-              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
-                <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
-              </div>
-              {/* Email Info */}
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                Email sent to <span className="font-medium text-gray-900 dark:text-gray-100">{signatureRequestModal.email}</span>
-              </p>
-            </>
-          )}
-
-          {/* Sign Now Option - Prominent */}
-          {!signatureRequestModal.emailSent && (
-            <div className="bg-primary-50 dark:bg-primary-900/20 rounded-xl p-4 mb-4 border-2 border-primary-200 dark:border-primary-700">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-primary-100 dark:bg-primary-800 rounded-lg">
-                  <PenLine className="w-5 h-5 text-primary-600 dark:text-primary-400" />
-                </div>
-                <div className="text-left">
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">Sign Now</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Open signature panel on this device (iPad, tablet, etc.)</p>
-                </div>
-              </div>
-              <Button
-                onClick={() => window.open(signatureRequestModal.signingUrl, '_blank')}
-                className="w-full"
-              >
-                <ExternalLink className="w-4 h-4 mr-2" />
-                Open Signature Panel
-              </Button>
-            </div>
-          )}
-
-          {/* Divider */}
-          {!signatureRequestModal.emailSent && (
-            <div className="relative my-4">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="bg-white dark:bg-gray-800 px-3 text-gray-500 dark:text-gray-400">or send to client</span>
-              </div>
-            </div>
-          )}
-
-          {/* URL Box */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
-            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 text-left">
-              Signing URL
-            </label>
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                readOnly
-                value={signatureRequestModal.signingUrl}
-                className="flex-1 px-3 py-2 text-sm bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 font-mono"
-                onClick={(e) => e.currentTarget.select()}
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  navigator.clipboard.writeText(signatureRequestModal.signingUrl);
-                  setUrlCopied(true);
-                  setTimeout(() => setUrlCopied(false), 2000);
-                }}
-                className="flex-1"
-              >
-                {urlCopied ? (
-                  <>
-                    <CheckCircle className="w-4 h-4 mr-1" />
-                    Copied!
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4 mr-1" />
-                    Copy Link
-                  </>
-                )}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleShareLink}
-                className="flex-1"
-              >
-                <Share2 className="w-4 h-4 mr-1" />
-                Share
-              </Button>
-            </div>
-          </div>
-
-          {/* Info Message */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 text-left">
-            <div className="flex gap-3">
-              <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-              <div className="text-sm text-gray-700 dark:text-gray-300">
-                <p className="font-medium mb-1">Signature options:</p>
-                <ul className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
-                  <li>• <strong>Sign Now:</strong> Open the signature panel on your current device</li>
-                  <li>• <strong>Send to client:</strong> Email the link or share via messaging apps</li>
-                  <li>• The link expires in 7 days</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Actions - Hidden */}
-          <div className="hidden">
-            {!signatureRequestModal.emailSent ? (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setSignatureRequestModal({ isOpen: false, signingUrl: '', email: '', emailSent: false });
-                    setUrlCopied(false);
-                  }}
-                  disabled={sendingEmail}
-                  className="flex-1"
-                >
-                  Close
-                </Button>
-                <Button
-                  onClick={handleSendSignatureEmail}
-                  disabled={sendingEmail || !signatureRequestModal.email}
-                  className="flex-1"
-                >
-                  <Send className="w-4 h-4 mr-2" />
-                  {sendingEmail ? 'Sending...' : 'Send Email'}
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={() => window.open(signatureRequestModal.signingUrl, '_blank')}
-                  className="flex-1"
-                >
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Preview Link
-                </Button>
-                <Button
-                  onClick={() => {
-                    setSignatureRequestModal({ isOpen: false, signingUrl: '', email: '', emailSent: false });
-                    setUrlCopied(false);
-                  }}
-                  className="flex-1"
-                >
-                  Done
-                </Button>
-              </>
-            )}
-          </div>
-        </div>
-      </Modal>
-
       {/* Edit Dates Modal */}
       <Modal
         isOpen={isEditDatesOpen}
@@ -1482,33 +1164,6 @@ export default function FacturaDetailPage({
             </Button>
           </div>
         </div>
-      </Modal>
-
-      {/* Job Photos Modal */}
-      <Modal
-        isOpen={isPhotosModalOpen}
-        onClose={() => setIsPhotosModalOpen(false)}
-        title=""
-        size="full"
-      >
-        <JobPhotosGallery
-          facturaId={factura.id}
-          photos={jobPhotos}
-          onPhotosChange={loadJobPhotos}
-          readOnly={factura.estado === 'ANULADA'}
-          onClose={() => setIsPhotosModalOpen(false)}
-          clientInfo={{
-            razonSocial: factura.cliente.razonSocial,
-            numeroDocumento: factura.cliente.numeroDocumento,
-            direccion: factura.cliente.direccion,
-            email: factura.cliente.email
-          }}
-          invoiceInfo={{
-            numero: factura.numero,
-            serie: factura.serie,
-            fechaEmision: factura.fechaEmision
-          }}
-        />
       </Modal>
 
       {/* Hidden PDF Generator */}

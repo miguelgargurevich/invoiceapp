@@ -2,6 +2,7 @@
 
 import { forwardRef } from 'react';
 import { useTranslations } from 'next-intl';
+import { Building2 } from 'lucide-react';
 import { formatCurrency as baseFormatCurrency, formatDate } from '@/lib/utils';
 
 interface DetalleFactura {
@@ -26,7 +27,7 @@ interface Empresa {
   direccion?: string;
   telefono?: string;
   email?: string;
-  logo?: string;
+  logoUrl?: string;
   moneda?: string;
   taxRate?: number | string;
 }
@@ -49,13 +50,6 @@ interface Factura {
   igv: number;
   total: number;
   descuento: number;
-  signatureRequest?: {
-    signature?: {
-      signatureImageUrl: string;
-      signerName: string;
-      signedAt: string;
-    };
-  };
   estado: string;
   saldoPendiente?: number;
   totalPagado?: number;
@@ -85,28 +79,22 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         className="bg-white text-black p-6 mx-auto"
         style={{ fontFamily: 'Arial, sans-serif', minHeight: '297mm' }}
       >
-        {/* Header */}
-        <div className="flex justify-between items-start mb-3 border-b-2 border-gray-800 pb-3">
-          {/* Left Side - Invoice Info */}
-          <div className="flex-1">
-            <div className="bg-gray-800 text-white px-4 py-2 rounded inline-block mb-2">
-              <div className="text-[10px] font-bold">{t('invoice')}</div>
-              <div className="text-[13px] font-bold">
+        {/* Header Section */}
+        <div className="grid grid-cols-12 gap-4 items-start mb-4 border-b-2 border-gray-800 pb-3">
+          {/* Left Side - Receipt Number & Dates */}
+          <div className="col-span-3">
+            <div className="bg-gray-800 text-white px-3 py-2 rounded inline-block mb-2">
+              <div className="text-[9px] font-bold">{t('receipt')}</div>
+              <div className="text-[12px] font-bold">
                 {factura.serie}-{factura.numero.toString().padStart(6, '0')}
               </div>
             </div>
             <div className="text-[9px] text-gray-700 space-y-0.5">
-              <p>
-                <span className="font-semibold">{t('issueDate')}</span>{' '}
-                {formatDate(factura.fechaEmision)}
-              </p>
-              <p>
-                <span className="font-semibold">{t('dueDate')}</span>{' '}
-                {formatDate(factura.fechaVencimiento)}
-              </p>
+              <p><span className="font-semibold">Date:</span> {formatDate(factura.fechaEmision)}</p>
+              <p><span className="font-semibold">Due Date:</span> {formatDate(factura.fechaVencimiento)}</p>
             </div>
             {factura.orderType && (
-              <div className="mt-2 flex items-center gap-2 text-[8px]">
+              <div className="mt-2 flex flex-col gap-1 text-[8px]">
                 <label className="flex items-center gap-1">
                   <input 
                     type="checkbox" 
@@ -137,26 +125,32 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
               </div>
             )}
           </div>
-          
-          {/* Right Side - Company Logo & Info */}
-          <div className="text-right">
-            {empresa?.logo ? (
-              <img
-                src={empresa.logo}
-                alt={empresa.nombre}
-                className="h-16 w-auto ml-auto mb-2"
-              />
-            ) : (
-              <div className="text-[12px] font-bold text-gray-800 mb-2">
-                {empresa?.nombre || 'Mi Empresa'}
-              </div>
-            )}
+
+          {/* Center - Company Info */}
+          <div className="col-span-6 text-center">
+            <div className="text-[16px] font-bold text-gray-900">
+              {empresa?.nombre || 'Mi Empresa'}
+            </div>
             <div className="text-[9px] text-gray-600 space-y-0.5">
               {empresa?.ruc && <p>RUC: {empresa.ruc}</p>}
-              {empresa?.direccion && <p>{empresa.direccion}</p>}
               {empresa?.telefono && <p>Tel: {empresa.telefono}</p>}
               {empresa?.email && <p>{empresa.email}</p>}
             </div>
+          </div>
+
+          {/* Right Side - Company Logo */}
+          <div className="col-span-3 flex justify-end">
+            {empresa?.logoUrl ? (
+              <img
+                src={empresa.logoUrl}
+                alt={empresa?.nombre}
+                className="h-20 w-auto object-contain"
+              />
+            ) : (
+              <div className="h-20 w-20 bg-gray-200 rounded flex items-center justify-center">
+                <Building2 className="w-12 h-12 text-gray-400" />
+              </div>
+            )}
           </div>
         </div>
 
@@ -307,32 +301,6 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
               {t('observations')}
             </div>
             <p className="text-[10px] text-gray-600">{factura.observaciones}</p>
-          </div>
-        )}
-
-        {/* Signature */}
-        {factura.signatureRequest?.signature && (
-          <div className="mb-2 p-1.5 bg-gray-50 rounded border border-green-200" style={{ pageBreakInside: 'avoid' }}>
-            <h3 className="text-[8px] font-medium text-gray-800 mb-1">
-              {t('signature')}
-            </h3>
-            <div className="flex items-end gap-3">
-              <div className="flex-shrink-0">
-                <img 
-                  src={factura.signatureRequest.signature.signatureImageUrl} 
-                  alt="Signature" 
-                  className="h-12 w-auto border border-gray-300 rounded bg-white"
-                />
-              </div>
-              <div className="text-[10px] text-gray-600">
-                <p className="font-medium text-gray-800">
-                  {factura.signatureRequest.signature.signerName}
-                </p>
-                <p className="text-[8px] text-gray-500 mt-0.5">
-                  {t('signedOn')}: {formatDate(factura.signatureRequest.signature.signedAt)}
-                </p>
-              </div>
-            </div>
           </div>
         )}
 

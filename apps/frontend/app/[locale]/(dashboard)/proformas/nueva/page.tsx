@@ -11,6 +11,7 @@ import {
   Calculator,
   Search,
   FileBarChart,
+  Users,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
@@ -291,7 +292,7 @@ export default function NuevaProformaPage({
           <Card>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                {t('client')}*
+                {t('client')}
               </h2>
               <Button
                 size="md"
@@ -299,7 +300,7 @@ export default function NuevaProformaPage({
                 onClick={() => setIsClientModalOpen(true)}
                 type="button"
               >
-                <Plus className="w-5 h-5 mr-2" />
+                <Users className="w-5 h-5 mr-2" />
                 {t('addClient')}
               </Button>
             </div>
@@ -371,9 +372,6 @@ export default function NuevaProformaPage({
                         <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '15%' }}>
                           {t('price')}
                         </th>
-                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '12%' }}>
-                          {t('discount')}
-                        </th>
                         <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '15%' }}>
                           {t('subtotal')}
                         </th>
@@ -411,17 +409,6 @@ export default function NuevaProformaPage({
                               value={linea.precioUnitario}
                               onChange={(e) =>
                                 updateLinea(linea.id, { precioUnitario: parseFloat(e.target.value) || 0 })
-                              }
-                              className="w-full px-2 py-1.5 text-right border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm"
-                            />
-                          </td>
-                          <td className="py-2 px-1">
-                            <input
-                              type="text"
-                              inputMode="decimal"
-                              value={linea.descuento}
-                              onChange={(e) =>
-                                updateLinea(linea.id, { descuento: parseFloat(e.target.value) || 0 })
                               }
                               className="w-full px-2 py-1.5 text-right border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm"
                             />
@@ -490,18 +477,6 @@ export default function NuevaProformaPage({
                             value={linea.precioUnitario}
                             onChange={(e) =>
                               updateLinea(linea.id, { precioUnitario: parseFloat(e.target.value) || 0 })
-                            }
-                            className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs text-gray-500">{t('discount')}</label>
-                          <input
-                            type="text"
-                            inputMode="decimal"
-                            value={linea.descuento}
-                            onChange={(e) =>
-                              updateLinea(linea.id, { descuento: parseFloat(e.target.value) || 0 })
                             }
                             className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
                           />

@@ -49,7 +49,7 @@ export default function JobPhotosGallery({
   invoiceInfo,
   onClose
 }: JobPhotosGalleryProps) {
-  const t = useTranslations('invoices');
+  const t = useTranslations('jobPhotos');
   const { showSuccess, showError } = useToast();
   
   const [uploading, setUploading] = useState(false);
@@ -124,9 +124,19 @@ export default function JobPhotosGallery({
       
       showSuccess(files.length > 1 ? t('photosUploadedSuccess') : t('photoUploadedSuccess'));
       onPhotosChange();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error uploading photos:', error);
-      showError(t('photoUploadError'));
+      
+      // Check for specific error messages
+      const errorMessage = error?.response?.data?.error || error?.message || '';
+      
+      if (errorMessage.includes('Invalid file type') || errorMessage.includes('file type')) {
+        showError(t('invalidFileType'));
+      } else if (errorMessage.includes('File size too large') || errorMessage.includes('LIMIT_FILE_SIZE')) {
+        showError(t('fileTooLarge'));
+      } else {
+        showError(t('uploadError'));
+      }
     } finally {
       setUploading(false);
       if (fileInputRef.current) {

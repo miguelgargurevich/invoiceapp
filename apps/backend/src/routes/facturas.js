@@ -342,7 +342,8 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
       totalPagado,
       saldoPendiente,
       signatureRequest,
-      signatureStatus
+      signatureStatus,
+      proformaOrigenId: factura.proformaOrigenId
     });
   } catch (error) {
     console.error('Error obteniendo factura:', error);

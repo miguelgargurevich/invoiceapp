@@ -18,8 +18,10 @@ import {
   Send,
   ExternalLink,
   Share2,
+  Camera,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import {
   Button,
   Card,
@@ -33,6 +35,7 @@ import {
   ProformaSendEmailModal,
   ProformaPreview,
 } from '@/components/proforma';
+import { JobPhotosGallery } from '@/components/job';
 import { formatDate } from '@/lib/utils';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
@@ -52,6 +55,14 @@ interface DetalleProforma {
     codigo: string;
     nombre: string;
   };
+}
+
+interface JobPhoto {
+  id: string;
+  url: string;
+  descripcion?: string;
+  fecha: string;
+  orden: number;
 }
 
 interface Proforma {
@@ -87,6 +98,12 @@ interface Proforma {
   detalles: DetalleProforma[];
   signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
   signatureRequest?: any;
+  facturasGeneradas?: Array<{
+    id: string;
+    serie: string;
+    numero: number;
+    estado: string;
+  }>;
 }
 
 export default function ProformaDetailPage({
@@ -99,9 +116,12 @@ export default function ProformaDetailPage({
   const router = useRouter();
   const { empresa } = useAuth();
   const { formatCurrency } = useCurrency();
+  const { showSuccess, showError } = useToast();
 
   const [proforma, setProforma] = useState<Proforma | null>(null);
   const [loading, setLoading] = useState(true);
+  const [photos, setPhotos] = useState<JobPhoto[]>([]);
+  const [showPhotosGallery, setShowPhotosGallery] = useState(false);
   const [isPrintPreviewOpen, setIsPrintPreviewOpen] = useState(false);
   const [isSendEmailOpen, setIsSendEmailOpen] = useState(false);
   const [isConvertDialogOpen, setIsConvertDialogOpen] = useState(false);
@@ -121,6 +141,7 @@ export default function ProformaDetailPage({
 
   useEffect(() => {
     loadProforma();
+    loadPhotos();
   }, [id]);
 
   const loadProforma = async () => {
@@ -193,6 +214,16 @@ export default function ProformaDetailPage({
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadPhotos = async () => {
+    try {
+      const response = await api.get(`/job-photos/proforma/${id}`);
+      setPhotos((response as any).data || response || []);
+    } catch (error) {
+      console.error('Error loading photos:', error);
+      setPhotos([]);
     }
   };
 
@@ -440,6 +471,14 @@ export default function ProformaDetailPage({
             <Printer className="w-4 h-4 mr-1" />
             {t('print')}
           </Button>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setShowPhotosGallery(true)}
+          >
+            <Camera className="w-4 h-4 mr-1" />
+            {t('jobPhotos')} ({photos.length})
+          </Button>
           {proforma.estado !== 'ANULADA' && proforma.signatureStatus !== 'SIGNED' && (
             <Button 
               size="sm" 
@@ -460,6 +499,12 @@ export default function ProformaDetailPage({
             <Button size="sm" onClick={() => setIsConvertDialogOpen(true)}>
               <FileText className="w-4 h-4 mr-1" />
               {t('convertToInvoice')}
+            </Button>
+          )}
+          {proforma.estado === 'facturada' && proforma.facturasGeneradas && proforma.facturasGeneradas.length > 0 && (
+            <Button size="sm" onClick={() => router.push(`/${locale}/facturas/${proforma.facturasGeneradas![0].id}`)}>
+              <FileText className="w-4 h-4 mr-1" />
+              {t('viewInvoice')}
             </Button>
           )}
         </div>
@@ -925,6 +970,34 @@ export default function ProformaDetailPage({
         confirmLabel={tCommon('delete')}
         variant="danger"
       />
+
+      {/* Photos Gallery Modal */}
+      {showPhotosGallery && (
+        <Modal 
+          isOpen={showPhotosGallery} 
+          onClose={() => setShowPhotosGallery(false)}
+          title={t('jobPhotos')}
+          size="full"
+        >
+          <JobPhotosGallery
+            proformaId={id}
+            photos={photos}
+            onPhotosChange={loadPhotos}
+            clientInfo={{
+              razonSocial: proforma.cliente.razonSocial,
+              numeroDocumento: proforma.cliente.numeroDocumento,
+              direccion: proforma.cliente.direccion,
+              email: proforma.cliente.email,
+            }}
+            invoiceInfo={{
+              numero: proforma.numero,
+              serie: proforma.serie,
+              fechaEmision: proforma.fechaEmision,
+            }}
+            onClose={() => setShowPhotosGallery(false)}
+          />
+        </Modal>
+      )}
 
       {/* Hidden PDF Generator */}
       <div className="fixed -left-[9999px] -top-[9999px]">

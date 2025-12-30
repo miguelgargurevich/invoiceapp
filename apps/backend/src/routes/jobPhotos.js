@@ -35,7 +35,7 @@ const upload = multer({
     if (extname && mimetype) {
       cb(null, true);
     } else {
-      cb(new Error('Solo se permiten imágenes (JPEG, PNG, GIF, WebP)'));
+      cb(new Error(`Invalid file type. Only images are allowed (JPEG, PNG, GIF, WebP). Received: ${file.mimetype}`));
     }
   }
 });
@@ -97,7 +97,22 @@ router.get('/proforma/:proformaId', authenticateToken, async (req, res) => {
 });
 
 // Subir una foto
-router.post('/', authenticateToken, upload.single('photo'), async (req, res) => {
+router.post('/', authenticateToken, (req, res, next) => {
+  upload.single('photo')(req, res, (err) => {
+    if (err) {
+      if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(400).json({ error: 'File size too large. Maximum size is 10MB.' });
+        }
+        return res.status(400).json({ error: `Upload error: ${err.message}` });
+      } else if (err.message.includes('Invalid file type')) {
+        return res.status(400).json({ error: err.message });
+      }
+      return res.status(500).json({ error: 'Error uploading file' });
+    }
+    next();
+  });
+}, async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'No se proporcionó ninguna imagen' });

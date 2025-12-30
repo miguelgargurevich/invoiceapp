@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Plus, Search, Filter, Printer, FileBarChart, CheckCircle } from 'lucide-react';
+import { Plus, Search, Filter, Printer, FileBarChart, CheckCircle, FileText, Clock, TrendingUp } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
@@ -293,6 +293,19 @@ export default function ProformasPage({
       return 0;
     });
 
+  // Calculate totals
+  const totals = filteredProformas.reduce(
+    (acc, p) => {
+      const total = Number(p.total) || 0;
+      const isAceptada = p.estado.toLowerCase() === 'aceptada' || p.estado.toLowerCase() === 'facturada';
+      return {
+        total: acc.total + total,
+        aceptadas: acc.aceptadas + (isAceptada ? total : 0),
+      };
+    },
+    { total: 0, aceptadas: 0 }
+  );
+
   if (loading && proformas.length === 0) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -320,6 +333,73 @@ export default function ProformasPage({
           <FileBarChart className="w-5 h-5 mr-2" />
           {t('create')}
         </Button>
+      </div>
+
+      {/* Summary cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card>
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                {t('totalQuoted')}
+              </div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                {formatCurrency(totals.total)}
+              </div>
+            </div>
+            <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
+              <FileBarChart className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            </div>
+          </div>
+        </Card>
+        
+        <Card>
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                {t('quotesCount')}
+              </div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                {filteredProformas.length}
+              </div>
+            </div>
+            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+              <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
+          </div>
+        </Card>
+        
+        <Card>
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                {t('acceptedAmount')}
+              </div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                {formatCurrency(totals.aceptadas)}
+              </div>
+            </div>
+            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+            </div>
+          </div>
+        </Card>
+        
+        <Card>
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
+                {t('acceptanceRate')}
+              </div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                {totals.total > 0 ? Math.round((totals.aceptadas / totals.total) * 100) : 0}%
+              </div>
+            </div>
+            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+              <TrendingUp className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            </div>
+          </div>
+        </Card>
       </div>
 
       {/* Filters */}
