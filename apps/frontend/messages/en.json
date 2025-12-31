@@ -202,6 +202,7 @@
     "lineTotal": "Line Total",
     "generatePdf": "Generate PDF",
     "registerPayment": "Register Payment",
+    "viewProposal": "View Proposal",
     "voidInvoice": "Void Invoice",
     "cancelInvoice": "Cancel Invoice",
     "issuedOn": "Issued on {date}",

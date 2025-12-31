@@ -30,6 +30,7 @@ interface Empresa {
   logoUrl?: string;
   moneda?: string;
   taxRate?: number | string;
+  firmaEmpresa?: string;
 }
 
 interface Factura {
@@ -73,11 +74,17 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
     const formatCurrency = (amount: number | string | null | undefined) => 
       baseFormatCurrency(amount, empresa?.moneda || 'USD');
     
+    // Calculate totals
+    const totalMaterials = factura.subtotal;
+    const totalLabor = 0; // Can be calculated based on business logic if needed
+    const tax = factura.igv;
+    const totalAmount = factura.total;
+    
     return (
       <div
         ref={ref}
-        className="bg-white text-black p-6 mx-auto"
-        style={{ fontFamily: 'Arial, sans-serif', minHeight: '297mm' }}
+        className="bg-white text-black p-8 mx-auto"
+        style={{ fontFamily: 'Arial, sans-serif', maxWidth: '850px' }}
       >
         {/* Header Section */}
         <div className="grid grid-cols-12 gap-4 items-start mb-4 border-b-2 border-gray-800 pb-3">
@@ -93,37 +100,6 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
               <p><span className="font-semibold">Date:</span> {formatDate(factura.fechaEmision)}</p>
               <p><span className="font-semibold">Due Date:</span> {formatDate(factura.fechaVencimiento)}</p>
             </div>
-            {factura.orderType && (
-              <div className="mt-2 flex flex-col gap-1 text-[8px]">
-                <label className="flex items-center gap-1">
-                  <input 
-                    type="checkbox" 
-                    checked={factura.orderType === 'day_work'} 
-                    readOnly 
-                    className="w-2.5 h-2.5"
-                  />
-                  <span>Day Work</span>
-                </label>
-                <label className="flex items-center gap-1">
-                  <input 
-                    type="checkbox" 
-                    checked={factura.orderType === 'contract'} 
-                    readOnly 
-                    className="w-2.5 h-2.5"
-                  />
-                  <span>Contract</span>
-                </label>
-                <label className="flex items-center gap-1">
-                  <input 
-                    type="checkbox" 
-                    checked={factura.orderType === 'extra'} 
-                    readOnly 
-                    className="w-2.5 h-2.5"
-                  />
-                  <span>Extra</span>
-                </label>
-              </div>
-            )}
           </div>
 
           {/* Center - Company Info */}
@@ -154,30 +130,20 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
           </div>
         </div>
 
-        {/* Client Info */}
-        <div className="mb-3 bg-gray-50 p-1.5 rounded" style={{ pageBreakInside: 'avoid' }}>
-          <div className="text-[10px] font-medium text-gray-800 mb-0.5 uppercase">
-            {t('clientData')}
-          </div>
-          <div className="grid grid-cols-2 gap-1.5 text-[9px]">
+        {/* Client Information */}
+        <div className="mb-4">
+          <div className="text-[9px] font-bold text-gray-800 mb-2 uppercase">Client Information</div>
+          <div className="grid grid-cols-2 gap-4 text-[10px]">
             <div>
-              <span className="text-gray-500">{t('companyName')}</span>
-              <p className="font-medium">{factura.cliente.razonSocial}</p>
-            </div>
-            <div>
-              <span className="text-gray-500">
-                {factura.cliente.numeroDocumento && factura.cliente.tipoDocumento !== 'OTHER'
-                  ? `${factura.cliente.tipoDocumento}:`
-                  : t('document')}
-              </span>
-              <p className="font-medium">
+              <p className="font-bold text-gray-900">{factura.cliente.razonSocial}</p>
+              <p className="text-gray-700">
+                {factura.cliente.tipoDocumento !== 'OTHER' && `${factura.cliente.tipoDocumento}: `}
                 {factura.cliente.numeroDocumento || '-'}
               </p>
             </div>
             {factura.cliente.direccion && (
-              <div className="col-span-2">
-                <span className="text-gray-500">{t('address')}</span>
-                <p className="font-medium">{factura.cliente.direccion}</p>
+              <div>
+                <p className="text-gray-700">{factura.cliente.direccion}</p>
               </div>
             )}
           </div>
@@ -186,130 +152,74 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         {/* Work Description */}
         {factura.workDescription && (
           <div className="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
-            <div className="text-[10px] font-bold text-gray-800 mb-1">We Hereby submit specifications and estimates for:</div>
+            <div className="text-[10px] font-bold text-gray-800 mb-1">Work Description:</div>
             <p className="text-[9px] text-gray-700 whitespace-pre-wrap">{factura.workDescription}</p>
           </div>
         )}
 
         {/* Separator Line */}
-        {factura.workDescription && (
-          <>
-            <div className="border-t border-gray-400 mb-3"></div>
-            <div className="mb-3 text-center">
-              <p className="text-[10px] font-bold text-gray-800">
-                We Propose hereby to furnish material and labor - complete in accordance with above specifications, for the sum of:
-              </p>
-            </div>
-          </>
-        )}
+        <div className="border-t border-gray-400 mb-4"></div>
 
-        {/* Payment Terms */}
-        {factura.paymentTerms && (
-          <div className="mb-4 p-3 bg-gray-50 border border-gray-300 rounded">
-            <div className="text-[10px]">
-              <p className="text-gray-800 mb-2">
-                <span className="font-bold text-gray-900">Payment to be made as follows:</span>
-                <span className="ml-1">{factura.paymentTerms}</span>
-              </p>
+        {/* Payment Summary */}
+        <div className="mb-6">
+          <div className="text-[10px] font-bold text-gray-800 mb-3 uppercase">Payment Summary</div>
+          <div className="space-y-2">
+            <div className="flex justify-between items-center py-2 border-b border-gray-300">
+              <span className="text-[11px] text-gray-700">Total Materials</span>
+              <span className="text-[11px] font-medium">{formatCurrency(totalMaterials)}</span>
+            </div>
+            <div className="flex justify-between items-center py-2 border-b border-gray-300">
+              <span className="text-[11px] text-gray-700">Total Labor</span>
+              <span className="text-[11px] font-medium">{formatCurrency(totalLabor)}</span>
+            </div>
+            <div className="flex justify-between items-center py-2 border-b border-gray-300">
+              <span className="text-[11px] text-gray-700">
+                Tax {empresa?.taxRate && Number(empresa.taxRate) > 0 ? `(${empresa.taxRate}%)` : ''}
+              </span>
+              <span className="text-[11px] font-medium">{formatCurrency(tax)}</span>
+            </div>
+            <div className="flex justify-between items-center py-3 bg-gray-100 px-3 rounded mt-2">
+              <span className="text-[13px] font-bold text-gray-900">TOTAL AMOUNT</span>
+              <span className="text-[13px] font-bold text-gray-900">{formatCurrency(totalAmount)}</span>
             </div>
           </div>
-        )}
-
-        {/* Items Table */}
-        <div className="mb-3" style={{ pageBreakInside: 'avoid' }}>
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="bg-gray-800 text-white">
-                <th className="py-1 px-2 text-left text-[10px] font-medium">
-                  {t('description')}
-                </th>
-                <th className="py-1 px-2 text-center text-[10px] font-medium w-14">
-                  {t('quantity')}
-                </th>
-                <th className="py-1 px-2 text-right text-[10px] font-medium w-20">
-                  {t('unitPrice')}
-                </th>
-                <th className="py-1 px-2 text-right text-[10px] font-medium w-20">
-                  {t('lineSubtotal')}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {factura.detalles.map((detalle, index) => (
-                <tr
-                  key={detalle.id}
-                  className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}
-                >
-                  <td className="py-1 px-2 text-[10px] border-b border-gray-200">
-                    {detalle.producto && (
-                      <span className="text-[8px] text-gray-500 block">
-                        {detalle.producto.codigo}
-                      </span>
-                    )}
-                    {detalle.descripcion}
-                  </td>
-                  <td className="py-1 px-2 text-center text-[10px] border-b border-gray-200">
-                    {detalle.cantidad}
-                  </td>
-                  <td className="py-1 px-2 text-right text-[10px] border-b border-gray-200">
-                    {formatCurrency(detalle.precioUnitario)}
-                  </td>
-                  <td className="py-1 px-2 text-right text-[10px] font-medium border-b border-gray-200">
-                    {formatCurrency(detalle.subtotal)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
         </div>
 
-        {/* Totals */}
-        <div className="flex justify-end mb-3" style={{ pageBreakInside: 'avoid' }}>
-          <div className="w-56">
-            <div className="flex justify-between py-1 text-[10px]">
-              <span className="text-gray-600">{t('subtotal')}</span>
-              <span>{formatCurrency(factura.subtotal)}</span>
-            </div>
-            {factura.descuento > 0 && (
-              <div className="flex justify-between py-1 text-[10px]">
-                <span className="text-gray-600">{t('discount')}</span>
-                <span className="text-red-600">
-                  -{formatCurrency(factura.descuento)}
-                </span>
+        {/* Signature Section */}
+        <div className="mt-8 pt-6 border-t border-gray-300">
+          <div className="grid grid-cols-2 gap-8">
+            {/* Company Signature */}
+            <div>
+              <div className="text-[9px] font-bold text-gray-800 mb-2">Company Signature</div>
+              <div className="border-t-2 border-gray-400 pt-1 mt-8">
+                {empresa?.firmaEmpresa ? (
+                  <div className="h-16 flex items-center justify-center mb-2">
+                    <img 
+                      src={empresa.firmaEmpresa} 
+                      alt="Company Signature" 
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-16 mb-2"></div>
+                )}
+                <p className="text-[8px] text-gray-600 text-center">
+                  {empresa?.nombre || 'Company Name'}
+                </p>
+                <p className="text-[8px] text-gray-500 text-center">
+                  Date: {formatDate(factura.fechaEmision)}
+                </p>
               </div>
-            )}
-            <div className="flex justify-between py-1 text-[10px]">
-              <span className="text-gray-600">
-                {t('tax')}
-                {empresa?.taxRate && Number(empresa.taxRate) > 0 ? ` (${empresa.taxRate}%)` : ''}
-              </span>
-              <span>{formatCurrency(factura.igv)}</span>
             </div>
-            <div className="flex justify-between py-1.5 border-t border-gray-800 mt-1">
-              <span className="text-xs font-bold">{t('total')}</span>
-              <span className="text-xs font-bold text-gray-800">
-                {formatCurrency(factura.total)}
-              </span>
-            </div>
+
+            {/* Empty space or client signature if needed */}
+            <div></div>
           </div>
         </div>
-
-        {/* Observations */}
-        {factura.observaciones && (
-          <div className="mb-2 p-1.5 bg-gray-50 rounded" style={{ pageBreakInside: 'avoid' }}>
-            <div className="text-[10px] font-medium text-gray-800 mb-0.5">
-              {t('observations')}
-            </div>
-            <p className="text-[10px] text-gray-600">{factura.observaciones}</p>
-          </div>
-        )}
 
         {/* Footer */}
-        <div className="border-t border-gray-300 pt-2 text-center text-[8px] text-gray-500">
+        <div className="mt-6 pt-4 border-t border-gray-300 text-center text-[8px] text-gray-500">
           <p>{t('thankYou')}</p>
-          <p className="mt-1">
-            {t('electronicDocument')}
-          </p>
         </div>
       </div>
     );

@@ -438,7 +438,7 @@ export default function ProformaDetailPage({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
           <button
-            onClick={() => router.back()}
+            onClick={() => router.push(`/${locale}/proformas`)}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />

@@ -265,6 +265,7 @@ interface ClientSelectProps {
     nombre: string;
     documento: string;
     email?: string;
+    telefono?: string;
   }>;
   value?: string;
   onChange: (value: string) => void;
@@ -288,11 +289,18 @@ export function ClientSelect({
   required,
 }: ClientSelectProps) {
   const t = useTranslations('common');
-  const options: SelectOption[] = clients.map((client) => ({
-    value: client.id,
-    label: client.nombre,
-    description: `${client.documento}${client.email ? ` • ${client.email}` : ''}`,
-  }));
+  const options: SelectOption[] = clients.map((client) => {
+    const parts = [];
+    if (client.documento) parts.push(client.documento);
+    if (client.telefono) parts.push(client.telefono);
+    if (client.email) parts.push(client.email);
+    
+    return {
+      value: client.id,
+      label: client.nombre,
+      description: parts.join(' • '),
+    };
+  });
 
   return (
     <SearchableSelect

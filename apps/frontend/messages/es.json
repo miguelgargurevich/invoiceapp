@@ -202,6 +202,7 @@
     "lineTotal": "Total Línea",
     "generatePdf": "Generar PDF",
     "registerPayment": "Registrar Pago",
+    "viewProposal": "Ver Proforma",
     "voidInvoice": "Anular Factura",
     "cancelInvoice": "Cancelar Factura",
     "issuedOn": "Emitida el {date}",

@@ -15,6 +15,7 @@ import {
   Clock,
   Calendar,
   Edit2,
+  FileText
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -432,13 +433,7 @@ export default function FacturaDetailPage({
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
           <button
-            onClick={() => {
-              if (factura.proformaOrigenId) {
-                router.push(`/${locale}/proformas/${factura.proformaOrigenId}`);
-              } else {
-                router.back();
-              }
-            }}
+            onClick={() => router.push(`/${locale}/facturas`)}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -477,6 +472,12 @@ export default function FacturaDetailPage({
             <Printer className="w-4 h-4 mr-1" />
             {t('print')}
           </Button>
+          {factura.proformaOrigenId && (
+            <Button variant="outline" size="sm" onClick={() => router.push(`/${locale}/proformas/${factura.proformaOrigenId}`)}>
+              <FileText className="w-4 h-4 mr-1" />
+              {t('viewProposal')}
+            </Button>
+          )}
           {factura.estado !== 'PAGADA' && factura.estado !== 'ANULADA' && factura.saldoPendiente > 0 && (
             <Button size="sm" onClick={() => {
               setPaymentData({ ...paymentData, monto: (factura.saldoPendiente || 0).toFixed(2) });
