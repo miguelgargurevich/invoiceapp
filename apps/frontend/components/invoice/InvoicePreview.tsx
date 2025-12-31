@@ -60,6 +60,8 @@ interface Factura {
   jobLocation?: string;
   workDescription?: string;
   paymentTerms?: string;
+  totalMaterials?: number;
+  totalLabor?: number;
   detalles: DetalleFactura[];
 }
 
@@ -74,9 +76,9 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
     const formatCurrency = (amount: number | string | null | undefined) => 
       baseFormatCurrency(amount, empresa?.moneda || 'USD');
     
-    // Calculate totals
-    const totalMaterials = factura.subtotal;
-    const totalLabor = 0; // Can be calculated based on business logic if needed
+    // Use provided totals or calculate from factura
+    const totalMaterials = factura.totalMaterials ?? factura.subtotal;
+    const totalLabor = factura.totalLabor ?? 0;
     const tax = factura.igv;
     const totalAmount = factura.total;
     
@@ -166,21 +168,21 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
           <div className="space-y-2">
             <div className="flex justify-between items-center py-2 border-b border-gray-300">
               <span className="text-[11px] text-gray-700">Total Materials</span>
-              <span className="text-[11px] font-medium">{formatCurrency(totalMaterials)}</span>
+              <span className="text-[11px] font-medium text-right">{formatCurrency(totalMaterials)}</span>
             </div>
             <div className="flex justify-between items-center py-2 border-b border-gray-300">
               <span className="text-[11px] text-gray-700">Total Labor</span>
-              <span className="text-[11px] font-medium">{formatCurrency(totalLabor)}</span>
+              <span className="text-[11px] font-medium text-right">{formatCurrency(totalLabor)}</span>
             </div>
             <div className="flex justify-between items-center py-2 border-b border-gray-300">
               <span className="text-[11px] text-gray-700">
                 Tax {empresa?.taxRate && Number(empresa.taxRate) > 0 ? `(${empresa.taxRate}%)` : ''}
               </span>
-              <span className="text-[11px] font-medium">{formatCurrency(tax)}</span>
+              <span className="text-[11px] font-medium text-right">{formatCurrency(tax)}</span>
             </div>
             <div className="flex justify-between items-center py-3 bg-gray-100 px-3 rounded mt-2">
               <span className="text-[13px] font-bold text-gray-900">TOTAL AMOUNT</span>
-              <span className="text-[13px] font-bold text-gray-900">{formatCurrency(totalAmount)}</span>
+              <span className="text-[13px] font-bold text-gray-900 text-right">{formatCurrency(totalAmount)}</span>
             </div>
           </div>
         </div>

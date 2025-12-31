@@ -29,6 +29,8 @@ const facturaSchema = z.object({
   jobLocation: z.string().optional().nullable(),
   workDescription: z.string().optional().nullable(),
   paymentTerms: z.string().optional().nullable(),
+  totalMaterials: z.number().min(0).optional(),
+  totalLabor: z.number().min(0).optional(),
   detalles: z.array(detalleSchema).min(1)
 });
 
@@ -355,9 +357,28 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
 router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
     const validatedData = facturaSchema.parse(req.body);
-    const { detalles, ...facturaData } = validatedData;
+    const { detalles, totalMaterials, totalLabor, ...facturaData } = validatedData;
 
-    // Calcular montos usando el taxRate de la empresa
+    // Si se proporcionan totalMaterials y totalLabor, usar esos valores
+    let subtotal, igv, total;
+    
+    if (totalMaterials !== undefined || totalLabor !== undefined) {
+      // Use provided materials and labor
+      const materials = totalMaterials || 0;
+      const labor = totalLabor || 0;
+      subtotal = materials + labor;
+      const taxRate = req.empresa.taxRate ? parseFloat(req.empresa.taxRate) / 100 : 0.18;
+      igv = subtotal * taxRate;
+      total = subtotal + igv;
+    } else {
+      // Calcular montos desde detalles usando el taxRate de la empresa
+      const montosCalculados = calcularMontos(detalles, req.empresa.taxRate || 18);
+      subtotal = montosCalculados.subtotal;
+      igv = montosCalculados.igv;
+      total = montosCalculados.total;
+    }
+
+    // Calcular detalles para guardar
     const montosCalculados = calcularMontos(detalles, req.empresa.taxRate || 18);
 
     // Obtener siguiente número
@@ -379,10 +400,12 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
         jobLocation: facturaData.jobLocation || null,
         workDescription: facturaData.workDescription || null,
         paymentTerms: facturaData.paymentTerms || null,
-        subtotal: montosCalculados.subtotal,
+        totalMaterials: totalMaterials || null,
+        totalLabor: totalLabor || null,
+        subtotal: subtotal,
         descuento: montosCalculados.descuento,
-        igv: montosCalculados.igv,
-        total: montosCalculados.total,
+        igv: igv,
+        total: total,
         empresaId: req.empresa.id,
         userId: req.user.id,
         detalles: {

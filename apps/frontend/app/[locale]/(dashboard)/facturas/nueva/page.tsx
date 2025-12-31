@@ -88,7 +88,7 @@ export default function NuevaFacturaPage({
     new Date(Date.now() + 30 * 86400000)
   );
   const [observaciones, setObservaciones] = useState('');
-  const [orderType, setOrderType] = useState<string>('');
+  const [orderType, setOrderType] = useState<string>('contract');
   const [lineas, setLineas] = useState<LineaDetalle[]>([]);
   
   // Job information fields
@@ -96,6 +96,10 @@ export default function NuevaFacturaPage({
   const [jobLocation, setJobLocation] = useState('');
   const [workDescription, setWorkDescription] = useState('');
   const [paymentTerms, setPaymentTerms] = useState('');
+  
+  // Payment breakdown fields
+  const [totalMaterials, setTotalMaterials] = useState<number>(0);
+  const [totalLabor, setTotalLabor] = useState<number>(0);
 
   // Load data
   useEffect(() => {
@@ -232,6 +236,12 @@ export default function NuevaFacturaPage({
     }),
     { subtotal: 0, igv: 0, total: 0, descuento: 0 }
   );
+  
+  // Calculate final total with materials and labor
+  const finalSubtotal = totalMaterials + totalLabor;
+  const taxRate = empresa?.taxRate ? parseFloat(empresa.taxRate.toString()) / 100 : 0;
+  const finalTax = finalSubtotal * taxRate;
+  const finalTotal = finalSubtotal + finalTax;
 
   const selectedCliente = clientes.find((c) => c.id === clienteId);
 
@@ -242,7 +252,8 @@ export default function NuevaFacturaPage({
       return;
     }
 
-    if (lineas.length === 0) {
+    // Si no hay totales materials/labor, requiere items
+    if (totalMaterials === 0 && totalLabor === 0 && lineas.length === 0) {
       showWarning(t('errors.addItems'));
       return;
     }
@@ -266,6 +277,8 @@ export default function NuevaFacturaPage({
         jobLocation: jobLocation || null,
         workDescription: workDescription || null,
         paymentTerms: paymentTerms || null,
+        totalMaterials: totalMaterials,
+        totalLabor: totalLabor,
         moneda: empresa?.moneda || 'USD',
         detalles: lineas.map((linea) => ({
           productoId: linea.productoId || null,
@@ -650,37 +663,61 @@ export default function NuevaFacturaPage({
             </div>
           </Card>
 
-          {/* Totals */}
+          {/* Payment Breakdown */}
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              {t('totals')}
+              Payment Summary
             </h2>
-            <div className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">{t('subtotal')}</span>
-                <span>{formatCurrency(totals.subtotal)}</span>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Total Materials
+                </label>
+                <input
+                  type="number"
+                  value={totalMaterials}
+                  onChange={(e) => setTotalMaterials(parseFloat(e.target.value) || 0)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
+                />
               </div>
-              {totals.descuento > 0 && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Total Labor
+                </label>
+                <input
+                  type="number"
+                  value={totalLabor}
+                  onChange={(e) => setTotalLabor(parseFloat(e.target.value) || 0)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="0.00"
+                  step="0.01"
+                  min="0"
+                />
+              </div>
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-500 dark:text-gray-400">{t('discount')}</span>
-                  <span className="text-red-500">-{formatCurrency(totals.descuento)}</span>
+                  <span className="text-gray-500 dark:text-gray-400">Subtotal</span>
+                  <span>{formatCurrency(finalSubtotal)}</span>
                 </div>
-              )}
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500 dark:text-gray-400">
-                  {t('tax').replace(' (18%)', '')}
-                  {empresa?.taxRate && Number(empresa.taxRate) > 0 ? ` (${empresa.taxRate}%)` : ''}
-                </span>
-                <span>{formatCurrency(totals.igv)}</span>
-              </div>
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
-                <div className="flex justify-between">
-                  <span className="font-semibold text-gray-900 dark:text-gray-100">
-                    {t('total')}
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Tax
+                    {empresa?.taxRate && Number(empresa.taxRate) > 0 ? ` (${empresa.taxRate}%)` : ''}
                   </span>
-                  <span className="text-xl font-bold text-primary-600">
-                    {formatCurrency(totals.total)}
-                  </span>
+                  <span>{formatCurrency(finalTax)}</span>
+                </div>
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-2">
+                  <div className="flex justify-between">
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">
+                      Total Amount
+                    </span>
+                    <span className="text-xl font-bold text-primary-600">
+                      {formatCurrency(finalTotal)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -688,7 +725,11 @@ export default function NuevaFacturaPage({
 
           {/* Quick actions */}
           <Card className="!p-4">
-            <Button className="w-full" onClick={handleSave} disabled={saving || lineas.length === 0}>
+            <Button 
+              className="w-full" 
+              onClick={handleSave} 
+              disabled={saving || (totalMaterials === 0 && totalLabor === 0 && lineas.length === 0)}
+            >
               <Save className="w-4 h-4 mr-2" />
               {saving ? t('saving') : t('saveInvoice')}
             </Button>
