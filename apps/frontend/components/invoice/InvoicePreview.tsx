@@ -163,26 +163,28 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         <div className="border-t border-gray-400 mb-4"></div>
 
         {/* Payment Summary */}
-        <div className="mb-6">
-          <div className="text-[10px] font-bold text-gray-800 mb-3 uppercase">Payment Summary</div>
-          <div className="space-y-2">
-            <div className="flex justify-between items-center py-2 border-b border-gray-300">
-              <span className="text-[11px] text-gray-700">Total Materials</span>
-              <span className="text-[11px] font-medium text-right">{formatCurrency(totalMaterials)}</span>
-            </div>
-            <div className="flex justify-between items-center py-2 border-b border-gray-300">
-              <span className="text-[11px] text-gray-700">Total Labor</span>
-              <span className="text-[11px] font-medium text-right">{formatCurrency(totalLabor)}</span>
-            </div>
-            <div className="flex justify-between items-center py-2 border-b border-gray-300">
-              <span className="text-[11px] text-gray-700">
-                Tax {empresa?.taxRate && Number(empresa.taxRate) > 0 ? `(${empresa.taxRate}%)` : ''}
-              </span>
-              <span className="text-[11px] font-medium text-right">{formatCurrency(tax)}</span>
-            </div>
-            <div className="flex justify-between items-center py-3 bg-gray-100 px-3 rounded mt-2">
-              <span className="text-[13px] font-bold text-gray-900">TOTAL AMOUNT</span>
-              <span className="text-[13px] font-bold text-gray-900 text-right">{formatCurrency(totalAmount)}</span>
+        <div className="mb-6 flex justify-end">
+          <div className="w-64">
+            <div className="text-[10px] font-bold text-gray-800 mb-2 uppercase text-right">Payment Summary</div>
+            <div className="space-y-1">
+              <div className="flex justify-between items-center py-1">
+                <span className="text-[10px] text-gray-700">Total Materials</span>
+                <span className="text-[10px] font-medium text-right">{formatCurrency(totalMaterials)}</span>
+              </div>
+              <div className="flex justify-between items-center py-1">
+                <span className="text-[10px] text-gray-700">Total Labor</span>
+                <span className="text-[10px] font-medium text-right">{formatCurrency(totalLabor)}</span>
+              </div>
+              <div className="flex justify-between items-center py-1 border-t border-gray-300 pt-1">
+                <span className="text-[10px] text-gray-700">
+                  Tax {empresa?.taxRate && Number(empresa.taxRate) > 0 ? `(${empresa.taxRate}%)` : ''}
+                </span>
+                <span className="text-[10px] font-medium text-right">{formatCurrency(tax)}</span>
+              </div>
+              <div className="flex justify-between items-center py-2 bg-gray-100 px-2 rounded mt-1">
+                <span className="text-[11px] font-bold text-gray-900">TOTAL AMOUNT</span>
+                <span className="text-[11px] font-bold text-gray-900 text-right">{formatCurrency(totalAmount)}</span>
+              </div>
             </div>
           </div>
         </div>
