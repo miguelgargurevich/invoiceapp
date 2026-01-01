@@ -117,7 +117,7 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
         <div className="flex items-center h-16 px-4 border-b border-gray-800 relative">
           <div className="flex items-center gap-2 flex-1 min-w-0">
             {/* SIEMPRE COLAPSADO - Solo mostrar logo */}
-            <Link href="/dashboard" className="flex items-center justify-center w-full">
+            <Link href="/dashboard" className="flex items-left justify-left w-full">
               <CompanyLogo />
             </Link>
           </div>
