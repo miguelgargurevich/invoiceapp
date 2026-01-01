@@ -766,22 +766,22 @@ export default function FacturaDetailPage({
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Total Materials</span>
-                <span>{formatCurrency(factura.totalMaterials || 0)}</span>
+                <span>{formatCurrency(Number(factura.totalMaterials) || 0)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Total Labor</span>
                 <span>{formatCurrency(
-                  (factura.totalMaterials || 0) === 0 && (factura.totalLabor || 0) === 0
+                  Number(factura.totalMaterials || 0) === 0 && Number(factura.totalLabor || 0) === 0
                     ? factura.subtotal
-                    : (factura.totalLabor || 0)
+                    : (Number(factura.totalLabor) || 0)
                 )}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Subtotal</span>
                 <span>{formatCurrency(
-                  (factura.totalMaterials || 0) === 0 && (factura.totalLabor || 0) === 0
+                  Number(factura.totalMaterials || 0) === 0 && Number(factura.totalLabor || 0) === 0
                     ? factura.subtotal
-                    : (factura.totalMaterials || 0) + (factura.totalLabor || 0)
+                    : Number(factura.totalMaterials || 0) + Number(factura.totalLabor || 0)
                 )}</span>
               </div>
               <div className="flex justify-between text-sm">
