@@ -54,17 +54,21 @@ router.get('/ventas', authenticateToken, getEmpresaFromUser, async (req, res) =>
       grouped[key].total += total;
       grouped[key].cantidad += 1;
       
-      if (factura.estado === 'pagada') {
+      const estadoNormalizado = factura.estado.toLowerCase();
+      if (estadoNormalizado === 'pagada') {
         grouped[key].pagado += total;
-      } else if (factura.estado === 'emitida') {
+      } else if (estadoNormalizado === 'emitida' || estadoNormalizado === 'pendiente') {
         grouped[key].pendiente += total;
       }
     });
 
     // Calcular totales
     const totalVentas = facturas.reduce((acc, f) => acc + parseFloat(f.total), 0);
-    const totalPagado = facturas.filter(f => f.estado === 'pagada').reduce((acc, f) => acc + parseFloat(f.total), 0);
-    const totalPendiente = facturas.filter(f => f.estado === 'emitida').reduce((acc, f) => acc + parseFloat(f.total), 0);
+    const totalPagado = facturas.filter(f => f.estado.toLowerCase() === 'pagada').reduce((acc, f) => acc + parseFloat(f.total), 0);
+    const totalPendiente = facturas.filter(f => {
+      const estado = f.estado.toLowerCase();
+      return estado === 'emitida' || estado === 'pendiente';
+    }).reduce((acc, f) => acc + parseFloat(f.total), 0);
 
     res.json({
       resumen: {
@@ -133,9 +137,10 @@ router.get('/clientes', authenticateToken, getEmpresaFromUser, async (req, res) 
       porCliente[clienteId].totalVentas += total;
       porCliente[clienteId].cantidadFacturas += 1;
       
-      if (factura.estado === 'pagada') {
+      const estadoNormalizado = factura.estado.toLowerCase();
+      if (estadoNormalizado === 'pagada') {
         porCliente[clienteId].pagado += total;
-      } else if (factura.estado === 'emitida') {
+      } else if (estadoNormalizado === 'emitida' || estadoNormalizado === 'pendiente') {
         porCliente[clienteId].pendiente += total;
       }
     });
