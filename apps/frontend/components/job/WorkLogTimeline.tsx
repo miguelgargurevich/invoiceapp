@@ -126,6 +126,7 @@ export function WorkLogTimeline({ documentType, documentId }: WorkLogTimelinePro
   }
 
   return (
+    <>
     <Card>
       <Card.Header className="flex flex-row items-center justify-between">
         <Card.Title>{t('workLog.title')}</Card.Title>
