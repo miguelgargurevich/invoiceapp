@@ -195,18 +195,18 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
             {/* Company Signature */}
             <div>
               <div className="text-[9px] font-bold text-gray-800 mb-2">Company Signature</div>
-              <div className="border-t-2 border-gray-400 pt-1 mt-8">
-                {empresa?.firmaEmpresa ? (
-                  <div className="h-16 flex items-center justify-center mb-2">
-                    <img 
-                      src={empresa.firmaEmpresa} 
-                      alt="Company Signature" 
-                      className="max-h-full max-w-full object-contain"
-                    />
-                  </div>
-                ) : (
-                  <div className="h-16 mb-2"></div>
-                )}
+              {empresa?.firmaEmpresa ? (
+                <div className="h-16 flex items-center justify-center mb-2">
+                  <img 
+                    src={empresa.firmaEmpresa} 
+                    alt="Company Signature" 
+                    className="max-h-full max-w-full object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="h-16 mb-2"></div>
+              )}
+              <div className="border-t-2 border-gray-400 pt-1">
                 <p className="text-[8px] text-gray-600 text-center">
                   {empresa?.nombre || 'Company Name'}
                 </p>
