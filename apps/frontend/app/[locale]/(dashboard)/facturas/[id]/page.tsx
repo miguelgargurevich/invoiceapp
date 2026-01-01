@@ -347,12 +347,12 @@ export default function FacturaDetailPage({
 
   const handleOpenEditPaymentSummary = () => {
     if (!factura) return;
-    const materials = factura.totalMaterials || 0;
-    const labor = factura.totalLabor || 0;
-    // If both are 0, assign the total to labor by default
+    const materials = Number(factura.totalMaterials) || 0;
+    const labor = Number(factura.totalLabor) || 0;
+    // If both are 0, assign the subtotal to labor by default (not total which includes tax)
     if (materials === 0 && labor === 0) {
       setTotalMaterialsEdit(0);
-      setTotalLaborEdit(factura.total || 0);
+      setTotalLaborEdit(Number(factura.subtotal) || 0);
     } else {
       setTotalMaterialsEdit(materials);
       setTotalLaborEdit(labor);
@@ -1273,21 +1273,21 @@ export default function FacturaDetailPage({
           <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Subtotal</span>
-              <span>{formatCurrency(totalMaterialsEdit + totalLaborEdit)}</span>
+              <span>{formatCurrency(Number(totalMaterialsEdit) + Number(totalLaborEdit))}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">
                 Tax {empresa?.taxRate && Number(empresa.taxRate) > 0 ? `(${empresa.taxRate}%)` : ''}
               </span>
               <span>
-                {formatCurrency((totalMaterialsEdit + totalLaborEdit) * (empresa?.taxRate ? parseFloat(empresa.taxRate.toString()) / 100 : 0))}
+                {formatCurrency((Number(totalMaterialsEdit) + Number(totalLaborEdit)) * (empresa?.taxRate ? parseFloat(empresa.taxRate.toString()) / 100 : 0))}
               </span>
             </div>
             <div className="flex justify-between font-semibold">
               <span>Total Amount</span>
               <span className="text-primary-600">
                 {formatCurrency(
-                  (totalMaterialsEdit + totalLaborEdit) * 
+                  (Number(totalMaterialsEdit) + Number(totalLaborEdit)) * 
                   (1 + (empresa?.taxRate ? parseFloat(empresa.taxRate.toString()) / 100 : 0))
                 )}
               </span>
