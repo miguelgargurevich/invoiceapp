@@ -615,16 +615,9 @@ export default function FacturaDetailPage({
                   {factura.detalles.map((detalle) => (
                     <tr key={detalle.id}>
                       <td className="py-3">
-                        <div>
-                          {detalle.producto && (
-                            <span className="text-xs text-gray-500 block">
-                              {detalle.producto.codigo}
-                            </span>
-                          )}
-                          <span className="text-gray-900 dark:text-gray-100">
-                            {detalle.descripcion}
-                          </span>
-                        </div>
+                        <span className="text-gray-900 dark:text-gray-100">
+                          {detalle.descripcion}
+                        </span>
                       </td>
                       <td className="py-3 text-center text-gray-600 dark:text-gray-400">
                         {detalle.cantidad}
