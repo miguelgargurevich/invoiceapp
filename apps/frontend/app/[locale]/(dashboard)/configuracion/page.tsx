@@ -905,14 +905,6 @@ export default function ConfiguracionPage({
                   onChange={(e) => setInvoiceConfig({ ...invoiceConfig, condicionesPago: e.target.value })}
                 />
 
-                <Textarea
-                  label={t('footerNotes')}
-                  value={invoiceConfig.notasPie}
-                  onChange={(e) => setInvoiceConfig({ ...invoiceConfig, notasPie: e.target.value })}
-                  rows={3}
-                  placeholder={t('footerNotesPlaceholder')}
-                />
-
                 <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
                   <Button onClick={handleSaveInvoiceConfig} disabled={saving}>
                     {saving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="w-4 h-4 mr-2" />}
