@@ -87,6 +87,8 @@ interface Factura {
   jobLocation?: string;
   workDescription?: string;
   paymentTerms?: string;
+  totalMaterials?: number;
+  totalLabor?: number;
   detalles: DetalleFactura[];
   pagos: PagoFactura[];
   signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
@@ -122,6 +124,10 @@ export default function FacturaDetailPage({
   const [isEditOrderTypeOpen, setIsEditOrderTypeOpen] = useState(false);
   const [editingOrderType, setEditingOrderType] = useState(false);
   const [orderTypeEdit, setOrderTypeEdit] = useState<string>('');
+  const [isEditPaymentSummaryOpen, setIsEditPaymentSummaryOpen] = useState(false);
+  const [editingPaymentSummary, setEditingPaymentSummary] = useState(false);
+  const [totalMaterialsEdit, setTotalMaterialsEdit] = useState<number>(0);
+  const [totalLaborEdit, setTotalLaborEdit] = useState<number>(0);
   const pdfRef = useRef<HTMLDivElement>(null);
   const [paymentData, setPaymentData] = useState({
     monto: '',
@@ -334,6 +340,34 @@ export default function FacturaDetailPage({
       showError(error.response?.data?.error || 'Failed to update order type');
     } finally {
       setEditingOrderType(false);
+    }
+  };
+
+  const handleOpenEditPaymentSummary = () => {
+    if (!factura) return;
+    setTotalMaterialsEdit(factura.totalMaterials || 0);
+    setTotalLaborEdit(factura.totalLabor || 0);
+    setIsEditPaymentSummaryOpen(true);
+  };
+
+  const handleSavePaymentSummary = async () => {
+    if (!factura) return;
+
+    try {
+      setEditingPaymentSummary(true);
+      await api.put(`/facturas/${factura.id}/payment-summary`, {
+        totalMaterials: totalMaterialsEdit,
+        totalLabor: totalLaborEdit,
+      });
+      
+      showSuccess('Payment summary updated successfully');
+      setIsEditPaymentSummaryOpen(false);
+      loadFactura();
+    } catch (error: any) {
+      console.error('Error updating payment summary:', error);
+      showError(error.response?.data?.error || 'Failed to update payment summary');
+    } finally {
+      setEditingPaymentSummary(false);
     }
   };
 
@@ -702,6 +736,53 @@ export default function FacturaDetailPage({
 
         {/* Sidebar */}
         <div className="space-y-6">
+          {/* Payment Summary */}
+          <Card>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Payment Summary
+              </h2>
+              {factura.estado !== 'ANULADA' && (
+                <button
+                  onClick={handleOpenEditPaymentSummary}
+                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                  title="Edit payment summary"
+                >
+                  <Edit2 className="w-4 h-4 text-gray-500" />
+                </button>
+              )}
+            </div>
+            <div className="space-y-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">Total Materials</span>
+                <span>{formatCurrency(factura.totalMaterials || 0)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">Total Labor</span>
+                <span>{formatCurrency(factura.totalLabor || 0)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">Subtotal</span>
+                <span>{formatCurrency((factura.totalMaterials || 0) + (factura.totalLabor || 0))}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">
+                  Tax
+                  {empresa?.taxRate && Number(empresa.taxRate) > 0 ? ` (${empresa.taxRate}%)` : ''}
+                </span>
+                <span>{formatCurrency(factura.igv)}</span>
+              </div>
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-2">
+                <div className="flex justify-between">
+                  <span className="font-semibold">Total Amount</span>
+                  <span className="text-xl font-bold text-primary-600">
+                    {formatCurrency(factura.total)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Card>
+
           {/* Summary */}
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
@@ -1162,6 +1243,87 @@ export default function FacturaDetailPage({
               className="flex-1"
             >
               {editingOrderType ? 'Saving...' : 'Save'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Edit Payment Summary Modal */}
+      <Modal
+        isOpen={isEditPaymentSummaryOpen}
+        onClose={() => !editingPaymentSummary && setIsEditPaymentSummaryOpen(false)}
+        title="Edit Payment Summary"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Total Materials
+            </label>
+            <input
+              type="number"
+              value={totalMaterialsEdit}
+              onChange={(e) => setTotalMaterialsEdit(parseFloat(e.target.value) || 0)}
+              disabled={editingPaymentSummary}
+              step="0.01"
+              min="0"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Total Labor
+            </label>
+            <input
+              type="number"
+              value={totalLaborEdit}
+              onChange={(e) => setTotalLaborEdit(parseFloat(e.target.value) || 0)}
+              disabled={editingPaymentSummary}
+              step="0.01"
+              min="0"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            />
+          </div>
+
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">Subtotal</span>
+              <span>{formatCurrency(totalMaterialsEdit + totalLaborEdit)}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-500">
+                Tax {empresa?.taxRate && Number(empresa.taxRate) > 0 ? `(${empresa.taxRate}%)` : ''}
+              </span>
+              <span>
+                {formatCurrency((totalMaterialsEdit + totalLaborEdit) * (empresa?.taxRate ? parseFloat(empresa.taxRate.toString()) / 100 : 0))}
+              </span>
+            </div>
+            <div className="flex justify-between font-semibold">
+              <span>Total Amount</span>
+              <span className="text-primary-600">
+                {formatCurrency(
+                  (totalMaterialsEdit + totalLaborEdit) * 
+                  (1 + (empresa?.taxRate ? parseFloat(empresa.taxRate.toString()) / 100 : 0))
+                )}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsEditPaymentSummaryOpen(false)}
+              disabled={editingPaymentSummary}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSavePaymentSummary}
+              disabled={editingPaymentSummary}
+              className="flex-1"
+            >
+              {editingPaymentSummary ? 'Saving...' : 'Save'}
             </Button>
           </div>
         </div>

@@ -718,6 +718,58 @@ router.put('/:id/order-type', authenticateToken, getEmpresaFromUser, async (req,
   }
 });
 
+// PUT /api/facturas/:id/payment-summary - Actualizar resumen de pago
+router.put('/:id/payment-summary', authenticateToken, getEmpresaFromUser, async (req, res) => {
+  try {
+    const { totalMaterials, totalLabor } = req.body;
+
+    // Verificar que la factura existe y pertenece a la empresa
+    const factura = await prisma.factura.findFirst({
+      where: {
+        id: req.params.id,
+        empresaId: req.empresa.id
+      },
+      include: {
+        empresa: true
+      }
+    });
+
+    if (!factura) {
+      return res.status(404).json({ error: 'Factura no encontrada' });
+    }
+
+    // No permitir editar facturas anuladas
+    if (factura.estado === 'ANULADA') {
+      return res.status(400).json({ error: 'No se pueden editar facturas anuladas' });
+    }
+
+    // Calcular nuevos totales
+    const materials = parseFloat(totalMaterials) || 0;
+    const labor = parseFloat(totalLabor) || 0;
+    const subtotal = materials + labor;
+    const taxRate = factura.empresa.taxRate ? parseFloat(factura.empresa.taxRate) / 100 : 0.18;
+    const igv = subtotal * taxRate;
+    const total = subtotal + igv;
+
+    // Actualizar payment summary y totales
+    const facturaActualizada = await prisma.factura.update({
+      where: { id: req.params.id },
+      data: {
+        totalMaterials: materials,
+        totalLabor: labor,
+        subtotal: subtotal,
+        igv: igv,
+        total: total
+      }
+    });
+
+    res.json(facturaActualizada);
+  } catch (error) {
+    console.error('Error actualizando payment summary:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 // GET /api/facturas/:id/pdf - Generar PDF (placeholder)
 router.get('/:id/pdf', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
