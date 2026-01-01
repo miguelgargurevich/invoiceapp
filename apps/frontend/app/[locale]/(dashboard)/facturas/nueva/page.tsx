@@ -717,10 +717,11 @@ export default function NuevaFacturaPage({
           <Card className="!p-4">
             <Button 
               className="w-full" 
+              size="lg"
               onClick={handleSave} 
               disabled={saving || (totalMaterials === 0 && totalLabor === 0 && lineas.length === 0)}
             >
-              <Save className="w-4 h-4 mr-2" />
+              <Save className="w-5 h-5 mr-2" />
               {saving ? t('saving') : t('saveInvoice')}
             </Button>
           </Card>
