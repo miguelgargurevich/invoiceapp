@@ -105,9 +105,9 @@ export default function DashboardPage({
       setLoading(true);
       
       // Fetch all data from API in parallel
-      const [recentInvoicesData, recentProposalsData, resumenData, graficosData] = await Promise.all([
+      const [recentInvoicesData, recentProposalsResponse, resumenData, graficosData] = await Promise.all([
         api.get<any[]>('/dashboard/ultimas-facturas'),
-        api.get<any[]>('/proformas?limit=5'),
+        api.get<any>('/proformas?limit=5'),
         api.get<any>('/dashboard/resumen'),
         api.get<any>('/dashboard/graficos')
       ]);
@@ -124,14 +124,19 @@ export default function DashboardPage({
       })).slice(0, 5);
 
       // Transform proposals data to match interface
-      const transformedProposals: RecentProposal[] = (recentProposalsData as any[]).map((proforma: any) => ({
+      // Handle case where API returns object with data property or direct array
+      const recentProposalsData = Array.isArray(recentProposalsResponse) 
+        ? recentProposalsResponse 
+        : (recentProposalsResponse?.data || recentProposalsResponse?.proformas || []);
+      
+      const transformedProposals: RecentProposal[] = recentProposalsData.slice(0, 5).map((proforma: any) => ({
         id: proforma.id.toString(),
         numero: `${proforma.serie}-${proforma.numero.toString().padStart(6, '0')}`,
-        cliente: { nombre: proforma.cliente.razonSocial },
+        cliente: { nombre: proforma.cliente?.razonSocial || proforma.cliente?.nombre || 'N/A' },
         total: parseFloat(proforma.total),
         estado: proforma.estado,
         fechaEmision: proforma.fechaEmision,
-      })).slice(0, 5);
+      }));
 
       // Build dashboard stats from real API data
       const dashboardData: DashboardStats = {
