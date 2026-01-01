@@ -109,6 +109,15 @@ export default function NuevaFacturaPage({
     }
   }, [empresa?.id]);
 
+  // Auto-update totalLabor when items change
+  useEffect(() => {
+    if (lineas.length > 0) {
+      const itemsSubtotal = lineas.reduce((sum, linea) => sum + Number(linea.subtotal), 0);
+      setTotalLabor(itemsSubtotal);
+      setTotalMaterials(0); // Reset materials when using items
+    }
+  }, [lineas]);
+
   const loadClientes = async () => {
     try {
       setLoadingClientes(true);
