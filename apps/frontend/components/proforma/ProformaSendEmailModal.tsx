@@ -96,7 +96,7 @@ export default function ProformaSendEmailModal({
       isOpen={isOpen} 
       onClose={handleClose} 
       title={t('sendEmail')} 
-      subtitle="Send this proposal to your client via email"
+      subtitle={t('sendEmailSubtitle')}
       icon={Mail}
       iconColor="primary"
       size="lg"
@@ -108,7 +108,7 @@ export default function ProformaSendEmailModal({
             <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-medium">{t('emailSentSuccess')}</p>
-              <p className="text-sm text-green-600 dark:text-green-500 mt-1">El documento se envió correctamente al cliente</p>
+              <p className="text-sm text-green-600 dark:text-green-500 mt-1">{t('emailSentSuccessDescription')}</p>
             </div>
           </div>
         )}
@@ -118,7 +118,7 @@ export default function ProformaSendEmailModal({
             <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-medium">{errorMessage}</p>
-              <p className="text-sm text-red-600 dark:text-red-500 mt-1">Verifica los datos e intenta nuevamente</p>
+              <p className="text-sm text-red-600 dark:text-red-500 mt-1">{t('emailErrorDescription')}</p>
             </div>
           </div>
         )}
@@ -130,7 +130,7 @@ export default function ProformaSendEmailModal({
               <Mail className="w-6 h-6 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Documento a enviar</h4>
+              <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">{t('documentToSend')}</h4>
               <p className="text-sm text-gray-700 dark:text-gray-300 font-medium truncate">
                 Proforma {proforma.serie}-{proforma.numero}
               </p>

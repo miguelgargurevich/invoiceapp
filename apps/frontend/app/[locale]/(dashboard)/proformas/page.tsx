@@ -141,18 +141,31 @@ export default function ProformasPage({
   }, [loadProformas]);
 
   const getEstadoBadge = (estado: string) => {
+    const normalizedEstado = estado.toLowerCase();
     const variants = {
       pendiente: 'warning' as const,
       aceptada: 'success' as const,
       rechazada: 'danger' as const,
       vencida: 'warning' as const,
       facturada: 'info' as const,
+      aprobada: 'success' as const,
+      anulada: 'neutral' as const,
     };
-    return variants[estado as keyof typeof variants] || 'default' as const;
+    return variants[normalizedEstado as keyof typeof variants] || 'default' as const;
   };
 
   const getStatusLabel = (status: string) => {
-    return t(`statuses.${status}`);
+    const normalizedStatus = status.toLowerCase();
+    const statusMap: Record<string, string> = {
+      pendiente: t('statusPending'),
+      aceptada: t('statusAccepted'),
+      aprobada: t('statusAccepted'),
+      rechazada: t('statusRejected'),
+      vencida: t('statusExpired'),
+      facturada: t('statusInvoiced'),
+      anulada: t('statusCancelled'),
+    };
+    return statusMap[normalizedStatus] || status;
   };
 
   const columns: Column<ProformaListItem>[] = [
@@ -194,7 +207,7 @@ export default function ProformasPage({
       header: t('status'),
       render: (proforma) => (
         <Badge variant={getEstadoBadge(proforma.estado)}>
-          {t(`statuses.${proforma.estado}`)}
+          {getStatusLabel(proforma.estado)}
         </Badge>
       ),
     },

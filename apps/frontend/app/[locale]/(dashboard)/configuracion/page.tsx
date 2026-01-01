@@ -405,15 +405,15 @@ export default function ConfiguracionPage({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-xl">
-          <Settings className="w-6 h-6 text-gray-600 dark:text-gray-400" />
+      <div className="flex items-center gap-4">
+        <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+          <Settings className="w-7 h-7 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
             {t('title')}
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-gray-600 dark:text-gray-400 mt-1">
             {t('subtitle')}
           </p>
         </div>
@@ -421,28 +421,34 @@ export default function ConfiguracionPage({
 
       {/* Success message */}
       {message && (
-        <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-          <p className="text-green-600 dark:text-green-400">{message}</p>
+        <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-center gap-2">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <p className="text-green-700 dark:text-green-400 font-medium">{message}</p>
+          </div>
         </div>
       )}
 
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar */}
-        <div className="lg:w-64 shrink-0">
-          <Card className="!p-2">
-            <nav className="space-y-1">
+        <div className="lg:w-72 shrink-0">
+          <Card className="!p-3 shadow-sm">
+            <nav className="space-y-2">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={cn(
-                    'w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors',
+                    'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200',
                     activeTab === tab.id
-                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
-                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                      ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 text-blue-700 dark:text-blue-400 shadow-sm font-semibold'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 font-medium'
                   )}
                 >
-                  <tab.icon className="w-5 h-5" />
+                  <tab.icon className={cn(
+                    "w-5 h-5",
+                    activeTab === tab.id ? "text-blue-600 dark:text-blue-400" : ""
+                  )} />
                   <span>{tab.label}</span>
                 </button>
               ))}
@@ -454,63 +460,86 @@ export default function ConfiguracionPage({
         <div className="flex-1">
           {/* Company Settings */}
           {activeTab === 'empresa' && (
-            <Card>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-primary-100 dark:bg-primary-900 rounded-lg">
-                  <Building2 className="w-5 h-5 text-primary-600 dark:text-primary-400" />
+            <Card className="shadow-sm">
+              <div className="flex items-center gap-3 pb-6 border-b border-gray-200 dark:border-gray-700">
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-md">
+                  <Building2 className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold">{t('companySettings')}</h2>
-                  <p className="text-sm text-gray-500">{t('companySettingsDesc')}</p>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('companySettings')}</h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{t('companySettingsDesc')}</p>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input
-                    label={t('ruc')}
-                    value={empresaForm.ruc}
-                    onChange={(e) => setEmpresaForm({ ...empresaForm, ruc: e.target.value })}
-                  />
-                  <Input
-                    label={t('businessName')}
-                    value={empresaForm.razonSocial}
-                    onChange={(e) => setEmpresaForm({ ...empresaForm, razonSocial: e.target.value })}
-                  />
+              <div className="space-y-6 mt-6">
+                {/* Basic Information */}
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                    <div className="w-1 h-5 bg-blue-500 rounded-full"></div>
+                    {t('basicInformation') || 'Basic Information'}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Input
+                      label={t('ruc')}
+                      value={empresaForm.ruc}
+                      onChange={(e) => setEmpresaForm({ ...empresaForm, ruc: e.target.value })}
+                      className="focus:ring-blue-500"
+                    />
+                    <Input
+                      label={t('businessName')}
+                      value={empresaForm.razonSocial}
+                      onChange={(e) => setEmpresaForm({ ...empresaForm, razonSocial: e.target.value })}
+                      className="focus:ring-blue-500"
+                    />
+                  </div>
                 </div>
 
                 <Input
                   label={t('tradeName')}
                   value={empresaForm.nombreComercial}
                   onChange={(e) => setEmpresaForm({ ...empresaForm, nombreComercial: e.target.value })}
+                  className="focus:ring-blue-500"
                 />
 
-                <Input
-                  label={t('address')}
-                  value={empresaForm.direccion}
-                  onChange={(e) => setEmpresaForm({ ...empresaForm, direccion: e.target.value })}
-                />
+                {/* Contact Information */}
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                    <div className="w-1 h-5 bg-blue-500 rounded-full"></div>
+                    {t('contactInformation') || 'Contact Information'}
+                  </h3>
+                  <div className="space-y-4">
+                    <Input
+                      label={t('address')}
+                      value={empresaForm.direccion}
+                      onChange={(e) => setEmpresaForm({ ...empresaForm, direccion: e.target.value })}
+                      className="focus:ring-blue-500"
+                    />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input
-                    label={t('phone')}
-                    value={empresaForm.telefono}
-                    onChange={(e) => setEmpresaForm({ ...empresaForm, telefono: e.target.value })}
-                  />
-                  <Input
-                    label={t('email')}
-                    type="email"
-                    value={empresaForm.email}
-                    onChange={(e) => setEmpresaForm({ ...empresaForm, email: e.target.value })}
-                  />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input
+                        label={t('phone')}
+                        value={empresaForm.telefono}
+                        onChange={(e) => setEmpresaForm({ ...empresaForm, telefono: e.target.value })}
+                        className="focus:ring-blue-500"
+                      />
+                      <Input
+                        label={t('email')}
+                        type="email"
+                        value={empresaForm.email}
+                        onChange={(e) => setEmpresaForm({ ...empresaForm, email: e.target.value })}
+                        className="focus:ring-blue-500"
+                      />
+                    </div>
+
+                    <Input
+                      label={t('website')}
+                      value={empresaForm.web}
+                      onChange={(e) => setEmpresaForm({ ...empresaForm, web: e.target.value })}
+                      placeholder="https://www.ejemplo.com"
+                      className="focus:ring-blue-500"
+                    />
+                  </div>
                 </div>
-
-                <Input
-                  label={t('website')}
-                  value={empresaForm.web}
-                  onChange={(e) => setEmpresaForm({ ...empresaForm, web: e.target.value })}
-                  placeholder="https://www.ejemplo.com"
-                />
 
                 {/* Logo upload */}
                 <div>
@@ -668,41 +697,55 @@ export default function ConfiguracionPage({
 
           {/* User Settings */}
           {activeTab === 'usuario' && (
-            <Card>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                  <User className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <Card className="shadow-sm">
+              <div className="flex items-center gap-3 pb-6 border-b border-gray-200 dark:border-gray-700">
+                <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-md">
+                  <User className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold">{t('userSettings')}</h2>
-                  <p className="text-sm text-gray-500">{t('userSettingsDesc')}</p>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('userSettings')}</h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{t('userSettingsDesc')}</p>
                 </div>
               </div>
 
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input
-                    label={t('name')}
-                    value={userForm.nombre}
-                    onChange={(e) => setUserForm({ ...userForm, nombre: e.target.value })}
-                  />
-                  <Input
-                    label={t('email')}
-                    type="email"
-                    value={userForm.email}
-                    onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
-                    disabled
-                  />
+              <div className="space-y-6 mt-6">
+                {/* Personal Information */}
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                    <div className="w-1 h-5 bg-purple-500 rounded-full"></div>
+                    {t('personalInformation') || 'Personal Information'}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Input
+                      label={t('name')}
+                      value={userForm.nombre}
+                      onChange={(e) => setUserForm({ ...userForm, nombre: e.target.value })}
+                      className="focus:ring-purple-500"
+                    />
+                    <Input
+                      label={t('email')}
+                      type="email"
+                      value={userForm.email}
+                      onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
+                      disabled
+                      className="bg-gray-50 dark:bg-gray-800/50"
+                    />
+                  </div>
                 </div>
 
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                  <h3 className="text-md font-medium mb-4">{t('changePassword')}</h3>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                    <div className="w-1 h-5 bg-purple-500 rounded-full"></div>
+                    <Shield className="w-5 h-5 text-purple-500" />
+                    {t('changePassword')}
+                  </h3>
                   <div className="space-y-4">
                     <Input
                       label={t('currentPassword')}
                       type="password"
                       value={userForm.currentPassword}
                       onChange={(e) => setUserForm({ ...userForm, currentPassword: e.target.value })}
+                      className="focus:ring-purple-500"
                     />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <Input
@@ -710,20 +753,22 @@ export default function ConfiguracionPage({
                         type="password"
                         value={userForm.newPassword}
                         onChange={(e) => setUserForm({ ...userForm, newPassword: e.target.value })}
+                        className="focus:ring-purple-500"
                       />
                       <Input
                         label={t('confirmPassword')}
                         type="password"
                         value={userForm.confirmPassword}
                         onChange={(e) => setUserForm({ ...userForm, confirmPassword: e.target.value })}
+                        className="focus:ring-purple-500"
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <Button onClick={handleSaveUser} disabled={saving}>
-                    {saving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                <div className="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
+                  <Button onClick={handleSaveUser} disabled={saving} className="px-6 h-11 text-base font-semibold">
+                    {saving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="w-5 h-5 mr-2" />}
                     {t('save')}
                   </Button>
                 </div>
@@ -733,23 +778,24 @@ export default function ConfiguracionPage({
 
           {/* Appearance Settings */}
           {activeTab === 'apariencia' && (
-            <Card>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
-                  <Palette className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            <Card className="shadow-sm">
+              <div className="flex items-center gap-3 pb-6 border-b border-gray-200 dark:border-gray-700">
+                <div className="p-3 bg-gradient-to-br from-orange-500 to-pink-600 rounded-xl shadow-md">
+                  <Palette className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold">{t('appearanceSettings')}</h2>
-                  <p className="text-sm text-gray-500">{t('appearanceSettingsDesc')}</p>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('appearanceSettings')}</h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{t('appearanceSettingsDesc')}</p>
                 </div>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-6 mt-6">
                 {/* Theme */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                    <div className="w-1 h-5 bg-orange-500 rounded-full"></div>
                     {t('theme')}
-                  </label>
+                  </h3>
                   <div className="grid grid-cols-3 gap-4">
                     {['light', 'dark', 'system'].map((themeOption) => (
                       <button
@@ -845,38 +891,53 @@ export default function ConfiguracionPage({
 
           {/* Invoice Settings */}
           {activeTab === 'facturacion' && (
-            <Card>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-green-100 dark:bg-green-900 rounded-lg">
-                  <FileText className="w-5 h-5 text-green-600 dark:text-green-400" />
+            <Card className="shadow-sm">
+              <div className="flex items-center gap-3 pb-6 border-b border-gray-200 dark:border-gray-700">
+                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-md">
+                  <FileText className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold">{t('invoiceSettings')}</h2>
-                  <p className="text-sm text-gray-500">{t('invoiceSettingsDesc')}</p>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('invoiceSettings')}</h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{t('invoiceSettingsDesc')}</p>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Input
-                    label={t('invoiceSeries')}
-                    value={invoiceConfig.serieFactura}
-                    onChange={(e) => setInvoiceConfig({ ...invoiceConfig, serieFactura: e.target.value })}
-                  />
-                  <Input
-                    label={t('receiptSeries')}
-                    value={invoiceConfig.serieBoleta}
-                    onChange={(e) => setInvoiceConfig({ ...invoiceConfig, serieBoleta: e.target.value })}
-                  />
+              <div className="space-y-6 mt-6">
+                {/* Series Configuration */}
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                    <div className="w-1 h-5 bg-green-500 rounded-full"></div>
+                    {t('seriesConfiguration') || 'Series Configuration'}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Input
+                      label={t('invoiceSeries')}
+                      value={invoiceConfig.serieFactura}
+                      onChange={(e) => setInvoiceConfig({ ...invoiceConfig, serieFactura: e.target.value })}
+                      className="focus:ring-green-500"
+                    />
+                    <Input
+                      label={t('receiptSeries')}
+                      value={invoiceConfig.serieBoleta}
+                      onChange={(e) => setInvoiceConfig({ ...invoiceConfig, serieBoleta: e.target.value })}
+                      className="focus:ring-green-500"
+                    />
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      {t('taxRate')}
-                    </label>
-                    <input
-                      type="text"
+                {/* Tax Configuration */}
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                    <div className="w-1 h-5 bg-green-500 rounded-full"></div>
+                    {t('taxConfiguration') || 'Tax Configuration'}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        {t('taxRate')}
+                      </label>
+                      <input
+                        type="text"
                       inputMode="decimal"
                       pattern="[0-9]*\.?[0-9]*"
                       value={invoiceConfig.igv.toString()}
@@ -886,7 +947,7 @@ export default function ConfiguracionPage({
                           setInvoiceConfig({ ...invoiceConfig, igv: value === '' ? 0 : parseFloat(value) || 0 });
                         }
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       placeholder="0"
                     />
                   </div>
@@ -897,110 +958,141 @@ export default function ConfiguracionPage({
                     <select
                       value={invoiceConfig.moneda}
                       onChange={(e) => setInvoiceConfig({ ...invoiceConfig, moneda: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-green-500 focus:border-transparent"
                     >
                       <option value="PEN">PEN - Sol Peruano</option>
                       <option value="USD">USD - Dólar Americano</option>
                     </select>
                   </div>
                 </div>
+              </div>
 
+              {/* Payment Terms */}
+              <div>
+                <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                  <div className="w-1 h-5 bg-green-500 rounded-full"></div>
+                  {t('paymentTerms') || 'Payment Terms'}
+                </h3>
                 <Input
                   label={t('paymentTerms')}
                   value={invoiceConfig.condicionesPago}
                   onChange={(e) => setInvoiceConfig({ ...invoiceConfig, condicionesPago: e.target.value })}
+                  className="focus:ring-green-500"
                 />
+              </div>
+            </div>
 
-                <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <Button onClick={handleSaveInvoiceConfig} disabled={saving}>
-                    {saving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-                    {t('save')}
-                  </Button>
-                </div>
+              <div className="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={handleSaveInvoiceConfig}
+                  disabled={saving}
+                  className="h-11 px-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-base font-semibold rounded-lg hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all duration-200"
+                >
+                  {saving ? t('saving') : t('save')}
+                </button>
               </div>
             </Card>
           )}
 
           {/* Notification Settings */}
           {activeTab === 'notificaciones' && (
-            <Card>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
-                  <Bell className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+            <Card className="shadow-sm">
+              <div className="flex items-center gap-3 pb-6 border-b border-gray-200 dark:border-gray-700">
+                <div className="p-3 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl shadow-md">
+                  <Bell className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold">{t('notificationSettings')}</h2>
-                  <p className="text-sm text-gray-500">{t('notificationSettingsDesc')}</p>
+                  <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('notificationSettings')}</h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{t('notificationSettingsDesc')}</p>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                  <div>
-                    <p className="font-medium">{t('emailOnInvoice')}</p>
-                    <p className="text-sm text-gray-500">{t('emailOnInvoiceDesc')}</p>
+              <div className="space-y-6 mt-6">
+                {/* Email Notifications */}
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                    <div className="w-1 h-5 bg-yellow-500 rounded-full"></div>
+                    {t('emailNotifications') || 'Email Notifications'}
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div>
+                        <p className="font-medium text-gray-900 dark:text-gray-100">{t('emailOnInvoice')}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{t('emailOnInvoiceDesc')}</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={notifications.emailFactura}
+                          onChange={(e) => setNotifications({ ...notifications, emailFactura: e.target.checked })}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-300 dark:peer-focus:ring-yellow-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-yellow-500"></div>
+                      </label>
+                    </div>
+
+                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div>
+                        <p className="font-medium text-gray-900 dark:text-gray-100">{t('emailOnDue')}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{t('emailOnDueDesc')}</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={notifications.emailVencimiento}
+                          onChange={(e) => setNotifications({ ...notifications, emailVencimiento: e.target.checked })}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-300 dark:peer-focus:ring-yellow-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-yellow-500"></div>
+                      </label>
+                    </div>
+
+                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <div>
+                        <p className="font-medium text-gray-900 dark:text-gray-100">{t('emailOnPayment')}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{t('emailOnPaymentDesc')}</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={notifications.emailPago}
+                          onChange={(e) => setNotifications({ ...notifications, emailPago: e.target.checked })}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-yellow-300 dark:peer-focus:ring-yellow-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-yellow-500"></div>
+                      </label>
+                    </div>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={notifications.emailFactura}
-                      onChange={(e) => setNotifications({ ...notifications, emailFactura: e.target.checked })}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
-                  </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                  <div>
-                    <p className="font-medium">{t('emailOnDue')}</p>
-                    <p className="text-sm text-gray-500">{t('emailOnDueDesc')}</p>
+                {/* Reminder Settings */}
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                    <div className="w-1 h-5 bg-yellow-500 rounded-full"></div>
+                    {t('reminderSettings') || 'Reminder Settings'}
+                  </h3>
+                  <div className="p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <label className="block font-medium text-gray-900 dark:text-gray-100 mb-2">{t('daysBeforeDue')}</label>
+                    <Input
+                      type="number"
+                      min="1"
+                      max="30"
+                      value={notifications.diasAntesVencimiento.toString()}
+                      onChange={(e) => setNotifications({ ...notifications, diasAntesVencimiento: parseInt(e.target.value) || 5 })}
+                      className="max-w-[120px] focus:ring-yellow-500"
+                    />
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={notifications.emailVencimiento}
-                      onChange={(e) => setNotifications({ ...notifications, emailVencimiento: e.target.checked })}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
-                  </label>
                 </div>
+              </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                  <div>
-                    <p className="font-medium">{t('emailOnPayment')}</p>
-                    <p className="text-sm text-gray-500">{t('emailOnPaymentDesc')}</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={notifications.emailPago}
-                      onChange={(e) => setNotifications({ ...notifications, emailPago: e.target.checked })}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
-                  </label>
-                </div>
-
-                <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                  <label className="block font-medium mb-2">{t('daysBeforeDue')}</label>
-                  <Input
-                    type="number"
-                    min="1"
-                    max="30"
-                    value={notifications.diasAntesVencimiento.toString()}
-                    onChange={(e) => setNotifications({ ...notifications, diasAntesVencimiento: parseInt(e.target.value) || 5 })}
-                    className="max-w-[120px]"
-                  />
-                </div>
-
-                <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <Button onClick={handleSaveNotifications} disabled={saving}>
-                    {saving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-                    {t('save')}
-                  </Button>
-                </div>
+              <div className="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={handleSaveNotifications}
+                  disabled={saving}
+                  className="h-11 px-6 bg-gradient-to-r from-yellow-500 to-orange-600 text-white text-base font-semibold rounded-lg hover:from-yellow-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all duration-200"
+                >
+                  {saving ? t('saving') : t('save')}
+                </button>
               </div>
             </Card>
           )}

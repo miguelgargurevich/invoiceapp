@@ -779,6 +779,46 @@ router.put('/:id/order-type', authenticateToken, getEmpresaFromUser, async (req,
   }
 });
 
+// PUT /api/facturas/:id/job-info - Actualizar información del trabajo
+router.put('/:id/job-info', authenticateToken, getEmpresaFromUser, async (req, res) => {
+  try {
+    const { jobName, jobLocation, workDescription, paymentTerms } = req.body;
+
+    // Verificar que la factura existe y pertenece a la empresa
+    const factura = await prisma.factura.findFirst({
+      where: {
+        id: req.params.id,
+        empresaId: req.empresa.id
+      }
+    });
+
+    if (!factura) {
+      return res.status(404).json({ error: 'Factura no encontrada' });
+    }
+
+    // No permitir editar facturas anuladas
+    if (factura.estado === 'ANULADA') {
+      return res.status(400).json({ error: 'No se pueden editar facturas anuladas' });
+    }
+
+    // Actualizar job info
+    const facturaActualizada = await prisma.factura.update({
+      where: { id: req.params.id },
+      data: {
+        jobName: jobName || null,
+        jobLocation: jobLocation || null,
+        workDescription: workDescription || null,
+        paymentTerms: paymentTerms || null
+      }
+    });
+
+    res.json(facturaActualizada);
+  } catch (error) {
+    console.error('Error actualizando job info:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 // PUT /api/facturas/:id/payment-summary - Actualizar resumen de pago
 router.put('/:id/payment-summary', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {

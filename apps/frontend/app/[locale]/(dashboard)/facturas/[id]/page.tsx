@@ -23,7 +23,10 @@ import {
   HardHat,
   MessageSquare,
   ClipboardList,
-  Receipt
+  Receipt,
+  Plus,
+  Trash2,
+  MapPin
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -137,6 +140,19 @@ export default function FacturaDetailPage({
   const [editingPaymentSummary, setEditingPaymentSummary] = useState(false);
   const [totalMaterialsEdit, setTotalMaterialsEdit] = useState<number>(0);
   const [totalLaborEdit, setTotalLaborEdit] = useState<number>(0);
+  const [isEditJobInfoOpen, setIsEditJobInfoOpen] = useState(false);
+  const [editingJobInfo, setEditingJobInfo] = useState(false);
+  const [showJobMoreOptions, setShowJobMoreOptions] = useState(false);
+  const [jobInfoEdit, setJobInfoEdit] = useState({ jobName: '', jobLocation: '', workDescription: '', paymentTerms: '' });
+  const [isEditItemsOpen, setIsEditItemsOpen] = useState(false);
+  const [editingItems, setEditingItems] = useState(false);
+  const [itemsEdit, setItemsEdit] = useState<Array<{
+    id: string;
+    descripcion: string;
+    cantidad: number;
+    precioUnitario: number;
+    descuento: number;
+  }>>([]);
   const pdfRef = useRef<HTMLDivElement>(null);
   const [paymentData, setPaymentData] = useState({
     monto: '',
@@ -390,6 +406,99 @@ export default function FacturaDetailPage({
     }
   };
 
+  const handleOpenEditJobInfo = () => {
+    if (!factura) return;
+    setJobInfoEdit({
+      jobName: factura.jobName || '',
+      jobLocation: factura.jobLocation || '',
+      workDescription: factura.workDescription || '',
+      paymentTerms: factura.paymentTerms || ''
+    });
+    setIsEditJobInfoOpen(true);
+  };
+
+  const handleSaveJobInfo = async () => {
+    if (!factura) return;
+
+    try {
+      setEditingJobInfo(true);
+      await api.put(`/facturas/${factura.id}/job-info`, jobInfoEdit);
+      
+      showSuccess('Job information updated successfully');
+      setIsEditJobInfoOpen(false);
+      loadFactura();
+    } catch (error: any) {
+      console.error('Error updating job info:', error);
+      showError(error.response?.data?.error || 'Failed to update job information');
+    } finally {
+      setEditingJobInfo(false);
+    }
+  };
+
+  const handleOpenEditItems = () => {
+    if (!factura) return;
+    setItemsEdit(factura.detalles.map(d => ({
+      id: d.id,
+      descripcion: d.descripcion,
+      cantidad: d.cantidad,
+      precioUnitario: d.precioUnitario,
+      descuento: d.descuento || 0
+    })));
+    setIsEditItemsOpen(true);
+  };
+
+  const handleAddItem = () => {
+    setItemsEdit([...itemsEdit, {
+      id: `new-${Date.now()}`,
+      descripcion: '',
+      cantidad: 1,
+      precioUnitario: 0,
+      descuento: 0
+    }]);
+  };
+
+  const handleRemoveItem = (index: number) => {
+    setItemsEdit(itemsEdit.filter((_, i) => i !== index));
+  };
+
+  const handleUpdateItem = (index: number, field: string, value: string | number) => {
+    const updated = [...itemsEdit];
+    updated[index] = { ...updated[index], [field]: value };
+    setItemsEdit(updated);
+  };
+
+  const handleSaveItems = async () => {
+    if (!factura) return;
+
+    // Validate items
+    const validItems = itemsEdit.filter(item => item.descripcion.trim() !== '');
+    if (validItems.length === 0) {
+      showError(t('messages.itemsRequired') || 'At least one item is required');
+      return;
+    }
+
+    try {
+      setEditingItems(true);
+      await api.put(`/facturas/${factura.id}`, {
+        detalles: validItems.map(item => ({
+          descripcion: item.descripcion,
+          cantidad: Number(item.cantidad) || 1,
+          precioUnitario: Number(item.precioUnitario) || 0,
+          descuento: Number(item.descuento) || 0
+        }))
+      });
+      
+      showSuccess(t('messages.itemsUpdated') || 'Items updated successfully');
+      setIsEditItemsOpen(false);
+      loadFactura();
+    } catch (error: any) {
+      console.error('Error updating items:', error);
+      showError(error.response?.data?.error || 'Failed to update items');
+    } finally {
+      setEditingItems(false);
+    }
+  };
+
   const handleDirectDownloadPDF = async () => {
     if (!pdfRef.current || !factura) return;
 
@@ -522,13 +631,13 @@ export default function FacturaDetailPage({
               )}
             </div>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
-              {t('issuedOn', { date: formatDate(factura.fechaEmision) })}
+              {t('issuedOn', { date: formatDate(factura.fechaEmision, locale) })}
             </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={() => setIsPrintPreviewOpen(true)}>
-            <Printer className="w-4 h-4 mr-1" />
+          <Button variant="outline" className="h-12 text-base" onClick={() => setIsPrintPreviewOpen(true)}>
+            <Printer className="w-5 h-5 mr-2" />
             {t('print')}
           </Button>
           {factura.proformaOrigenId && (
@@ -537,15 +646,7 @@ export default function FacturaDetailPage({
               {t('viewProposal')}
             </Button>
           )}
-          {factura.estado !== 'PAGADA' && factura.estado !== 'ANULADA' && factura.saldoPendiente > 0 && (
-            <Button size="sm" onClick={() => {
-              setPaymentData({ ...paymentData, monto: (factura.saldoPendiente || 0).toFixed(2) });
-              setIsPaymentModalOpen(true);
-            }}>
-              <CreditCard className="w-4 h-4 mr-1" />
-              {t('registerPayment')}
-            </Button>
-          )}
+
         </div>
       </div>
 
@@ -596,10 +697,21 @@ export default function FacturaDetailPage({
 
           {/* Line items */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-              <Package className="w-5 h-5" />
-              {t('items')}
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <Package className="w-5 h-5" />
+                {t('items')}
+              </h2>
+              {factura.estado !== 'ANULADA' && factura.estado !== 'PAGADA' && (
+                <button
+                  onClick={handleOpenEditItems}
+                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                  title={t('editItems') || 'Edit items'}
+                >
+                  <Edit2 className="w-4 h-4 text-gray-500" />
+                </button>
+              )}
+            </div>
             {/* Desktop table */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
@@ -695,12 +807,23 @@ export default function FacturaDetailPage({
           )}
 
           {/* Job Information */}
-          {(factura.jobName || factura.jobLocation || factura.workDescription || factura.paymentTerms) && (
-            <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+          <Card>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <Briefcase className="w-5 h-5" />
                 Job Information
               </h2>
+              {factura.estado !== 'ANULADA' && (
+                <button
+                  onClick={handleOpenEditJobInfo}
+                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                  title="Edit job information"
+                >
+                  <Edit2 className="w-4 h-4 text-gray-500" />
+                </button>
+              )}
+            </div>
+            {(factura.jobName || factura.jobLocation || factura.workDescription || factura.paymentTerms) ? (
               <div className="space-y-3">
                 {factura.jobName && (
                   <div>
@@ -727,8 +850,12 @@ export default function FacturaDetailPage({
                   </div>
                 )}
               </div>
-            </Card>
-          )}
+            ) : (
+              <p className="text-gray-400 dark:text-gray-500 italic text-sm">
+                No job information set. Click the edit icon to add details.
+              </p>
+            )}
+          </Card>
 
           {/* Observations */}
           <Card>
@@ -888,25 +1015,25 @@ export default function FacturaDetailPage({
           {/* Actions */}
           {factura.estado !== 'ANULADA' && (
             <Card className="!p-4">
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {factura.saldoPendiente > 0 && (
                   <Button
-                    className="w-full"
+                    className="w-full h-12 text-base"
                     onClick={() => {
                       setPaymentData({ ...paymentData, monto: factura.saldoPendiente.toFixed(2) });
                       setIsPaymentModalOpen(true);
                     }}
                   >
-                    <CreditCard className="w-4 h-4 mr-2" />
+                    <CreditCard className="w-5 h-5 mr-2" />
                     {t('registerPayment')}
                   </Button>
                 )}
                 <Button
                   variant="outline"
-                  className="w-full text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  className="w-full h-12 text-base text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
                   onClick={() => setIsCancelDialogOpen(true)}
                 >
-                  <XCircle className="w-4 h-4 mr-2" />
+                  <XCircle className="w-5 h-5 mr-2" />
                   {t('cancelInvoice')}
                 </Button>
               </div>
@@ -1248,6 +1375,133 @@ export default function FacturaDetailPage({
         </div>
       </Modal>
 
+      {/* Edit Job Information Modal */}
+      <Modal
+        isOpen={isEditJobInfoOpen}
+        onClose={() => { !editingJobInfo && setIsEditJobInfoOpen(false); setShowJobMoreOptions(false); }}
+        title="Job Information"
+        subtitle="Update job details and work description"
+        icon={Briefcase}
+        size="md"
+      >
+        <div className="space-y-5">
+          {/* Job Fields */}
+          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Work Description
+                </label>
+                <textarea
+                  value={jobInfoEdit.workDescription}
+                  onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, workDescription: e.target.value })}
+                  disabled={editingJobInfo}
+                  placeholder="Describe the work to be done"
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent resize-none transition-all placeholder:text-gray-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Payment Terms
+                </label>
+                <textarea
+                  value={jobInfoEdit.paymentTerms}
+                  onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, paymentTerms: e.target.value })}
+                  disabled={editingJobInfo}
+                  placeholder="Define payment conditions"
+                  rows={3}
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent resize-none transition-all placeholder:text-gray-400"
+                />
+              </div>
+
+              {/* More Options Toggle */}
+              <button
+                type="button"
+                onClick={() => setShowJobMoreOptions(!showJobMoreOptions)}
+                className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              >
+                <svg 
+                  className={`w-4 h-4 transition-transform ${showJobMoreOptions ? 'rotate-180' : ''}`} 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+                {t('moreOptions') || 'More options'}
+              </button>
+
+              {/* Job Name & Location (Collapsible) */}
+              {showJobMoreOptions && (
+                <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      Job Name
+                    </label>
+                    <input
+                      type="text"
+                      value={jobInfoEdit.jobName}
+                      onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, jobName: e.target.value })}
+                      disabled={editingJobInfo}
+                      placeholder="Enter job name"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      Job Location
+                    </label>
+                    <input
+                      type="text"
+                      value={jobInfoEdit.jobLocation}
+                      onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, jobLocation: e.target.value })}
+                      disabled={editingJobInfo}
+                      placeholder="Enter job location"
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsEditJobInfoOpen(false)}
+              disabled={editingJobInfo}
+              className="flex-1 h-11"
+            >
+              {t('cancel')}
+            </Button>
+            <Button
+              onClick={handleSaveJobInfo}
+              disabled={editingJobInfo}
+              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+            >
+              {editingJobInfo ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {t('saving')}
+                </>
+              ) : (
+                <>
+                  <Briefcase className="w-4 h-4 mr-2" />
+                  {t('save')}
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
       {/* Edit Order Type Modal */}
       <Modal
         isOpen={isEditOrderTypeOpen}
@@ -1353,6 +1607,143 @@ export default function FacturaDetailPage({
               ) : (
                 <>
                   <ClipboardList className="w-4 h-4 mr-2" />
+                  {t('save')}
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Edit Items Modal */}
+      <Modal
+        isOpen={isEditItemsOpen}
+        onClose={() => !editingItems && setIsEditItemsOpen(false)}
+        title={t('items')}
+        subtitle={t('editItemsSubtitle') || 'Add, edit or remove line items'}
+        icon={Package}
+        size="lg"
+      >
+        <div className="space-y-5">
+          {/* Items List */}
+          <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+            {itemsEdit.map((item, index) => (
+              <div 
+                key={item.id} 
+                className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-4 border border-gray-100 dark:border-gray-800"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="flex-1 space-y-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
+                        {t('description')}
+                      </label>
+                      <input
+                        type="text"
+                        value={item.descripcion}
+                        onChange={(e) => handleUpdateItem(index, 'descripcion', e.target.value)}
+                        disabled={editingItems}
+                        placeholder={t('descriptionPlaceholder') || 'Item description...'}
+                        className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
+                      />
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
+                          {t('qty')}
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={item.cantidad}
+                          onChange={(e) => handleUpdateItem(index, 'cantidad', parseFloat(e.target.value) || 0)}
+                          disabled={editingItems}
+                          className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm text-center focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
+                          {t('price')}
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={item.precioUnitario}
+                          onChange={(e) => handleUpdateItem(index, 'precioUnitario', parseFloat(e.target.value) || 0)}
+                          disabled={editingItems}
+                          className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm text-right focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
+                          {t('subtotal')}
+                        </label>
+                        <div className="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-sm text-right font-medium text-gray-900 dark:text-gray-100">
+                          {formatCurrency(item.cantidad * item.precioUnitario)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleRemoveItem(index)}
+                    disabled={editingItems || itemsEdit.length <= 1}
+                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    title={t('delete')}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Add Item Button */}
+          <button
+            onClick={handleAddItem}
+            disabled={editingItems}
+            className="w-full py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-gray-500 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            {t('addItem') || 'Add Item'}
+          </button>
+
+          {/* Total */}
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-blue-900/20 dark:to-indigo-900/10 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+            <div className="flex items-center justify-between text-lg font-semibold">
+              <span className="text-gray-700 dark:text-gray-300">{t('total')}</span>
+              <span className="text-gray-900 dark:text-gray-100">
+                {formatCurrency(itemsEdit.reduce((sum, item) => sum + (item.cantidad * item.precioUnitario), 0))}
+              </span>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsEditItemsOpen(false)}
+              disabled={editingItems}
+              className="flex-1 h-11"
+            >
+              {t('cancel')}
+            </Button>
+            <Button
+              onClick={handleSaveItems}
+              disabled={editingItems || itemsEdit.length === 0}
+              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+            >
+              {editingItems ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {t('saving')}
+                </>
+              ) : (
+                <>
+                  <Package className="w-4 h-4 mr-2" />
                   {t('save')}
                 </>
               )}

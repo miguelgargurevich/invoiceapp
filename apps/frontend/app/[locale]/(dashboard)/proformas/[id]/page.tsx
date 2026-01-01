@@ -29,7 +29,9 @@ import {
   Edit2,
   MessageSquare,
   MapPin,
-  CreditCard
+  CreditCard,
+  Plus,
+  Trash2
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -159,10 +161,20 @@ export default function ProformaDetailPage({
   const [fechaValidezEdit, setFechaValidezEdit] = useState<Date | null>(null);
   const [isEditJobInfoOpen, setIsEditJobInfoOpen] = useState(false);
   const [editingJobInfo, setEditingJobInfo] = useState(false);
+  const [showJobMoreOptions, setShowJobMoreOptions] = useState(false);
   const [jobInfoEdit, setJobInfoEdit] = useState({ jobName: '', jobLocation: '', workDescription: '', telefonoTrabajo: '' });
   const [isEditPaymentTermsOpen, setIsEditPaymentTermsOpen] = useState(false);
   const [editingPaymentTerms, setEditingPaymentTerms] = useState(false);
   const [paymentTermsEdit, setPaymentTermsEdit] = useState('');
+  const [isEditItemsOpen, setIsEditItemsOpen] = useState(false);
+  const [editingItems, setEditingItems] = useState(false);
+  const [itemsEdit, setItemsEdit] = useState<Array<{
+    id: string;
+    descripcion: string;
+    cantidad: number;
+    precioUnitario: number;
+    descuento: number;
+  }>>([]);
   const pdfRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -517,6 +529,70 @@ export default function ProformaDetailPage({
       setEditingPaymentTerms(false);
     }
   };
+
+  const handleOpenEditItems = () => {
+    if (!proforma) return;
+    setItemsEdit(proforma.detalles.map(d => ({
+      id: d.id,
+      descripcion: d.descripcion,
+      cantidad: d.cantidad,
+      precioUnitario: d.precioUnitario,
+      descuento: d.descuento || 0
+    })));
+    setIsEditItemsOpen(true);
+  };
+
+  const handleAddItem = () => {
+    setItemsEdit([...itemsEdit, {
+      id: `new-${Date.now()}`,
+      descripcion: '',
+      cantidad: 1,
+      precioUnitario: 0,
+      descuento: 0
+    }]);
+  };
+
+  const handleRemoveItem = (index: number) => {
+    setItemsEdit(itemsEdit.filter((_, i) => i !== index));
+  };
+
+  const handleUpdateItem = (index: number, field: string, value: string | number) => {
+    const updated = [...itemsEdit];
+    updated[index] = { ...updated[index], [field]: value };
+    setItemsEdit(updated);
+  };
+
+  const handleSaveItems = async () => {
+    if (!proforma) return;
+
+    // Validate items
+    const validItems = itemsEdit.filter(item => item.descripcion.trim() !== '');
+    if (validItems.length === 0) {
+      showError(t('itemsRequired') || 'At least one item is required');
+      return;
+    }
+
+    try {
+      setEditingItems(true);
+      await api.put(`/proformas/${proforma.id}`, {
+        detalles: validItems.map(item => ({
+          descripcion: item.descripcion,
+          cantidad: Number(item.cantidad) || 1,
+          precioUnitario: Number(item.precioUnitario) || 0,
+          descuento: Number(item.descuento) || 0
+        }))
+      });
+      
+      showSuccess(t('updateSuccess') || 'Items updated successfully');
+      setIsEditItemsOpen(false);
+      loadProforma();
+    } catch (error: any) {
+      console.error('Error updating items:', error);
+      showError(error.response?.data?.error || 'Failed to update items');
+    } finally {
+      setEditingItems(false);
+    }
+  };
   
   const handleConvertToInvoice = async () => {
     if (!proforma) return;
@@ -609,7 +685,7 @@ export default function ProformaDetailPage({
               )}
             </div>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
-              {t('issuedOn', { date: formatDate(proforma.fechaEmision) })}
+              {t('issuedOn', { date: formatDate(proforma.fechaEmision, locale) })}
             </p>
           </div>
         </div>
@@ -620,10 +696,10 @@ export default function ProformaDetailPage({
           </Button>
           <Button 
             variant="outline" 
-            size="sm" 
+            className="h-12 text-base"
             onClick={() => setShowPhotosGallery(true)}
           >
-            <Camera className="w-4 h-4 mr-1" />
+            <Camera className="w-5 h-5 mr-2" />
             {t('jobPhotos')} ({photos.length})
           </Button>
           {proforma.estado !== 'ANULADA' && proforma.signatureStatus !== 'SIGNED' && (
@@ -704,10 +780,21 @@ export default function ProformaDetailPage({
 
           {/* Line items */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-              <Package className="w-5 h-5" />
-              {t('items')}
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <Package className="w-5 h-5" />
+                {t('items')}
+              </h2>
+              {proforma.estado !== 'facturada' && proforma.estado !== 'convertida' && (
+                <button
+                  onClick={handleOpenEditItems}
+                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                  title={t('editItems') || 'Edit items'}
+                >
+                  <Edit2 className="w-4 h-4 text-gray-500" />
+                </button>
+              )}
+            </div>
             {/* Desktop table */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
@@ -988,23 +1075,23 @@ export default function ProformaDetailPage({
 
           {/* Actions */}
           <Card className="!p-4">
-            <div className="space-y-2">
+            <div className="space-y-3">
               {canConvert && (
                 <Button
-                  className="w-full"
+                  className="w-full h-12 text-base"
                   onClick={() => setIsConvertDialogOpen(true)}
                   disabled={converting}
                 >
-                  <FileText className="w-4 h-4 mr-2" />
+                  <FileText className="w-5 h-5 mr-2" />
                   {converting ? tCommon('loading') : t('convertToInvoice')}
                 </Button>
               )}
               <Button
                 variant="outline"
-                className="w-full text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                className="w-full h-12 text-base text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
                 onClick={() => setIsDeleteDialogOpen(true)}
               >
-                <XCircle className="w-4 h-4 mr-2" />
+                <XCircle className="w-5 h-5 mr-2" />
                 {tCommon('delete')}
               </Button>
             </div>
@@ -1230,7 +1317,7 @@ export default function ProformaDetailPage({
       {/* Edit Job Information Modal */}
       <Modal
         isOpen={isEditJobInfoOpen}
-        onClose={() => !editingJobInfo && setIsEditJobInfoOpen(false)}
+        onClose={() => { !editingJobInfo && setIsEditJobInfoOpen(false); setShowJobMoreOptions(false); }}
         title={t('jobInformation')}
         subtitle="Update job details and work description"
         icon={Briefcase}
@@ -1240,37 +1327,6 @@ export default function ProformaDetailPage({
           {/* Job Fields */}
           <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  {t('jobName')}
-                </label>
-                <input
-                  type="text"
-                  value={jobInfoEdit.jobName}
-                  onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, jobName: e.target.value })}
-                  disabled={editingJobInfo}
-                  placeholder={t('jobName')}
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  {t('jobLocation')}
-                </label>
-                <div className="relative">
-                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    value={jobInfoEdit.jobLocation}
-                    onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, jobLocation: e.target.value })}
-                    disabled={editingJobInfo}
-                    placeholder={t('jobLocation')}
-                    className="w-full pl-11 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
-                  />
-                </div>
-              </div>
-
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   {t('jobPhone')}
@@ -1298,6 +1354,59 @@ export default function ProformaDetailPage({
                   className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent resize-none transition-all placeholder:text-gray-400"
                 />
               </div>
+
+              {/* More Options Toggle */}
+              <button
+                type="button"
+                onClick={() => setShowJobMoreOptions(!showJobMoreOptions)}
+                className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              >
+                <svg 
+                  className={`w-4 h-4 transition-transform ${showJobMoreOptions ? 'rotate-180' : ''}`} 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+                {t('moreOptions') || 'More options'}
+              </button>
+
+              {/* Job Name & Location (Collapsible) */}
+              {showJobMoreOptions && (
+                <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      {t('jobName')}
+                    </label>
+                    <input
+                      type="text"
+                      value={jobInfoEdit.jobName}
+                      onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, jobName: e.target.value })}
+                      disabled={editingJobInfo}
+                      placeholder={t('jobName')}
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      {t('jobLocation')}
+                    </label>
+                    <div className="relative">
+                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="text"
+                        value={jobInfoEdit.jobLocation}
+                        onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, jobLocation: e.target.value })}
+                        disabled={editingJobInfo}
+                        placeholder={t('jobLocation')}
+                        className="w-full pl-11 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -1453,6 +1562,143 @@ export default function ProformaDetailPage({
         </div>
       </Modal>
 
+      {/* Edit Items Modal */}
+      <Modal
+        isOpen={isEditItemsOpen}
+        onClose={() => !editingItems && setIsEditItemsOpen(false)}
+        title={t('items')}
+        subtitle={t('editItemsSubtitle') || 'Add, edit or remove line items'}
+        icon={Package}
+        size="lg"
+      >
+        <div className="space-y-5">
+          {/* Items List */}
+          <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+            {itemsEdit.map((item, index) => (
+              <div 
+                key={item.id} 
+                className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-4 border border-gray-100 dark:border-gray-800"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="flex-1 space-y-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
+                        {t('description')}
+                      </label>
+                      <input
+                        type="text"
+                        value={item.descripcion}
+                        onChange={(e) => handleUpdateItem(index, 'descripcion', e.target.value)}
+                        disabled={editingItems}
+                        placeholder={t('descriptionPlaceholder') || 'Item description...'}
+                        className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
+                      />
+                    </div>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
+                          {t('qty')}
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={item.cantidad}
+                          onChange={(e) => handleUpdateItem(index, 'cantidad', parseFloat(e.target.value) || 0)}
+                          disabled={editingItems}
+                          className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm text-center focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
+                          {t('price')}
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={item.precioUnitario}
+                          onChange={(e) => handleUpdateItem(index, 'precioUnitario', parseFloat(e.target.value) || 0)}
+                          disabled={editingItems}
+                          className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm text-right focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">
+                          {t('subtotal')}
+                        </label>
+                        <div className="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-sm text-right font-medium text-gray-900 dark:text-gray-100">
+                          {formatCurrency(item.cantidad * item.precioUnitario)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => handleRemoveItem(index)}
+                    disabled={editingItems || itemsEdit.length <= 1}
+                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    title={tCommon('delete')}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Add Item Button */}
+          <button
+            onClick={handleAddItem}
+            disabled={editingItems}
+            className="w-full py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-gray-500 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            {t('addItem') || 'Add Item'}
+          </button>
+
+          {/* Total */}
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-blue-900/20 dark:to-indigo-900/10 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+            <div className="flex items-center justify-between text-lg font-semibold">
+              <span className="text-gray-700 dark:text-gray-300">{t('total')}</span>
+              <span className="text-gray-900 dark:text-gray-100">
+                {formatCurrency(itemsEdit.reduce((sum, item) => sum + (item.cantidad * item.precioUnitario), 0))}
+              </span>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsEditItemsOpen(false)}
+              disabled={editingItems}
+              className="flex-1 h-11"
+            >
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              onClick={handleSaveItems}
+              disabled={editingItems || itemsEdit.length === 0}
+              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+            >
+              {editingItems ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {tCommon('saving')}
+                </>
+              ) : (
+                <>
+                  <Package className="w-4 h-4 mr-2" />
+                  {tCommon('save')}
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
       {/* Convert to Invoice Confirmation */}
       <ConfirmDialog
         isOpen={isConvertDialogOpen}
@@ -1481,9 +1727,9 @@ export default function ProformaDetailPage({
           isOpen={showPhotosGallery} 
           onClose={() => setShowPhotosGallery(false)}
           title={t('jobPhotos')}
-          subtitle="View and manage photos for this job"
+          subtitle={t('jobPhotosSubtitle')}
           icon={Camera}
-          size="full"
+          size="xl"
         >
           <JobPhotosGallery
             proformaId={id}

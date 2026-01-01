@@ -185,56 +185,40 @@ export default function JobPhotosGallery({
     <>
       <div className="space-y-6 relative">
 
-        {/* Client & Invoice Info Header */}
+        {/* Client & Invoice Info Header - Simplified */}
         {(clientInfo || invoiceInfo) && (
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
               {clientInfo && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300 font-semibold">
-                    <User className="w-4 h-4" />
-                    <span className="text-sm">Client Information</span>
-                  </div>
-                  <div className="ml-6 space-y-1 text-sm">
-                    <p className="font-medium text-gray-900 dark:text-gray-100">{clientInfo.razonSocial}</p>
-                    {clientInfo.numeroDocumento && (
-                      <p className="text-gray-600 dark:text-gray-400">ID: {clientInfo.numeroDocumento}</p>
-                    )}
-                    {clientInfo.direccion && (
-                      <p className="text-gray-600 dark:text-gray-400">{clientInfo.direccion}</p>
-                    )}
-                    {clientInfo.email && (
-                      <p className="text-gray-600 dark:text-gray-400">{clientInfo.email}</p>
-                    )}
-                  </div>
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <span className="font-medium text-gray-900 dark:text-gray-100">{clientInfo.razonSocial}</span>
+                  {clientInfo.numeroDocumento && (
+                    <span className="text-gray-500 dark:text-gray-400 text-sm">• {clientInfo.numeroDocumento}</span>
+                  )}
                 </div>
               )}
               {invoiceInfo && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300 font-semibold">
-                    <FileText className="w-4 h-4" />
-                    <span className="text-sm">Invoice Details</span>
-                  </div>
-                  <div className="ml-6 space-y-1 text-sm">
-                    <p className="font-medium text-gray-900 dark:text-gray-100">
-                      {invoiceInfo.serie}-{invoiceInfo.numero}
-                    </p>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      Issued: {formatDate(invoiceInfo.fechaEmision)}
-                    </p>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                    {invoiceInfo.serie}-{invoiceInfo.numero}
+                  </span>
+                  <span className="text-gray-500 dark:text-gray-400 text-sm">
+                    • {formatDate(invoiceInfo.fechaEmision)}
+                  </span>
                 </div>
               )}
             </div>
           </div>
         )}
 
-        {/* Upload Button */}
+        {/* Upload Section */}
         {!readOnly && (
           <div className="flex justify-between items-center">
-            <div className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <Camera className="w-4 h-4 text-blue-600" />
-              {t('photosInformation')} ({photos.length})
+            <div className="text-base font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
+              <Image className="w-4 h-4 text-blue-600" />
+              {photos.length} {photos.length === 1 ? t('photo') : t('photos')}
             </div>
             <div>
               <input
@@ -277,7 +261,7 @@ export default function JobPhotosGallery({
                       {group.displayDate}
                     </h4>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {group.photos.length} {group.photos.length === 1 ? 'photo' : 'photos'}
+                      {group.photos.length} {group.photos.length === 1 ? t('photo') : t('photos')}
                     </p>
                   </div>
                 </div>
@@ -293,7 +277,7 @@ export default function JobPhotosGallery({
                       >
                         <img
                           src={photo.url}
-                          alt={photo.descripcion || `Photo`}
+                          alt={photo.descripcion || t('photo')}
                           className="w-full h-full object-cover cursor-pointer transition-transform group-hover:scale-110"
                           onClick={() => {
                             setCurrentPhotoIndex(photoIndex);
@@ -418,7 +402,7 @@ export default function JobPhotosGallery({
             <div className="flex flex-col items-center justify-center h-full pt-20 pb-16">
               <img
                 src={photos[currentPhotoIndex].url}
-                alt={photos[currentPhotoIndex].descripcion || `Photo ${currentPhotoIndex + 1}`}
+                alt={photos[currentPhotoIndex].descripcion || t('photo')}
                 className="max-h-[calc(85vh-160px)] max-w-full w-auto rounded-lg shadow-2xl"
               />
               <div className="mt-6 text-center max-w-2xl">
@@ -442,7 +426,7 @@ export default function JobPhotosGallery({
                   </p>
                 )}
                 <p className="text-sm font-semibold text-gray-500 dark:text-gray-500">
-                  Photo {currentPhotoIndex + 1} of {photos.length}
+                  {t('photoOf', { current: currentPhotoIndex + 1, total: photos.length })}
                 </p>
               </div>
             </div>

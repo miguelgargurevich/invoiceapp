@@ -28,8 +28,8 @@ export default function NuevoProductoPage({
     nombre: '',
     descripcion: '',
     precioVenta: '',
-    unidadMedida: 'UNIDAD',
-    tipo: 'PRODUCTO',
+    unidadMedida: 'SERVICIO',
+    tipo: 'SERVICIO',
     afectoIgv: true,
   });
 
