@@ -275,6 +275,13 @@ export default function NuevaFacturaPage({
     try {
       setSaving(true);
 
+      // Filter out empty/incomplete line items
+      const validLineas = lineas.filter(linea => 
+        linea.descripcion.trim() !== '' && 
+        linea.precioUnitario > 0 && 
+        linea.cantidad > 0
+      );
+
       const payload = {
         empresaId: empresa?.id,
         clienteId,
@@ -289,7 +296,7 @@ export default function NuevaFacturaPage({
         totalMaterials: totalMaterials,
         totalLabor: totalLabor,
         moneda: empresa?.moneda || 'USD',
-        detalles: lineas.map((linea) => ({
+        detalles: validLineas.map((linea) => ({
           productoId: linea.productoId || null,
           descripcion: linea.descripcion,
           cantidad: linea.cantidad,
