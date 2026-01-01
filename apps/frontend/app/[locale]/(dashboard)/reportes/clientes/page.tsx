@@ -31,8 +31,8 @@ interface ClienteReporte {
   };
   totalVentas: number;
   cantidadFacturas: number;
-  totalPagado: number;
-  totalPendiente: number;
+  pagado: number;
+  pendiente: number;
 }
 
 export default function ClientsReportPage({
@@ -69,12 +69,19 @@ export default function ClientsReportPage({
 
       const response = await api.get<any>(`/reportes/clientes?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}&limite=20`);
 
-      setClientesData(response.datos || []);
+      const datos = response.datos || [];
+      setClientesData(datos);
+      
+      // Calculate totals from client data
+      const totalVentas = datos.reduce((acc: number, c: any) => acc + (c.totalVentas || 0), 0);
+      const totalPagado = datos.reduce((acc: number, c: any) => acc + (c.pagado || 0), 0);
+      const totalPendiente = datos.reduce((acc: number, c: any) => acc + (c.pendiente || 0), 0);
+      
       setResumen({
-        totalClientes: response.resumen?.totalClientes || 0,
-        totalVentas: response.resumen?.totalVentas || 0,
-        totalPagado: response.resumen?.totalPagado || 0,
-        totalPendiente: response.resumen?.totalPendiente || 0,
+        totalClientes: response.totalClientes || datos.length,
+        totalVentas,
+        totalPagado,
+        totalPendiente,
       });
 
     } catch (error) {
@@ -91,7 +98,7 @@ export default function ClientsReportPage({
   const chartData = clientesData.slice(0, 10).map(c => ({
     name: c.cliente.razonSocial.length > 15 ? c.cliente.razonSocial.substring(0, 15) + '...' : c.cliente.razonSocial,
     ventas: c.totalVentas,
-    pagado: c.totalPagado,
+    pagado: c.pagado,
   }));
 
   return (
@@ -278,10 +285,10 @@ export default function ClientsReportPage({
                       {formatCurrency(item.totalVentas)}
                     </td>
                     <td className="py-3 px-4 text-right text-green-600 dark:text-green-400">
-                      {formatCurrency(item.totalPagado)}
+                      {formatCurrency(item.pagado)}
                     </td>
                     <td className="py-3 px-4 text-right text-yellow-600 dark:text-yellow-400">
-                      {formatCurrency(item.totalPendiente)}
+                      {formatCurrency(item.pendiente)}
                     </td>
                   </tr>
                 ))
