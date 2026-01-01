@@ -149,6 +149,10 @@ export default function ProformasPage({
     return variants[estado as keyof typeof variants] || 'default' as const;
   };
 
+  const getStatusLabel = (status: string) => {
+    return t(`statuses.${status}`);
+  };
+
   const columns: Column<ProformaListItem>[] = [
     {
       key: 'numero',
@@ -434,6 +438,31 @@ export default function ProformasPage({
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
+            renderMobileCard={(proforma) => (
+              <div className="space-y-2">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                      {proforma.serie}-{proforma.numero}
+                    </span>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {proforma.cliente.nombre}
+                    </p>
+                  </div>
+                  <Badge variant={getEstadoBadge(proforma.estado)} size="sm">
+                    {getStatusLabel(proforma.estado)}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500 dark:text-gray-400">
+                    {formatDate(proforma.fechaEmision)}
+                  </span>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                    {formatCurrency(proforma.total)}
+                  </span>
+                </div>
+              </div>
+            )}
           />
         )}
       </Card>
