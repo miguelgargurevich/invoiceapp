@@ -715,7 +715,7 @@ export default function FacturaDetailPage({
               </div>
             </Card>
           )}
-          
+
           {/* Observations */}
           <Card>
             <div className="flex items-center justify-between mb-2">
@@ -768,11 +768,19 @@ export default function FacturaDetailPage({
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Total Labor</span>
-                <span>{formatCurrency(factura.totalLabor || 0)}</span>
+                <span>{formatCurrency(
+                  (factura.totalMaterials || 0) === 0 && (factura.totalLabor || 0) === 0
+                    ? factura.subtotal
+                    : (factura.totalLabor || 0)
+                )}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Subtotal</span>
-                <span>{formatCurrency((factura.totalMaterials || 0) + (factura.totalLabor || 0))}</span>
+                <span>{formatCurrency(
+                  (factura.totalMaterials || 0) === 0 && (factura.totalLabor || 0) === 0
+                    ? factura.subtotal
+                    : (factura.totalMaterials || 0) + (factura.totalLabor || 0)
+                )}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">
