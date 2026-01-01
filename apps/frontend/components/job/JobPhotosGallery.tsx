@@ -3,7 +3,7 @@
 import { useState, useRef, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { Camera, X, Plus, Trash2, Maximize2, ChevronLeft, ChevronRight, Image, Calendar, User, FileText } from 'lucide-react';
-import { Button, Modal, LoadingSpinner } from '@/components/common';
+import { Button, Modal, LoadingSpinner, ConfirmDialog } from '@/components/common';
 import { useToast } from '@/contexts/ToastContext';
 import api from '@/lib/api';
 
@@ -54,6 +54,7 @@ export default function JobPhotosGallery({
   
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [photoToDelete, setPhotoToDelete] = useState<string | null>(null);
   const [viewerOpen, setViewerOpen] = useState(false);
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -146,11 +147,15 @@ export default function JobPhotosGallery({
   };
 
   const handleDeletePhoto = async (photoId: string) => {
-    if (!confirm(t('confirmDeletePhoto'))) return;
+    setPhotoToDelete(photoId);
+  };
+
+  const confirmDeletePhoto = async () => {
+    if (!photoToDelete) return;
     
-    setDeleting(photoId);
+    setDeleting(photoToDelete);
     try {
-      await api.delete(`/job-photos/${photoId}`);
+      await api.delete(`/job-photos/${photoToDelete}`);
       showSuccess(t('photoDeletedSuccess'));
       onPhotosChange();
     } catch (error) {
@@ -158,6 +163,7 @@ export default function JobPhotosGallery({
       showError(t('photoDeleteError'));
     } finally {
       setDeleting(null);
+      setPhotoToDelete(null);
     }
   };
 
@@ -452,6 +458,17 @@ export default function JobPhotosGallery({
           )}
         </div>
       </Modal>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={!!photoToDelete}
+        onClose={() => setPhotoToDelete(null)}
+        onConfirm={confirmDeletePhoto}
+        title={t('confirmDeletePhoto')}
+        message={t('confirmDeletePhotoMessage') || 'Are you sure you want to delete this photo?'}
+        confirmLabel={t('delete') || 'Delete'}
+        variant="danger"
+      />
     </>
   );
 }

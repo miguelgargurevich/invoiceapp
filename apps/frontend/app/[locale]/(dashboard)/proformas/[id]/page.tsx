@@ -317,7 +317,7 @@ export default function ProformaDetailPage({
       }
     } catch (error: any) {
       console.error('Error requesting signature:', error);
-      alert(error.response?.data?.error || 'Failed to request signature');
+      showError(error.response?.data?.error || 'Failed to request signature');
     } finally {
       setRequestingSignature(false);
     }
@@ -343,10 +343,10 @@ export default function ProformaDetailPage({
         emailSent: true
       }));
       
-      alert('Email sent successfully!');
+      showSuccess('Email sent successfully!');
     } catch (error: any) {
       console.error('Error sending email:', error);
-      alert(error.response?.data?.error || 'Failed to send email');
+      showError(error.response?.data?.error || 'Failed to send email');
     } finally {
       setSendingEmail(false);
     }

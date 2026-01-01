@@ -4,6 +4,7 @@ import { useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { X, Download, Share2, ZoomIn, ZoomOut } from 'lucide-react';
 import { Button, Modal } from '@/components/common';
+import { useToast } from '@/contexts/ToastContext';
 import ProformaPreview from './ProformaPreview';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -72,6 +73,7 @@ export default function ProformaPrintPreviewModal({
 }: ProformaPrintPreviewModalProps) {
   const t = useTranslations('quotes');
   const tCommon = useTranslations('common');
+  const { showError } = useToast();
   const previewRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1.05);
   const [downloading, setDownloading] = useState(false);
@@ -199,11 +201,11 @@ export default function ProformaPrintPreviewModal({
         pdf.save(`${t('title')}-${proforma.serie}-${proforma.numero}.pdf`);
       } else {
         console.error('[ProformaPDF] PDF generation returned null');
-        alert('Error generating PDF. Please try again.');
+        showError('Error generating PDF. Please try again.');
       }
     } catch (error) {
       console.error('[ProformaPDF] Error generating PDF:', error);
-      alert('Error generating PDF. Please try again.');
+      showError('Error generating PDF. Please try again.');
     } finally {
       setDownloading(false);
     }
@@ -243,13 +245,13 @@ export default function ProformaPrintPreviewModal({
         }
       } else {
         console.error('[ProformaPDF] PDF generation returned null');
-        alert('Error generating PDF. Please try again.');
+        showError('Error generating PDF. Please try again.');
       }
     } catch (error: any) {
       console.error('[ProformaPDF] Error sharing:', error);
       // Only show error if it's not a user cancellation
       if (error.name !== 'AbortError') {
-        alert('Error sharing PDF. Please try download instead.');
+        showError('Error sharing PDF. Please try download instead.');
       }
     } finally {
       setDownloading(false);

@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { CheckCircle, AlertCircle, Clock, FileText, Building2 } from 'lucide-react';
 import { Button, Card, LoadingPage } from '@/components/common';
+import { useToast } from '@/contexts/ToastContext';
 import SignatureCanvas from '@/components/signature/SignatureCanvas';
 import { InvoicePreview } from '@/components/invoice';
 import api from '@/lib/api';
@@ -60,6 +61,7 @@ export default function SignDocumentPage() {
   const params = useParams();
   const router = useRouter();
   const t = useTranslations('signature');
+  const { showWarning, showError } = useToast();
   const token = params.token as string;
 
   const [loading, setLoading] = useState(true);
@@ -94,7 +96,7 @@ export default function SignDocumentPage() {
 
   const handleSubmit = async () => {
     if (!signatureData || !consentGiven) {
-      alert('Please sign the document and accept the terms');
+      showWarning('Please sign the document and accept the terms');
       return;
     }
 
@@ -185,7 +187,7 @@ export default function SignDocumentPage() {
       setSuccess(true);
     } catch (err: any) {
       console.error('Error submitting signature:', err);
-      alert(err.response?.data?.error || 'Failed to submit signature');
+      showError(err.response?.data?.error || 'Failed to submit signature');
       setGeneratingPdf(false);
     } finally {
       setSubmitting(false);

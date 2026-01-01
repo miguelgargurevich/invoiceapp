@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { Plus, Clock, User, Calendar, Edit2, Trash2, Save, X } from 'lucide-react';
-import { Button, Input, Textarea, Card } from '@/components/common';
+import { Button, Input, Textarea, Card, ConfirmDialog } from '@/components/common';
 import { workLogsApi, type WorkLog } from '@/lib/jobTracking';
 
 interface WorkLogTimelineProps {
@@ -17,6 +17,7 @@ export function WorkLogTimeline({ documentType, documentId }: WorkLogTimelinePro
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [logToDelete, setLogToDelete] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     fecha: new Date().toISOString().split('T')[0],
     descripcion: '',
@@ -83,13 +84,19 @@ export function WorkLogTimeline({ documentType, documentId }: WorkLogTimelinePro
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm(t('common.confirmDelete'))) return;
+    setLogToDelete(id);
+  };
+
+  const confirmDelete = async () => {
+    if (!logToDelete) return;
     
     try {
-      await workLogsApi.delete(id);
+      await workLogsApi.delete(logToDelete);
       await loadWorkLogs();
     } catch (error) {
       console.error('Error deleting work log:', error);
+    } finally {
+      setLogToDelete(null);
     }
   };
 
@@ -255,5 +262,17 @@ export function WorkLogTimeline({ documentType, documentId }: WorkLogTimelinePro
         )}
       </Card.Content>
     </Card>
+
+    {/* Delete Confirmation Dialog */}
+    <ConfirmDialog
+      isOpen={!!logToDelete}
+      onClose={() => setLogToDelete(null)}
+      onConfirm={confirmDelete}
+      title={t('common.confirmDelete')}
+      message={t('common.confirmDeleteMessage') || 'Are you sure you want to delete this work log?'}
+      confirmLabel={t('common.delete') || 'Delete'}
+      variant="danger"
+    />
+    </>
   );
 }

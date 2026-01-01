@@ -14,6 +14,7 @@ import {
   Users,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import {
   Button,
   Card,
@@ -70,6 +71,7 @@ export default function NuevaProformaPage({
   const router = useRouter();
   const { empresa } = useAuth();
   const { formatCurrency } = useCurrency();
+  const { showWarning, showError, showSuccess } = useToast();
 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -206,7 +208,7 @@ export default function NuevaProformaPage({
 
   const handleSave = async () => {
     if (!clienteId || lineas.length === 0) {
-      alert('Por favor complete todos los campos requeridos');
+      showWarning('Por favor complete todos los campos requeridos');
       return;
     }
 
@@ -240,10 +242,11 @@ export default function NuevaProformaPage({
       };
 
       await api.post('/proformas', payload);
+      showSuccess('Propuesta creada exitosamente');
       router.push(`/${locale}/proformas`);
     } catch (error) {
       console.error('Error saving proforma:', error);
-      alert(t('quotes.saveError'));
+      showError(t('quotes.saveError'));
     } finally {
       setSaving(false);
     }
