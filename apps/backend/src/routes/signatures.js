@@ -436,26 +436,26 @@ router.post('/submit', async (req, res) => {
       data: { status: 'SIGNED' }
     });
 
-    // Send confirmation emails
-    try {
-      const document = signatureRequest.documentType === 'INVOICE' 
-        ? signatureRequest.factura 
-        : signatureRequest.proforma;
+    // Send confirmation emails - TEMPORARILY DISABLED
+    // try {
+    //   const document = signatureRequest.documentType === 'INVOICE' 
+    //     ? signatureRequest.factura 
+    //     : signatureRequest.proforma;
       
-      await sendSignatureConfirmationEmail({
-        signerEmail: signature.signerEmail,
-        signerName: signature.signerName,
-        document,
-        empresa: signatureRequest.empresa,
-        signedPdfUrl: signature.signedPdfUrl,
-        signedAt: signature.signedAt,
-        locale: 'en' // TODO: Get from request or user preferences
-      });
-      console.log('✅ Signature confirmation emails sent successfully');
-    } catch (emailError) {
-      console.error('❌ Failed to send signature confirmation emails:', emailError);
-      // Don't fail the request if email fails, just log it
-    }
+    //   await sendSignatureConfirmationEmail({
+    //     signerEmail: signature.signerEmail,
+    //     signerName: signature.signerName,
+    //     document,
+    //     empresa: signatureRequest.empresa,
+    //     signedPdfUrl: signature.signedPdfUrl,
+    //     signedAt: signature.signedAt,
+    //     locale: 'en' // TODO: Get from request or user preferences
+    //   });
+    //   console.log('✅ Signature confirmation emails sent successfully');
+    // } catch (emailError) {
+    //   console.error('❌ Failed to send signature confirmation emails:', emailError);
+    //   // Don't fail the request if email fails, just log it
+    // }
 
     res.json({
       success: true,
