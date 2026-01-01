@@ -440,19 +440,16 @@ export default function NuevaFacturaPage({
                   <table className="w-full table-fixed">
                     <thead>
                       <tr className="border-b border-gray-200 dark:border-gray-700">
-                        <th className="text-left py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '40%' }}>
+                        <th className="text-left py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '45%' }}>
                           {t('product')}
                         </th>
-                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '10%' }}>
+                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '15%' }}>
                           {t('qty')}
                         </th>
-                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '15%' }}>
+                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '20%' }}>
                           {t('price')}
                         </th>
-                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '12%' }}>
-                          {t('discount')}
-                        </th>
-                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '15%' }}>
+                        <th className="text-right py-2 text-xs font-medium text-gray-500 uppercase" style={{ width: '20%' }}>
                           {t('subtotal')}
                         </th>
                         <th style={{ width: '8%' }}></th>
@@ -489,17 +486,6 @@ export default function NuevaFacturaPage({
                               value={linea.precioUnitario}
                               onChange={(e) =>
                                 updateLinea(linea.id, { precioUnitario: parseFloat(e.target.value) || 0 })
-                              }
-                              className="w-full px-2 py-1.5 text-right border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm"
-                            />
-                          </td>
-                          <td className="py-2 px-1">
-                            <input
-                              type="text"
-                              inputMode="decimal"
-                              value={linea.descuento}
-                              onChange={(e) =>
-                                updateLinea(linea.id, { descuento: parseFloat(e.target.value) || 0 })
                               }
                               className="w-full px-2 py-1.5 text-right border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm"
                             />
@@ -545,7 +531,7 @@ export default function NuevaFacturaPage({
                         onChange={(value) => updateLinea(linea.id, { productoId: value })}
                         loading={loadingProductos}
                       />
-                      <div className="grid grid-cols-3 gap-2">
+                      <div className="grid grid-cols-2 gap-2">
                         <div>
                           <label className="text-xs text-gray-500">{t('qty')}</label>
                           <input
@@ -567,18 +553,6 @@ export default function NuevaFacturaPage({
                             value={linea.precioUnitario}
                             onChange={(e) =>
                               updateLinea(linea.id, { precioUnitario: parseFloat(e.target.value) || 0 })
-                            }
-                            className="w-full px-2 py-1 border rounded bg-white dark:bg-gray-800"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs text-gray-500">{t('discount')}</label>
-                          <input
-                            type="text"
-                            inputMode="decimal"
-                            value={linea.descuento}
-                            onChange={(e) =>
-                              updateLinea(linea.id, { descuento: parseFloat(e.target.value) || 0 })
                             }
                             className="w-full px-2 py-1 border rounded bg-white dark:bg-gray-800"
                           />
