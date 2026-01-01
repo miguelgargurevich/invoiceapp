@@ -5,6 +5,9 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 
+// Importar middleware de autenticación
+const { authenticateToken } = require('./src/middleware/auth');
+
 // Importar rutas
 const authRoutes = require('./src/routes/auth');
 const empresaRoutes = require('./src/routes/empresa');
@@ -163,7 +166,7 @@ app.use('/api/job-receipts', jobReceiptRoutes);
 app.use('/api/signatures', signaturesRoutes);
 app.use('/api/preferences', preferencesRoutes);
 app.use('/api/notificaciones', notificacionesRoutes);
-app.use('/api/admin', adminRoutes);
+app.use('/api/admin', authenticateToken, adminRoutes);
 
 // Servir archivos estáticos (uploads)
 app.use('/uploads', express.static('uploads'));
