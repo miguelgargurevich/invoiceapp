@@ -250,11 +250,13 @@ export default function FacturaDetailPage({
     if (!factura) return;
 
     try {
-      await api.put(`/facturas/${factura.id}/anular`);
+      await api.delete(`/facturas/${factura.id}`);
+      showSuccess(t('invoiceCancelled') || 'Invoice cancelled successfully');
       setIsCancelDialogOpen(false);
       loadFactura();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error cancelling invoice:', error);
+      showError(error.response?.data?.error || 'Failed to cancel invoice');
     }
   };
 
