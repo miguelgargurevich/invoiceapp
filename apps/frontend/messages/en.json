@@ -1007,5 +1007,10 @@
         "answer": "Yes, the system automatically calculates Sales Tax (18%) on all products and services, unless you configure a product as tax exempt."
       }
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "noNotifications": "You have no notifications",
+    "viewAll": "View all invoices"
   }
 }

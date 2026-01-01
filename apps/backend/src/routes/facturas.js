@@ -3,7 +3,7 @@ const router = express.Router();
 const { authenticateToken, getEmpresaFromUser } = require('../middleware/auth');
 const prisma = require('../utils/prisma');
 const { z } = require('zod');
-const { sendInvoiceEmail } = require('../services/emailService');
+const { sendInvoiceEmail, sendInvoiceCreationEmail, sendPaymentConfirmationEmail } = require('../services/emailService');
 
 // Esquema de validación para detalle
 const detalleSchema = z.object({
@@ -418,6 +418,31 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       }
     });
 
+    // Send automatic email notification if enabled in user preferences
+    try {
+      const preferences = await prisma.userPreferences.findUnique({
+        where: { userId: req.user.id }
+      });
+
+      if (preferences?.emailFactura && factura.cliente?.email) {
+        console.log('[INVOICE] Sending automatic invoice creation email to:', factura.cliente.email);
+        await sendInvoiceCreationEmail({
+          factura,
+          empresa: req.empresa,
+          locale: preferences.locale || 'en'
+        });
+        console.log('[INVOICE] ✅ Automatic email sent successfully');
+      } else {
+        console.log('[INVOICE] Email notification skipped:', {
+          emailFacturaEnabled: preferences?.emailFactura,
+          hasClientEmail: !!factura.cliente?.email
+        });
+      }
+    } catch (emailError) {
+      // Don't fail the invoice creation if email fails
+      console.error('[INVOICE] ❌ Failed to send automatic email:', emailError);
+    }
+
     res.status(201).json(factura);
   } catch (error) {
     console.error('Error creando factura:', error);
@@ -586,6 +611,42 @@ router.post('/:id/pagos', authenticateToken, getEmpresaFromUser, async (req, res
         where: { id: req.params.id },
         data: { estado: 'pagada' }
       });
+    }
+
+    // Send automatic payment confirmation email if enabled in user preferences
+    try {
+      const preferences = await prisma.userPreferences.findUnique({
+        where: { userId: req.user.id }
+      });
+
+      if (preferences?.emailPago && factura.cliente?.email) {
+        console.log('[PAYMENT] Sending automatic payment confirmation email to:', factura.cliente.email);
+        
+        // Reload factura with full cliente data for email
+        const facturaCompleta = await prisma.factura.findUnique({
+          where: { id: req.params.id },
+          include: { cliente: true }
+        });
+
+        await sendPaymentConfirmationEmail({
+          pago: {
+            ...pago,
+            monto: parseFloat(pago.monto)
+          },
+          factura: facturaCompleta,
+          empresa: req.empresa,
+          locale: preferences.locale || 'en'
+        });
+        console.log('[PAYMENT] ✅ Automatic email sent successfully');
+      } else {
+        console.log('[PAYMENT] Email notification skipped:', {
+          emailPagoEnabled: preferences?.emailPago,
+          hasClientEmail: !!factura.cliente?.email
+        });
+      }
+    } catch (emailError) {
+      // Don't fail the payment registration if email fails
+      console.error('[PAYMENT] ❌ Failed to send automatic email:', emailError);
     }
 
     res.status(201).json(pago);

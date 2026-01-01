@@ -20,8 +20,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  LineChart,
-  Line,
   PieChart,
   Pie,
   Cell,
@@ -161,8 +159,8 @@ export default function SalesReportPage({
 
       {/* Filters */}
       <Card className="!p-4">
-        <div className="flex flex-col md:flex-row gap-4 items-end">
-          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <DatePicker
               label={t('fromDate')}
               value={dateRange.from}
@@ -176,7 +174,7 @@ export default function SalesReportPage({
               locale={locale as 'es' | 'en'}
             />
           </div>
-          <Button onClick={loadReportData} disabled={loading}>
+          <Button onClick={loadReportData} disabled={loading} className="w-full sm:w-auto">
             {loading ? <LoadingSpinner size="sm" className="mr-2" /> : <Filter className="w-4 h-4 mr-2" />}
             {t('generate')}
           </Button>
@@ -282,46 +280,6 @@ export default function SalesReportPage({
           </div>
         </Card>
       </div>
-
-      {/* Trend Chart */}
-      <Card>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-          {t('salesTrend')}
-        </h2>
-        <div className="h-72 w-full min-h-[288px]">
-          <ResponsiveContainer width="100%" height={288}>
-            <LineChart data={ventasMensuales}>
-              <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" />
-              <XAxis dataKey="mes" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${currencySymbol}${((parseFloat(String(v)) || 0)/1000).toFixed(0)}k`} />
-              <Tooltip
-                formatter={(value: number | undefined) => value !== undefined ? [formatCurrency(value)] : ['']}
-                contentStyle={{
-                  backgroundColor: 'var(--tooltip-bg)',
-                  border: 'none',
-                  borderRadius: '8px',
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="ventas"
-                name={t('invoiced')}
-                stroke="#3b82f6"
-                strokeWidth={2}
-                dot={{ fill: '#3b82f6' }}
-              />
-              <Line
-                type="monotone"
-                dataKey="cobrado"
-                name={t('collected')}
-                stroke="#22c55e"
-                strokeWidth={2}
-                dot={{ fill: '#22c55e' }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </Card>
     </div>
   );
 }

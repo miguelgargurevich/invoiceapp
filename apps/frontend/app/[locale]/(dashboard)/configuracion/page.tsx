@@ -92,6 +92,26 @@ export default function ConfiguracionPage({
   });
 
   useEffect(() => {
+    loadPreferences();
+  }, []);
+
+  const loadPreferences = async () => {
+    try {
+      const prefs = await api.get<any>('/preferences');
+      if (prefs) {
+        setNotifications({
+          emailFactura: prefs.emailFactura ?? true,
+          emailVencimiento: prefs.emailVencimiento ?? true,
+          emailPago: prefs.emailPago ?? true,
+          diasAntesVencimiento: prefs.diasAntesVencimiento ?? 5,
+        });
+      }
+    } catch (error) {
+      console.error('Error loading preferences:', error);
+    }
+  };
+
+  useEffect(() => {
     if (empresa) {
       setEmpresaForm({
         ruc: empresa.ruc || '',
@@ -349,6 +369,23 @@ export default function ConfiguracionPage({
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       console.error('[CONFIG] Error saving invoice config:', error);
+      setMessage(t('errorSaving'));
+      setTimeout(() => setMessage(''), 3000);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveNotifications = async () => {
+    try {
+      setSaving(true);
+      console.log('[CONFIG] Saving notification settings:', notifications);
+      await api.put('/preferences', notifications);
+      
+      setMessage(t('savedSuccessfully'));
+      setTimeout(() => setMessage(''), 3000);
+    } catch (error) {
+      console.error('[CONFIG] Error saving notification settings:', error);
       setMessage(t('errorSaving'));
       setTimeout(() => setMessage(''), 3000);
     } finally {
@@ -961,7 +998,7 @@ export default function ConfiguracionPage({
                 </div>
 
                 <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <Button disabled={saving}>
+                  <Button onClick={handleSaveNotifications} disabled={saving}>
                     {saving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                     {t('save')}
                   </Button>

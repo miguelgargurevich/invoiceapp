@@ -802,10 +802,217 @@ async function sendSignatureConfirmationEmail({
   }
 }
 
+/**
+ * Send invoice creation notification email to client
+ * @param {Object} options - Email options
+ * @param {Object} options.factura - Invoice data with cliente
+ * @param {Object} options.empresa - Company data
+ * @param {string} options.locale - Language locale (es or en)
+ * @returns {Promise<Object>} - Resend API response
+ */
+async function sendInvoiceCreationEmail({ factura, empresa, locale = 'es' }) {
+  const t = getTranslations(locale);
+  
+  const clientEmail = factura.cliente?.email;
+  if (!clientEmail) {
+    console.log('No client email found, skipping invoice creation email');
+    return null;
+  }
+
+  const subject = locale === 'es' 
+    ? `Nueva factura ${factura.serie}-${String(factura.numero).padStart(6, '0')}` 
+    : `New invoice ${factura.serie}-${String(factura.numero).padStart(6, '0')}`;
+
+  const message = locale === 'es'
+    ? `Estimado/a ${factura.cliente.nombre},\n\nSe ha generado una nueva factura a su nombre.\n\nPor favor revise los detalles a continuación.`
+    : `Dear ${factura.cliente.nombre},\n\nA new invoice has been generated in your name.\n\nPlease review the details below.`;
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #2563eb; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .invoice-info { background-color: #fff; border: 1px solid #e0e0e0; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .invoice-number { font-size: 20px; font-weight: bold; color: #2563eb; margin-bottom: 15px; }
+        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+        .info-label { color: #666; }
+        .info-value { font-weight: 500; }
+        .total { font-size: 24px; font-weight: bold; color: #1a1a1a; }
+        .message { white-space: pre-wrap; margin-bottom: 20px; }
+        .footer { text-align: center; color: #666; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>${empresa?.nombre || 'Invoice App'}</h1>
+          ${empresa?.ruc ? `<p style="margin: 5px 0 0 0;">${locale === 'es' ? 'RUC' : 'Tax ID'}: ${empresa.ruc}</p>` : ''}
+        </div>
+        
+        <div class="message">${message.replace(/\n/g, '<br>')}</div>
+        
+        <div class="invoice-info">
+          <div class="invoice-number">${t.invoice} ${factura.serie}-${String(factura.numero).padStart(6, '0')}</div>
+          <div class="info-row">
+            <span class="info-label">${t.issueDate}:</span>
+            <span class="info-value">${new Date(factura.fechaEmision).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-PE')}</span>
+          </div>
+          ${factura.fechaVencimiento ? `
+          <div class="info-row">
+            <span class="info-label">${t.dueDate}:</span>
+            <span class="info-value">${new Date(factura.fechaVencimiento).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-PE')}</span>
+          </div>
+          ` : ''}
+          <div class="info-row" style="border-bottom: none; margin-top: 10px;">
+            <span class="info-label">${t.total}:</span>
+            <span class="total">${empresa?.moneda === 'USD' ? '$' : 'S/'} ${parseFloat(factura.total).toFixed(2)}</span>
+          </div>
+        </div>
+        
+        <div class="footer">
+          <p>${t.automaticEmail}</p>
+          ${empresa?.email ? `<p>${t.forQuestions}: ${empresa.email}</p>` : ''}
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: clientEmail,
+    subject,
+    text: message,
+    html: htmlContent,
+  });
+}
+
+/**
+ * Send payment confirmation email to client
+ * @param {Object} options - Email options
+ * @param {Object} options.pago - Payment data
+ * @param {Object} options.factura - Invoice data with cliente
+ * @param {Object} options.empresa - Company data
+ * @param {string} options.locale - Language locale (es or en)
+ * @returns {Promise<Object>} - Resend API response
+ */
+async function sendPaymentConfirmationEmail({ pago, factura, empresa, locale = 'es' }) {
+  const t = getTranslations(locale);
+  
+  const clientEmail = factura.cliente?.email;
+  if (!clientEmail) {
+    console.log('No client email found, skipping payment confirmation email');
+    return null;
+  }
+
+  const subject = locale === 'es' 
+    ? `Pago recibido - Factura ${factura.serie}-${String(factura.numero).padStart(6, '0')}` 
+    : `Payment received - Invoice ${factura.serie}-${String(factura.numero).padStart(6, '0')}`;
+
+  const message = locale === 'es'
+    ? `Estimado/a ${factura.cliente.nombre},\n\nHemos recibido su pago. Gracias por su puntualidad.`
+    : `Dear ${factura.cliente.nombre},\n\nWe have received your payment. Thank you for your promptness.`;
+
+  const paymentMethodLabels = {
+    es: {
+      TRANSFERENCIA: 'Transferencia bancaria',
+      EFECTIVO: 'Efectivo',
+      TARJETA: 'Tarjeta',
+      CHEQUE: 'Cheque',
+    },
+    en: {
+      TRANSFERENCIA: 'Bank transfer',
+      EFECTIVO: 'Cash',
+      TARJETA: 'Card',
+      CHEQUE: 'Check',
+    }
+  };
+
+  const metodoPagoLabel = paymentMethodLabels[locale][pago.metodoPago] || pago.metodoPago;
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #22c55e; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .payment-info { background-color: #f0fdf4; border: 2px solid #22c55e; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .checkmark { font-size: 48px; text-align: center; margin-bottom: 10px; }
+        .invoice-number { font-size: 18px; font-weight: bold; color: #166534; margin-bottom: 15px; }
+        .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #dcfce7; }
+        .info-label { color: #166534; }
+        .info-value { font-weight: 500; }
+        .amount-paid { font-size: 28px; font-weight: bold; color: #22c55e; text-align: center; margin: 20px 0; }
+        .message { white-space: pre-wrap; margin-bottom: 20px; }
+        .footer { text-align: center; color: #666; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>${empresa?.nombre || 'Invoice App'}</h1>
+          ${empresa?.ruc ? `<p style="margin: 5px 0 0 0;">${locale === 'es' ? 'RUC' : 'Tax ID'}: ${empresa.ruc}</p>` : ''}
+        </div>
+        
+        <div class="message">${message.replace(/\n/g, '<br>')}</div>
+        
+        <div class="payment-info">
+          <div class="checkmark">✅</div>
+          <div class="invoice-number">${t.invoice} ${factura.serie}-${String(factura.numero).padStart(6, '0')}</div>
+          
+          <div class="amount-paid">${empresa?.moneda === 'USD' ? '$' : 'S/'} ${parseFloat(pago.monto).toFixed(2)}</div>
+          
+          <div class="info-row">
+            <span class="info-label">${locale === 'es' ? 'Fecha de pago' : 'Payment date'}:</span>
+            <span class="info-value">${new Date(pago.fecha).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-PE')}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">${locale === 'es' ? 'Método de pago' : 'Payment method'}:</span>
+            <span class="info-value">${metodoPagoLabel}</span>
+          </div>
+          ${pago.referencia ? `
+          <div class="info-row">
+            <span class="info-label">${locale === 'es' ? 'Referencia' : 'Reference'}:</span>
+            <span class="info-value">${pago.referencia}</span>
+          </div>
+          ` : ''}
+          <div class="info-row" style="border-bottom: none;">
+            <span class="info-label">${locale === 'es' ? 'Total factura' : 'Invoice total'}:</span>
+            <span class="info-value">${empresa?.moneda === 'USD' ? '$' : 'S/'} ${parseFloat(factura.total).toFixed(2)}</span>
+          </div>
+        </div>
+        
+        <div class="footer">
+          <p>${t.automaticEmail}</p>
+          ${empresa?.email ? `<p>${t.forQuestions}: ${empresa.email}</p>` : ''}
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  return sendEmail({
+    to: clientEmail,
+    subject,
+    text: message,
+    html: htmlContent,
+  });
+}
+
 module.exports = {
   sendEmail,
   sendInvoiceEmail,
   sendProformaEmail,
   sendSignatureRequestEmail,
   sendSignatureConfirmationEmail,
+  sendInvoiceCreationEmail,
+  sendPaymentConfirmationEmail,
 };

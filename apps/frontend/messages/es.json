@@ -1012,5 +1012,10 @@
         "answer": "Sí, el sistema calcula automáticamente el IGV (18%) sobre todos los productos y servicios, a menos que configures un producto como no afecto a IGV."
       }
     }
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "noNotifications": "No tienes notificaciones",
+    "viewAll": "Ver todas las facturas"
   }
 }

@@ -215,8 +215,8 @@ export default function PaymentsReportPage({
 
       {/* Filters */}
       <Card className="!p-4">
-        <div className="flex flex-col md:flex-row gap-4 items-end">
-          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <DatePicker
               label={t('fromDate')}
               value={dateRange.from}
@@ -230,7 +230,7 @@ export default function PaymentsReportPage({
               locale={locale as 'es' | 'en'}
             />
           </div>
-          <Button onClick={loadReportData} disabled={loading}>
+          <Button onClick={loadReportData} disabled={loading} className="w-full sm:w-auto">
             {loading ? <LoadingSpinner size="sm" className="mr-2" /> : <Filter className="w-4 h-4 mr-2" />}
             {t('generate')}
           </Button>
