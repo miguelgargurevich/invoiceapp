@@ -23,13 +23,16 @@ router.post('/login', async (req, res) => {
     });
 
     if (!existingProfile) {
+      // Determinar el rol basado en el email
+      const role = data.user.email === 'miguel.gargurevich@gmail.com' ? 'SUPER_ADMIN' : 'USER';
+      
       // Crear perfil si no existe
       await prisma.userProfile.create({
         data: {
           id: data.user.id,
           email: data.user.email,
           name: data.user.user_metadata?.name || null,
-          role: 'USER',
+          role: role,
           isActive: true
         }
       });
@@ -69,12 +72,15 @@ router.post('/register', async (req, res) => {
     }
 
     // Crear perfil de usuario en user_profiles
+    // Determinar el rol basado en el email
+    const role = email === 'miguel.gargurevich@gmail.com' ? 'SUPER_ADMIN' : 'USER';
+    
     await prisma.userProfile.create({
       data: {
         id: authData.user.id,
         email: email,
         name: name || null,
-        role: 'USER', // Todos los nuevos usuarios son USER por defecto
+        role: role, // SUPER_ADMIN para miguel.gargurevich@gmail.com, USER para el resto
         isActive: true
       }
     });
@@ -141,14 +147,23 @@ router.get('/me', async (req, res) => {
 
     // Si no existe el perfil, crearlo (para usuarios existentes)
     if (!userProfile) {
+      // Determinar el rol basado en el email
+      const isSuperAdmin = user.email === 'miguel.gargurevich@gmail.com';
+      
       userProfile = await prisma.userProfile.create({
         data: {
           id: user.id,
           email: user.email,
           name: user.user_metadata?.name || null,
-          role: 'USER',
+          role: isSuperAdmin ? 'SUPER_ADMIN' : 'USER',
           isActive: true
         }
+      });
+    } else if (user.email === 'miguel.gargurevich@gmail.com' && userProfile.role !== 'SUPER_ADMIN') {
+      // Actualizar a SUPER_ADMIN si es el email correcto pero tiene otro rol
+      userProfile = await prisma.userProfile.update({
+        where: { id: user.id },
+        data: { role: 'SUPER_ADMIN' }
       });
     }
 
