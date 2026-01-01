@@ -90,6 +90,21 @@ class ApiClient {
     return response.json();
   }
 
+  async patch<T>(endpoint: string, data?: unknown): Promise<T> {
+    const response = await fetch(`${API_URL}${endpoint}`, {
+      method: 'PATCH',
+      headers: this.getHeaders(),
+      body: data ? JSON.stringify(data) : undefined,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Error en la petición');
+    }
+
+    return response.json();
+  }
+
   async upload<T>(endpoint: string, formData: FormData): Promise<T> {
     const headers: HeadersInit = {};
     if (this.token) {
