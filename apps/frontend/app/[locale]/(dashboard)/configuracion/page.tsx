@@ -85,9 +85,9 @@ export default function ConfiguracionPage({
 
   // Notification settings
   const [notifications, setNotifications] = useState({
-    emailFactura: true,
-    emailVencimiento: true,
-    emailPago: true,
+    emailFactura: false,
+    emailVencimiento: false,
+    emailPago: false,
     diasAntesVencimiento: 5,
   });
 
@@ -100,9 +100,9 @@ export default function ConfiguracionPage({
       const prefs = await api.get<any>('/preferences');
       if (prefs) {
         setNotifications({
-          emailFactura: prefs.emailFactura ?? true,
-          emailVencimiento: prefs.emailVencimiento ?? true,
-          emailPago: prefs.emailPago ?? true,
+          emailFactura: prefs.emailFactura ?? false,
+          emailVencimiento: prefs.emailVencimiento ?? false,
+          emailPago: prefs.emailPago ?? false,
           diasAntesVencimiento: prefs.diasAntesVencimiento ?? 5,
         });
       }
