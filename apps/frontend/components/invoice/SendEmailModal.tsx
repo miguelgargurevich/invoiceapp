@@ -94,7 +94,15 @@ export default function SendEmailModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title={t('sendEmail')} size="lg">
+    <Modal 
+      isOpen={isOpen} 
+      onClose={handleClose} 
+      title={t('sendEmail')} 
+      subtitle="Send this invoice to your client via email"
+      icon={Mail}
+      iconColor="primary"
+      size="lg"
+    >
       <div className="space-y-6">
         {/* Status Messages */}
         {status === 'success' && (

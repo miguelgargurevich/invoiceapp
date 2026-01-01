@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Save, User, Trash2, FileText, Calendar } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
-import { Button, Card, Input, Badge, ConfirmDialog, LoadingSpinner } from '@/components/common';
+import { Button, Card, Input, Badge, ConfirmDialog, SkeletonDetailPage } from '@/components/common';
 import { formatDate } from '@/lib/utils';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
@@ -136,11 +136,7 @@ export default function ClienteDetailPage({
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
+    return <SkeletonDetailPage />;
   }
 
   return (

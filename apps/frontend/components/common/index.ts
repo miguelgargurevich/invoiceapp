@@ -30,4 +30,5 @@ export {
   SkeletonMetricCard,
   SkeletonFormPage,
   SkeletonDetailPage,
+  SkeletonReportPage,
 } from './LoadingSpinner';

@@ -25,7 +25,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { Button, Card, DatePicker, LoadingSpinner, Badge } from '@/components/common';
+import { Button, Card, DatePicker, LoadingSpinner, Badge, SkeletonReportPage } from '@/components/common';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
 
@@ -180,6 +180,11 @@ export default function PaymentsReportPage({
     };
     return labels[method] || method;
   };
+
+  // Show skeleton while initial loading
+  if (loading && pagosData.length === 0) {
+    return <SkeletonReportPage />;
+  }
 
   return (
     <div className="space-y-6">

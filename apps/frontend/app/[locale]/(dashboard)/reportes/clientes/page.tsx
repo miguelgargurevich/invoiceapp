@@ -19,7 +19,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { Button, Card, DatePicker, LoadingSpinner, Badge } from '@/components/common';
+import { Button, Card, DatePicker, LoadingSpinner, Badge, SkeletonReportPage } from '@/components/common';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
 
@@ -94,6 +94,11 @@ export default function ClientsReportPage({
   useEffect(() => {
     loadReportData();
   }, [loadReportData]);
+
+  // Show skeleton while initial loading
+  if (loading && clientesData.length === 0) {
+    return <SkeletonReportPage />;
+  }
 
   const chartData = clientesData.slice(0, 10).map(c => ({
     name: c.cliente.razonSocial.length > 15 ? c.cliente.razonSocial.substring(0, 15) + '...' : c.cliente.razonSocial,

@@ -24,7 +24,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { Button, Card, MetricCard, DatePicker, LoadingSpinner } from '@/components/common';
+import { Button, Card, MetricCard, DatePicker, LoadingSpinner, SkeletonReportPage } from '@/components/common';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
 
@@ -124,6 +124,10 @@ export default function SalesReportPage({
   useEffect(() => {
     loadReportData();
   }, [loadReportData]);
+
+  if (loading && ventasMensuales.length === 0) {
+    return <SkeletonReportPage />;
+  }
 
   return (
     <div className="space-y-6">

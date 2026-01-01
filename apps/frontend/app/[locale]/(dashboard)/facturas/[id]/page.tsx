@@ -920,82 +920,91 @@ export default function FacturaDetailPage({
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         title={t('registerPayment')}
+        subtitle="Record a payment for this invoice"
+        icon={CreditCard}
+        iconColor="success"
+        size="md"
       >
-        <div className="space-y-4">
+        <div className="space-y-5">
           {/* Pending Balance Info */}
           {factura && (
-            <div className={`border rounded-lg p-4 ${
+            <div className={`rounded-xl p-4 border ${
               factura.saldoPendiente <= 0 
-                ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                : 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+                ? 'bg-gradient-to-br from-green-50 to-emerald-50/50 dark:from-green-900/20 dark:to-emerald-900/10 border-green-200 dark:border-green-800'
+                : 'bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-blue-900/20 dark:to-indigo-900/10 border-blue-200 dark:border-blue-800'
             }`}>
               <div className="flex justify-between items-center">
-                <span className={`text-sm ${factura.saldoPendiente <= 0 ? 'text-green-700 dark:text-green-300' : 'text-blue-700 dark:text-blue-300'}`}>
-                  {t('pendingBalance') || 'Pending Balance'}:
+                <span className={`text-sm font-medium ${factura.saldoPendiente <= 0 ? 'text-green-700 dark:text-green-300' : 'text-blue-700 dark:text-blue-300'}`}>
+                  {t('pendingBalance') || 'Pending Balance'}
                 </span>
-                <span className={`text-lg font-bold ${factura.saldoPendiente <= 0 ? 'text-green-900 dark:text-green-100' : 'text-blue-900 dark:text-blue-100'}`}>
+                <span className={`text-xl font-bold ${factura.saldoPendiente <= 0 ? 'text-green-900 dark:text-green-100' : 'text-blue-900 dark:text-blue-100'}`}>
                   {formatCurrency(factura.saldoPendiente)}
                 </span>
               </div>
-              <div className="flex justify-between items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
+              <div className="flex justify-between items-center mt-2 text-xs text-gray-500 dark:text-gray-400">
                 <span>{t('totalInvoice') || 'Total Invoice'}:</span>
-                <span>{formatCurrency(factura.total)}</span>
+                <span className="font-medium">{formatCurrency(factura.total)}</span>
               </div>
               {factura.totalPagado > 0 && (
                 <div className="flex justify-between items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
                   <span>{t('totalPaid') || 'Total Paid'}:</span>
-                  <span>{formatCurrency(factura.totalPagado)}</span>
+                  <span className="font-medium">{formatCurrency(factura.totalPagado)}</span>
                 </div>
               )}
             </div>
           )}
           
           {factura && factura.saldoPendiente <= 0 ? (
-            <div className="text-center py-4">
-              <p className="text-green-600 dark:text-green-400 font-medium">
+            <div className="text-center py-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/20 flex items-center justify-center">
+                <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
+              </div>
+              <p className="text-green-600 dark:text-green-400 font-semibold text-lg">
                 {t('invoiceFullyPaid') || 'This invoice is fully paid'}
               </p>
             </div>
           ) : (
             <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {t('amount')} *
+              {/* Amount Field */}
+              <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  {t('amount')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
                   <input
                     type="text"
                     inputMode="decimal"
                     value={paymentData.monto}
                     onChange={(e) => setPaymentData({ ...paymentData, monto: e.target.value })}
-                    className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 ${
+                    className={`w-full pl-8 pr-24 py-3 border rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all text-lg font-medium ${
                       paymentData.monto && Math.round(parseFloat(paymentData.monto) * 100) > Math.round((factura?.saldoPendiente || 0) * 100)
                         ? 'border-red-500 text-red-600'
-                        : 'border-gray-300 dark:border-gray-600'
+                        : 'border-gray-200 dark:border-gray-700'
                     }`}
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setPaymentData({ ...paymentData, monto: factura?.saldoPendiente?.toFixed(2) || '0' })}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-xs bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-2 py-1 rounded text-gray-600 dark:text-gray-300"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs bg-gray-800 dark:bg-gray-600 hover:bg-gray-900 dark:hover:bg-gray-500 px-3 py-1.5 rounded-lg text-white font-medium transition-colors"
                   >
                     {t('payFull') || 'Pay Full'}
                   </button>
                 </div>
                 {paymentData.monto && Math.round(parseFloat(paymentData.monto) * 100) > Math.round((factura?.saldoPendiente || 0) * 100) && (
-                  <p className="mt-1 text-xs text-red-500">
+                  <p className="mt-2 text-xs text-red-500 font-medium">
                     {t('amountExceedsPending') || 'Amount exceeds pending balance'}
                   </p>
                 )}
               </div>
               
               {/* Payment Method Cards */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                   {t('paymentMethod')}
                 </label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   {[
                     { value: 'TRANSFERENCIA', label: t('transfer'), icon: '🏦' },
                     { value: 'EFECTIVO', label: t('cash'), icon: '💵' },
@@ -1006,43 +1015,77 @@ export default function FacturaDetailPage({
                       key={method.value}
                       type="button"
                       onClick={() => setPaymentData({ ...paymentData, metodoPago: method.value })}
-                      className={`flex items-center gap-2 p-3 rounded-lg border-2 transition-all ${
+                      className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
                         paymentData.metodoPago === method.value
-                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300'
-                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800'
+                          ? 'border-gray-800 dark:border-gray-500 bg-gray-50 dark:bg-gray-800 shadow-sm'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800/50'
                       }`}
                     >
-                      <span className="text-xl">{method.icon}</span>
-                      <span className="text-sm font-medium">{method.label}</span>
+                      <span className="text-2xl">{method.icon}</span>
+                      <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{method.label}</span>
                     </button>
                   ))}
                 </div>
               </div>
               
-              <Input
-                label={t('reference')}
-                value={paymentData.referencia}
-                onChange={(e) => setPaymentData({ ...paymentData, referencia: e.target.value })}
-                placeholder={t('referencePlaceholder')}
-              />
-              <Input
-                label={t('notes')}
-                value={paymentData.notas}
-                onChange={(e) => setPaymentData({ ...paymentData, notas: e.target.value })}
-              />
+              {/* Reference & Notes */}
+              <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800 space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    {t('reference')}
+                  </label>
+                  <input
+                    type="text"
+                    value={paymentData.referencia}
+                    onChange={(e) => setPaymentData({ ...paymentData, referencia: e.target.value })}
+                    placeholder={t('referencePlaceholder')}
+                    className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    {t('notes')}
+                  </label>
+                  <input
+                    type="text"
+                    value={paymentData.notas}
+                    onChange={(e) => setPaymentData({ ...paymentData, notas: e.target.value })}
+                    className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
+                  />
+                </div>
+              </div>
             </>
           )}
           
-          <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button variant="outline" onClick={() => setIsPaymentModalOpen(false)}>
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setIsPaymentModalOpen(false)}
+              className="flex-1 h-11"
+            >
               {factura && factura.saldoPendiente <= 0 ? (t('close') || 'Close') : t('cancel')}
             </Button>
             {factura && factura.saldoPendiente > 0 && (
               <Button 
                 onClick={handleRegisterPayment} 
                 disabled={savingPayment}
+                className="flex-1 h-11 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
               >
-                {savingPayment ? t('saving') : t('save')}
+                {savingPayment ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    {t('saving')}
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="w-4 h-4 mr-2" />
+                    {t('save')}
+                  </>
+                )}
               </Button>
             )}
           </div>

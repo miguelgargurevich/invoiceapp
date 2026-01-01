@@ -1036,14 +1036,17 @@ export default function ProformaDetailPage({
             setUrlCopied(false);
           }}
           title={signatureRequestModal.emailSent ? t('signatureRequestSent') : t('requestSignature')}
+          subtitle={signatureRequestModal.emailSent ? 'Signature request has been sent successfully' : 'Get this proposal signed digitally'}
+          icon={PenLine}
+          iconColor={signatureRequestModal.emailSent ? 'success' : 'primary'}
           size="lg"
         >
           <div className="text-center">
             {/* Success Icon - Only show if email sent */}
             {signatureRequestModal.emailSent && (
               <>
-                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
-                  <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400" />
+                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/20 mb-4">
+                  <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
                 </div>
                 {/* Email Info */}
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
