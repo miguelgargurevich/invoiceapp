@@ -111,7 +111,8 @@
     "products": "Products",
     "reports": "Reports",
     "settings": "Settings",
-    "help": "Help"
+    "help": "Help",
+    "admin": "Admin Panel"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -1012,5 +1013,34 @@
     "title": "Notifications",
     "noNotifications": "You have no notifications",
     "viewAll": "View all invoices"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "subtitle": "System administration and management",
+    "overview": "Overview",
+    "users": "Users",
+    "companies": "Companies",
+    "totalUsers": "Total Users",
+    "activeUsers": "Active Users",
+    "totalCompanies": "Companies",
+    "totalInvoices": "Invoices",
+    "totalProposals": "Proposals",
+    "recentUsers": "Recent Users",
+    "recentCompanies": "Recent Companies",
+    "user": "User",
+    "company": "Company",
+    "role": "Role",
+    "status": "Status",
+    "joined": "Joined",
+    "created": "Created",
+    "active": "Active",
+    "inactive": "Inactive",
+    "actions": "Actions",
+    "activate": "Activate",
+    "deactivate": "Deactivate",
+    "searchUsers": "Search users...",
+    "searchCompanies": "Search companies...",
+    "email": "Email",
+    "stats": "Stats"
   }
 }

@@ -111,7 +111,8 @@
     "products": "Productos",
     "reports": "Reportes",
     "settings": "Configuración",
-    "help": "Ayuda"
+    "help": "Ayuda",
+    "admin": "Panel de Admin"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -1017,5 +1018,34 @@
     "title": "Notificaciones",
     "noNotifications": "No tienes notificaciones",
     "viewAll": "Ver todas las facturas"
+  },
+  "admin": {
+    "title": "Panel de Administración",
+    "subtitle": "Administración y gestión del sistema",
+    "overview": "Resumen",
+    "users": "Usuarios",
+    "companies": "Empresas",
+    "totalUsers": "Total Usuarios",
+    "activeUsers": "Usuarios Activos",
+    "totalCompanies": "Empresas",
+    "totalInvoices": "Facturas",
+    "totalProposals": "Proformas",
+    "recentUsers": "Usuarios Recientes",
+    "recentCompanies": "Empresas Recientes",
+    "user": "Usuario",
+    "company": "Empresa",
+    "role": "Rol",
+    "status": "Estado",
+    "joined": "Registro",
+    "created": "Creado",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "actions": "Acciones",
+    "activate": "Activar",
+    "deactivate": "Desactivar",
+    "searchUsers": "Buscar usuarios...",
+    "searchCompanies": "Buscar empresas...",
+    "email": "Email",
+    "stats": "Estadísticas"
   }
 }

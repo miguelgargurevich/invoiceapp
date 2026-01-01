@@ -17,10 +17,11 @@ import {
   ChevronLeft,
   X,
   Building2,
+  Shield,
 } from 'lucide-react';
 import { cn, getInitials } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -43,6 +44,21 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
   const pathname = usePathname();
   const t = useTranslations('navigation');
   const { empresa } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  // Check if user is admin
+  useEffect(() => {
+    const checkAdminRole = async () => {
+      try {
+        const api = (await import('@/lib/api')).default;
+        const response: any = await api.get('/admin/stats');
+        setIsAdmin(true);
+      } catch (error) {
+        setIsAdmin(false);
+      }
+    };
+    checkAdminRole();
+  }, []);
 
   // Extraer la parte de la ruta sin el locale
   const currentPath = '/' + pathname.split('/').slice(2).join('/');
@@ -173,6 +189,25 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
                 </li>
               );
             })}
+
+            {/* Admin link - only for admins */}
+            {isAdmin && (
+              <li>
+                <Link
+                  href="/admin"
+                  onClick={onClose}
+                  className={cn(
+                    'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
+                    'hover:bg-gray-800',
+                    currentPath === '/admin' && 'bg-red-600 hover:bg-red-700',
+                    'md:justify-center md:px-2'
+                  )}
+                >
+                  <Shield className="w-5 h-5 shrink-0" />
+                  <span className="md:hidden truncate">{t('admin')}</span>
+                </Link>
+              </li>
+            )}
           </ul>
         </nav>
 

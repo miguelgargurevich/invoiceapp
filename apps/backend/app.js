@@ -20,6 +20,7 @@ const jobReceiptRoutes = require('./src/routes/jobReceipts');
 const signaturesRoutes = require('./src/routes/signatures');
 const preferencesRoutes = require('./src/routes/preferences');
 const notificacionesRoutes = require('./src/routes/notificaciones');
+const adminRoutes = require('./src/routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -162,6 +163,7 @@ app.use('/api/job-receipts', jobReceiptRoutes);
 app.use('/api/signatures', signaturesRoutes);
 app.use('/api/preferences', preferencesRoutes);
 app.use('/api/notificaciones', notificacionesRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Servir archivos estáticos (uploads)
 app.use('/uploads', express.static('uploads'));
