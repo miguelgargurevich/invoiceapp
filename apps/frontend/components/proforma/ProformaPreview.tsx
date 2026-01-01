@@ -89,11 +89,11 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         <div className="grid grid-cols-12 gap-4 items-start mb-4 border-b-2 border-gray-800 pb-3">
           {/* Left Side - Proposal Number & Dates */}
           <div className="col-span-3">
-            <div className="bg-gray-800 text-white px-3 py-2 rounded inline-block mb-2">
-              <div className="text-[9px] font-bold">PROPOSAL</div>
-              <div className="text-[12px] font-bold">
-                {proforma.serie}-{proforma.numero.toString().padStart(6, '0')}
-              </div>
+            <div style={{ border: '2px solid #1f2937', padding: '8px 12px', borderRadius: '4px', display: 'inline-block', marginBottom: '8px' }}>
+              <p style={{ fontSize: '11px', fontWeight: 700, color: '#000000', margin: 0 }}>PROPOSAL</p>
+              <p style={{ fontSize: '16px', fontWeight: 700, color: '#000000', margin: 0 }}>
+                {proforma.serie}-{String(proforma.numero).padStart(6, '0')}
+              </p>
             </div>
             <div className="text-[9px] text-gray-700 space-y-0.5">
               <p><span className="font-semibold">Date:</span> {formatDate(proforma.fechaEmision)}</p>

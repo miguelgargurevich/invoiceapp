@@ -34,8 +34,19 @@ app.set('trust proxy', 1);
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // máximo 100 requests por ventana
-  message: { error: 'Demasiadas peticiones, intente más tarde' }
+  max: 300, // máximo 300 requests por ventana (aumentado de 100)
+  message: { error: 'Demasiadas peticiones, intente más tarde' },
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+// Separate rate limiter for auth endpoints (more permissive)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 50, // máximo 50 requests por ventana para auth
+  message: { error: 'Demasiadas peticiones de autenticación, intente más tarde' },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 // Middlewares
@@ -95,7 +106,6 @@ app.use(cors({
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' })); // Increased limit for PDF signatures
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use('/api', limiter);
 
 // Health check
 app.get('/health', (req, res) => {
@@ -152,21 +162,21 @@ app.get('/api/debug/data', async (req, res) => {
 });
 
 // Rutas de la API
-app.use('/api/auth', authRoutes);
-app.use('/api/empresas', empresaRoutes);
-app.use('/api/clientes', clienteRoutes);
-app.use('/api/productos', productoRoutes);
-app.use('/api/facturas', facturaRoutes);
-app.use('/api/proformas', proformaRoutes);
-app.use('/api/reportes', reporteRoutes);
-app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/work-logs', workLogRoutes);
-app.use('/api/job-photos', jobPhotoRoutes);
-app.use('/api/job-receipts', jobReceiptRoutes);
-app.use('/api/signatures', signaturesRoutes);
-app.use('/api/preferences', preferencesRoutes);
-app.use('/api/notificaciones', notificacionesRoutes);
-app.use('/api/admin', authenticateToken, adminRoutes);
+app.use('/api/auth', authLimiter, authRoutes); // Auth routes with separate limiter
+app.use('/api/empresas', limiter, authenticateToken, empresaRoutes);
+app.use('/api/clientes', limiter, authenticateToken, clienteRoutes);
+app.use('/api/productos', limiter, authenticateToken, productoRoutes);
+app.use('/api/facturas', limiter, authenticateToken, facturaRoutes);
+app.use('/api/proformas', limiter, authenticateToken, proformaRoutes);
+app.use('/api/reportes', limiter, authenticateToken, reporteRoutes);
+app.use('/api/dashboard', limiter, authenticateToken, dashboardRoutes);
+app.use('/api/work-logs', limiter, authenticateToken, workLogRoutes);
+app.use('/api/job-photos', limiter, authenticateToken, jobPhotoRoutes);
+app.use('/api/job-receipts', limiter, authenticateToken, jobReceiptRoutes);
+app.use('/api/signatures', limiter, authenticateToken, signaturesRoutes);
+app.use('/api/preferences', limiter, authenticateToken, preferencesRoutes);
+app.use('/api/notificaciones', limiter, authenticateToken, notificacionesRoutes);
+app.use('/api/admin', limiter, authenticateToken, adminRoutes);
 
 // Servir archivos estáticos (uploads)
 app.use('/uploads', express.static('uploads'));

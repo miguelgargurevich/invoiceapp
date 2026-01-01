@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter, useParams } from 'next/navigation';
-import { Search, Filter, Download, Trash2, UserPlus } from 'lucide-react';
+import { Search, Filter, Download, Trash2, UserPlus, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   Button,
@@ -220,13 +220,18 @@ export default function ClientesPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {t('title')}
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
-            {t('subtitle')}
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
+            <Users className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {t('title')}
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">
+              {t('subtitle')}
+            </p>
+          </div>
         </div>
         <Button
           onClick={() => router.push(`/${locale}/clientes/nuevo`)}

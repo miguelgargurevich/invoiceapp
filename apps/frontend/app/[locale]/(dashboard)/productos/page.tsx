@@ -241,13 +241,18 @@ export default function ProductosPage({
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {t('title')}
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
-            {t('subtitle')}
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
+            <Package className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              {t('title')}
+            </h1>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">
+              {t('description')}
+            </p>
+          </div>
         </div>
         <Button
           onClick={() => router.push(`/${locale}/productos/nuevo`)}

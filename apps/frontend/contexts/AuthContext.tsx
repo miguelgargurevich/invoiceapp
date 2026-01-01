@@ -50,12 +50,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [empresa, setEmpresa] = useState<Empresa | null>(null);
+  
+  // Flags to prevent duplicate API calls
+  const [isLoadingUser, setIsLoadingUser] = useState(false);
+  const [isLoadingEmpresa, setIsLoadingEmpresa] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
+    
     // Obtener sesión inicial
     const getInitialSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
+        if (!mounted) return;
+        
         setSession(session);
         
         if (session?.access_token) {
@@ -67,10 +75,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } catch (err) {
         console.error('[AuthContext] Error getting initial session:', err);
-        setUser(null);
-        setSession(null);
+        if (mounted) {
+          setUser(null);
+          setSession(null);
+        }
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
@@ -79,6 +91,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Escuchar cambios de autenticación
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (!mounted) return;
+        
         console.log('[AuthContext] Auth state changed:', event);
         setSession(session);
         
@@ -96,7 +110,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const loadUserWithRole = async (supabaseUser: User | null) => {
@@ -104,8 +121,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       return;
     }
+    
+    // Prevent duplicate calls
+    if (isLoadingUser) {
+      console.log('[AuthContext] User already loading, skipping...');
+      return;
+    }
 
     try {
+      setIsLoadingUser(true);
       // Obtener datos del usuario desde el backend que incluye el rol
       const response: any = await apiClient.get('/auth/me');
       const userWithRole: UserWithRole = {
@@ -123,16 +147,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isActive: true
       };
       setUser(userWithRole);
+    } finally {
+      setIsLoadingUser(false);
     }
   };
 
   const loadEmpresa = async () => {
+    // Prevent duplicate calls
+    if (isLoadingEmpresa) {
+      console.log('[AuthContext] Empresa already loading, skipping...');
+      return;
+    }
+    
     try {
+      setIsLoadingEmpresa(true);
       const response = await apiClient.get<Empresa>('/empresas/mi-empresa');
       setEmpresa(response);
     } catch (error) {
       console.log('[AuthContext] No empresa found or error:', error);
       setEmpresa(null);
+    } finally {
+      setIsLoadingEmpresa(false);
     }
   };
 

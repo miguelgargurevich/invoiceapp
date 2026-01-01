@@ -8,6 +8,7 @@ import {
   Package,
   CreditCard,
   ArrowRight,
+  BarChart3,
 } from 'lucide-react';
 import { Card } from '@/components/common';
 
@@ -89,13 +90,18 @@ export default function ReportesPage({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          {t('title')}
-        </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
-          {t('subtitle')}
-        </p>
+      <div className="flex items-center gap-3">
+        <div className="p-3 bg-amber-100 dark:bg-amber-900/30 rounded-xl">
+          <BarChart3 className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {t('title')}
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
+            {t('subtitle')}
+          </p>
+        </div>
       </div>
 
       {/* Report Cards Grid */}

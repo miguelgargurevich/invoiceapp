@@ -110,13 +110,15 @@ export default function SignDocumentPage() {
         // Wait for fonts to load
         await document.fonts.ready;
         
+        // Adjust scale based on device pixel ratio
+        const dpr = window.devicePixelRatio || 1;
+        const adjustedScale = 2.5 / Math.max(dpr, 1);
+        
         const canvas = await html2canvas(pdfRef.current, {
-          scale: 3, // Increased from 1.5 for better quality
+          scale: adjustedScale,
           useCORS: true,
           logging: false,
           backgroundColor: '#ffffff',
-          windowWidth: pdfRef.current.scrollWidth,
-          windowHeight: pdfRef.current.scrollHeight,
         });
 
         const imgData = canvas.toDataURL('image/png', 1.0); // Use PNG with maximum quality

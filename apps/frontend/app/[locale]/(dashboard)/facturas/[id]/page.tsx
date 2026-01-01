@@ -15,7 +15,12 @@ import {
   Clock,
   Calendar,
   Edit2,
-  FileText
+  FileText,
+  Users,
+  Package,
+  DollarSign,
+  Briefcase,
+  HardHat
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -389,13 +394,15 @@ export default function FacturaDetailPage({
       // Wait for fonts to load
       await document.fonts.ready;
       
+      // Adjust scale based on device pixel ratio
+      const dpr = window.devicePixelRatio || 1;
+      const adjustedScale = 2.5 / Math.max(dpr, 1);
+      
       const canvas = await html2canvas(pdfRef.current, {
-        scale: 3,
+        scale: adjustedScale,
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
-        windowWidth: pdfRef.current.scrollWidth,
-        windowHeight: pdfRef.current.scrollHeight,
       });
 
       const imgData = canvas.toDataURL('image/png', 1.0);
@@ -539,7 +546,8 @@ export default function FacturaDetailPage({
         <div className="lg:col-span-2 space-y-6">
           {/* Client info */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <Users className="w-5 h-5" />
               {t('clientInfo')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -580,7 +588,8 @@ export default function FacturaDetailPage({
 
           {/* Line items */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <Package className="w-5 h-5" />
               {t('items')}
             </h2>
             {/* Desktop table */}
@@ -658,7 +667,8 @@ export default function FacturaDetailPage({
           {/* Payments */}
           {factura.pagos.length > 0 && (
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <CreditCard className="w-5 h-5" />
                 {t('payments')}
               </h2>
               <div className="space-y-3">
@@ -686,7 +696,8 @@ export default function FacturaDetailPage({
           {/* Job Information */}
           {(factura.jobName || factura.jobLocation || factura.workDescription || factura.paymentTerms) && (
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <Briefcase className="w-5 h-5" />
                 Job Information
               </h2>
               <div className="space-y-3">
@@ -721,7 +732,8 @@ export default function FacturaDetailPage({
           {/* Observations */}
           <Card>
             <div className="flex items-center justify-between mb-2">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <FileText className="w-5 h-5" />
                 {t('observations')}
               </h2>
               {factura.estado !== 'ANULADA' && (
@@ -750,7 +762,8 @@ export default function FacturaDetailPage({
           {/* Payment Summary */}
           <Card>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <DollarSign className="w-5 h-5" />
                 Payment Summary
               </h2>
               {factura.estado !== 'ANULADA' && (
@@ -811,7 +824,8 @@ export default function FacturaDetailPage({
           {/* Order Type */}
           <Card>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <HardHat className="w-5 h-5" />
                 Order Type
               </h2>
               {factura.estado !== 'ANULADA' && (
@@ -844,7 +858,8 @@ export default function FacturaDetailPage({
           {/* Dates */}
           <Card>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <Calendar className="w-5 h-5" />
                 {t('dates')}
               </h2>
               {factura.estado !== 'ANULADA' && (

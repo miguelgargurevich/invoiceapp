@@ -88,13 +88,15 @@ export default function PrintPreviewModal({
     // Esperar a que todas las fuentes se carguen
     await document.fonts.ready;
 
+    // Adjust scale based on device pixel ratio
+    const dpr = window.devicePixelRatio || 1;
+    const adjustedScale = 2.5 / Math.max(dpr, 1);
+
     const canvas = await html2canvas(previewRef.current, {
-      scale: 3,
+      scale: adjustedScale,
       useCORS: true,
       logging: false,
       backgroundColor: '#ffffff',
-      windowWidth: previewRef.current.scrollWidth,
-      windowHeight: previewRef.current.scrollHeight,
       onclone: (clonedDoc) => {
         const clonedElement = clonedDoc.querySelector('[data-preview-content]');
         if (clonedElement) {

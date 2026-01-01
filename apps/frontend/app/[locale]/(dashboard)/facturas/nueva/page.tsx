@@ -15,6 +15,8 @@ import {
   Package,
   Calendar,
   DollarSign,
+  Briefcase,
+  HardHat,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -570,8 +572,9 @@ export default function NuevaFacturaPage({
 
           {/* Job Information */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              Job Information
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <Briefcase className="w-5 h-5 text-primary-600" />
+              {t('jobInformation')}
             </h2>
             <div className="space-y-4">
               <Textarea
@@ -596,7 +599,8 @@ export default function NuevaFacturaPage({
         <div className="space-y-6">
           {/* Order Type */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <HardHat className="w-5 h-5 text-primary-600" />
               Order Type
             </h2>
             <div className="space-y-3">

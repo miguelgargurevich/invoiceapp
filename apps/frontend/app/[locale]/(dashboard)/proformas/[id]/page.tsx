@@ -19,6 +19,13 @@ import {
   ExternalLink,
   Share2,
   Camera,
+  Users,
+  Package,
+  Briefcase,
+  HardHat,
+  DollarSign,
+  Calendar,
+  Receipt
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -235,13 +242,15 @@ export default function ProformaDetailPage({
       // Wait for fonts to load
       await document.fonts.ready;
       
+      // Adjust scale based on device pixel ratio
+      const dpr = window.devicePixelRatio || 1;
+      const adjustedScale = 2.5 / Math.max(dpr, 1);
+      
       const canvas = await html2canvas(pdfRef.current, {
-        scale: 3,
+        scale: adjustedScale,
         useCORS: true,
         logging: false,
         backgroundColor: '#ffffff',
-        windowWidth: pdfRef.current.scrollWidth,
-        windowHeight: pdfRef.current.scrollHeight,
       });
 
       const imgData = canvas.toDataURL('image/png', 1.0);
@@ -515,7 +524,8 @@ export default function ProformaDetailPage({
         <div className="lg:col-span-2 space-y-6">
           {/* Client info */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <Users className="w-5 h-5" />
               {t('client')}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -556,7 +566,8 @@ export default function ProformaDetailPage({
 
           {/* Line items */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <Package className="w-5 h-5" />
               {t('items')}
             </h2>
             {/* Desktop table */}
@@ -634,7 +645,8 @@ export default function ProformaDetailPage({
           {/* Job Information */}
           {(proforma.jobName || proforma.jobLocation || proforma.workDescription || proforma.telefonoTrabajo) && (
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <Briefcase className="w-5 h-5" />
                 {t('jobInformation')}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -677,7 +689,8 @@ export default function ProformaDetailPage({
           {/* Contractor Details */}
           {(proforma.arquitectoNombre || proforma.fechaPlanos) && (
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+                <HardHat className="w-5 h-5" />
                 {t('contractorDetails')}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -704,7 +717,8 @@ export default function ProformaDetailPage({
           {/* Payment Terms */}
           {proforma.paymentTerms && (
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+                <Receipt className="w-5 h-5" />
                 {t('paymentTerms')}
               </h2>
               <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{proforma.paymentTerms}</p>
@@ -714,7 +728,8 @@ export default function ProformaDetailPage({
           {/* Conditions */}
           {proforma.condiciones && (
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+                <FileText className="w-5 h-5" />
                 {t('conditions')}
               </h2>
               <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{proforma.condiciones}</p>
@@ -724,7 +739,8 @@ export default function ProformaDetailPage({
           {/* Observations */}
           {proforma.observaciones && (
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+                <FileText className="w-5 h-5" />
                 {t('observations')}
               </h2>
               <p className="text-gray-600 dark:text-gray-400">{proforma.observaciones}</p>
@@ -736,7 +752,8 @@ export default function ProformaDetailPage({
         <div className="space-y-6">
           {/* Summary */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <DollarSign className="w-5 h-5" />
               {t('totals')}
             </h2>
             <div className="space-y-3">
@@ -767,7 +784,8 @@ export default function ProformaDetailPage({
 
           {/* Dates */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <Calendar className="w-5 h-5" />
               {t('dates')}
             </h2>
             <div className="space-y-3">

@@ -76,6 +76,9 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
     const formatCurrency = (amount: number | string | null | undefined) => 
       baseFormatCurrency(amount, empresa?.moneda || 'USD');
     
+    // Debug log to check factura data
+    console.log('InvoicePreview - factura:', { serie: factura.serie, numero: factura.numero });
+    
     // Use provided totals or calculate from factura
     const totalMaterials = factura.totalMaterials ?? 0;
     const totalLabor = factura.totalLabor ?? factura.subtotal;
@@ -92,11 +95,11 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         <div className="grid grid-cols-12 gap-4 items-start mb-4 border-b-2 border-gray-800 pb-3">
           {/* Left Side - Receipt Number & Dates */}
           <div className="col-span-3">
-            <div className="bg-gray-800 text-white px-3 py-2 rounded inline-block mb-2">
-              <div className="text-[9px] font-bold">{t('receipt')}</div>
-              <div className="text-[12px] font-bold">
-                {factura.serie}-{factura.numero.toString().padStart(6, '0')}
-              </div>
+            <div style={{ border: '2px solid #1f2937', padding: '8px 12px', borderRadius: '4px', display: 'inline-block', marginBottom: '8px' }}>
+              <p style={{ fontSize: '11px', fontWeight: 700, color: '#000000', margin: 0 }}>INVOICE</p>
+              <p style={{ fontSize: '16px', fontWeight: 700, color: '#000000', margin: 0 }}>
+                {factura.serie}-{String(factura.numero).padStart(6, '0')}
+              </p>
             </div>
             <div className="text-[9px] text-gray-700 space-y-0.5">
               <p><span className="font-semibold">Date:</span> {formatDate(factura.fechaEmision)}</p>
