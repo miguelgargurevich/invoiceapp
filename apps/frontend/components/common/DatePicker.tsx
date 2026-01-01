@@ -1,6 +1,7 @@
 'use client';
 
-import { forwardRef, useState } from 'react';
+import { forwardRef, useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { format } from 'date-fns';
 import { es, enUS } from 'date-fns/locale';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -39,6 +40,32 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     const t = useTranslations('common');
     const [isOpen, setIsOpen] = useState(false);
     const [currentMonth, setCurrentMonth] = useState(value || new Date());
+    const buttonRef = useRef<HTMLButtonElement>(null);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+
+    // Calculate dropdown position when opening
+    useEffect(() => {
+      if (isOpen && buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const dropdownHeight = 380; // Approximate height of the calendar
+        
+        // Position below or above depending on available space
+        if (spaceBelow < dropdownHeight && rect.top > dropdownHeight) {
+          // Position above
+          setDropdownPosition({
+            top: rect.top - dropdownHeight - 4,
+            left: rect.left,
+          });
+        } else {
+          // Position below
+          setDropdownPosition({
+            top: rect.bottom + 4,
+            left: rect.left,
+          });
+        }
+      }
+    }, [isOpen]);
 
     const actualPlaceholder = placeholder || t('selectDate');
     const dateLocale = locale === 'es' ? es : enUS;
@@ -120,6 +147,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
         )}
 
         <button
+          ref={buttonRef}
           type="button"
           onClick={() => !disabled && setIsOpen(!isOpen)}
           disabled={disabled}
@@ -150,16 +178,22 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
 
         {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
 
-        {isOpen && (
+        {isOpen && createPortal(
           <>
             {/* Overlay para cerrar */}
             <div
-              className="fixed inset-0 z-10"
+              className="fixed inset-0 z-[60]"
               onClick={() => setIsOpen(false)}
             />
 
-            {/* Calendar dropdown */}
-            <div className="absolute z-20 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 w-72">
+            {/* Calendar dropdown - rendered via portal */}
+            <div 
+              className="fixed z-[61] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-4 w-72"
+              style={{
+                top: dropdownPosition.top,
+                left: dropdownPosition.left,
+              }}
+            >
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
                 <button
@@ -256,7 +290,8 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                 </button>
               </div>
             </div>
-          </>
+          </>,
+          document.body
         )}
       </div>
     );
