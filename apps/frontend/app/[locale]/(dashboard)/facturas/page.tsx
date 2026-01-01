@@ -583,7 +583,7 @@ export default function FacturasPage({
                 </p>
               </div>
               <Badge variant={getStatusBadge(factura.estado)} size="sm">
-                {factura.estado}
+                {getStatusLabel(factura.estado)}
               </Badge>
             </div>
             <div className="flex items-center justify-between text-sm">
