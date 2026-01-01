@@ -479,7 +479,6 @@ export default function AdminPage({
                           size="sm"
                           variant="outline"
                           onClick={() => toggleUserStatus(user.id, user.isActive)}
-                          disabled={user.id === user.id}
                         >
                           {user.isActive ? t('deactivate') || 'Deactivate' : t('activate') || 'Activate'}
                         </Button>
