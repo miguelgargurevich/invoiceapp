@@ -637,13 +637,13 @@ export default function NuevaFacturaPage({
                 onChange={setFechaEmision}
                 locale={locale as 'es' | 'en'}
               />
-              <DatePicker
+              {/* <DatePicker
                 label={t('dueDate')}
                 value={fechaVencimiento}
                 onChange={setFechaVencimiento}
                 minDate={fechaEmision || undefined}
                 locale={locale as 'es' | 'en'}
-              />
+              /> */}
             </div>
           </Card>
 

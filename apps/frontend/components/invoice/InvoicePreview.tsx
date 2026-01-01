@@ -100,7 +100,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
             </div>
             <div className="text-[9px] text-gray-700 space-y-0.5">
               <p><span className="font-semibold">Date:</span> {formatDate(factura.fechaEmision)}</p>
-              <p><span className="font-semibold">Due Date:</span> {formatDate(factura.fechaVencimiento)}</p>
+              {/* <p><span className="font-semibold">Due Date:</span> {formatDate(factura.fechaVencimiento)}</p> */}
             </div>
           </div>
 
