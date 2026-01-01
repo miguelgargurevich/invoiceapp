@@ -137,6 +137,8 @@
     "last12Months": "Últimos 12 Meses",
     "topClients": "Top Clientes",
     "recentInvoices": "Facturas Recientes",
+    "recentProposals": "Proformas Recientes",
+    "proposalNumber": "N° Proforma",
     "invoiceNumber": "N° Factura",
     "client": "Cliente",
     "date": "Fecha",

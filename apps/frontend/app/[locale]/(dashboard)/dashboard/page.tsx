@@ -195,6 +195,7 @@ export default function DashboardPage({
       pendiente: t('statusPending'),
       vencida: t('statusOverdue'),
       anulada: t('statusCancelled'),
+      facturada: t('statusIssued'), // Alias for issued status
     };
     return statusMap[normalizedStatus] || status;
   };
@@ -331,7 +332,7 @@ export default function DashboardPage({
                       : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                   )}
                 >
-                  Recent Proposals
+                  {t('recentProposals')}
                 </button>
                 <button
                   onClick={() => setActiveTab('invoices')}
@@ -360,7 +361,7 @@ export default function DashboardPage({
                 <thead>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
-                      {activeTab === 'proposals' ? 'Proposal No.' : t('invoiceNumber')}
+                      {activeTab === 'proposals' ? t('proposalNumber') : t('invoiceNumber')}
                     </th>
                     <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                       {t('client')}

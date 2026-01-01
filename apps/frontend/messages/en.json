@@ -137,6 +137,8 @@
     "last12Months": "Last 12 Months",
     "topClients": "Top Clients",
     "recentInvoices": "Recent Invoices",
+    "recentProposals": "Recent Proposals",
+    "proposalNumber": "Proposal No.",
     "invoiceNumber": "Invoice No.",
     "client": "Client",
     "date": "Date",
