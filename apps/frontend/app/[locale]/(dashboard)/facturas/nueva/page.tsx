@@ -658,13 +658,12 @@ export default function NuevaFacturaPage({
                   Total Materials
                 </label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   value={totalMaterials}
                   onChange={(e) => setTotalMaterials(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   placeholder="0.00"
-                  step="0.01"
-                  min="0"
                 />
               </div>
               <div>
@@ -672,13 +671,12 @@ export default function NuevaFacturaPage({
                   Total Labor
                 </label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="decimal"
                   value={totalLabor}
                   onChange={(e) => setTotalLabor(parseFloat(e.target.value) || 0)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   placeholder="0.00"
-                  step="0.01"
-                  min="0"
                 />
               </div>
               <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-2">
