@@ -1041,6 +1041,15 @@
     "searchUsers": "Search users...",
     "searchCompanies": "Search companies...",
     "email": "Email",
-    "stats": "Stats"
+    "stats": "Stats",
+    "confirmDeactivate": "Confirm Deactivation",
+    "confirmActivate": "Confirm Activation",
+    "confirmDeactivateMessage": "Are you sure you want to deactivate this user? They will no longer be able to access the system.",
+    "confirmActivateMessage": "Are you sure you want to activate this user? They will regain access to the system.",
+    "cancel": "Cancel",
+    "userDeactivatedSuccess": "User has been deactivated successfully",
+    "userActivatedSuccess": "User has been activated successfully",
+    "cannotChangeOwnStatus": "You cannot change your own status",
+    "errorUpdatingStatus": "Error updating user status"
   }
 }

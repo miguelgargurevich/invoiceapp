@@ -1046,6 +1046,15 @@
     "searchUsers": "Buscar usuarios...",
     "searchCompanies": "Buscar empresas...",
     "email": "Email",
-    "stats": "Estadísticas"
+    "stats": "Estadísticas",
+    "confirmDeactivate": "Confirmar Desactivación",
+    "confirmActivate": "Confirmar Activación",
+    "confirmDeactivateMessage": "¿Estás seguro de que deseas desactivar este usuario? Ya no podrá acceder al sistema.",
+    "confirmActivateMessage": "¿Estás seguro de que deseas activar este usuario? Recuperará el acceso al sistema.",
+    "cancel": "Cancelar",
+    "userDeactivatedSuccess": "Usuario desactivado exitosamente",
+    "userActivatedSuccess": "Usuario activado exitosamente",
+    "cannotChangeOwnStatus": "No puedes cambiar tu propio estado",
+    "errorUpdatingStatus": "Error al actualizar el estado del usuario"
   }
 }

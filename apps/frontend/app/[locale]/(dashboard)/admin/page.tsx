@@ -14,7 +14,8 @@ import {
   Search
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Card, LoadingPage, Badge, Button, Input } from '@/components/common';
+import { useToast } from '@/contexts/ToastContext';
+import { Card, LoadingPage, Badge, Button, Input, ConfirmDialog } from '@/components/common';
 import api from '@/lib/api';
 import { formatDate } from '@/lib/utils';
 
@@ -65,6 +66,7 @@ export default function AdminPage({
 }) {
   const t = useTranslations('admin');
   const { user } = useAuth();
+  const { showToast } = useToast();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [users, setUsers] = useState<UserProfile[]>([]);
@@ -74,6 +76,12 @@ export default function AdminPage({
   const [searchEmpresas, setSearchEmpresas] = useState('');
   const [userPage, setUserPage] = useState(1);
   const [empresaPage, setEmpresaPage] = useState(1);
+  const [confirmDialog, setConfirmDialog] = useState<{
+    open: boolean;
+    userId: string;
+    userName: string;
+    currentStatus: boolean;
+  }>({ open: false, userId: '', userName: '', currentStatus: true });
 
   useEffect(() => {
     loadAdminData();
@@ -123,15 +131,37 @@ export default function AdminPage({
     }
   };
 
-  const toggleUserStatus = async (userId: string, currentStatus: boolean) => {
+  const toggleUserStatus = async () => {
     try {
+      const { userId, currentStatus, userName } = confirmDialog;
+      
       await api.patch(`/admin/users/${userId}/status`, {
         isActive: !currentStatus
       });
+      
+      showToast(
+        currentStatus 
+          ? t('userDeactivatedSuccess') || `User ${userName} has been deactivated`
+          : t('userActivatedSuccess') || `User ${userName} has been activated`,
+        'success'
+      );
+      
       await loadUsers(userPage, searchUsers);
+      setConfirmDialog({ open: false, userId: '', userName: '', currentStatus: true });
     } catch (error: any) {
       console.error('Error updating user status:', error);
+      
+      const errorMessage = error.message === 'Bad Request'
+        ? t('cannotChangeOwnStatus') || 'You cannot change your own status'
+        : t('errorUpdatingStatus') || 'Error updating user status';
+      
+      showToast(errorMessage, 'error');
+      setConfirmDialog({ open: false, userId: '', userName: '', currentStatus: true });
     }
+  };
+
+  const openConfirmDialog = (userId: string, userName: string, currentStatus: boolean) => {
+    setConfirmDialog({ open: true, userId, userName, currentStatus });
   };
 
   const getRoleBadgeVariant = (role: string) => {
@@ -478,7 +508,7 @@ export default function AdminPage({
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => toggleUserStatus(user.id, user.isActive)}
+                          onClick={() => openConfirmDialog(user.id, user.name || user.email, user.isActive)}
                         >
                           {user.isActive ? t('deactivate') || 'Deactivate' : t('activate') || 'Activate'}
                         </Button>
@@ -563,6 +593,22 @@ export default function AdminPage({
           </Card>
         </div>
       )}
+
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.open}
+        onClose={() => setConfirmDialog({ open: false, userId: '', userName: '', currentStatus: true })}
+        onConfirm={toggleUserStatus}
+        title={confirmDialog.currentStatus ? t('confirmDeactivate') || 'Confirm Deactivation' : t('confirmActivate') || 'Confirm Activation'}
+        message={
+          confirmDialog.currentStatus
+            ? t('confirmDeactivateMessage') || `Are you sure you want to deactivate user "${confirmDialog.userName}"? They will no longer be able to access the system.`
+            : t('confirmActivateMessage') || `Are you sure you want to activate user "${confirmDialog.userName}"? They will regain access to the system.`
+        }
+        confirmText={confirmDialog.currentStatus ? t('deactivate') || 'Deactivate' : t('activate') || 'Activate'}
+        cancelText={t('cancel') || 'Cancel'}
+        variant={confirmDialog.currentStatus ? 'danger' : 'warning'}
+      />
     </div>
   );
 }
