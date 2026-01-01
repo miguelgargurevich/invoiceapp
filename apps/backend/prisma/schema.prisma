@@ -267,6 +267,8 @@ model Proforma {
   descuento         Decimal   @default(0) @db.Decimal(10, 2)
   igv               Decimal   @db.Decimal(10, 2)
   total             Decimal   @db.Decimal(10, 2)
+  totalMaterials    Decimal?  @map("total_materials") @db.Decimal(10, 2)
+  totalLabor        Decimal?  @map("total_labor") @db.Decimal(10, 2)
   moneda            String    @default("PEN")
   tipoCambio        Decimal?  @map("tipo_cambio") @db.Decimal(10, 4)
   

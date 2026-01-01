@@ -505,6 +505,8 @@ router.post('/:id/convertir-factura', authenticateToken, getEmpresaFromUser, asy
         descuento: proforma.descuento,
         igv: proforma.igv,
         total: proforma.total,
+        totalMaterials: proforma.totalMaterials || null,
+        totalLabor: proforma.totalLabor || null,
         moneda: proforma.moneda,
         tipoCambio: proforma.tipoCambio,
         observaciones: proforma.observaciones,
