@@ -92,7 +92,7 @@ export default function DashboardPage({
   const [monthlyRevenue, setMonthlyRevenue] = useState<MonthlyRevenue[]>([]);
   const [invoiceStatus, setInvoiceStatus] = useState<InvoiceStatusData>({ pagada: 0, pendiente: 0, vencida: 0 });
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'invoices' | 'proposals'>('invoices');
+  const [activeTab, setActiveTab] = useState<'invoices' | 'proposals'>('proposals');
 
   useEffect(() => {
     if (empresa?.id) {
@@ -398,17 +398,6 @@ export default function DashboardPage({
             <div className="flex items-center justify-between mb-6">
               <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
                 <button
-                  onClick={() => setActiveTab('invoices')}
-                  className={cn(
-                    "px-4 py-2 rounded-md text-sm font-medium transition-colors",
-                    activeTab === 'invoices'
-                      ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm"
-                      : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
-                  )}
-                >
-                  {t('recentInvoices')}
-                </button>
-                <button
                   onClick={() => setActiveTab('proposals')}
                   className={cn(
                     "px-4 py-2 rounded-md text-sm font-medium transition-colors",
@@ -418,6 +407,17 @@ export default function DashboardPage({
                   )}
                 >
                   Recent Proposals
+                </button>
+                <button
+                  onClick={() => setActiveTab('invoices')}
+                  className={cn(
+                    "px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                    activeTab === 'invoices'
+                      ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm"
+                      : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                  )}
+                >
+                  {t('recentInvoices')}
                 </button>
               </div>
               <a
@@ -435,7 +435,7 @@ export default function DashboardPage({
                 <thead>
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
-                      {activeTab === 'invoices' ? t('invoiceNumber') : 'Proposal No.'}
+                      {activeTab === 'proposals' ? 'Proposal No.' : t('invoiceNumber')}
                     </th>
                     <th className="text-left py-3 px-4 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                       {t('client')}
@@ -452,35 +452,7 @@ export default function DashboardPage({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                  {activeTab === 'invoices' ? (
-                    recentInvoices.map((invoice) => (
-                      <tr
-                        key={invoice.id}
-                        onClick={() => router.push(`/${locale}/facturas/${invoice.id}`)}
-                        className="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
-                      >
-                        <td className="py-3 px-4">
-                          <span className="font-medium text-gray-900 dark:text-gray-100">
-                            {invoice.numero}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          {invoice.cliente.nombre}
-                        </td>
-                        <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          {new Date(invoice.fechaEmision).toLocaleDateString()}
-                        </td>
-                        <td className="py-3 px-4 text-right font-medium text-gray-900 dark:text-gray-100">
-                          {formatCurrency(invoice.total)}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <Badge variant={getStatusBadge(invoice.estado)}>
-                            {getStatusLabel(invoice.estado)}
-                          </Badge>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
+                  {activeTab === 'proposals' ? (
                     recentProposals.map((proposal) => (
                       <tr
                         key={proposal.id}
@@ -508,6 +480,34 @@ export default function DashboardPage({
                         </td>
                       </tr>
                     ))
+                  ) : (
+                    recentInvoices.map((invoice) => (
+                      <tr
+                        key={invoice.id}
+                        onClick={() => router.push(`/${locale}/facturas/${invoice.id}`)}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
+                      >
+                        <td className="py-3 px-4">
+                          <span className="font-medium text-gray-900 dark:text-gray-100">
+                            {invoice.numero}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
+                          {invoice.cliente.nombre}
+                        </td>
+                        <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
+                          {new Date(invoice.fechaEmision).toLocaleDateString()}
+                        </td>
+                        <td className="py-3 px-4 text-right font-medium text-gray-900 dark:text-gray-100">
+                          {formatCurrency(invoice.total)}
+                        </td>
+                        <td className="py-3 px-4 text-center">
+                          <Badge variant={getStatusBadge(invoice.estado)}>
+                            {getStatusLabel(invoice.estado)}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))
                   )}
                 </tbody>
               </table>
@@ -515,35 +515,7 @@ export default function DashboardPage({
 
             {/* Mobile cards */}
             <div className="md:hidden space-y-3">
-              {activeTab === 'invoices' ? (
-                recentInvoices.map((invoice) => (
-                  <div
-                    key={invoice.id}
-                    onClick={() => router.push(`/${locale}/facturas/${invoice.id}`)}
-                    className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <span className="font-medium text-gray-900 dark:text-gray-100">
-                        {invoice.numero}
-                      </span>
-                      <Badge variant={getStatusBadge(invoice.estado)} size="sm">
-                        {getStatusLabel(invoice.estado)}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      {invoice.cliente.nombre}
-                    </p>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500 dark:text-gray-400">
-                        {new Date(invoice.fechaEmision).toLocaleDateString()}
-                      </span>
-                      <span className="font-medium text-gray-900 dark:text-gray-100">
-                        {formatCurrency(invoice.total)}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              ) : (
+              {activeTab === 'proposals' ? (
                 recentProposals.map((proposal) => (
                   <div
                     key={proposal.id}
@@ -567,6 +539,34 @@ export default function DashboardPage({
                       </span>
                       <span className="font-medium text-gray-900 dark:text-gray-100">
                         {formatCurrency(proposal.total)}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                recentInvoices.map((invoice) => (
+                  <div
+                    key={invoice.id}
+                    onClick={() => router.push(`/${locale}/facturas/${invoice.id}`)}
+                    className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <span className="font-medium text-gray-900 dark:text-gray-100">
+                        {invoice.numero}
+                      </span>
+                      <Badge variant={getStatusBadge(invoice.estado)} size="sm">
+                        {getStatusLabel(invoice.estado)}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                      {invoice.cliente.nombre}
+                    </p>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-500 dark:text-gray-400">
+                        {new Date(invoice.fechaEmision).toLocaleDateString()}
+                      </span>
+                      <span className="font-medium text-gray-900 dark:text-gray-100">
+                        {formatCurrency(invoice.total)}
                       </span>
                     </div>
                   </div>
