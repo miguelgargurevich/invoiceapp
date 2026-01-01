@@ -788,42 +788,8 @@ export default function FacturaDetailPage({
                   </span>
                 </div>
               </div>
-            </div>
-          </Card>
-
-          {/* Summary */}
-          <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              {t('summary')}
-            </h2>
-            <div className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">{t('subtotal')}</span>
-                <span>{formatCurrency(factura.subtotal)}</span>
-              </div>
-              {factura.descuento > 0 && (
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-500">{t('discount')}</span>
-                  <span className="text-red-500">-{formatCurrency(factura.descuento)}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">
-                  {t('tax')}
-                  {empresa?.taxRate && Number(empresa.taxRate) > 0 ? ` (${empresa.taxRate}%)` : ''}
-                </span>
-                <span>{formatCurrency(factura.igv)}</span>
-              </div>
-              <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
-                <div className="flex justify-between">
-                  <span className="font-semibold">{t('total')}</span>
-                  <span className="text-xl font-bold text-primary-600">
-                    {formatCurrency(factura.total)}
-                  </span>
-                </div>
-              </div>
               {factura.saldoPendiente > 0 && factura.estado !== 'ANULADA' && (
-                <div className="flex justify-between text-orange-600 pt-2">
+                <div className="flex justify-between text-orange-600 pt-2 border-t border-orange-200 dark:border-orange-800 mt-2">
                   <span className="font-medium">{t('pending')}</span>
                   <span className="font-bold">{formatCurrency(factura.saldoPendiente)}</span>
                 </div>
