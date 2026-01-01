@@ -60,7 +60,7 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loadingNotifications, setLoadingNotifications] = useState(false);
 
-  const currentLocale = pathname.split('/')[1] || 'es';
+  const currentLocale = pathname.split('/')[1] || 'en';
 
   // Cargar notificaciones
   useEffect(() => {
@@ -101,7 +101,7 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
   };
 
   const handleNotificationClick = (notification: Notification) => {
-    const locale = pathname.split('/')[1] || 'es';
+    const locale = pathname.split('/')[1] || 'en';
     router.push(`/${locale}${notification.link}`);
     setShowNotifications(false);
   };

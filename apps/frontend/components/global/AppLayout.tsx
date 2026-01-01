@@ -26,7 +26,7 @@ export function AppLayout({ children }: AppLayoutProps) {
   // Redirigir si no está autenticado
   useEffect(() => {
     if (!loading && !user) {
-      const locale = pathname.split('/')[1] || 'es';
+      const locale = pathname.split('/')[1] || 'en';
       router.push(`/${locale}/login`);
     }
   }, [user, loading, router, pathname]);

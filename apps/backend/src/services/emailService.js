@@ -11,7 +11,7 @@ const fromName = process.env.RESEND_FROM_NAME || 'Invoice App';
  * @param {string} locale - Language locale (es or en)
  * @returns {Object} - Translation strings
  */
-function getTranslations(locale = 'es') {
+function getTranslations(locale = 'en') {
   const translations = {
     es: {
       invoice: 'Factura',
@@ -104,7 +104,7 @@ async function sendEmail({ to, subject, text, html, attachments = [] }) {
  * @param {string} options.locale - Language locale (es or en)
  * @returns {Promise<Object>} - Resend API response
  */
-async function sendInvoiceEmail({ to, subject, message, factura, empresa, pdfBuffer, locale = 'es' }) {
+async function sendInvoiceEmail({ to, subject, message, factura, empresa, pdfBuffer, locale = 'en' }) {
   const t = getTranslations(locale);
   
   const htmlContent = `
@@ -201,7 +201,7 @@ async function sendInvoiceEmail({ to, subject, message, factura, empresa, pdfBuf
  * @param {string} options.locale - Language locale (es or en)
  * @returns {Promise<Object>} - Resend API response
  */
-async function sendProformaEmail({ to, subject, message, proforma, empresa, pdfBuffer, locale = 'es' }) {
+async function sendProformaEmail({ to, subject, message, proforma, empresa, pdfBuffer, locale = 'en' }) {
   const t = getTranslations(locale);
   
   const htmlContent = `
@@ -810,7 +810,7 @@ async function sendSignatureConfirmationEmail({
  * @param {string} options.locale - Language locale (es or en)
  * @returns {Promise<Object>} - Resend API response
  */
-async function sendInvoiceCreationEmail({ factura, empresa, locale = 'es' }) {
+async function sendInvoiceCreationEmail({ factura, empresa, locale = 'en' }) {
   const t = getTranslations(locale);
   
   const clientEmail = factura.cliente?.email;
@@ -900,7 +900,7 @@ async function sendInvoiceCreationEmail({ factura, empresa, locale = 'es' }) {
  * @param {string} options.locale - Language locale (es or en)
  * @returns {Promise<Object>} - Resend API response
  */
-async function sendPaymentConfirmationEmail({ pago, factura, empresa, locale = 'es' }) {
+async function sendPaymentConfirmationEmail({ pago, factura, empresa, locale = 'en' }) {
   const t = getTranslations(locale);
   
   const clientEmail = factura.cliente?.email;
