@@ -33,7 +33,8 @@ router.get('/', authenticateToken, async (req, res) => {
       include: {
         cliente: {
           select: {
-            nombre: true,
+            razonSocial: true,
+            nombreComercial: true,
           },
         },
       },
@@ -58,7 +59,8 @@ router.get('/', authenticateToken, async (req, res) => {
       include: {
         cliente: {
           select: {
-            nombre: true,
+            razonSocial: true,
+            nombreComercial: true,
           },
         },
       },
@@ -83,7 +85,8 @@ router.get('/', authenticateToken, async (req, res) => {
       include: {
         cliente: {
           select: {
-            nombre: true,
+            razonSocial: true,
+            nombreComercial: true,
           },
         },
       },
@@ -107,7 +110,8 @@ router.get('/', authenticateToken, async (req, res) => {
       include: {
         cliente: {
           select: {
-            nombre: true,
+            razonSocial: true,
+            nombreComercial: true,
           },
         },
       },
@@ -123,11 +127,12 @@ router.get('/', authenticateToken, async (req, res) => {
     // Agregar facturas vencidas
     facturasVencidas.forEach((factura) => {
       const diasVencido = Math.floor((now - new Date(factura.fechaVencimiento)) / (1000 * 60 * 60 * 24));
+      const clienteName = factura.cliente.nombreComercial || factura.cliente.razonSocial;
       notificaciones.push({
         id: `overdue-${factura.id}`,
         type: 'overdue',
         title: 'Factura vencida',
-        message: `${factura.serie}-${factura.numero} de ${factura.cliente.nombre}`,
+        message: `${factura.serie}-${factura.numero} de ${clienteName}`,
         detail: `Vencida hace ${diasVencido} día${diasVencido !== 1 ? 's' : ''}`,
         amount: factura.total,
         date: factura.fechaVencimiento,
@@ -139,11 +144,12 @@ router.get('/', authenticateToken, async (req, res) => {
     // Agregar facturas próximas a vencer
     facturasProximasVencer.forEach((factura) => {
       const diasRestantes = Math.ceil((new Date(factura.fechaVencimiento) - now) / (1000 * 60 * 60 * 24));
+      const clienteName = factura.cliente.nombreComercial || factura.cliente.razonSocial;
       notificaciones.push({
         id: `due-soon-${factura.id}`,
         type: 'due_soon',
         title: 'Factura próxima a vencer',
-        message: `${factura.serie}-${factura.numero} de ${factura.cliente.nombre}`,
+        message: `${factura.serie}-${factura.numero} de ${clienteName}`,
         detail: `Vence en ${diasRestantes} día${diasRestantes !== 1 ? 's' : ''}`,
         amount: factura.total,
         date: factura.fechaVencimiento,
@@ -155,11 +161,12 @@ router.get('/', authenticateToken, async (req, res) => {
     // Agregar proformas sin respuesta
     proformasPendientes.forEach((proforma) => {
       const diasSinRespuesta = Math.floor((now - new Date(proforma.fechaEmision)) / (1000 * 60 * 60 * 24));
+      const clienteName = proforma.cliente.nombreComercial || proforma.cliente.razonSocial;
       notificaciones.push({
         id: `proposal-pending-${proforma.id}`,
         type: 'proposal_pending',
         title: 'Proforma sin respuesta',
-        message: `${proforma.numero} para ${proforma.cliente.nombre}`,
+        message: `${proforma.numero} para ${clienteName}`,
         detail: `Sin respuesta hace ${diasSinRespuesta} días`,
         amount: proforma.total,
         date: proforma.fechaEmision,
@@ -172,11 +179,12 @@ router.get('/', authenticateToken, async (req, res) => {
     facturasPagosPendientes.slice(0, 3).forEach((factura) => {
       const diasRestantes = Math.ceil((new Date(factura.fechaVencimiento) - now) / (1000 * 60 * 60 * 24));
       if (diasRestantes > 7) { // Solo si no está en la lista de próximas a vencer
+        const clienteName = factura.cliente.nombreComercial || factura.cliente.razonSocial;
         notificaciones.push({
           id: `pending-payment-${factura.id}`,
           type: 'pending_payment',
           title: 'Pago pendiente',
-          message: `${factura.serie}-${factura.numero} de ${factura.cliente.nombre}`,
+          message: `${factura.serie}-${factura.numero} de ${clienteName}`,
           detail: `Vence en ${diasRestantes} días`,
           amount: factura.total,
           date: factura.fechaVencimiento,
