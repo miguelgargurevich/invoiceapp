@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Modal } from './Modal';
 import { Button } from './Button';
-import { AlertTriangle, AlertCircle, Info } from 'lucide-react';
+import { AlertTriangle, AlertCircle, Info, Trash2, CheckCircle } from 'lucide-react';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -33,81 +33,76 @@ export function ConfirmDialog({
   const variantStyles = {
     danger: {
       icon: AlertCircle,
-      iconBg: 'bg-red-100 dark:bg-red-900/30',
-      iconColor: 'text-red-600 dark:text-red-400',
-      buttonVariant: 'danger' as const,
+      iconBg: 'bg-gradient-to-br from-red-500 to-rose-600',
+      iconColor: 'text-white',
+      buttonClass: 'bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white',
+      iconModalColor: 'danger' as const,
     },
     warning: {
       icon: AlertTriangle,
-      iconBg: 'bg-yellow-100 dark:bg-yellow-900/30',
-      iconColor: 'text-yellow-600 dark:text-yellow-400',
-      buttonVariant: 'warning' as const,
+      iconBg: 'bg-gradient-to-br from-amber-500 to-orange-600',
+      iconColor: 'text-white',
+      buttonClass: 'bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white',
+      iconModalColor: 'warning' as const,
     },
     info: {
       icon: Info,
-      iconBg: 'bg-blue-100 dark:bg-blue-900/30',
-      iconColor: 'text-blue-600 dark:text-blue-400',
-      buttonVariant: 'primary' as const,
+      iconBg: 'bg-gradient-to-br from-blue-500 to-indigo-600',
+      iconColor: 'text-white',
+      buttonClass: 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white',
+      iconModalColor: 'info' as const,
     },
   };
 
-  const { icon: Icon, iconBg, iconColor, buttonVariant } = variantStyles[variant];
+  const { icon: Icon, buttonClass, iconModalColor } = variantStyles[variant];
 
   return (
     <Modal 
       isOpen={isOpen} 
       onClose={onClose} 
-      title={title} 
+      title={title}
+      icon={Icon}
+      iconColor={iconModalColor}
       size="sm"
       showCloseButton={!loading}
     >
-      <div className="flex flex-col items-center text-center py-4">
-        {/* Icon with pulse animation */}
-        <div
-          className={`w-16 h-16 rounded-full flex items-center justify-center mb-5 ${iconBg} animate-pulse-slow`}
-        >
-          <Icon className={`w-8 h-8 ${iconColor}`} />
+      <div className="py-2">
+        {/* Message */}
+        <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800 mb-6">
+          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+            {message}
+          </p>
         </div>
 
-        {/* Message */}
-        <p className="text-base text-gray-700 dark:text-gray-300 mb-8 leading-relaxed max-w-sm">
-          {message}
-        </p>
-
         {/* Action Buttons */}
-        <div className="flex gap-3 w-full">
+        <div className="flex gap-3">
           <Button 
             variant="outline" 
             onClick={onClose} 
-            className="flex-1"
+            className="flex-1 h-11"
             disabled={loading}
           >
             {cancelLabel || t('cancel')}
           </Button>
           <Button
-            variant={buttonVariant}
             onClick={onConfirm}
-            loading={loading}
-            className="flex-1"
+            disabled={loading}
+            className={`flex-1 h-11 ${buttonClass}`}
           >
-            {confirmLabel || t('confirm')}
+            {loading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                {t('loading')}
+              </>
+            ) : (
+              confirmLabel || t('confirm')
+            )}
           </Button>
         </div>
       </div>
-
-      <style jsx global>{`
-        @keyframes pulse-slow {
-          0%, 100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: 0.8;
-          }
-        }
-        .animate-pulse-slow {
-          animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-      `}</style>
     </Modal>
   );
 }

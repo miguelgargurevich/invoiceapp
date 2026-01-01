@@ -20,7 +20,10 @@ import {
   Package,
   DollarSign,
   Briefcase,
-  HardHat
+  HardHat,
+  MessageSquare,
+  ClipboardList,
+  Receipt
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -1076,47 +1079,68 @@ export default function FacturaDetailPage({
       <Modal
         isOpen={isEditDatesOpen}
         onClose={() => !editingDates && setIsEditDatesOpen(false)}
-        title="Edit Invoice Dates"
+        title={t('dates')}
+        subtitle="Update the issue and due dates for this invoice"
+        icon={Calendar}
+        size="md"
       >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Issue Date
-            </label>
-            <DatePicker
-              value={fechaEmisionEdit}
-              onChange={(date) => setFechaEmisionEdit(date)}
-              disabled={editingDates}
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Due Date
-            </label>
-            <DatePicker
-              value={fechaVencimientoEdit}
-              onChange={(date) => setFechaVencimientoEdit(date)}
-              disabled={editingDates}
-            />
+        <div className="space-y-5">
+          {/* Date Fields */}
+          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  {t('issueDate')}
+                </label>
+                <DatePicker
+                  value={fechaEmisionEdit}
+                  onChange={(date) => setFechaEmisionEdit(date)}
+                  disabled={editingDates}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  {t('dueDate')}
+                </label>
+                <DatePicker
+                  value={fechaVencimientoEdit}
+                  onChange={(date) => setFechaVencimientoEdit(date)}
+                  disabled={editingDates}
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
             <Button
               variant="outline"
               onClick={() => setIsEditDatesOpen(false)}
               disabled={editingDates}
-              className="flex-1"
+              className="flex-1 h-11"
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               onClick={handleSaveDates}
               disabled={editingDates || !fechaEmisionEdit || !fechaVencimientoEdit}
-              className="flex-1"
+              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
             >
-              <Calendar className="w-4 h-4 mr-2" />
-              {editingDates ? 'Saving...' : 'Save Dates'}
+              {editingDates ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {t('saving')}
+                </>
+              ) : (
+                <>
+                  <Calendar className="w-4 h-4 mr-2" />
+                  {t('save')}
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -1127,10 +1151,14 @@ export default function FacturaDetailPage({
         isOpen={isEditObservationsOpen}
         onClose={() => !editingObservations && setIsEditObservationsOpen(false)}
         title={t('observations')}
+        subtitle="Add notes or special instructions for this invoice"
+        icon={MessageSquare}
+        size="md"
       >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <div className="space-y-5">
+          {/* Textarea Field */}
+          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               {t('observations')}
             </label>
             <textarea
@@ -1138,26 +1166,40 @@ export default function FacturaDetailPage({
               onChange={(e) => setObservacionesEdit(e.target.value)}
               disabled={editingObservations}
               placeholder={t('observationsPlaceholder')}
-              rows={4}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+              rows={5}
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent resize-none transition-all placeholder:text-gray-400 dark:placeholder:text-gray-500"
             />
           </div>
 
-          <div className="flex gap-3 pt-4">
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
             <Button
               variant="outline"
               onClick={() => setIsEditObservationsOpen(false)}
               disabled={editingObservations}
-              className="flex-1"
+              className="flex-1 h-11"
             >
               {t('cancel')}
             </Button>
             <Button
               onClick={handleSaveObservations}
               disabled={editingObservations}
-              className="flex-1"
+              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
             >
-              {editingObservations ? t('saving') : t('save')}
+              {editingObservations ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {t('saving')}
+                </>
+              ) : (
+                <>
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  {t('save')}
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -1168,14 +1210,18 @@ export default function FacturaDetailPage({
         isOpen={isEditOrderTypeOpen}
         onClose={() => !editingOrderType && setIsEditOrderTypeOpen(false)}
         title="Order Type"
+        subtitle="Select the type of work for this invoice"
+        icon={ClipboardList}
+        size="md"
       >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+        <div className="space-y-5">
+          {/* Radio Options */}
+          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
               Select order type
             </label>
             <div className="space-y-2">
-              <label className="flex items-center gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors">
+              <label className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${orderTypeEdit === 'day_work' ? 'border-gray-800 dark:border-gray-600 bg-gray-50 dark:bg-gray-800' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50/50 dark:hover:bg-gray-800/50'}`}>
                 <input
                   type="radio"
                   name="orderType"
@@ -1183,11 +1229,14 @@ export default function FacturaDetailPage({
                   checked={orderTypeEdit === 'day_work'}
                   onChange={(e) => setOrderTypeEdit(e.target.value)}
                   disabled={editingOrderType}
-                  className="w-4 h-4 text-primary-600"
+                  className="w-4 h-4 text-gray-800 dark:text-gray-300 border-gray-300 focus:ring-gray-800"
                 />
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Day Work</span>
+                <div>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">Day Work</span>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Hourly or daily rate work</p>
+                </div>
               </label>
-              <label className="flex items-center gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors">
+              <label className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${orderTypeEdit === 'contract' ? 'border-gray-800 dark:border-gray-600 bg-gray-50 dark:bg-gray-800' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50/50 dark:hover:bg-gray-800/50'}`}>
                 <input
                   type="radio"
                   name="orderType"
@@ -1195,11 +1244,14 @@ export default function FacturaDetailPage({
                   checked={orderTypeEdit === 'contract'}
                   onChange={(e) => setOrderTypeEdit(e.target.value)}
                   disabled={editingOrderType}
-                  className="w-4 h-4 text-primary-600"
+                  className="w-4 h-4 text-gray-800 dark:text-gray-300 border-gray-300 focus:ring-gray-800"
                 />
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Contract</span>
+                <div>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">Contract</span>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Fixed price contract work</p>
+                </div>
               </label>
-              <label className="flex items-center gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors">
+              <label className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${orderTypeEdit === 'extra' ? 'border-gray-800 dark:border-gray-600 bg-gray-50 dark:bg-gray-800' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50/50 dark:hover:bg-gray-800/50'}`}>
                 <input
                   type="radio"
                   name="orderType"
@@ -1207,11 +1259,14 @@ export default function FacturaDetailPage({
                   checked={orderTypeEdit === 'extra'}
                   onChange={(e) => setOrderTypeEdit(e.target.value)}
                   disabled={editingOrderType}
-                  className="w-4 h-4 text-primary-600"
+                  className="w-4 h-4 text-gray-800 dark:text-gray-300 border-gray-300 focus:ring-gray-800"
                 />
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Extra</span>
+                <div>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">Extra</span>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Additional work outside scope</p>
+                </div>
               </label>
-              <label className="flex items-center gap-3 p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors">
+              <label className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${orderTypeEdit === '' ? 'border-gray-800 dark:border-gray-600 bg-gray-50 dark:bg-gray-800' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50/50 dark:hover:bg-gray-800/50'}`}>
                 <input
                   type="radio"
                   name="orderType"
@@ -1219,28 +1274,45 @@ export default function FacturaDetailPage({
                   checked={orderTypeEdit === ''}
                   onChange={(e) => setOrderTypeEdit(e.target.value)}
                   disabled={editingOrderType}
-                  className="w-4 h-4 text-primary-600"
+                  className="w-4 h-4 text-gray-800 dark:text-gray-300 border-gray-300 focus:ring-gray-800"
                 />
-                <span className="text-sm font-medium text-gray-500 dark:text-gray-400 italic">None</span>
+                <div>
+                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400 italic">None</span>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">No specific order type</p>
+                </div>
               </label>
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
             <Button
               variant="outline"
               onClick={() => setIsEditOrderTypeOpen(false)}
               disabled={editingOrderType}
-              className="flex-1"
+              className="flex-1 h-11"
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               onClick={handleSaveOrderType}
               disabled={editingOrderType}
-              className="flex-1"
+              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
             >
-              {editingOrderType ? 'Saving...' : 'Save'}
+              {editingOrderType ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {t('saving')}
+                </>
+              ) : (
+                <>
+                  <ClipboardList className="w-4 h-4 mr-2" />
+                  {t('save')}
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -1250,76 +1322,107 @@ export default function FacturaDetailPage({
       <Modal
         isOpen={isEditPaymentSummaryOpen}
         onClose={() => !editingPaymentSummary && setIsEditPaymentSummaryOpen(false)}
-        title="Edit Payment Summary"
+        title="Payment Summary"
+        subtitle="Update materials and labor costs breakdown"
+        icon={Receipt}
+        size="md"
       >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Total Materials
-            </label>
-            <input
-              type="text"
-              inputMode="decimal"
-              value={totalMaterialsEdit}
-              onChange={(e) => setTotalMaterialsEdit(parseFloat(e.target.value) || 0)}
-              disabled={editingPaymentSummary}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            />
-          </div>
+        <div className="space-y-5">
+          {/* Input Fields */}
+          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Total Materials
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={totalMaterialsEdit}
+                    onChange={(e) => setTotalMaterialsEdit(parseFloat(e.target.value) || 0)}
+                    disabled={editingPaymentSummary}
+                    className="w-full pl-8 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all"
+                  />
+                </div>
+              </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Total Labor
-            </label>
-            <input
-              type="text"
-              inputMode="decimal"
-              value={totalLaborEdit}
-              onChange={(e) => setTotalLaborEdit(parseFloat(e.target.value) || 0)}
-              disabled={editingPaymentSummary}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            />
-          </div>
-
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Subtotal</span>
-              <span>{formatCurrency(Number(totalMaterialsEdit) + Number(totalLaborEdit))}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-500">
-                Tax {empresa?.taxRate && Number(empresa.taxRate) > 0 ? `(${empresa.taxRate}%)` : ''}
-              </span>
-              <span>
-                {formatCurrency((Number(totalMaterialsEdit) + Number(totalLaborEdit)) * (empresa?.taxRate ? parseFloat(empresa.taxRate.toString()) / 100 : 0))}
-              </span>
-            </div>
-            <div className="flex justify-between font-semibold">
-              <span>Total Amount</span>
-              <span className="text-primary-600">
-                {formatCurrency(
-                  (Number(totalMaterialsEdit) + Number(totalLaborEdit)) * 
-                  (1 + (empresa?.taxRate ? parseFloat(empresa.taxRate.toString()) / 100 : 0))
-                )}
-              </span>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Total Labor
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={totalLaborEdit}
+                    onChange={(e) => setTotalLaborEdit(parseFloat(e.target.value) || 0)}
+                    disabled={editingPaymentSummary}
+                    className="w-full pl-8 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          {/* Totals Summary */}
+          <div className="bg-gradient-to-br from-emerald-50 to-green-50/50 dark:from-emerald-900/20 dark:to-green-900/10 rounded-xl p-5 border border-emerald-100 dark:border-emerald-900/30">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
+                <span className="font-medium text-gray-900 dark:text-gray-100">{formatCurrency(Number(totalMaterialsEdit) + Number(totalLaborEdit))}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-gray-600 dark:text-gray-400">
+                  Tax {empresa?.taxRate && Number(empresa.taxRate) > 0 ? `(${empresa.taxRate}%)` : ''}
+                </span>
+                <span className="font-medium text-gray-900 dark:text-gray-100">
+                  {formatCurrency((Number(totalMaterialsEdit) + Number(totalLaborEdit)) * (empresa?.taxRate ? parseFloat(empresa.taxRate.toString()) / 100 : 0))}
+                </span>
+              </div>
+              <div className="pt-3 border-t border-emerald-200 dark:border-emerald-800/50 flex justify-between items-center">
+                <span className="font-semibold text-gray-900 dark:text-gray-100">Total Amount</span>
+                <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                  {formatCurrency(
+                    (Number(totalMaterialsEdit) + Number(totalLaborEdit)) * 
+                    (1 + (empresa?.taxRate ? parseFloat(empresa.taxRate.toString()) / 100 : 0))
+                  )}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
             <Button
               variant="outline"
               onClick={() => setIsEditPaymentSummaryOpen(false)}
               disabled={editingPaymentSummary}
-              className="flex-1"
+              className="flex-1 h-11"
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               onClick={handleSavePaymentSummary}
               disabled={editingPaymentSummary}
-              className="flex-1"
+              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
             >
-              {editingPaymentSummary ? 'Saving...' : 'Save'}
+              {editingPaymentSummary ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {t('saving')}
+                </>
+              ) : (
+                <>
+                  <Receipt className="w-4 h-4 mr-2" />
+                  {t('save')}
+                </>
+              )}
             </Button>
           </div>
         </div>

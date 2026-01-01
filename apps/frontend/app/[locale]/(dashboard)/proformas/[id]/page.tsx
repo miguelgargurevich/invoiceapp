@@ -26,7 +26,10 @@ import {
   DollarSign,
   Calendar,
   Receipt,
-  Edit2
+  Edit2,
+  MessageSquare,
+  MapPin,
+  CreditCard
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -639,12 +642,12 @@ export default function ProformaDetailPage({
               }
             </Button>
           )}
-          {canConvert && (
+          {/* {canConvert && (
             <Button size="sm" onClick={() => setIsConvertDialogOpen(true)}>
               <FileText className="w-4 h-4 mr-1" />
               {t('convertToInvoice')}
             </Button>
-          )}
+          )} */}
           {proforma.estado === 'facturada' && proforma.facturasGeneradas && proforma.facturasGeneradas.length > 0 && (
             <Button size="sm" onClick={() => router.push(`/${locale}/facturas/${proforma.facturasGeneradas![0].id}`)}>
               <FileText className="w-4 h-4 mr-1" />
@@ -1155,46 +1158,67 @@ export default function ProformaDetailPage({
         isOpen={isEditDatesOpen}
         onClose={() => !editingDates && setIsEditDatesOpen(false)}
         title={t('dates')}
+        subtitle="Update proposal issue and validity dates"
+        icon={Calendar}
+        size="md"
       >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('issueDate')}
-            </label>
-            <DatePicker
-              value={fechaEmisionEdit}
-              onChange={(date) => setFechaEmisionEdit(date)}
-              disabled={editingDates}
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('validUntil')}
-            </label>
-            <DatePicker
-              value={fechaValidezEdit}
-              onChange={(date) => setFechaValidezEdit(date)}
-              disabled={editingDates}
-            />
+        <div className="space-y-5">
+          {/* Date Fields */}
+          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  {t('issueDate')}
+                </label>
+                <DatePicker
+                  value={fechaEmisionEdit}
+                  onChange={(date) => setFechaEmisionEdit(date)}
+                  disabled={editingDates}
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  {t('validUntil')}
+                </label>
+                <DatePicker
+                  value={fechaValidezEdit}
+                  onChange={(date) => setFechaValidezEdit(date)}
+                  disabled={editingDates}
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
             <Button
               variant="outline"
               onClick={() => setIsEditDatesOpen(false)}
               disabled={editingDates}
-              className="flex-1"
+              className="flex-1 h-11"
             >
               {tCommon('cancel')}
             </Button>
             <Button
               onClick={handleSaveDates}
               disabled={editingDates || !fechaEmisionEdit || !fechaValidezEdit}
-              className="flex-1"
+              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
             >
-              <Calendar className="w-4 h-4 mr-2" />
-              {editingDates ? 'Saving...' : tCommon('save')}
+              {editingDates ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {tCommon('saving')}
+                </>
+              ) : (
+                <>
+                  <Calendar className="w-4 h-4 mr-2" />
+                  {tCommon('save')}
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -1205,80 +1229,104 @@ export default function ProformaDetailPage({
         isOpen={isEditJobInfoOpen}
         onClose={() => !editingJobInfo && setIsEditJobInfoOpen(false)}
         title={t('jobInformation')}
+        subtitle="Update job details and work description"
+        icon={Briefcase}
+        size="md"
       >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('jobName')}
-            </label>
-            <input
-              type="text"
-              value={jobInfoEdit.jobName}
-              onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, jobName: e.target.value })}
-              disabled={editingJobInfo}
-              placeholder={t('jobName')}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            />
+        <div className="space-y-5">
+          {/* Job Fields */}
+          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  {t('jobName')}
+                </label>
+                <input
+                  type="text"
+                  value={jobInfoEdit.jobName}
+                  onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, jobName: e.target.value })}
+                  disabled={editingJobInfo}
+                  placeholder={t('jobName')}
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  {t('jobLocation')}
+                </label>
+                <div className="relative">
+                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    value={jobInfoEdit.jobLocation}
+                    onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, jobLocation: e.target.value })}
+                    disabled={editingJobInfo}
+                    placeholder={t('jobLocation')}
+                    className="w-full pl-11 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  {t('jobPhone')}
+                </label>
+                <input
+                  type="text"
+                  value={jobInfoEdit.telefonoTrabajo}
+                  onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, telefonoTrabajo: e.target.value })}
+                  disabled={editingJobInfo}
+                  placeholder={t('jobPhone')}
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  {t('workDescription')}
+                </label>
+                <textarea
+                  value={jobInfoEdit.workDescription}
+                  onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, workDescription: e.target.value })}
+                  disabled={editingJobInfo}
+                  placeholder={t('workDescription')}
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent resize-none transition-all placeholder:text-gray-400"
+                />
+              </div>
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('jobLocation')}
-            </label>
-            <input
-              type="text"
-              value={jobInfoEdit.jobLocation}
-              onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, jobLocation: e.target.value })}
-              disabled={editingJobInfo}
-              placeholder={t('jobLocation')}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('jobPhone')}
-            </label>
-            <input
-              type="text"
-              value={jobInfoEdit.telefonoTrabajo}
-              onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, telefonoTrabajo: e.target.value })}
-              disabled={editingJobInfo}
-              placeholder={t('jobPhone')}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('workDescription')}
-            </label>
-            <textarea
-              value={jobInfoEdit.workDescription}
-              onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, workDescription: e.target.value })}
-              disabled={editingJobInfo}
-              placeholder={t('workDescription')}
-              rows={4}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-            />
-          </div>
-
-          <div className="flex gap-3 pt-4">
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
             <Button
               variant="outline"
               onClick={() => setIsEditJobInfoOpen(false)}
               disabled={editingJobInfo}
-              className="flex-1"
+              className="flex-1 h-11"
             >
               {tCommon('cancel')}
             </Button>
             <Button
               onClick={handleSaveJobInfo}
               disabled={editingJobInfo}
-              className="flex-1"
+              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
             >
-              <Briefcase className="w-4 h-4 mr-2" />
-              {editingJobInfo ? 'Saving...' : tCommon('save')}
+              {editingJobInfo ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {tCommon('saving')}
+                </>
+              ) : (
+                <>
+                  <Briefcase className="w-4 h-4 mr-2" />
+                  {tCommon('save')}
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -1289,10 +1337,14 @@ export default function ProformaDetailPage({
         isOpen={isEditPaymentTermsOpen}
         onClose={() => !editingPaymentTerms && setIsEditPaymentTermsOpen(false)}
         title={t('paymentTerms')}
+        subtitle="Define payment conditions and schedule"
+        icon={CreditCard}
+        size="md"
       >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <div className="space-y-5">
+          {/* Textarea Field */}
+          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               {t('paymentTerms')}
             </label>
             <textarea
@@ -1301,26 +1353,39 @@ export default function ProformaDetailPage({
               disabled={editingPaymentTerms}
               placeholder={t('paymentTerms')}
               rows={6}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent resize-none transition-all placeholder:text-gray-400"
             />
           </div>
 
-          <div className="flex gap-3 pt-4">
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
             <Button
               variant="outline"
               onClick={() => setIsEditPaymentTermsOpen(false)}
               disabled={editingPaymentTerms}
-              className="flex-1"
+              className="flex-1 h-11"
             >
               {tCommon('cancel')}
             </Button>
             <Button
               onClick={handleSavePaymentTerms}
               disabled={editingPaymentTerms}
-              className="flex-1"
+              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
             >
-              <Receipt className="w-4 h-4 mr-2" />
-              {editingPaymentTerms ? 'Saving...' : tCommon('save')}
+              {editingPaymentTerms ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {tCommon('saving')}
+                </>
+              ) : (
+                <>
+                  <CreditCard className="w-4 h-4 mr-2" />
+                  {tCommon('save')}
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -1331,10 +1396,14 @@ export default function ProformaDetailPage({
         isOpen={isEditObservationsOpen}
         onClose={() => !editingObservations && setIsEditObservationsOpen(false)}
         title={t('observations')}
+        subtitle="Add notes or special instructions"
+        icon={MessageSquare}
+        size="md"
       >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <div className="space-y-5">
+          {/* Textarea Field */}
+          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               {t('observations')}
             </label>
             <textarea
@@ -1342,27 +1411,40 @@ export default function ProformaDetailPage({
               onChange={(e) => setObservacionesEdit(e.target.value)}
               disabled={editingObservations}
               placeholder={t('observationsPlaceholder')}
-              rows={4}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+              rows={5}
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent resize-none transition-all placeholder:text-gray-400"
             />
           </div>
 
-          <div className="flex gap-3 pt-4">
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
             <Button
               variant="outline"
               onClick={() => setIsEditObservationsOpen(false)}
               disabled={editingObservations}
-              className="flex-1"
+              className="flex-1 h-11"
             >
               {tCommon('cancel')}
             </Button>
             <Button
               onClick={handleSaveObservations}
               disabled={editingObservations}
-              className="flex-1"
+              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
             >
-              <FileText className="w-4 h-4 mr-2" />
-              {editingObservations ? 'Saving...' : tCommon('save')}
+              {editingObservations ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {tCommon('saving')}
+                </>
+              ) : (
+                <>
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  {tCommon('save')}
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -1396,6 +1478,8 @@ export default function ProformaDetailPage({
           isOpen={showPhotosGallery} 
           onClose={() => setShowPhotosGallery(false)}
           title={t('jobPhotos')}
+          subtitle="View and manage photos for this job"
+          icon={Camera}
           size="full"
         >
           <JobPhotosGallery
