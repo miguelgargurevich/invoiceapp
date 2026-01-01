@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { cn, getInitials } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -43,22 +43,10 @@ const menuItems = [
 export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: SidebarProps) {
   const pathname = usePathname();
   const t = useTranslations('navigation');
-  const { empresa } = useAuth();
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  // Check if user is admin
-  useEffect(() => {
-    const checkAdminRole = async () => {
-      try {
-        const api = (await import('@/lib/api')).default;
-        const response: any = await api.get('/admin/stats');
-        setIsAdmin(true);
-      } catch (error) {
-        setIsAdmin(false);
-      }
-    };
-    checkAdminRole();
-  }, []);
+  const { empresa, user } = useAuth();
+  
+  // Check if user is admin based on role
+  const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
 
   // Extraer la parte de la ruta sin el locale
   const currentPath = '/' + pathname.split('/').slice(2).join('/');

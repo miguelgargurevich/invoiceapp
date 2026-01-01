@@ -17,6 +17,30 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: error.message });
     }
 
+    // Crear o actualizar perfil de usuario si no existe
+    const existingProfile = await prisma.userProfile.findUnique({
+      where: { id: data.user.id }
+    });
+
+    if (!existingProfile) {
+      // Crear perfil si no existe
+      await prisma.userProfile.create({
+        data: {
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.user_metadata?.name || null,
+          role: 'USER',
+          isActive: true
+        }
+      });
+    } else {
+      // Actualizar lastLogin
+      await prisma.userProfile.update({
+        where: { id: data.user.id },
+        data: { lastLogin: new Date() }
+      });
+    }
+
     res.json({
       user: data.user,
       session: data.session
@@ -43,6 +67,17 @@ router.post('/register', async (req, res) => {
     if (authError) {
       return res.status(400).json({ error: authError.message });
     }
+
+    // Crear perfil de usuario en user_profiles
+    await prisma.userProfile.create({
+      data: {
+        id: authData.user.id,
+        email: email,
+        name: name || null,
+        role: 'USER', // Todos los nuevos usuarios son USER por defecto
+        isActive: true
+      }
+    });
 
     // Crear empresa asociada al usuario
     if (empresaData) {
@@ -99,11 +134,31 @@ router.get('/me', async (req, res) => {
       where: { userId: user.id }
     });
 
+    // Obtener perfil de usuario con rol
+    let userProfile = await prisma.userProfile.findUnique({
+      where: { id: user.id }
+    });
+
+    // Si no existe el perfil, crearlo (para usuarios existentes)
+    if (!userProfile) {
+      userProfile = await prisma.userProfile.create({
+        data: {
+          id: user.id,
+          email: user.email,
+          name: user.user_metadata?.name || null,
+          role: 'USER',
+          isActive: true
+        }
+      });
+    }
+
     res.json({
       user: {
         id: user.id,
         email: user.email,
-        name: user.user_metadata?.name
+        name: user.user_metadata?.name,
+        role: userProfile.role,
+        isActive: userProfile.isActive
       },
       empresa
     });

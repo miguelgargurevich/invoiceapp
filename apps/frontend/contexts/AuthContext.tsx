@@ -5,6 +5,11 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { apiClient } from '@/lib/api';
 
+export interface UserWithRole extends User {
+  role?: 'USER' | 'ADMIN' | 'SUPER_ADMIN';
+  isActive?: boolean;
+}
+
 export interface Empresa {
   id: string;
   nombre: string;
@@ -27,7 +32,7 @@ export interface Empresa {
 }
 
 interface AuthContextType {
-  user: User | null;
+  user: UserWithRole | null;
   session: Session | null;
   loading: boolean;
   empresa: Empresa | null;
@@ -41,7 +46,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserWithRole | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [empresa, setEmpresa] = useState<Empresa | null>(null);
@@ -52,11 +57,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         setSession(session);
-        setUser(session?.user ?? null);
         
         if (session?.access_token) {
           apiClient.setToken(session.access_token);
+          await loadUserWithRole(session.user);
           await loadEmpresa();
+        } else {
+          setUser(null);
         }
       } catch (err) {
         console.error('[AuthContext] Error getting initial session:', err);
@@ -74,13 +81,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async (event, session) => {
         console.log('[AuthContext] Auth state changed:', event);
         setSession(session);
-        setUser(session?.user ?? null);
         
         if (session?.access_token) {
           apiClient.setToken(session.access_token);
+          await loadUserWithRole(session.user);
           await loadEmpresa();
         } else {
           apiClient.clearToken();
+          setUser(null);
           setEmpresa(null);
         }
         
@@ -90,6 +98,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const loadUserWithRole = async (supabaseUser: User | null) => {
+    if (!supabaseUser) {
+      setUser(null);
+      return;
+    }
+
+    try {
+      // Obtener datos del usuario desde el backend que incluye el rol
+      const response: any = await apiClient.get('/auth/me');
+      const userWithRole: UserWithRole = {
+        ...supabaseUser,
+        role: response.user.role,
+        isActive: response.user.isActive
+      };
+      setUser(userWithRole);
+    } catch (error) {
+      console.error('[AuthContext] Error loading user role:', error);
+      setUser(supabaseUser);
+    }
+  };
 
   const loadEmpresa = async () => {
     try {
