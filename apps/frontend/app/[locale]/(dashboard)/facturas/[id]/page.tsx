@@ -345,8 +345,16 @@ export default function FacturaDetailPage({
 
   const handleOpenEditPaymentSummary = () => {
     if (!factura) return;
-    setTotalMaterialsEdit(factura.totalMaterials || 0);
-    setTotalLaborEdit(factura.totalLabor || 0);
+    const materials = factura.totalMaterials || 0;
+    const labor = factura.totalLabor || 0;
+    // If both are 0, assign the total to labor by default
+    if (materials === 0 && labor === 0) {
+      setTotalMaterialsEdit(0);
+      setTotalLaborEdit(factura.total || 0);
+    } else {
+      setTotalMaterialsEdit(materials);
+      setTotalLaborEdit(labor);
+    }
     setIsEditPaymentSummaryOpen(true);
   };
 

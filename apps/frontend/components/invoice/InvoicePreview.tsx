@@ -77,8 +77,8 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
       baseFormatCurrency(amount, empresa?.moneda || 'USD');
     
     // Use provided totals or calculate from factura
-    const totalMaterials = factura.totalMaterials ?? factura.subtotal;
-    const totalLabor = factura.totalLabor ?? 0;
+    const totalMaterials = factura.totalMaterials ?? 0;
+    const totalLabor = factura.totalLabor ?? factura.subtotal;
     const tax = factura.igv;
     const totalAmount = factura.total;
     
