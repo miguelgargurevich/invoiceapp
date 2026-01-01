@@ -605,8 +605,8 @@ export default function AdminPage({
             ? t('confirmDeactivateMessage') || `Are you sure you want to deactivate user "${confirmDialog.userName}"? They will no longer be able to access the system.`
             : t('confirmActivateMessage') || `Are you sure you want to activate user "${confirmDialog.userName}"? They will regain access to the system.`
         }
-        confirmText={confirmDialog.currentStatus ? t('deactivate') || 'Deactivate' : t('activate') || 'Activate'}
-        cancelText={t('cancel') || 'Cancel'}
+        confirmLabel={confirmDialog.currentStatus ? t('deactivate') || 'Deactivate' : t('activate') || 'Activate'}
+        cancelLabel={t('cancel') || 'Cancel'}
         variant={confirmDialog.currentStatus ? 'danger' : 'warning'}
       />
     </div>
