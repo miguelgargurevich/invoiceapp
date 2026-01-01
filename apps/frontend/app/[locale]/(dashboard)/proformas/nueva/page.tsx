@@ -12,6 +12,11 @@ import {
   Search,
   FileBarChart,
   Users,
+  Package,
+  Briefcase,
+  HardHat,
+  Calendar,
+  DollarSign,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -288,7 +293,8 @@ export default function NuevaProformaPage({
           {/* Client selection */}
           <Card>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <Users className="w-5 h-5 text-primary-600" />
                 {t('client')}
               </h2>
               <Button
@@ -335,7 +341,8 @@ export default function NuevaProformaPage({
           {/* Line items */}
           <Card>
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <Package className="w-5 h-5 text-primary-600" />
                 {t('items')}
               </h2>
               <Button size="md" onClick={addLinea}>
@@ -505,7 +512,8 @@ export default function NuevaProformaPage({
 
           {/* Job Information */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <Briefcase className="w-5 h-5 text-primary-600" />
               {t('jobInformation')}
             </h2>
             <div className="space-y-4">
@@ -546,7 +554,8 @@ export default function NuevaProformaPage({
 
           {/* Contractor Details */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <HardHat className="w-5 h-5 text-primary-600" />
               {t('contractorDetails')}
             </h2>
             <div className="space-y-4">
@@ -577,7 +586,8 @@ export default function NuevaProformaPage({
         <div className="space-y-6">
           {/* Dates */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <Calendar className="w-5 h-5 text-primary-600" />
               {t('dates')}
             </h2>
             <div className="space-y-4">
@@ -599,7 +609,8 @@ export default function NuevaProformaPage({
 
           {/* Totals */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <DollarSign className="w-5 h-5 text-primary-600" />
               {t('totals')}
             </h2>
             <div className="space-y-3">

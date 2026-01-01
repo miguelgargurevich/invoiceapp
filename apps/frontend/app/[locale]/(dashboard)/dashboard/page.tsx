@@ -264,7 +264,6 @@ export default function DashboardPage({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-8 shadow-xl hover:shadow-2xl transition-all duration-300"
         >
@@ -290,7 +289,6 @@ export default function DashboardPage({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-8 shadow-xl hover:shadow-2xl transition-all duration-300"
         >
