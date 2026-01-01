@@ -116,7 +116,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(userWithRole);
     } catch (error) {
       console.error('[AuthContext] Error loading user role:', error);
-      setUser(supabaseUser);
+      // Si hay error, crear UserWithRole con rol por defecto
+      const userWithRole: UserWithRole = {
+        ...supabaseUser,
+        role: 'USER',
+        isActive: true
+      };
+      setUser(userWithRole);
     }
   };
 
