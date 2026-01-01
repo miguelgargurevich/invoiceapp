@@ -28,4 +28,6 @@ export {
   SkeletonCard,
   SkeletonTable,
   SkeletonMetricCard,
+  SkeletonFormPage,
+  SkeletonDetailPage,
 } from './LoadingSpinner';

@@ -675,6 +675,9 @@ ISC
 
 ---
 
-Made with ❤️ by **Gargurevich Dev**
+Made with ❤️ by **Gargurevich Dev**  
+**Software Architect**  
+Tel: 966918363  
+Email: contacto@gargurevich.com
 
 Built with Next.js, Express, Prisma, and Supabase

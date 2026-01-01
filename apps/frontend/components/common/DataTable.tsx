@@ -74,7 +74,7 @@ export function DataTable<T>({
   // Loading state
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
         {/* Desktop skeleton */}
         <div className="hidden md:block">
           <table className="w-full">
@@ -123,14 +123,14 @@ export function DataTable<T>({
   // Empty state
   if (data.length === 0) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
         {emptyState || <EmptySearch />}
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden">
+    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
       {/* Desktop table view */}
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full">

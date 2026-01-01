@@ -655,4 +655,161 @@ router.post('/:id/send-email', authenticateToken, getEmpresaFromUser, async (req
   }
 });
 
+// PUT /api/proformas/:id/dates - Actualizar fechas de proforma
+router.put('/:id/dates', authenticateToken, getEmpresaFromUser, async (req, res) => {
+  try {
+    const { fechaEmision, fechaValidez } = req.body;
+
+    // Verificar que la proforma existe y pertenece a la empresa
+    const proforma = await prisma.proforma.findFirst({
+      where: {
+        id: req.params.id,
+        empresaId: req.empresa.id
+      }
+    });
+
+    if (!proforma) {
+      return res.status(404).json({ error: 'Proforma no encontrada' });
+    }
+
+    // No permitir editar proformas facturadas o canceladas
+    if (proforma.estado === 'facturada' || proforma.estado === 'convertida') {
+      return res.status(400).json({ error: 'No se pueden editar proformas facturadas' });
+    }
+
+    // Validar fechas
+    if (new Date(fechaEmision) > new Date(fechaValidez)) {
+      return res.status(400).json({ error: 'La fecha de validez debe ser posterior a la fecha de emisión' });
+    }
+
+    // Actualizar fechas
+    const proformaActualizada = await prisma.proforma.update({
+      where: { id: req.params.id },
+      data: {
+        fechaEmision: new Date(fechaEmision),
+        fechaValidez: new Date(fechaValidez)
+      }
+    });
+
+    res.json(proformaActualizada);
+  } catch (error) {
+    console.error('Error actualizando fechas:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// PUT /api/proformas/:id/observations - Actualizar observaciones de proforma
+router.put('/:id/observations', authenticateToken, getEmpresaFromUser, async (req, res) => {
+  try {
+    const { observaciones } = req.body;
+
+    // Verificar que la proforma existe y pertenece a la empresa
+    const proforma = await prisma.proforma.findFirst({
+      where: {
+        id: req.params.id,
+        empresaId: req.empresa.id
+      }
+    });
+
+    if (!proforma) {
+      return res.status(404).json({ error: 'Proforma no encontrada' });
+    }
+
+    // No permitir editar proformas facturadas o canceladas
+    if (proforma.estado === 'INVOICED' || proforma.estado === 'CANCELLED') {
+      return res.status(400).json({ error: 'No se pueden editar proformas facturadas o canceladas' });
+    }
+
+    // Actualizar observaciones
+    const proformaActualizada = await prisma.proforma.update({
+      where: { id: req.params.id },
+      data: {
+        observaciones: observaciones || null
+      }
+    });
+
+    res.json(proformaActualizada);
+  } catch (error) {
+    console.error('Error actualizando observaciones:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// PUT /api/proformas/:id/job-info - Actualizar información del trabajo
+router.put('/:id/job-info', authenticateToken, getEmpresaFromUser, async (req, res) => {
+  try {
+    const { jobName, jobLocation, workDescription, telefonoTrabajo } = req.body;
+
+    // Verificar que la proforma existe y pertenece a la empresa
+    const proforma = await prisma.proforma.findFirst({
+      where: {
+        id: req.params.id,
+        empresaId: req.empresa.id
+      }
+    });
+
+    if (!proforma) {
+      return res.status(404).json({ error: 'Proforma no encontrada' });
+    }
+
+    // No permitir editar proformas facturadas
+    if (proforma.estado === 'facturada' || proforma.estado === 'convertida') {
+      return res.status(400).json({ error: 'No se pueden editar proformas facturadas' });
+    }
+
+    // Actualizar información del trabajo
+    const proformaActualizada = await prisma.proforma.update({
+      where: { id: req.params.id },
+      data: {
+        jobName: jobName || null,
+        jobLocation: jobLocation || null,
+        workDescription: workDescription || null,
+        telefonoTrabajo: telefonoTrabajo || null
+      }
+    });
+
+    res.json(proformaActualizada);
+  } catch (error) {
+    console.error('Error actualizando información del trabajo:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// PUT /api/proformas/:id/payment-terms - Actualizar términos de pago
+router.put('/:id/payment-terms', authenticateToken, getEmpresaFromUser, async (req, res) => {
+  try {
+    const { paymentTerms } = req.body;
+
+    // Verificar que la proforma existe y pertenece a la empresa
+    const proforma = await prisma.proforma.findFirst({
+      where: {
+        id: req.params.id,
+        empresaId: req.empresa.id
+      }
+    });
+
+    if (!proforma) {
+      return res.status(404).json({ error: 'Proforma no encontrada' });
+    }
+
+    // No permitir editar proformas facturadas
+    if (proforma.estado === 'facturada' || proforma.estado === 'convertida') {
+      return res.status(400).json({ error: 'No se pueden editar proformas facturadas' });
+    }
+
+    // Actualizar términos de pago
+    const proformaActualizada = await prisma.proforma.update({
+      where: { id: req.params.id },
+      data: {
+        paymentTerms: paymentTerms || null
+      }
+    });
+
+    res.json(proformaActualizada);
+  } catch (error) {
+    console.error('Error actualizando términos de pago:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 module.exports = router;

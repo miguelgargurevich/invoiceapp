@@ -29,7 +29,7 @@ import {
   DatePicker,
   ClientSelect,
   ProductSelect,
-  LoadingPage,
+  SkeletonFormPage,
   Modal,
 } from '@/components/common';
 import { useCurrency } from '@/lib/hooks/useCurrency';
@@ -330,7 +330,7 @@ export default function NuevaFacturaPage({
   };
 
   if (loading) {
-    return <LoadingPage />;
+    return <SkeletonFormPage />;
   }
 
   return (

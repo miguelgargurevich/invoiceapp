@@ -30,7 +30,7 @@ import {
   Badge,
   Modal,
   Input,
-  LoadingPage,
+  SkeletonDetailPage,
   ConfirmDialog,
   DatePicker,
 } from '@/components/common';
@@ -107,6 +107,7 @@ export default function FacturaDetailPage({
   params: { locale: string; id: string };
 }) {
   const t = useTranslations('invoices');
+  const tDashboard = useTranslations('dashboard');
   const router = useRouter();
   const { empresa } = useAuth();
   const { formatCurrency } = useCurrency();
@@ -462,7 +463,7 @@ export default function FacturaDetailPage({
   };
 
   if (loading) {
-    return <LoadingPage />;
+    return <SkeletonDetailPage />;
   }
 
   if (!factura) {
@@ -490,6 +491,10 @@ export default function FacturaDetailPage({
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
+            <div className="flex items-center gap-2 mb-1">
+              <FileText className="w-5 h-5 text-blue-600" />
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{tDashboard('invoice')}</span>
+            </div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {factura.serie}-{factura.numero}

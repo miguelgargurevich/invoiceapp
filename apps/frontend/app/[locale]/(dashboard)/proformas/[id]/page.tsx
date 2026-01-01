@@ -25,7 +25,8 @@ import {
   HardHat,
   DollarSign,
   Calendar,
-  Receipt
+  Receipt,
+  Edit2
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -33,9 +34,10 @@ import {
   Button,
   Card,
   Badge,
-  LoadingPage,
+  SkeletonDetailPage,
   ConfirmDialog,
   Modal,
+  DatePicker,
 } from '@/components/common';
 import {
   ProformaPrintPreviewModal,
@@ -120,6 +122,7 @@ export default function ProformaDetailPage({
 }) {
   const t = useTranslations('quotes');
   const tCommon = useTranslations('common');
+  const tJobSummary = useTranslations('jobSummary');
   const router = useRouter();
   const { empresa } = useAuth();
   const { formatCurrency } = useCurrency();
@@ -144,6 +147,19 @@ export default function ProformaDetailPage({
   }>({ isOpen: false, signingUrl: '', email: '', emailSent: false });
   const [urlCopied, setUrlCopied] = useState(false);
   const [sendingEmail, setSendingEmail] = useState(false);
+  const [isEditObservationsOpen, setIsEditObservationsOpen] = useState(false);
+  const [editingObservations, setEditingObservations] = useState(false);
+  const [observacionesEdit, setObservacionesEdit] = useState('');
+  const [isEditDatesOpen, setIsEditDatesOpen] = useState(false);
+  const [editingDates, setEditingDates] = useState(false);
+  const [fechaEmisionEdit, setFechaEmisionEdit] = useState<Date | null>(null);
+  const [fechaValidezEdit, setFechaValidezEdit] = useState<Date | null>(null);
+  const [isEditJobInfoOpen, setIsEditJobInfoOpen] = useState(false);
+  const [editingJobInfo, setEditingJobInfo] = useState(false);
+  const [jobInfoEdit, setJobInfoEdit] = useState({ jobName: '', jobLocation: '', workDescription: '', telefonoTrabajo: '' });
+  const [isEditPaymentTermsOpen, setIsEditPaymentTermsOpen] = useState(false);
+  const [editingPaymentTerms, setEditingPaymentTerms] = useState(false);
+  const [paymentTermsEdit, setPaymentTermsEdit] = useState('');
   const pdfRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -384,6 +400,121 @@ export default function ProformaDetailPage({
       }
     }
   };
+  
+  const handleOpenEditDates = () => {
+    if (!proforma) return;
+    setFechaEmisionEdit(new Date(proforma.fechaEmision));
+    setFechaValidezEdit(new Date(proforma.fechaValidez));
+    setIsEditDatesOpen(true);
+  };
+
+  const handleSaveDates = async () => {
+    if (!proforma || !fechaEmisionEdit || !fechaValidezEdit) return;
+
+    if (fechaEmisionEdit > fechaValidezEdit) {
+      showError('Valid until date must be after issue date');
+      return;
+    }
+
+    try {
+      setEditingDates(true);
+      await api.put(`/proformas/${proforma.id}/dates`, {
+        fechaEmision: fechaEmisionEdit.toISOString(),
+        fechaValidez: fechaValidezEdit.toISOString(),
+      });
+      
+      showSuccess(t('updateSuccess') || 'Dates updated successfully');
+      setIsEditDatesOpen(false);
+      loadProforma();
+    } catch (error: any) {
+      console.error('Error updating dates:', error);
+      showError(error.response?.data?.error || 'Failed to update dates');
+    } finally {
+      setEditingDates(false);
+    }
+  };
+
+  const handleOpenEditObservations = () => {
+    if (!proforma) return;
+    setObservacionesEdit(proforma.observaciones || '');
+    setIsEditObservationsOpen(true);
+  };
+
+  const handleSaveObservations = async () => {
+    if (!proforma) return;
+
+    try {
+      setEditingObservations(true);
+      await api.put(`/proformas/${proforma.id}/observations`, {
+        observaciones: observacionesEdit,
+      });
+      
+      showSuccess(t('updateSuccess') || 'Observations updated successfully');
+      setIsEditObservationsOpen(false);
+      loadProforma();
+    } catch (error: any) {
+      console.error('Error updating observations:', error);
+      showError(error.response?.data?.error || 'Failed to update observations');
+    } finally {
+      setEditingObservations(false);
+    }
+  };
+
+  const handleOpenEditJobInfo = () => {
+    if (!proforma) return;
+    setJobInfoEdit({
+      jobName: proforma.jobName || '',
+      jobLocation: proforma.jobLocation || '',
+      workDescription: proforma.workDescription || '',
+      telefonoTrabajo: proforma.telefonoTrabajo || ''
+    });
+    setIsEditJobInfoOpen(true);
+  };
+
+  const handleSaveJobInfo = async () => {
+    if (!proforma) return;
+
+    try {
+      setEditingJobInfo(true);
+      await api.put(`/proformas/${proforma.id}/job-info`, jobInfoEdit);
+      
+      showSuccess(t('updateSuccess') || 'Job information updated successfully');
+      setIsEditJobInfoOpen(false);
+      loadProforma();
+    } catch (error: any) {
+      console.error('Error updating job info:', error);
+      showError(error.response?.data?.error || 'Failed to update job information');
+    } finally {
+      setEditingJobInfo(false);
+    }
+  };
+
+  const handleOpenEditPaymentTerms = () => {
+    if (!proforma) return;
+    setPaymentTermsEdit(proforma.paymentTerms || '');
+    setIsEditPaymentTermsOpen(true);
+  };
+
+  const handleSavePaymentTerms = async () => {
+    if (!proforma) return;
+
+    try {
+      setEditingPaymentTerms(true);
+      await api.put(`/proformas/${proforma.id}/payment-terms`, {
+        paymentTerms: paymentTermsEdit,
+      });
+      
+      showSuccess(t('updateSuccess') || 'Payment terms updated successfully');
+      setIsEditPaymentTermsOpen(false);
+      loadProforma();
+    } catch (error: any) {
+      console.error('Error updating payment terms:', error);
+      showError(error.response?.data?.error || 'Failed to update payment terms');
+    } finally {
+      setEditingPaymentTerms(false);
+    }
+  };
+  
   const handleConvertToInvoice = async () => {
     if (!proforma) return;
 
@@ -424,7 +555,7 @@ export default function ProformaDetailPage({
   };
 
   if (loading) {
-    return <LoadingPage />;
+    return <SkeletonDetailPage />;
   }
 
   if (!proforma) {
@@ -453,6 +584,10 @@ export default function ProformaDetailPage({
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Receipt className="w-5 h-5 text-blue-600" />
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{tJobSummary('proposal')}</span>
+            </div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {proforma.serie}-{proforma.numero}
@@ -645,10 +780,21 @@ export default function ProformaDetailPage({
           {/* Job Information */}
           {(proforma.jobName || proforma.jobLocation || proforma.workDescription || proforma.telefonoTrabajo) && (
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                <Briefcase className="w-5 h-5" />
-                {t('jobInformation')}
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                  <Briefcase className="w-5 h-5" />
+                  {t('jobInformation')}
+                </h2>
+                {proforma.estado !== 'facturada' && proforma.estado !== 'convertida' && (
+                  <button
+                    onClick={handleOpenEditJobInfo}
+                    className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                    title="Edit job information"
+                  >
+                    <Edit2 className="w-4 h-4 text-gray-500" />
+                  </button>
+                )}
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {proforma.jobName && (
                   <div>
@@ -717,10 +863,21 @@ export default function ProformaDetailPage({
           {/* Payment Terms */}
           {proforma.paymentTerms && (
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
-                <Receipt className="w-5 h-5" />
-                {t('paymentTerms')}
-              </h2>
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                  <Receipt className="w-5 h-5" />
+                  {t('paymentTerms')}
+                </h2>
+                {proforma.estado !== 'facturada' && proforma.estado !== 'convertida' && (
+                  <button
+                    onClick={handleOpenEditPaymentTerms}
+                    className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                    title="Edit payment terms"
+                  >
+                    <Edit2 className="w-4 h-4 text-gray-500" />
+                  </button>
+                )}
+              </div>
               <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{proforma.paymentTerms}</p>
             </Card>
           )}
@@ -737,15 +894,30 @@ export default function ProformaDetailPage({
           )}
 
           {/* Observations */}
-          {proforma.observaciones && (
-            <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+          <Card>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <FileText className="w-5 h-5" />
                 {t('observations')}
               </h2>
-              <p className="text-gray-600 dark:text-gray-400">{proforma.observaciones}</p>
-            </Card>
-          )}
+              {proforma.estado !== 'INVOICED' && proforma.estado !== 'CANCELLED' && (
+                <button
+                  onClick={handleOpenEditObservations}
+                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                  title="Edit observations"
+                >
+                  <Edit2 className="w-4 h-4 text-gray-500" />
+                </button>
+              )}
+            </div>
+            {proforma.observaciones ? (
+              <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{proforma.observaciones}</p>
+            ) : (
+              <p className="text-gray-400 dark:text-gray-500 italic text-sm">
+                {t('observationsPlaceholder') || 'No observations'}
+              </p>
+            )}
+          </Card>
         </div>
 
         {/* Sidebar */}
@@ -784,10 +956,21 @@ export default function ProformaDetailPage({
 
           {/* Dates */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-              <Calendar className="w-5 h-5" />
-              {t('dates')}
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <Calendar className="w-5 h-5" />
+                {t('dates')}
+              </h2>
+              {proforma.estado !== 'facturada' && proforma.estado !== 'convertida' && (
+                <button
+                  onClick={handleOpenEditDates}
+                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                  title="Edit dates"
+                >
+                  <Edit2 className="w-4 h-4 text-gray-500" />
+                </button>
+              )}
+            </div>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">{t('issueDate')}</span>
@@ -849,7 +1032,7 @@ export default function ProformaDetailPage({
             setSignatureRequestModal({ isOpen: false, signingUrl: '', email: '', emailSent: false });
             setUrlCopied(false);
           }}
-          title={signatureRequestModal.emailSent ? "Signature Request Sent!" : "Request Signature"}
+          title={signatureRequestModal.emailSent ? t('signatureRequestSent') : t('requestSignature')}
           size="lg"
         >
           <div className="text-center">
@@ -861,7 +1044,7 @@ export default function ProformaDetailPage({
                 </div>
                 {/* Email Info */}
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-                  Email sent to <span className="font-medium text-gray-900 dark:text-gray-100">{signatureRequestModal.email}</span>
+                  {t('emailSentTo')} <span className="font-medium text-gray-900 dark:text-gray-100">{signatureRequestModal.email}</span>
                 </p>
               </>
             )}
@@ -874,8 +1057,8 @@ export default function ProformaDetailPage({
                     <PenLine className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                   </div>
                   <div className="text-left">
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">Sign Now</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Open signature panel on this device (iPad, tablet, etc.)</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">{t('signNow')}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{t('openSignaturePanel')}</p>
                   </div>
                 </div>
                 <Button
@@ -883,7 +1066,7 @@ export default function ProformaDetailPage({
                   className="w-full"
                 >
                   <ExternalLink className="w-4 h-4 mr-2" />
-                  Open Signature Panel
+                  {t('openSignaturePanelButton')}
                 </Button>
               </div>
             )}
@@ -895,7 +1078,7 @@ export default function ProformaDetailPage({
                   <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="bg-white dark:bg-gray-800 px-3 text-gray-500 dark:text-gray-400">or send to client</span>
+                  <span className="bg-white dark:bg-gray-800 px-3 text-gray-500 dark:text-gray-400">{t('orSendToClient')}</span>
                 </div>
               </div>
             )}
@@ -903,7 +1086,7 @@ export default function ProformaDetailPage({
             {/* URL Box */}
             <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-4 border border-gray-200 dark:border-gray-700">
               <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 text-left">
-                Signing URL
+                {t('signingUrl')}
               </label>
               <div className="flex gap-2 mb-2">
                 <input
@@ -928,12 +1111,12 @@ export default function ProformaDetailPage({
                   {urlCopied ? (
                     <>
                       <CheckCircle className="w-4 h-4 mr-1" />
-                      Copied!
+                      {t('copied')}
                     </>
                   ) : (
                     <>
                       <Copy className="w-4 h-4 mr-1" />
-                      Copy Link
+                      {t('copyLink')}
                     </>
                   )}
                 </Button>
@@ -944,7 +1127,7 @@ export default function ProformaDetailPage({
                   className="flex-1"
                 >
                   <Share2 className="w-4 h-4 mr-1" />
-                  Share
+                  {t('share')}
                 </Button>
               </div>
             </div>
@@ -954,11 +1137,11 @@ export default function ProformaDetailPage({
               <div className="flex gap-3">
                 <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
                 <div className="text-sm text-gray-700 dark:text-gray-300">
-                  <p className="font-medium mb-1">Signature options:</p>
+                  <p className="font-medium mb-1">{t('signatureOptions')}</p>
                   <ul className="space-y-1 text-xs text-gray-600 dark:text-gray-400">
-                    <li>• <strong>Sign Now:</strong> Open the signature panel on your current device</li>
-                    <li>• <strong>Send to client:</strong> Email the link or share via messaging apps</li>
-                    <li>• The link expires in 7 days</li>
+                    <li>• {t('signNowOption')}</li>
+                    <li>• {t('sendToClientOption')}</li>
+                    <li>• {t('linkExpiresIn')}</li>
                   </ul>
                 </div>
               </div>
@@ -966,6 +1149,224 @@ export default function ProformaDetailPage({
           </div>
         </Modal>
       )}
+
+      {/* Edit Dates Modal */}
+      <Modal
+        isOpen={isEditDatesOpen}
+        onClose={() => !editingDates && setIsEditDatesOpen(false)}
+        title={t('dates')}
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('issueDate')}
+            </label>
+            <DatePicker
+              value={fechaEmisionEdit}
+              onChange={(date) => setFechaEmisionEdit(date)}
+              disabled={editingDates}
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('validUntil')}
+            </label>
+            <DatePicker
+              value={fechaValidezEdit}
+              onChange={(date) => setFechaValidezEdit(date)}
+              disabled={editingDates}
+            />
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsEditDatesOpen(false)}
+              disabled={editingDates}
+              className="flex-1"
+            >
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              onClick={handleSaveDates}
+              disabled={editingDates || !fechaEmisionEdit || !fechaValidezEdit}
+              className="flex-1"
+            >
+              <Calendar className="w-4 h-4 mr-2" />
+              {editingDates ? 'Saving...' : tCommon('save')}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Edit Job Information Modal */}
+      <Modal
+        isOpen={isEditJobInfoOpen}
+        onClose={() => !editingJobInfo && setIsEditJobInfoOpen(false)}
+        title={t('jobInformation')}
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('jobName')}
+            </label>
+            <input
+              type="text"
+              value={jobInfoEdit.jobName}
+              onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, jobName: e.target.value })}
+              disabled={editingJobInfo}
+              placeholder={t('jobName')}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('jobLocation')}
+            </label>
+            <input
+              type="text"
+              value={jobInfoEdit.jobLocation}
+              onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, jobLocation: e.target.value })}
+              disabled={editingJobInfo}
+              placeholder={t('jobLocation')}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('jobPhone')}
+            </label>
+            <input
+              type="text"
+              value={jobInfoEdit.telefonoTrabajo}
+              onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, telefonoTrabajo: e.target.value })}
+              disabled={editingJobInfo}
+              placeholder={t('jobPhone')}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('workDescription')}
+            </label>
+            <textarea
+              value={jobInfoEdit.workDescription}
+              onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, workDescription: e.target.value })}
+              disabled={editingJobInfo}
+              placeholder={t('workDescription')}
+              rows={4}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+            />
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsEditJobInfoOpen(false)}
+              disabled={editingJobInfo}
+              className="flex-1"
+            >
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              onClick={handleSaveJobInfo}
+              disabled={editingJobInfo}
+              className="flex-1"
+            >
+              <Briefcase className="w-4 h-4 mr-2" />
+              {editingJobInfo ? 'Saving...' : tCommon('save')}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Edit Payment Terms Modal */}
+      <Modal
+        isOpen={isEditPaymentTermsOpen}
+        onClose={() => !editingPaymentTerms && setIsEditPaymentTermsOpen(false)}
+        title={t('paymentTerms')}
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('paymentTerms')}
+            </label>
+            <textarea
+              value={paymentTermsEdit}
+              onChange={(e) => setPaymentTermsEdit(e.target.value)}
+              disabled={editingPaymentTerms}
+              placeholder={t('paymentTerms')}
+              rows={6}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+            />
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsEditPaymentTermsOpen(false)}
+              disabled={editingPaymentTerms}
+              className="flex-1"
+            >
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              onClick={handleSavePaymentTerms}
+              disabled={editingPaymentTerms}
+              className="flex-1"
+            >
+              <Receipt className="w-4 h-4 mr-2" />
+              {editingPaymentTerms ? 'Saving...' : tCommon('save')}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Edit Observations Modal */}
+      <Modal
+        isOpen={isEditObservationsOpen}
+        onClose={() => !editingObservations && setIsEditObservationsOpen(false)}
+        title={t('observations')}
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t('observations')}
+            </label>
+            <textarea
+              value={observacionesEdit}
+              onChange={(e) => setObservacionesEdit(e.target.value)}
+              disabled={editingObservations}
+              placeholder={t('observationsPlaceholder')}
+              rows={4}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+            />
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setIsEditObservationsOpen(false)}
+              disabled={editingObservations}
+              className="flex-1"
+            >
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              onClick={handleSaveObservations}
+              disabled={editingObservations}
+              className="flex-1"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              {editingObservations ? 'Saving...' : tCommon('save')}
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       {/* Convert to Invoice Confirmation */}
       <ConfirmDialog

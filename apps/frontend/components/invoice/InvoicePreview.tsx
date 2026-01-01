@@ -77,7 +77,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
       baseFormatCurrency(amount, empresa?.moneda || 'USD');
     
     // Debug log to check factura data
-    console.log('InvoicePreview - factura:', { serie: factura.serie, numero: factura.numero });
+    //console.log('InvoicePreview - factura:', { serie: factura.serie, numero: factura.numero });
     
     // Use provided totals or calculate from factura
     const totalMaterials = factura.totalMaterials ?? 0;
@@ -109,10 +109,10 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
 
           {/* Center - Company Info */}
           <div className="col-span-6 text-center">
-            <div className="text-[16px] font-bold text-gray-900">
+            <div className="text-[18px] font-bold text-gray-900">
               {empresa?.nombre || 'Mi Empresa'}
             </div>
-            <div className="text-[9px] text-gray-600 space-y-0.5">
+            <div className="text-[11px] text-gray-600 space-y-0.5">
               {empresa?.ruc && <p>RUC: {empresa.ruc}</p>}
               {empresa?.telefono && <p>Tel: {empresa.telefono}</p>}
               {empresa?.email && <p>{empresa.email}</p>}

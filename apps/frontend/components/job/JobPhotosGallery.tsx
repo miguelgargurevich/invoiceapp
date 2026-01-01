@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useMemo } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Camera, X, Plus, Trash2, Maximize2, ChevronLeft, ChevronRight, Image, Calendar, User, FileText } from 'lucide-react';
 import { Button, Modal, LoadingSpinner, ConfirmDialog } from '@/components/common';
 import { useToast } from '@/contexts/ToastContext';
@@ -50,6 +50,7 @@ export default function JobPhotosGallery({
   onClose
 }: JobPhotosGalleryProps) {
   const t = useTranslations('jobPhotos');
+  const locale = useLocale();
   const { showSuccess, showError } = useToast();
   
   const [uploading, setUploading] = useState(false);
@@ -81,7 +82,7 @@ export default function JobPhotosGallery({
         const displayDate = new Date(year, month - 1, day);
         return {
           date,
-          displayDate: displayDate.toLocaleDateString(undefined, { 
+          displayDate: displayDate.toLocaleDateString(locale, { 
             weekday: 'long', 
             year: 'numeric', 
             month: 'long', 
@@ -90,10 +91,10 @@ export default function JobPhotosGallery({
           photos: grouped[date].sort((a, b) => a.orden - b.orden)
         };
       });
-  }, [photos]);
+  }, [photos, locale]);
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(undefined, {
+    return new Date(dateString).toLocaleDateString(locale, {
       year: 'numeric',
       month: 'short',
       day: 'numeric'
@@ -231,10 +232,10 @@ export default function JobPhotosGallery({
         {/* Upload Button */}
         {!readOnly && (
           <div className="flex justify-between items-center">
-            <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-              <Camera className="w-5 h-5 text-blue-600" />
-              Job Photos Information ({photos.length})
-            </h3>
+            <div className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <Camera className="w-4 h-4 text-blue-600" />
+              {t('photosInformation')} ({photos.length})
+            </div>
             <div>
               <input
                 ref={fileInputRef}

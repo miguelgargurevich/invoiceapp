@@ -24,7 +24,7 @@ export default function DashboardLayout({
   }, [user, loading, router, locale]);
 
   if (loading) {
-    return <LoadingPage message="Cargando..." />;
+    return <LoadingPage message="Loading..." />;
   }
 
   if (!user) {

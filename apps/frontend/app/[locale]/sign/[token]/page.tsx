@@ -13,19 +13,18 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 interface SignatureRequestData {
-  signatureRequest: {
-    id: string;
-    documentType: string;
-    signerEmail: string;
-    signerName: string | null;
-    expiresAt: string;
-  };
+  id: string;
+  documentType: string;
+  signerEmail: string;
+  signerName: string | null;
+  expiresAt: string;
+  status: string;
   empresa: {
     nombre: string;
     logoUrl: string | null;
     email: string | null;
   };
-  document: {
+  factura?: {
     id: string;
     serie: string;
     numero: string;
@@ -55,6 +54,43 @@ interface SignatureRequestData {
       };
     }>;
   };
+  proforma?: {
+    id: string;
+    serie: string;
+    numero: string;
+    fechaEmision: string;
+    subtotal: number;
+    igv: number;
+    total: number;
+    cliente: {
+      razonSocial: string;
+      numeroDocumento: string;
+      tipoDocumento: string;
+      direccion?: string;
+      email: string;
+    };
+    detalles: Array<{
+      id: string;
+      descripcion: string;
+      cantidad: number;
+      precioUnitario: number;
+      descuento: number;
+      subtotal: number;
+      igv: number;
+      total: number;
+      producto?: {
+        codigo: string;
+        nombre: string;
+      };
+    }>;
+  };
+  signature?: {
+    id: string;
+    signatureImageUrl: string;
+    signerName: string;
+    signerEmail: string;
+    signedAt: string;
+  };
 }
 
 export default function SignDocumentPage() {
@@ -81,8 +117,13 @@ export default function SignDocumentPage() {
   const validateToken = async () => {
     try {
       setLoading(true);
-      const response = await api.get(`/signatures/validate/${token}`) as SignatureRequestData;
+      const response = await api.get(`/signatures/public/validate/${token}`) as SignatureRequestData;
       setData(response);
+      
+      // If document is already signed, show success state
+      if (response.status === 'SIGNED') {
+        setSuccess(true);
+      }
     } catch (err: any) {
       setError(err.response?.data?.error || 'Invalid or expired signature request');
     } finally {
@@ -175,7 +216,7 @@ export default function SignDocumentPage() {
       const ipResponse = await fetch('https://api.ipify.org?format=json');
       const { ip } = await ipResponse.json();
 
-      await api.post('/signatures/submit', {
+      await api.post('/signatures/public/submit', {
         token,
         signatureDataUrl: signatureData,
         signedPdfDataUrl: signedPdfBase64,
@@ -206,27 +247,45 @@ export default function SignDocumentPage() {
         <Card className="max-w-md w-full text-center p-8">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-            Invalid Request
+            {t('invalidRequest')}
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mb-6">{error}</p>
-          <Button onClick={() => router.push('/')}>Go to Home</Button>
+          <Button onClick={() => router.push('/')}>{t('cancel')}</Button>
         </Card>
       </div>
     );
   }
 
   if (success) {
+    const documentUrl = data?.documentType === 'INVOICE' 
+      ? `/facturas/${data?.factura?.id}` 
+      : `/proformas/${data?.proforma?.id}`;
+    
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4">
         <Card className="max-w-md w-full text-center p-8">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-            Document Signed Successfully!
+            {t('documentSignedSuccessfully')}
           </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            You will receive a confirmation email with the signed document.
+          <p className="text-gray-600 dark:text-gray-400 mb-2">
+            {data?.signature?.signedAt 
+              ? t('signedOn', { date: new Date(data.signature.signedAt).toLocaleDateString() })
+              : t('confirmationEmailSent')}
           </p>
-          <Button onClick={() => router.push('/')}>Done</Button>
+          {data?.signature?.signerName && (
+            <p className="text-sm text-gray-500 dark:text-gray-500 mb-6">
+              {t('signedBy', { name: data.signature.signerName })}
+            </p>
+          )}
+          <div className="flex gap-3 justify-center">
+            <Button onClick={() => router.push(documentUrl)}>
+              {t('viewDocument')}
+            </Button>
+            <Button variant="outline" onClick={() => router.push('/')}>
+              {t('done')}
+            </Button>
+          </div>
         </Card>
       </div>
     );
@@ -234,7 +293,7 @@ export default function SignDocumentPage() {
 
   if (!data) return null;
 
-  const expiresAt = new Date(data.signatureRequest.expiresAt);
+  const expiresAt = new Date(data.expiresAt);
   const daysUntilExpiry = Math.ceil((expiresAt.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 
   return (
@@ -261,7 +320,7 @@ export default function SignDocumentPage() {
                 </h2>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                has requested your signature for the following document:
+                {t('hasRequestedSignature')}
               </p>
             </div>
           </div>
@@ -273,20 +332,20 @@ export default function SignDocumentPage() {
                 {/* Left Column - Invoice & Client */}
                 <div className="space-y-1">
                   <div className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                    {data.signatureRequest.documentType === 'INVOICE' ? 'Invoice' : 'Proposal'}{' '}
-                    {data.document.serie}-{data.document.numero}
+                    {data.documentType === 'INVOICE' ? t('invoice') : t('proposal')}{' '}
+                    {(data.factura || data.proforma)?.serie}-{(data.factura || data.proforma)?.numero}
                   </div>
                   
                   {/* Client Information - Compact */}
                   <div className="text-xs">
-                    <span className="font-medium text-gray-500 dark:text-gray-400">CLIENT: </span>
+                    <span className="font-medium text-gray-500 dark:text-gray-400">{t('client')} </span>
                     <span className="font-medium text-gray-900 dark:text-gray-100">
-                      {data.document.cliente.razonSocial}
+                      {(data.factura || data.proforma)?.cliente.razonSocial}
                     </span>
                     <div className="text-gray-600 dark:text-gray-400 mt-0.5">
-                      {data.document.cliente.tipoDocumento}: {data.document.cliente.numeroDocumento}
-                      {data.document.cliente.direccion && (
-                        <div className="mt-0.5">{data.document.cliente.direccion}</div>
+                      {(data.factura || data.proforma)?.cliente.tipoDocumento}: {(data.factura || data.proforma)?.cliente.numeroDocumento}
+                      {(data.factura || data.proforma)?.cliente.direccion && (
+                        <div className="mt-0.5">{(data.factura || data.proforma)?.cliente.direccion}</div>
                       )}
                     </div>
                   </div>
@@ -295,15 +354,15 @@ export default function SignDocumentPage() {
                 {/* Right Column - Amount & Date */}
                 <div className="space-y-1 text-right">
                   <div className="text-xs">
-                    <div className="text-gray-600 dark:text-gray-400">Amount</div>
+                    <div className="text-gray-600 dark:text-gray-400">{t('amount')}</div>
                     <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                      ${Number(data.document.total).toFixed(2)}
+                      ${Number((data.factura || data.proforma)?.total).toFixed(2)}
                     </div>
                   </div>
                   <div className="text-xs">
-                    <div className="text-gray-600 dark:text-gray-400">Issue Date</div>
+                    <div className="text-gray-600 dark:text-gray-400">{t('issueDate')}</div>
                     <div className="font-medium text-gray-900 dark:text-gray-100">
-                      {new Date(data.document.fechaEmision).toLocaleDateString()}
+                      {new Date((data.factura || data.proforma)?.fechaEmision || '').toLocaleDateString()}
                     </div>
                   </div>
                 </div>
@@ -314,7 +373,7 @@ export default function SignDocumentPage() {
           <div className="mt-2 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
             <Clock className="w-4 h-4" />
             <span>
-              Expires in {daysUntilExpiry} {daysUntilExpiry === 1 ? 'day' : 'days'}
+              {t('expiresInDays', { days: daysUntilExpiry })}
             </span>
           </div>
         </Card>
@@ -322,10 +381,10 @@ export default function SignDocumentPage() {
         {/* Signature Canvas */}
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-            Sign Here
+            {t('signHere')}
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            Please sign using your finger (on touch devices) or mouse
+            {t('signInstructions')}
           </p>
           
           <SignatureCanvas 
@@ -344,9 +403,7 @@ export default function SignDocumentPage() {
                 className="mt-1 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
               />
               <span className="text-sm text-gray-700 dark:text-gray-300">
-                I agree to electronically sign this document and understand that my electronic 
-                signature is legally binding and has the same effect as a handwritten signature.
-                I consent to conduct this transaction electronically.
+                {t('consentText')}
               </span>
             </label>
           </div>
@@ -358,14 +415,14 @@ export default function SignDocumentPage() {
               disabled={!signatureData || !consentGiven || submitting}
               className="flex-1"
             >
-              {generatingPdf ? 'Generating PDF...' : submitting ? 'Submitting...' : 'Submit Signature'}
+              {generatingPdf ? t('generatingPdf') : submitting ? t('submitting') : t('submitSignature')}
             </Button>
             <Button
               variant="outline"
               onClick={() => router.push('/')}
               disabled={submitting}
             >
-              Cancel
+              {t('cancel')}
             </Button>
           </div>
         </Card>
@@ -373,8 +430,7 @@ export default function SignDocumentPage() {
         {/* Legal Notice */}
         <div className="text-center text-xs text-gray-500 dark:text-gray-400 px-4">
           <p>
-            This electronic signature is compliant with the U.S. Electronic Signatures in Global 
-            and National Commerce Act (ESIGN) and the Uniform Electronic Transactions Act (UETA).
+            {t('legalNotice')}
           </p>
         </div>
       </div>
@@ -384,24 +440,24 @@ export default function SignDocumentPage() {
         <InvoicePreview 
           ref={pdfRef} 
           factura={{
-            id: data.document.id,
-            numero: data.document.numero,
-            serie: data.document.serie,
-            cliente: data.document.cliente,
-            fechaEmision: data.document.fechaEmision,
-            fechaVencimiento: data.document.fechaEmision, // Use same date if not provided
+            id: (data.factura || data.proforma)?.id || '',
+            numero: (data.factura || data.proforma)?.numero || '',
+            serie: (data.factura || data.proforma)?.serie || '',
+            cliente: (data.factura || data.proforma)?.cliente || {} as any,
+            fechaEmision: (data.factura || data.proforma)?.fechaEmision || '',
+            fechaVencimiento: (data.factura || data.proforma)?.fechaEmision || '', // Use same date if not provided
             estado: 'EMITIDA',
             montoPendiente: 0,
             descuento: 0,
-            subtotal: data.document.subtotal,
-            igv: data.document.igv,
-            total: data.document.total,
+            subtotal: (data.factura || data.proforma)?.subtotal || 0,
+            igv: (data.factura || data.proforma)?.igv || 0,
+            total: (data.factura || data.proforma)?.total || 0,
             observaciones: undefined,
-            detalles: data.document.detalles || [],
+            detalles: (data.factura || data.proforma)?.detalles || [],
             signatureRequest: {
               signature: {
                 signatureImageUrl: signatureData || '',
-                signerName: data.signatureRequest.signerName || data.signatureRequest.signerEmail,
+                signerName: data.signerName || data.signerEmail,
                 signedAt: new Date().toISOString()
               }
             }

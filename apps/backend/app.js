@@ -21,6 +21,7 @@ const workLogRoutes = require('./src/routes/workLogs');
 const jobPhotoRoutes = require('./src/routes/jobPhotos');
 const jobReceiptRoutes = require('./src/routes/jobReceipts');
 const signaturesRoutes = require('./src/routes/signatures');
+const signaturesPublicRoutes = require('./src/routes/signaturesPublic');
 const preferencesRoutes = require('./src/routes/preferences');
 const notificacionesRoutes = require('./src/routes/notificaciones');
 const adminRoutes = require('./src/routes/admin');
@@ -104,8 +105,8 @@ app.use(cors({
 }));
 
 app.use(morgan('dev'));
-app.use(express.json({ limit: '10mb' })); // Increased limit for PDF signatures
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '50mb' })); // Increased limit for PDF signatures and large documents
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Health check
 app.get('/health', (req, res) => {
@@ -163,6 +164,11 @@ app.get('/api/debug/data', async (req, res) => {
 
 // Rutas de la API
 app.use('/api/auth', authLimiter, authRoutes); // Auth routes with separate limiter
+
+// Public signature routes (no authentication required)
+app.use('/api/signatures/public', limiter, signaturesPublicRoutes);
+
+// Protected routes (authentication required)
 app.use('/api/empresas', limiter, authenticateToken, empresaRoutes);
 app.use('/api/clientes', limiter, authenticateToken, clienteRoutes);
 app.use('/api/productos', limiter, authenticateToken, productoRoutes);

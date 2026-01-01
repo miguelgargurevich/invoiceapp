@@ -11,6 +11,8 @@ import {
   Badge,
   Card,
   EmptyState,
+  Skeleton,
+  SkeletonMetricCard,
   type Column,
 } from '@/components/common';
 
@@ -253,8 +255,71 @@ export default function ProformasPage({
 
   if (loading && proformas.length === 0) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+      <div className="space-y-6">
+        {/* Header skeleton */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-12 w-12 rounded-xl" />
+            <div>
+              <Skeleton className="h-8 w-32 mb-2" />
+              <Skeleton className="h-4 w-56" />
+            </div>
+          </div>
+          <Skeleton className="h-12 w-40 rounded-lg" />
+        </div>
+
+        {/* Summary cards skeleton */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <SkeletonMetricCard key={i} />
+          ))}
+        </div>
+
+        {/* Filters skeleton */}
+        <div className="bg-white dark:bg-gray-900 rounded-xl p-4 border border-gray-200 dark:border-gray-800 shadow-sm">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Skeleton className="h-10 flex-1 rounded-lg" />
+            <Skeleton className="h-10 w-32 rounded-lg" />
+          </div>
+        </div>
+
+        {/* Table skeleton */}
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+          {/* Table header */}
+          <div className="hidden md:flex gap-4 px-6 py-3 border-b border-gray-200 dark:border-gray-700">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-4 w-24 ml-auto" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+          {/* Table rows */}
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="hidden md:flex gap-4 px-6 py-4 border-b border-gray-100 dark:border-gray-800 last:border-0">
+              <Skeleton className="h-5 w-24" />
+              <Skeleton className="h-5 w-32" />
+              <Skeleton className="h-5 w-24" />
+              <Skeleton className="h-5 w-24 ml-auto" />
+              <Skeleton className="h-6 w-20 rounded-full" />
+            </div>
+          ))}
+          {/* Mobile skeleton */}
+          <div className="md:hidden p-4 space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 space-y-2">
+                <div className="flex justify-between">
+                  <Skeleton className="h-5 w-24" />
+                  <Skeleton className="h-5 w-20 rounded-full" />
+                </div>
+                <Skeleton className="h-4 w-40" />
+                <div className="flex justify-between">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-5 w-28" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
