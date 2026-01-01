@@ -277,15 +277,9 @@ export default function NuevaProformaPage({
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => router.back()} size="lg">
-            {t('cancel')}
-          </Button>
-          <Button onClick={handleSave} disabled={saving} size="lg">
-            <Save className="w-5 h-5 mr-2" />
-            {saving ? t('save') + '...' : t('save')}
-          </Button>
-        </div>
+        <Button variant="outline" onClick={() => router.back()} size="lg">
+          {t('cancel')}
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
