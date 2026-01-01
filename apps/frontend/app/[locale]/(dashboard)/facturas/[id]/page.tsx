@@ -681,31 +681,6 @@ export default function FacturaDetailPage({
             </Card>
           )}
 
-          {/* Observations */}
-          <Card>
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                {t('observations')}
-              </h2>
-              {factura.estado !== 'ANULADA' && (
-                <button
-                  onClick={handleOpenEditObservations}
-                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-                  title="Edit observations"
-                >
-                  <Edit2 className="w-4 h-4 text-gray-500" />
-                </button>
-              )}
-            </div>
-            {factura.observaciones ? (
-              <p className="text-gray-600 dark:text-gray-400">{factura.observaciones}</p>
-            ) : (
-              <p className="text-gray-400 dark:text-gray-500 italic text-sm">
-                {t('observationsPlaceholder') || 'No observations'}
-              </p>
-            )}
-          </Card>
-
           {/* Job Information */}
           {(factura.jobName || factura.jobLocation || factura.workDescription || factura.paymentTerms) && (
             <Card>
@@ -740,6 +715,32 @@ export default function FacturaDetailPage({
               </div>
             </Card>
           )}
+          
+          {/* Observations */}
+          <Card>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {t('observations')}
+              </h2>
+              {factura.estado !== 'ANULADA' && (
+                <button
+                  onClick={handleOpenEditObservations}
+                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                  title="Edit observations"
+                >
+                  <Edit2 className="w-4 h-4 text-gray-500" />
+                </button>
+              )}
+            </div>
+            {factura.observaciones ? (
+              <p className="text-gray-600 dark:text-gray-400">{factura.observaciones}</p>
+            ) : (
+              <p className="text-gray-400 dark:text-gray-500 italic text-sm">
+                {t('observationsPlaceholder') || 'No observations'}
+              </p>
+            )}
+          </Card>
+
         </div>
 
         {/* Sidebar */}
