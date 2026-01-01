@@ -48,6 +48,16 @@ const authenticateToken = async (req, res, next) => {
       name: user.user_metadata?.name || user.email
     };
 
+    // Fetch empresaId if exists
+    const empresa = await prisma.empresa.findFirst({
+      where: { userId: user.id },
+      select: { id: true }
+    });
+
+    if (empresa) {
+      req.user.empresaId = empresa.id;
+    }
+
     console.log('[AUTH] User authenticated:', user.email);
     next();
   } catch (error) {

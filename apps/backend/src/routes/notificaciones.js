@@ -9,7 +9,12 @@ const prisma = require('../utils/prisma');
  */
 router.get('/', authenticateToken, async (req, res) => {
   try {
-    const empresaId = req.user.empresaId;
+    const empresaId = req.user?.empresaId;
+    
+    if (!empresaId) {
+      return res.status(400).json({ error: 'EmpresaId no encontrado' });
+    }
+
     const now = new Date();
     const sevenDaysFromNow = new Date();
     sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7);
@@ -197,7 +202,13 @@ router.get('/', authenticateToken, async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching notifications:', error);
-    res.status(500).json({ error: 'Error al obtener notificaciones' });
+    console.error('Error stack:', error.stack);
+    console.error('User:', req.user);
+    res.status(500).json({ 
+      error: 'Error al obtener notificaciones',
+      message: error.message,
+      ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    });
   }
 });
 
