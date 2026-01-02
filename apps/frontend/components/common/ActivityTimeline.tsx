@@ -15,7 +15,7 @@ import {
 
 export interface TimelineEvent {
   id: string;
-  type: 'created' | 'sent' | 'viewed' | 'signed' | 'paid' | 'overdue' | 'cancelled';
+  type: 'created' | 'sent' | 'signed' | 'invoiced' | 'paid' | 'overdue' | 'cancelled';
   date?: Date | string | null;
   actor?: string;
   details?: string;
@@ -40,17 +40,17 @@ const EVENT_CONFIG = {
     activeColor: 'bg-indigo-500',
     label: 'sent',
   },
-  viewed: {
-    icon: Eye,
-    color: 'bg-slate-500',
-    activeColor: 'bg-purple-500',
-    label: 'viewed',
-  },
   signed: {
     icon: PenTool,
     color: 'bg-slate-500',
     activeColor: 'bg-green-500',
     label: 'signed',
+  },
+  invoiced: {
+    icon: FileText,
+    color: 'bg-slate-500',
+    activeColor: 'bg-amber-500',
+    label: 'invoiced',
   },
   paid: {
     icon: DollarSign,
@@ -72,7 +72,7 @@ const EVENT_CONFIG = {
   },
 };
 
-const DEFAULT_EVENTS: TimelineEvent['type'][] = ['created', 'sent', 'viewed', 'signed', 'paid'];
+const DEFAULT_EVENTS: TimelineEvent['type'][] = ['created', 'sent', 'signed', 'invoiced', 'paid'];
 
 export function ActivityTimeline({ events, currentStatus, compact = false }: ActivityTimelineProps) {
   const t = useTranslations('timeline');
@@ -244,8 +244,8 @@ export function ActivityTimeline({ events, currentStatus, compact = false }: Act
 export function createTimelineFromDocument(doc: {
   createdAt?: Date | string;
   sentAt?: Date | string | null;
-  viewedAt?: Date | string | null;
   signedAt?: Date | string | null;
+  invoicedAt?: Date | string | null;
   paidAt?: Date | string | null;
   status?: string;
   signerName?: string;
@@ -260,10 +260,6 @@ export function createTimelineFromDocument(doc: {
     events.push({ id: 'sent', type: 'sent', date: doc.sentAt });
   }
   
-  if (doc.viewedAt) {
-    events.push({ id: 'viewed', type: 'viewed', date: doc.viewedAt });
-  }
-  
   if (doc.signedAt) {
     events.push({ 
       id: 'signed', 
@@ -273,7 +269,11 @@ export function createTimelineFromDocument(doc: {
     });
   }
   
-  if (doc.paidAt || doc.status === 'PAID' || doc.status === 'PAGADA') {
+  if (doc.invoicedAt || doc.status === 'facturada') {
+    events.push({ id: 'invoiced', type: 'invoiced', date: doc.invoicedAt });
+  }
+  
+  if (doc.paidAt || doc.status === 'paid' || doc.status === 'pagada') {
     events.push({ id: 'paid', type: 'paid', date: doc.paidAt });
   }
   

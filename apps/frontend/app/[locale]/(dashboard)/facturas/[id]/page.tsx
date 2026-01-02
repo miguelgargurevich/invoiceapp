@@ -1023,8 +1023,8 @@ export default function FacturaDetailPage({
               events={createTimelineFromDocument({
                 createdAt: factura.fechaEmision,
                 sentAt: factura.signatureRequest?.sentAt,
-                viewedAt: factura.signatureRequest?.viewedAt,
-                signedAt: factura.signatureRequest?.signedAt,
+                signedAt: factura.signatureRequest?.signature?.signedAt,
+                invoicedAt: undefined, // Facturas no se convierten a otra cosa
                 paidAt: factura.estado === 'PAGADA' ? factura.pagos?.[factura.pagos.length - 1]?.fecha : undefined,
                 status: factura.estado,
                 signerName: factura.signatureRequest?.signerName,

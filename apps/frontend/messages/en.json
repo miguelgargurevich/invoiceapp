@@ -1283,14 +1283,14 @@
         "pending": "Waiting to be sent",
         "by": "to {actor}"
       },
-      "viewed": {
-        "label": "Viewed",
-        "pending": "Not yet viewed by client",
-        "by": "by {actor}"
-      },
       "signed": {
         "label": "Signed",
         "pending": "Awaiting signature",
+        "by": "by {actor}"
+      },
+      "invoiced": {
+        "label": "Invoiced",
+        "pending": "Not yet converted to invoice",
         "by": "by {actor}"
       },
       "paid": {

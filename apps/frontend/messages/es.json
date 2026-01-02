@@ -1280,14 +1280,14 @@
         "pending": "Esperando ser enviado",
         "by": "a {actor}"
       },
-      "viewed": {
-        "label": "Visto",
-        "pending": "Aún no visto por el cliente",
-        "by": "por {actor}"
-      },
       "signed": {
         "label": "Firmado",
         "pending": "Esperando firma",
+        "by": "por {actor}"
+      },
+      "invoiced": {
+        "label": "Facturado",
+        "pending": "Aún no convertido a factura",
         "by": "por {actor}"
       },
       "paid": {

@@ -112,6 +112,7 @@ interface Proforma {
   fechaPlanos?: string;
   telefonoTrabajo?: string;
   diasValidez?: number;
+  fechaAceptacion?: string;
   detalles: DetalleProforma[];
   signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
   signatureRequest?: any;
@@ -120,6 +121,7 @@ interface Proforma {
     serie: string;
     numero: number;
     estado: string;
+    fechaEmision?: string;
   }>;
 }
 
@@ -1129,9 +1131,11 @@ export default function ProformaDetailPage({
               events={createTimelineFromDocument({
                 createdAt: proforma.fechaEmision,
                 sentAt: proforma.signatureRequest?.sentAt,
-                viewedAt: proforma.signatureRequest?.viewedAt,
-                signedAt: proforma.signatureRequest?.signedAt,
-                paidAt: proforma.estado === 'facturada' ? undefined : undefined,
+                signedAt: proforma.signatureRequest?.signature?.signedAt || proforma.fechaAceptacion,
+                invoicedAt: proforma.facturasGeneradas && proforma.facturasGeneradas.length > 0 
+                  ? proforma.facturasGeneradas[0].fechaEmision 
+                  : undefined,
+                paidAt: undefined, // TODO: Get from factura pagos
                 status: proforma.estado,
                 signerName: proforma.signatureRequest?.signerName,
               })}
