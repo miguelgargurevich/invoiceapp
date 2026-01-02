@@ -400,7 +400,7 @@ export default function SignDocumentPage() {
                 checked={consentGiven}
                 onChange={(e) => setConsentGiven(e.target.checked)}
                 disabled={submitting}
-                className="mt-1 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                className="mt-0.5 w-5 h-5 min-w-5 text-blue-600 rounded focus:ring-blue-500"
               />
               <span className="text-sm text-gray-700 dark:text-gray-300">
                 {t('consentText')}

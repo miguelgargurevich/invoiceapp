@@ -586,25 +586,13 @@ export default function NuevaProformaPage({
             </div>
           </Card>
 
-          {/* Contractor Details */}
+          {/* Contractor Details - Hidden since validity is handled in Dates panel
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
               <HardHat className="w-5 h-5 text-primary-600" />
               {t('contractorDetails')}
             </h2>
             <div className="space-y-4">
-              {/* <Input
-                label={t('architectName')}
-                value={arquitectoNombre}
-                onChange={(e) => setArquitectoNombre(e.target.value)}
-                placeholder="Architect or designer name"
-              />
-              <DatePicker
-                label={t('plansDate')}
-                value={fechaPlanos}
-                onChange={setFechaPlanos}
-                locale={locale as 'es' | 'en'}
-              /> */}
               <Input
                 label={t('validityDays')}
                 type="number"
@@ -614,6 +602,7 @@ export default function NuevaProformaPage({
               />
             </div>
           </Card>
+          */}
 
           {/* Terms & Conditions */}
           <Card>
