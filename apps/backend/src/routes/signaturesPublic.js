@@ -145,10 +145,10 @@ router.post('/submit', async (req, res) => {
       try {
         const base64Data = signatureDataUrl.split(',')[1];
         const buffer = Buffer.from(base64Data, 'base64');
-        const fileName = `signatures/${token}_${Date.now()}.png`;
+        const fileName = `${signatureRequest.empresaId}/signatures/${token}_${Date.now()}.png`;
 
         const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('invoices')
+          .from('logos')
           .upload(fileName, buffer, {
             contentType: 'image/png',
             upsert: false
@@ -158,7 +158,7 @@ router.post('/submit', async (req, res) => {
           console.error('Error uploading signature to Supabase:', uploadError);
         } else {
           const { data: publicUrlData } = supabase.storage
-            .from('invoices')
+            .from('logos')
             .getPublicUrl(fileName);
           
           signatureImageUrl = publicUrlData.publicUrl;
@@ -190,8 +190,7 @@ router.post('/submit', async (req, res) => {
     await prisma.signatureRequest.update({
       where: { id: signatureRequest.id },
       data: { 
-        status: 'SIGNED',
-        signedAt: new Date()
+        status: 'SIGNED'
       }
     });
 

@@ -104,7 +104,7 @@ export default function SignatureCanvas({ onSignatureChange, disabled }: Signatu
 
   return (
     <div className="space-y-3">
-      <div className="relative border-2 border-dashed border-gray-300 dark:border-gray-300 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
+      <div className="relative border-2 border-dashed border-gray-800 dark:border-gray-300 rounded-lg overflow-hidden bg-white dark:bg-gray-300">
         <canvas
           ref={canvasRef}
           className="w-full h-48 touch-none cursor-crosshair"

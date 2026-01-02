@@ -417,13 +417,6 @@ export default function SignDocumentPage() {
             >
               {generatingPdf ? t('generatingPdf') : submitting ? t('submitting') : t('submitSignature')}
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => router.push('/')}
-              disabled={submitting}
-            >
-              {t('cancel')}
-            </Button>
           </div>
         </Card>
 
