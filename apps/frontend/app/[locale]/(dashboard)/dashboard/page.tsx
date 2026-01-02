@@ -200,10 +200,10 @@ export default function DashboardPage({
       pendiente: t('statusPending'),
       vencida: t('statusOverdue'),
       anulada: t('statusCancelled'),
-      facturada: t('statusIssued'), // Alias for issued status
-      aceptada: t('signed'), // Accepted/Signed status
-      aprobada: t('signed'), // Approved status
-      rechazada: t('statusCancelled'), // Rejected status
+      facturada: t('statusInvoiced'), // Invoiced status for converted proposals
+      aceptada: t('statusAccepted'), // Accepted status
+      aprobada: t('statusAccepted'), // Approved status (same as accepted)
+      rechazada: t('statusRejected'), // Rejected status
     };
     return statusMap[normalizedStatus] || status;
   };
