@@ -4,6 +4,14 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { usePreferences } from '@/contexts/PreferencesContext';
+import { Button, Card, Input, Textarea, LoadingSpinner } from '@/components/common';
+import { cn } from '@/lib/utils';
+import api from '@/lib/api';
+import { supabase } from '@/lib/supabase';
+import SignatureCanvas from '@/components/signature/SignatureCanvas';
 import {
   Building2,
   User,
@@ -17,15 +25,8 @@ import {
   X,
   ImageIcon,
   Settings,
+  CreditCard,
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
-import { usePreferences } from '@/contexts/PreferencesContext';
-import { Button, Card, Input, Textarea, LoadingSpinner } from '@/components/common';
-import { cn } from '@/lib/utils';
-import api from '@/lib/api';
-import { supabase } from '@/lib/supabase';
-import SignatureCanvas from '@/components/signature/SignatureCanvas';
 
 type Tab = 'empresa' | 'usuario' | 'apariencia' | 'facturacion' | 'notificaciones';
 
@@ -35,6 +36,7 @@ export default function ConfiguracionPage({
   params: { locale: string };
 }) {
   const t = useTranslations('settings');
+  const tSub = useTranslations('subscription');
   const router = useRouter();
   const pathname = usePathname();
   const { user, empresa, refreshEmpresa } = useAuth();
@@ -452,6 +454,17 @@ export default function ConfiguracionPage({
                   <span>{tab.label}</span>
                 </button>
               ))}
+              
+              {/* Subscription Link */}
+              <div className="pt-2 mt-2 border-t border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={() => router.push(`/${locale}/configuracion/suscripcion`)}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 font-medium"
+                >
+                  <CreditCard className="w-5 h-5" />
+                  <span>{tSub('title')}</span>
+                </button>
+              </div>
             </nav>
           </Card>
         </div>
