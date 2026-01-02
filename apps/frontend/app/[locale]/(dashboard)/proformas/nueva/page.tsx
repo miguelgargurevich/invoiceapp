@@ -270,11 +270,11 @@ export default function NuevaProformaPage({
       };
 
       await api.post('/proformas', payload);
-      showSuccess('Propuesta creada exitosamente');
+      showSuccess(t('saveSuccess'));
       router.push(`/${locale}/proformas`);
     } catch (error) {
       console.error('Error saving proforma:', error);
-      showError(t('quotes.saveError'));
+      showError(t('createError'));
     } finally {
       setSaving(false);
     }

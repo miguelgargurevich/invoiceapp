@@ -20,10 +20,10 @@ const proformaSchema = z.object({
   clienteId: z.string().uuid(),
   fechaEmision: z.string().datetime().optional(),
   fechaValidez: z.string().datetime().optional(),
-  condiciones: z.string().optional(),
+  condiciones: z.string().optional().nullable(),
   moneda: z.string().default('PEN'),
   tipoCambio: z.number().positive().optional(),
-  observaciones: z.string().optional(),
+  observaciones: z.string().optional().nullable(),
   // Contractor proposal fields
   jobName: z.string().optional().nullable(),
   jobLocation: z.string().optional().nullable(),
