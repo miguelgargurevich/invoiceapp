@@ -30,6 +30,21 @@ enum UserRole {
   SUPER_ADMIN
 }
 
+// Subscription System Enums
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  UNPAID
+  INCOMPLETE
+}
+
+enum BillingInterval {
+  MONTH
+  YEAR
+}
+
 // 👤 User Profile (extends Supabase Auth)
 model UserProfile {
   id        String    @id // Same as Supabase Auth user id
@@ -79,6 +94,7 @@ model Empresa {
   facturas        Factura[]
   proformas       Proforma[]
   signatureRequests SignatureRequest[]
+  subscription    Subscription?
   
   @@index([userId], map: "idx_empresa_user_id")
   @@map("empresas")
@@ -496,3 +512,105 @@ model UserPreferences {
   
   @@map("user_preferences")
 }
+
+// 💳 Subscription Plans
+model Plan {
+  id              String   @id @default(uuid())
+  name            String
+  slug            String   @unique
+  description     String?
+  
+  // Pricing
+  priceMonthly    Decimal  @map("price_monthly") @db.Decimal(10, 2)
+  priceYearly     Decimal  @map("price_yearly") @db.Decimal(10, 2)
+  currency        String   @default("USD")
+  
+  // Stripe IDs
+  stripePriceIdMonthly String? @map("stripe_price_id_monthly")
+  stripePriceIdYearly  String? @map("stripe_price_id_yearly")
+  stripeProductId      String? @map("stripe_product_id")
+  
+  // Limits (-1 means unlimited)
+  maxInvoicesPerMonth   Int     @default(-1) @map("max_invoices_per_month")
+  maxClients            Int     @default(-1) @map("max_clients")
+  maxProposalsPerMonth  Int     @default(-1) @map("max_proposals_per_month")
+  maxStorageMb          Int     @default(100) @map("max_storage_mb")
+  
+  // Features
+  hasProposals          Boolean @default(false) @map("has_proposals")
+  hasDigitalSignatures  Boolean @default(false) @map("has_digital_signatures")
+  hasReports            Boolean @default(false) @map("has_reports")
+  hasCustomBranding     Boolean @default(false) @map("has_custom_branding")
+  hasMultiCurrency      Boolean @default(false) @map("has_multi_currency")
+  hasJobTracking        Boolean @default(false) @map("has_job_tracking")
+  hasAdvancedReports    Boolean @default(false) @map("has_advanced_reports")
+  hasPrioritySupport    Boolean @default(false) @map("has_priority_support")
+  hasApiAccess          Boolean @default(false) @map("has_api_access")
+  
+  // Metadata
+  isActive      Boolean  @default(true) @map("is_active")
+  displayOrder  Int      @default(0) @map("display_order")
+  isPopular     Boolean  @default(false) @map("is_popular")
+  trialDays     Int      @default(14) @map("trial_days")
+  
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  
+  subscriptions Subscription[]
+  
+  @@map("plans")
+}
+
+// 📋 Company Subscriptions
+model Subscription {
+  id              String             @id @default(uuid())
+  empresaId       String             @unique @map("empresa_id")
+  planId          String             @map("plan_id")
+  
+  // Status
+  status          SubscriptionStatus @default(TRIALING)
+  billingInterval BillingInterval    @default(MONTH) @map("billing_interval")
+  
+  // Stripe
+  stripeCustomerId      String? @unique @map("stripe_customer_id")
+  stripeSubscriptionId  String? @unique @map("stripe_subscription_id")
+  
+  // Dates
+  trialStart          DateTime? @map("trial_start")
+  trialEnd            DateTime? @map("trial_end")
+  currentPeriodStart  DateTime? @map("current_period_start")
+  currentPeriodEnd    DateTime? @map("current_period_end")
+  canceledAt          DateTime? @map("canceled_at")
+  cancelAtPeriodEnd   Boolean   @default(false) @map("cancel_at_period_end")
+  
+  // Usage tracking
+  invoicesUsed  Int @default(0) @map("invoices_used")
+  proposalsUsed Int @default(0) @map("proposals_used")
+  storageUsedMb Int @default(0) @map("storage_used_mb")
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  
+  plan    Plan    @relation(fields: [planId], references: [id])
+  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  
+  @@index([stripeCustomerId])
+  @@index([status])
+  @@map("subscriptions")
+}
+
+// 📊 Usage Events (for tracking and analytics)
+model UsageEvent {
+  id        String   @id @default(uuid())
+  empresaId String   @map("empresa_id")
+  eventType String   @map("event_type") // 'invoice_created', 'proposal_created', 'storage_updated'
+  quantity  Int      @default(1)
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  @@index([empresaId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@map("usage_events")
+}
+

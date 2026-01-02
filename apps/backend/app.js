@@ -25,6 +25,8 @@ const signaturesPublicRoutes = require('./src/routes/signaturesPublic');
 const preferencesRoutes = require('./src/routes/preferences');
 const notificacionesRoutes = require('./src/routes/notificaciones');
 const adminRoutes = require('./src/routes/admin');
+const subscriptionsRoutes = require('./src/routes/subscriptions');
+const webhooksRoutes = require('./src/routes/webhooks');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -105,6 +107,11 @@ app.use(cors({
 }));
 
 app.use(morgan('dev'));
+
+// IMPORTANT: Webhook routes MUST be defined BEFORE express.json()
+// Stripe webhooks need raw body for signature verification
+app.use('/api/webhooks', webhooksRoutes);
+
 app.use(express.json({ limit: '50mb' })); // Increased limit for PDF signatures and large documents
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
@@ -183,6 +190,7 @@ app.use('/api/signatures', limiter, authenticateToken, signaturesRoutes);
 app.use('/api/preferences', limiter, authenticateToken, preferencesRoutes);
 app.use('/api/notificaciones', limiter, authenticateToken, notificacionesRoutes);
 app.use('/api/admin', limiter, authenticateToken, adminRoutes);
+app.use('/api/subscriptions', limiter, authenticateToken, subscriptionsRoutes);
 
 // Servir archivos estáticos (uploads)
 app.use('/uploads', express.static('uploads'));
