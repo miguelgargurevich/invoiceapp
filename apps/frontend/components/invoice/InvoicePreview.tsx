@@ -162,6 +162,14 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
           </div>
         )}
 
+        {/* Payment Terms */}
+        {factura.paymentTerms && (
+          <div className="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
+            <div className="text-[10px] font-bold text-gray-800 mb-1">Payment Terms:</div>
+            <p className="text-[9px] text-gray-700 whitespace-pre-wrap">{factura.paymentTerms}</p>
+          </div>
+        )}
+
         {/* Order Type */}
         {factura.orderType && (
           <div className="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
@@ -169,14 +177,6 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
             <p className="text-[9px] text-gray-700">
               {factura.orderType === 'day_work' ? 'Day Work' : factura.orderType === 'contract' ? 'Contract' : 'Extra'}
             </p>
-          </div>
-        )}
-
-        {/* Payment Terms */}
-        {factura.paymentTerms && (
-          <div className="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
-            <div className="text-[10px] font-bold text-gray-800 mb-1">Payment Terms:</div>
-            <p className="text-[9px] text-gray-700 whitespace-pre-wrap">{factura.paymentTerms}</p>
           </div>
         )}
 
