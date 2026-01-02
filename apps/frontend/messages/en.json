@@ -1205,5 +1205,75 @@
       "saving": "Setting up...",
       "launch": "Launch Dashboard"
     }
+  },
+  "templates": {
+    "title": "Choose a Proposal Template",
+    "subtitle": "Start with an industry-specific template to save time",
+    "backToTemplates": "Back to templates",
+    "useTemplate": "Use This Template",
+    "industries": {
+      "contractor": {
+        "name": "Contractor",
+        "description": "Construction, renovation, electrical, plumbing"
+      },
+      "freelancer": {
+        "name": "Freelancer",
+        "description": "Design, development, writing, marketing"
+      },
+      "agency": {
+        "name": "Agency",
+        "description": "Full-service marketing, creative, digital"
+      },
+      "consultant": {
+        "name": "Consultant",
+        "description": "Business, IT, management, strategy"
+      }
+    },
+    "preview": {
+      "view": "Preview",
+      "terms": "Terms & Conditions",
+      "paymentTerms": "Payment Terms",
+      "scope": "Scope of Work",
+      "warranty": "Warranty",
+      "suggestedSections": "Suggested Sections"
+    }
+  },
+  "timeline": {
+    "title": "Activity Timeline",
+    "events": {
+      "created": {
+        "label": "Created",
+        "pending": "Document not yet created",
+        "by": "by {actor}"
+      },
+      "sent": {
+        "label": "Sent",
+        "pending": "Waiting to be sent",
+        "by": "to {actor}"
+      },
+      "viewed": {
+        "label": "Viewed",
+        "pending": "Not yet viewed by client",
+        "by": "by {actor}"
+      },
+      "signed": {
+        "label": "Signed",
+        "pending": "Awaiting signature",
+        "by": "by {actor}"
+      },
+      "paid": {
+        "label": "Paid",
+        "pending": "Payment pending",
+        "by": "by {actor}"
+      },
+      "overdue": {
+        "label": "Overdue",
+        "pending": "Payment overdue"
+      },
+      "cancelled": {
+        "label": "Cancelled",
+        "pending": ""
+      }
+    }
   }
 }

@@ -32,3 +32,5 @@ export {
   SkeletonDetailPage,
   SkeletonReportPage,
 } from './LoadingSpinner';
+export { ActivityTimeline, createTimelineFromDocument } from './ActivityTimeline';
+export type { TimelineEvent } from './ActivityTimeline';

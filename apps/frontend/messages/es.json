@@ -1194,5 +1194,75 @@
       "saving": "Configurando...",
       "launch": "Ir al Panel"
     }
+  },
+  "templates": {
+    "title": "Elige una Plantilla de Propuesta",
+    "subtitle": "Comienza con una plantilla específica de industria para ahorrar tiempo",
+    "backToTemplates": "Volver a plantillas",
+    "useTemplate": "Usar Esta Plantilla",
+    "industries": {
+      "contractor": {
+        "name": "Contratista",
+        "description": "Construcción, renovación, electricidad, plomería"
+      },
+      "freelancer": {
+        "name": "Freelancer",
+        "description": "Diseño, desarrollo, redacción, marketing"
+      },
+      "agency": {
+        "name": "Agencia",
+        "description": "Marketing, creatividad, digital de servicio completo"
+      },
+      "consultant": {
+        "name": "Consultor",
+        "description": "Negocios, TI, gestión, estrategia"
+      }
+    },
+    "preview": {
+      "view": "Vista previa",
+      "terms": "Términos y Condiciones",
+      "paymentTerms": "Términos de Pago",
+      "scope": "Alcance del Trabajo",
+      "warranty": "Garantía",
+      "suggestedSections": "Secciones Sugeridas"
+    }
+  },
+  "timeline": {
+    "title": "Línea de Tiempo",
+    "events": {
+      "created": {
+        "label": "Creado",
+        "pending": "Documento aún no creado",
+        "by": "por {actor}"
+      },
+      "sent": {
+        "label": "Enviado",
+        "pending": "Esperando ser enviado",
+        "by": "a {actor}"
+      },
+      "viewed": {
+        "label": "Visto",
+        "pending": "Aún no visto por el cliente",
+        "by": "por {actor}"
+      },
+      "signed": {
+        "label": "Firmado",
+        "pending": "Esperando firma",
+        "by": "por {actor}"
+      },
+      "paid": {
+        "label": "Pagado",
+        "pending": "Pago pendiente",
+        "by": "por {actor}"
+      },
+      "overdue": {
+        "label": "Vencido",
+        "pending": "Pago vencido"
+      },
+      "cancelled": {
+        "label": "Cancelado",
+        "pending": ""
+      }
+    }
   }
 }

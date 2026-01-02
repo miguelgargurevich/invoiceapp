@@ -630,7 +630,7 @@ export default function ConfiguracionPage({
                             Delete
                           </button>
                         </div>
-                        <div className="bg-gray-50 dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-700 p-3 flex items-center justify-center min-h-[100px]">
+                        <div className="bg-gray-50 dark:bg-gray-200 rounded border border-gray-200 dark:border-gray-700 p-3 flex items-center justify-center min-h-[100px]">
                           <Image
                             src={companySignature}
                             alt="Company Signature"
