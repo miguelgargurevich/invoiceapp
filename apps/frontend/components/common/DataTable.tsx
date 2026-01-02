@@ -2,6 +2,7 @@
 
 import { ReactNode, useState, useMemo } from 'react';
 import { ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { EmptySearch } from './EmptyState';
 import { Skeleton } from './LoadingSpinner';
@@ -49,6 +50,8 @@ export function DataTable<T>({
   onPageChange,
   renderMobileCard,
 }: DataTableProps<T>) {
+  const t = useTranslations('common');
+  
   const handleSort = (key: string) => {
     if (!onSort) return;
     
@@ -221,7 +224,7 @@ export function DataTable<T>({
       {totalPages > 1 && onPageChange && (
         <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <span className="text-sm text-gray-500 dark:text-gray-400">
-            Página {currentPage} de {totalPages}
+            {t('page')} {currentPage} {t('of')} {totalPages}
           </span>
           <div className="flex gap-2">
             <button
@@ -234,7 +237,7 @@ export function DataTable<T>({
                   : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
               )}
             >
-              Anterior
+              {t('previous')}
             </button>
             <button
               onClick={() => onPageChange(currentPage + 1)}
@@ -246,7 +249,7 @@ export function DataTable<T>({
                   : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
               )}
             >
-              Siguiente
+              {t('next')}
             </button>
           </div>
         </div>

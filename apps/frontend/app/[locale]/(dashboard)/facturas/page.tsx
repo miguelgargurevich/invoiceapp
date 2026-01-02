@@ -313,7 +313,7 @@ export default function FacturasPage({
       sortable: true,
       render: (factura) => (
         <span className="text-gray-600 dark:text-gray-400">
-          {formatDate(factura.fechaEmision)}
+          {formatDate(factura.fechaEmision, locale)}
         </span>
       ),
     },
@@ -667,7 +667,7 @@ export default function FacturasPage({
             </div>
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-500 dark:text-gray-400">
-                {formatDate(factura.fechaEmision)}
+                {formatDate(factura.fechaEmision, locale)}
               </span>
               <span className="font-medium text-gray-900 dark:text-gray-100">
                 {formatCurrency(factura.total)}

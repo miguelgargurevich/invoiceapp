@@ -685,11 +685,24 @@ export default function ConfiguracionPage({
                   )}
                 </div>
 
-                <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <Button onClick={handleSaveEmpresa} disabled={saving}>
-                    {saving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="w-4 h-4 mr-2" />}
-                    {t('save')}
-                  </Button>
+                <div className="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
+                  <button
+                    onClick={handleSaveEmpresa}
+                    disabled={saving}
+                    className="h-11 px-6 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-base font-semibold rounded-lg hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
+                  >
+                    {saving ? (
+                      <>
+                        <LoadingSpinner size="sm" />
+                        {t('saving')}
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-5 h-5" />
+                        {t('save')}
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </Card>
@@ -767,10 +780,23 @@ export default function ConfiguracionPage({
                 </div>
 
                 <div className="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
-                  <Button onClick={handleSaveUser} disabled={saving} className="px-6 h-11 text-base font-semibold">
-                    {saving ? <LoadingSpinner size="sm" className="mr-2" /> : <Save className="w-5 h-5 mr-2" />}
-                    {t('save')}
-                  </Button>
+                  <button
+                    onClick={handleSaveUser}
+                    disabled={saving}
+                    className="h-11 px-6 bg-gradient-to-r from-purple-500 to-pink-600 text-white text-base font-semibold rounded-lg hover:from-purple-600 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
+                  >
+                    {saving ? (
+                      <>
+                        <LoadingSpinner size="sm" />
+                        {t('saving')}
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-5 h-5" />
+                        {t('save')}
+                      </>
+                    )}
+                  </button>
                 </div>
               </div>
             </Card>
