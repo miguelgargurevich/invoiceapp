@@ -735,6 +735,43 @@ router.put('/:id/observations', authenticateToken, getEmpresaFromUser, async (re
   }
 });
 
+// PUT /api/proformas/:id/conditions - Actualizar condiciones de proforma
+router.put('/:id/conditions', authenticateToken, getEmpresaFromUser, async (req, res) => {
+  try {
+    const { condiciones } = req.body;
+
+    // Verificar que la proforma existe y pertenece a la empresa
+    const proforma = await prisma.proforma.findFirst({
+      where: {
+        id: req.params.id,
+        empresaId: req.empresa.id
+      }
+    });
+
+    if (!proforma) {
+      return res.status(404).json({ error: 'Proforma no encontrada' });
+    }
+
+    // No permitir editar proformas facturadas o canceladas
+    if (proforma.estado === 'INVOICED' || proforma.estado === 'CANCELLED') {
+      return res.status(400).json({ error: 'No se pueden editar proformas facturadas o canceladas' });
+    }
+
+    // Actualizar condiciones
+    const proformaActualizada = await prisma.proforma.update({
+      where: { id: req.params.id },
+      data: {
+        condiciones: condiciones || null
+      }
+    });
+
+    res.json(proformaActualizada);
+  } catch (error) {
+    console.error('Error actualizando condiciones:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 // PUT /api/proformas/:id/job-info - Actualizar información del trabajo
 router.put('/:id/job-info', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {

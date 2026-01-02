@@ -103,7 +103,8 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
               {t('company.email')}
             </label>
             <input
-              type="email"
+              type="text"
+              inputMode="email"
               value={data.email}
               onChange={(e) => onUpdate({ email: e.target.value })}
               placeholder={t('company.emailPlaceholder')}
@@ -119,7 +120,7 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
             {t('company.website')}
           </label>
           <input
-            type="url"
+            type="text"
             value={data.website}
             onChange={(e) => onUpdate({ website: e.target.value })}
             placeholder="https://yourcompany.com"

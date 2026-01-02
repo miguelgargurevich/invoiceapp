@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Search, Download, Trash2, Package } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/contexts/ToastContext';
 import {
   Button,
   DataTable,
@@ -37,9 +38,11 @@ export default function ProductosPage({
   params: { locale: string };
 }) {
   const t = useTranslations('products');
+  const tCommon = useTranslations('common');
   const router = useRouter();
   const { empresa } = useAuth();
   const { formatCurrency } = useCurrency();
+  const { showSuccess, showError } = useToast();
   
   const [productos, setProductos] = useState<Producto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,6 +64,7 @@ export default function ProductosPage({
         search,
         page: currentPage.toString(),
         limit: '10',
+        activo: 'true',
       });
       const response: any = await api.get(`/productos?${params}`);
       setProductos(response.data || []);
@@ -91,9 +95,11 @@ export default function ProductosPage({
     
     try {
       await api.delete(`/productos/${selectedProducto.id}`);
+      showSuccess(t('deleteSuccess') || 'Product deleted successfully');
       loadProductos();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting producto:', error);
+      showError(error.response?.data?.error || tCommon('errorDeleting'));
     } finally {
       setIsDeleteDialogOpen(false);
       setSelectedProducto(null);

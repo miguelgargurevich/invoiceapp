@@ -18,6 +18,7 @@ import {
   Calendar,
   DollarSign,
   FileText,
+  ScrollText,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -95,6 +96,7 @@ export default function NuevaProformaPage({
     new Date(Date.now() + 30 * 86400000)
   );
   const [observaciones, setObservaciones] = useState('');
+  const [condiciones, setCondiciones] = useState('');
   const [lineas, setLineas] = useState<LineaDetalle[]>([]);
   
   // Job information fields
@@ -117,7 +119,7 @@ export default function NuevaProformaPage({
   const handleTemplateSelect = (template: ProposalTemplate) => {
     setSelectedTemplate(template);
     // Apply template defaults to form
-    setObservaciones(template.defaultTerms);
+    setCondiciones(template.defaultTerms);
     setPaymentTerms(template.defaultPaymentTerms);
     if (template.defaultScope) {
       setWorkDescription(template.defaultScope);
@@ -157,6 +159,7 @@ export default function NuevaProformaPage({
       const params = new URLSearchParams({
         empresaId: empresa?.id || '',
         limit: '100',
+        activo: 'true',
       });
       const response: any = await api.get(`/productos?${params}`);
       setProductos(response.data || []);
@@ -244,7 +247,8 @@ export default function NuevaProformaPage({
         clienteId,
         fechaEmision: fechaEmision?.toISOString(),
         fechaValidez: fechaValidez?.toISOString(),
-        observaciones,
+        observaciones: observaciones || null,
+        condiciones: condiciones || null,
         moneda: empresa?.moneda || 'USD',
         // Job information
         jobName: jobName || null,
@@ -607,6 +611,23 @@ export default function NuevaProformaPage({
                 value={diasValidez}
                 onChange={(e) => setDiasValidez(parseInt(e.target.value) || 30)}
                 placeholder="30"
+              />
+            </div>
+          </Card>
+
+          {/* Terms & Conditions */}
+          <Card>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <ScrollText className="w-5 h-5 text-primary-600" />
+              {t('termsAndConditions')}
+            </h2>
+            <div className="space-y-4">
+              <Textarea
+                label={t('termsConditionsLabel')}
+                value={condiciones}
+                onChange={(e) => setCondiciones(e.target.value)}
+                placeholder={t('termsConditionsPlaceholder')}
+                rows={6}
               />
             </div>
           </Card>

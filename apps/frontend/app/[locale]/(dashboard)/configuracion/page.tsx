@@ -524,7 +524,8 @@ export default function ConfiguracionPage({
                       />
                       <Input
                         label={t('email')}
-                        type="email"
+                        type="text"
+                        inputMode="email"
                         value={empresaForm.email}
                         onChange={(e) => setEmpresaForm({ ...empresaForm, email: e.target.value })}
                         className="focus:ring-blue-500"
@@ -737,7 +738,8 @@ export default function ConfiguracionPage({
                     />
                     <Input
                       label={t('email')}
-                      type="email"
+                      type="text"
+                      inputMode="email"
                       value={userForm.email}
                       onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
                       disabled

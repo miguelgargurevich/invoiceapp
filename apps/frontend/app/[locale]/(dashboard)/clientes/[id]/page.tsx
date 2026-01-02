@@ -210,7 +210,8 @@ export default function ClienteDetailPage({
                 
                 <Input
                   label={t('email')}
-                  type="email"
+                  type="text"
+                  inputMode="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="email@example.com"

@@ -31,7 +31,8 @@ import {
   MapPin,
   CreditCard,
   Plus,
-  Trash2
+  Trash2,
+  ScrollText
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -157,6 +158,9 @@ export default function ProformaDetailPage({
   const [isEditObservationsOpen, setIsEditObservationsOpen] = useState(false);
   const [editingObservations, setEditingObservations] = useState(false);
   const [observacionesEdit, setObservacionesEdit] = useState('');
+  const [isEditConditionsOpen, setIsEditConditionsOpen] = useState(false);
+  const [editingConditions, setEditingConditions] = useState(false);
+  const [condicionesEdit, setCondicionesEdit] = useState('');
   const [isEditDatesOpen, setIsEditDatesOpen] = useState(false);
   const [editingDates, setEditingDates] = useState(false);
   const [fechaEmisionEdit, setFechaEmisionEdit] = useState<Date | null>(null);
@@ -474,6 +478,32 @@ export default function ProformaDetailPage({
       showError(error.response?.data?.error || 'Failed to update observations');
     } finally {
       setEditingObservations(false);
+    }
+  };
+
+  const handleOpenEditConditions = () => {
+    if (!proforma) return;
+    setCondicionesEdit(proforma.condiciones || '');
+    setIsEditConditionsOpen(true);
+  };
+
+  const handleSaveConditions = async () => {
+    if (!proforma) return;
+
+    try {
+      setEditingConditions(true);
+      await api.put(`/proformas/${proforma.id}/conditions`, {
+        condiciones: condicionesEdit,
+      });
+      
+      showSuccess(t('updateSuccess') || 'Conditions updated successfully');
+      setIsEditConditionsOpen(false);
+      loadProforma();
+    } catch (error: any) {
+      console.error('Error updating conditions:', error);
+      showError(error.response?.data?.error || 'Failed to update conditions');
+    } finally {
+      setEditingConditions(false);
     }
   };
 
@@ -974,16 +1004,31 @@ export default function ProformaDetailPage({
             </Card>
           )}
 
-          {/* Conditions */}
-          {proforma.condiciones && (
-            <Card>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
-                <FileText className="w-5 h-5" />
-                {t('conditions')}
+          {/* Terms & Conditions */}
+          <Card>
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                <ScrollText className="w-5 h-5" />
+                {t('termsAndConditions')}
               </h2>
+              {proforma.estado !== 'INVOICED' && proforma.estado !== 'CANCELLED' && (
+                <button
+                  onClick={handleOpenEditConditions}
+                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
+                  title="Edit conditions"
+                >
+                  <Edit2 className="w-4 h-4 text-gray-500" />
+                </button>
+              )}
+            </div>
+            {proforma.condiciones ? (
               <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{proforma.condiciones}</p>
-            </Card>
-          )}
+            ) : (
+              <p className="text-gray-400 dark:text-gray-500 italic text-sm">
+                {t('termsConditionsPlaceholder') || 'No terms and conditions'}
+              </p>
+            )}
+          </Card>
 
           {/* Observations */}
           <Card>
@@ -1576,6 +1621,65 @@ export default function ProformaDetailPage({
               ) : (
                 <>
                   <MessageSquare className="w-4 h-4 mr-2" />
+                  {tCommon('save')}
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Edit Conditions Modal */}
+      <Modal
+        isOpen={isEditConditionsOpen}
+        onClose={() => !editingConditions && setIsEditConditionsOpen(false)}
+        title={t('termsAndConditions')}
+        subtitle={t('termsConditionsSubtitle') || 'Contract terms and conditions'}
+        icon={ScrollText}
+        size="md"
+      >
+        <div className="space-y-5">
+          {/* Textarea Field */}
+          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              {t('termsConditionsLabel')}
+            </label>
+            <textarea
+              value={condicionesEdit}
+              onChange={(e) => setCondicionesEdit(e.target.value)}
+              disabled={editingConditions}
+              placeholder={t('termsConditionsPlaceholder')}
+              rows={8}
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent resize-none transition-all placeholder:text-gray-400"
+            />
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsEditConditionsOpen(false)}
+              disabled={editingConditions}
+              className="flex-1 h-11"
+            >
+              {tCommon('cancel')}
+            </Button>
+            <Button
+              onClick={handleSaveConditions}
+              disabled={editingConditions}
+              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+            >
+              {editingConditions ? (
+                <>
+                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {tCommon('saving')}
+                </>
+              ) : (
+                <>
+                  <ScrollText className="w-4 h-4 mr-2" />
                   {tCommon('save')}
                 </>
               )}

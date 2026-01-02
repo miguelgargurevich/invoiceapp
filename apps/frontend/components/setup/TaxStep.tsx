@@ -104,23 +104,28 @@ export default function TaxStep({ data, onUpdate, onNext, onPrev }: TaxStepProps
               {t('tax.presets')}
             </label>
             <div className="grid grid-cols-3 gap-2">
-              {TAX_PRESETS.filter(p => p.rate > 0).map((preset) => (
-                <motion.button
-                  key={preset.name}
-                  type="button"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handlePresetSelect(preset)}
-                  className={`
-                    p-3 rounded-xl border text-sm transition-all
-                    ${data.taxRate === preset.rate
-                      ? 'bg-red-500/20 border-red-500 text-white'
-                      : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'}
-                  `}
-                >
-                  {preset.name}
-                </motion.button>
-              ))}
+              {TAX_PRESETS.filter(p => p.rate > 0).map((preset) => {
+                const presetTaxName = preset.name.split(' ')[0]; // VAT, GST, IGV, etc.
+                const isSelected = data.taxRate === preset.rate && data.taxName === presetTaxName;
+                
+                return (
+                  <motion.button
+                    key={preset.name}
+                    type="button"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handlePresetSelect(preset)}
+                    className={`
+                      p-3 rounded-xl border text-sm transition-all
+                      ${isSelected
+                        ? 'bg-red-500/20 border-red-500 text-white'
+                        : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'}
+                    `}
+                  >
+                    {preset.name}
+                  </motion.button>
+                );
+              })}
             </div>
           </div>
 

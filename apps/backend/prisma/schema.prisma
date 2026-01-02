@@ -278,8 +278,8 @@ model Proforma {
   
   // Estado
   estado            String    @default("pendiente") // pendiente, aceptada, rechazada, vencida, facturada
-  condiciones       String?   // Condiciones de pago/entrega
-  observaciones     String?
+  condiciones       String?   @db.Text // Terms and conditions (large text for templates)
+  observaciones     String?   @db.Text
   
   // Archivos (Supabase Storage)
   pdfUrl            String?   @map("pdf_url")

@@ -162,6 +162,7 @@ export default function NuevaFacturaPage({
       const params = new URLSearchParams({
         empresaId: empresa?.id || '',
         limit: '100',
+        activo: 'true',
       });
       const response: any = await api.get(`/productos?${params}`);
       setProductos(response.data || []);

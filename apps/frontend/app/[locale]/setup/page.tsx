@@ -162,8 +162,11 @@ export default function SetupWizardPage() {
         setupCompleted: true,
       });
 
-      // Redirect to dashboard
-      router.push('/dashboard');
+      // Set preferred locale cookie for future visits
+      document.cookie = `preferredLocale=${setupData.locale};path=/;max-age=31536000`;
+
+      // Redirect to dashboard in the selected language
+      router.push(`/${setupData.locale}/dashboard`);
     } catch (error) {
       console.error('Error completing setup:', error);
     } finally {

@@ -35,14 +35,14 @@ export default function DashboardLayout({
         try {
           const response = await api.get<EmpresaResponse>('/empresas/mi-empresa');
           if (response && response.setupCompleted === false) {
-            // User hasn't completed setup, redirect to wizard
-            router.push(`/${locale}/setup`);
+            // User hasn't completed setup, redirect to wizard in English (default)
+            router.push('/en/setup');
             return;
           }
         } catch (error) {
-          // If no empresa exists, redirect to setup
+          // If no empresa exists, redirect to setup in English (default)
           if ((error as Error)?.message?.includes('404')) {
-            router.push(`/${locale}/setup`);
+            router.push('/en/setup');
             return;
           }
         }
