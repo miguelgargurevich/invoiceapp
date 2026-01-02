@@ -5,7 +5,7 @@ import { useAuth } from './AuthContext';
 import api from '@/lib/api';
 
 // Types
-interface Plan {
+export interface Plan {
   id: string;
   name: string;
   slug: string;
@@ -13,9 +13,12 @@ interface Plan {
   priceMonthly: number;
   priceYearly: number;
   currency: string;
-  maxInvoicesPerMonth: number;
+  // Allow both naming conventions from backend
+  maxInvoicesPerMonth?: number;
+  maxInvoices?: number;
   maxClients: number;
-  maxProposalsPerMonth: number;
+  maxProposalsPerMonth?: number;
+  maxProposals?: number;
   maxStorageMb: number;
   hasProposals: boolean;
   hasDigitalSignatures: boolean;
@@ -27,6 +30,12 @@ interface Plan {
   hasPrioritySupport: boolean;
   hasApiAccess: boolean;
   trialDays: number;
+}
+
+// Normalized plan interface for easy access
+export interface NormalizedPlan extends Plan {
+  maxInvoices: number;
+  maxProposals: number;
 }
 
 interface Subscription {
@@ -46,6 +55,13 @@ interface Subscription {
   plan: Plan;
 }
 
+export interface UsageInfo {
+  invoicesCount: number;
+  proposalsCount: number;
+  clientsCount: number;
+  storageUsedMb: number;
+}
+
 interface UsageData {
   invoices: { used: number; limit: number; percentage: number };
   proposals: { used: number; limit: number; percentage: number };
@@ -54,7 +70,8 @@ interface UsageData {
 
 interface SubscriptionContextType {
   subscription: Subscription | null;
-  usage: UsageData | null;
+  usage: UsageInfo | null;
+  plan: NormalizedPlan | null;
   loading: boolean;
   error: string | null;
   // Feature checks
@@ -74,14 +91,14 @@ interface SubscriptionContextType {
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
 export function SubscriptionProvider({ children }: { children: React.ReactNode }) {
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const [subscription, setSubscription] = useState<Subscription | null>(null);
-  const [usage, setUsage] = useState<UsageData | null>(null);
+  const [usage, setUsage] = useState<UsageInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchSubscription = useCallback(async () => {
-    if (!isAuthenticated) {
+    if (!user) {
       setSubscription(null);
       setUsage(null);
       setLoading(false);
@@ -94,7 +111,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
       const [subResponse, usageResponse] = await Promise.all([
         api.get<Subscription>('/subscriptions/current'),
-        api.get<UsageData>('/subscriptions/usage')
+        api.get<UsageInfo>('/subscriptions/usage')
       ]);
 
       setSubscription(subResponse);
@@ -105,7 +122,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     } finally {
       setLoading(false);
     }
-  }, [isAuthenticated]);
+  }, [user]);
 
   useEffect(() => {
     fetchSubscription();
@@ -127,19 +144,20 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       return false;
     }
 
+    const planData = subscription.plan;
+
     switch (resource) {
       case 'invoice': {
-        const limit = subscription.plan.maxInvoicesPerMonth;
-        return limit === -1 || usage.invoices.used < limit;
+        const limit = planData.maxInvoices ?? planData.maxInvoicesPerMonth ?? 20;
+        return limit === -1 || usage.invoicesCount < limit;
       }
       case 'proposal': {
-        const limit = subscription.plan.maxProposalsPerMonth;
-        return limit === -1 || usage.proposals.used < limit;
+        const limit = planData.maxProposals ?? planData.maxProposalsPerMonth ?? 0;
+        return limit === -1 || usage.proposalsCount < limit;
       }
       case 'client': {
-        // Client count needs to be fetched separately or from usage
-        const limit = subscription.plan.maxClients;
-        return limit === -1; // For now, return true if unlimited
+        const limit = planData.maxClients ?? 10;
+        return limit === -1 || usage.clientsCount < limit;
       }
       default:
         return true;
@@ -152,28 +170,39 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       return { used: 0, limit: 0, percentage: 0, unlimited: false };
     }
 
+    const planData = subscription.plan;
+
     switch (resource) {
-      case 'invoice':
+      case 'invoice': {
+        const limit = planData.maxInvoices ?? planData.maxInvoicesPerMonth ?? 20;
+        const used = usage.invoicesCount;
         return {
-          used: usage.invoices.used,
-          limit: subscription.plan.maxInvoicesPerMonth,
-          percentage: usage.invoices.percentage,
-          unlimited: subscription.plan.maxInvoicesPerMonth === -1
+          used,
+          limit,
+          percentage: limit > 0 ? (used / limit) * 100 : 0,
+          unlimited: limit === -1
         };
-      case 'proposal':
+      }
+      case 'proposal': {
+        const limit = planData.maxProposals ?? planData.maxProposalsPerMonth ?? 0;
+        const used = usage.proposalsCount;
         return {
-          used: usage.proposals.used,
-          limit: subscription.plan.maxProposalsPerMonth,
-          percentage: usage.proposals.percentage,
-          unlimited: subscription.plan.maxProposalsPerMonth === -1
+          used,
+          limit,
+          percentage: limit > 0 ? (used / limit) * 100 : 0,
+          unlimited: limit === -1
         };
-      case 'storage':
+      }
+      case 'storage': {
+        const limit = planData.maxStorageMb ?? 100;
+        const used = usage.storageUsedMb;
         return {
-          used: usage.storage.used,
-          limit: subscription.plan.maxStorageMb,
-          percentage: usage.storage.percentage,
+          used,
+          limit,
+          percentage: limit > 0 ? (used / limit) * 100 : 0,
           unlimited: false
         };
+      }
       default:
         return { used: 0, limit: 0, percentage: 0, unlimited: false };
     }
@@ -193,9 +222,17 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
 
   const currentPlanSlug = subscription?.plan?.slug || null;
 
+  // Derived plan with normalized field names for easy access
+  const plan: NormalizedPlan | null = subscription?.plan ? {
+    ...subscription.plan,
+    maxInvoices: subscription.plan.maxInvoices ?? subscription.plan.maxInvoicesPerMonth ?? 20,
+    maxProposals: subscription.plan.maxProposals ?? subscription.plan.maxProposalsPerMonth ?? 0,
+  } : null;
+
   const value: SubscriptionContextType = {
     subscription,
     usage,
+    plan,
     loading,
     error,
     hasFeature,
@@ -237,11 +274,23 @@ export function useFeatureAccess(feature: keyof Plan) {
 
 // Hook for checking if user can create a resource
 export function useCanCreate(resource: 'invoice' | 'proposal' | 'client') {
-  const { canCreate, getUsageInfo, loading, subscription } = useSubscription();
+  const { canCreate, getUsageInfo, loading, subscription, usage, plan } = useSubscription();
   
-  const usageInfo = resource === 'invoice' || resource === 'proposal' 
-    ? getUsageInfo(resource) 
-    : { used: 0, limit: subscription?.plan?.maxClients || 0, percentage: 0, unlimited: (subscription?.plan?.maxClients || 0) === -1 };
+  let usageInfo: { used: number; limit: number; percentage: number; unlimited: boolean };
+  
+  if (resource === 'invoice' || resource === 'proposal') {
+    usageInfo = getUsageInfo(resource);
+  } else {
+    // For clients
+    const limit = plan?.maxClients ?? 10;
+    const used = usage?.clientsCount ?? 0;
+    usageInfo = {
+      used,
+      limit,
+      percentage: limit > 0 ? (used / limit) * 100 : 0,
+      unlimited: limit === -1
+    };
+  }
 
   return {
     canCreate: canCreate(resource),

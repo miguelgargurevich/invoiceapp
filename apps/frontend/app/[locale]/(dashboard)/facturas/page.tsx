@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Plus, Search, Filter, Download, MoreHorizontal, Receipt, CheckCircle, Clock, XCircle, AlertTriangle, FileText } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import {
   Button,
   DataTable,
@@ -15,6 +16,7 @@ import {
   SkeletonMetricCard,
   type Column,
 } from '@/components/common';
+import { UsageLimitModal, UsageLimitWarning } from '@/components/common/UpgradePrompt';
 
 import { formatDate } from '@/lib/utils';
 import { useCurrency } from '@/lib/hooks/useCurrency';
@@ -80,9 +82,11 @@ export default function FacturasPage({
   params: { locale: string };
 }) {
   const t = useTranslations('invoices');
+  const tSub = useTranslations('subscriptionFeatures');
   const router = useRouter();
   const { empresa } = useAuth();
   const { formatCurrency } = useCurrency();
+  const { subscription, usage, plan, loading: subscriptionLoading } = useSubscription();
   
   const [facturas, setFacturas] = useState<Factura[]>([]);
   const [loading, setLoading] = useState(true);
@@ -93,6 +97,22 @@ export default function FacturasPage({
   const [totalPages, setTotalPages] = useState(1);
   const [sortKey, setSortKey] = useState<string>('fechaEmision');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  
+  // Modal state for invoice limit
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  
+  // Check invoice limits
+  const invoicesLimit = plan?.maxInvoices ?? 20;
+  const invoicesUsed = usage?.invoicesCount ?? 0;
+  const canCreateInvoice = invoicesLimit === -1 || invoicesUsed < invoicesLimit;
+  
+  const handleCreateClick = () => {
+    if (!canCreateInvoice) {
+      setShowLimitModal(true);
+      return;
+    }
+    router.push(`/${locale}/facturas/nueva`);
+  };
 
   const loadFacturas = useCallback(async () => {
     if (!empresa?.id) return;
@@ -480,13 +500,29 @@ export default function FacturasPage({
           </div>
         </div>
         <Button 
-          onClick={() => router.push(`/${locale}/facturas/nueva`)}
+          onClick={handleCreateClick}
           className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
         >
           <Receipt className="w-5 h-5 mr-2" />
           {t('newInvoice')}
         </Button>
       </div>
+
+      {/* Usage limit warning */}
+      <UsageLimitWarning 
+        resource={t('title').toLowerCase()} 
+        used={invoicesUsed} 
+        limit={invoicesLimit} 
+      />
+
+      {/* Limit Modal when invoice limit reached */}
+      <UsageLimitModal
+        isOpen={showLimitModal}
+        onClose={() => setShowLimitModal(false)}
+        resource={t('title').toLowerCase()}
+        used={invoicesUsed}
+        limit={invoicesLimit}
+      />
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

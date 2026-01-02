@@ -1633,19 +1633,30 @@
       "dedicatedManager": "Dedicated account manager"
     }
   },
-  "subscription": {
+  "subscriptionFeatures": {
     "upgradeRequired": "Upgrade Required",
+    "upgradeToUnlock": "Upgrade to Unlock This Feature",
+    "upgradeNow": "Upgrade Now",
+    "upgradeForMore": "Upgrade for Higher Limits",
+    "maybeLater": "Maybe Later",
     "featureNotAvailable": "The {feature} feature is not available in your current plan",
     "featureNotAvailableDesc": "Upgrade your plan to unlock {feature} and many more powerful features.",
     "currentPlan": "Current plan",
     "viewPlans": "View Plans",
     "upgrade": "Upgrade",
     "limitReached": "You've reached the limit for {resource}",
+    "limitReachedTitle": "Monthly Limit Reached",
+    "limitReachedDesc": "You've used all your {resource} for this billing period. Upgrade your plan to create more.",
+    "usedThisMonth": "Used this month",
     "nearLimit": "{used} of {limit} {resource} used this month",
     "trialEndsIn": "Your trial ends in {days} days",
     "trialEnded": "Your trial has ended",
     "subscribeNow": "Subscribe Now",
     "manageSubscription": "Manage Subscription",
+    "proposalsFeature": "Proposals & Estimates",
+    "proposalsFeatureDesc": "Create professional proposals and estimates to win more clients. This feature helps you present detailed project costs and scope before starting work.",
+    "signaturesFeature": "Digital Signatures",
+    "signaturesFeatureDesc": "Get legally binding e-signatures on your proposals and invoices. Your clients can sign documents digitally from any device.",
     "features": {
       "hasProposals": "Proposals",
       "hasDigitalSignatures": "Digital Signatures",

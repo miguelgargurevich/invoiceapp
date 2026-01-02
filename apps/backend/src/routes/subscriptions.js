@@ -348,26 +348,34 @@ router.get('/usage', authenticateToken, getEmpresaFromUser, async (req, res) => 
       console.log(`[SUBSCRIPTIONS] Created trial subscription for usage - empresa ${req.empresa.id}`);
     }
 
+    // Get actual counts from the database
+    const [invoicesCount, proposalsCount, clientsCount] = await Promise.all([
+      prisma.factura.count({
+        where: { 
+          empresaId: req.empresa.id,
+          createdAt: {
+            gte: subscription.currentPeriodStart || new Date(new Date().setDate(1))
+          }
+        }
+      }),
+      prisma.proforma.count({
+        where: { 
+          empresaId: req.empresa.id,
+          createdAt: {
+            gte: subscription.currentPeriodStart || new Date(new Date().setDate(1))
+          }
+        }
+      }),
+      prisma.cliente.count({
+        where: { empresaId: req.empresa.id }
+      })
+    ]);
+
     res.json({
-      invoices: {
-        used: subscription.invoicesUsed,
-        limit: subscription.plan.maxInvoicesPerMonth,
-        percentage: subscription.plan.maxInvoicesPerMonth > 0 
-          ? (subscription.invoicesUsed / subscription.plan.maxInvoicesPerMonth) * 100 
-          : 0
-      },
-      proposals: {
-        used: subscription.proposalsUsed,
-        limit: subscription.plan.maxProposalsPerMonth,
-        percentage: subscription.plan.maxProposalsPerMonth > 0 
-          ? (subscription.proposalsUsed / subscription.plan.maxProposalsPerMonth) * 100 
-          : 0
-      },
-      storage: {
-        used: subscription.storageUsedMb,
-        limit: subscription.plan.maxStorageMb,
-        percentage: (subscription.storageUsedMb / subscription.plan.maxStorageMb) * 100
-      }
+      invoicesCount,
+      proposalsCount,
+      clientsCount,
+      storageUsedMb: subscription.storageUsedMb || 0
     });
   } catch (error) {
     console.error('Error fetching usage:', error);

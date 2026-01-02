@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { Lock, Sparkles, ArrowRight } from 'lucide-react';
+import { Lock, Sparkles, ArrowRight, Crown, X, Zap } from 'lucide-react';
 import { Button } from '@/components/common';
+import { Modal } from './Modal';
 
 interface UpgradePromptProps {
   feature: string;
@@ -20,7 +21,7 @@ export function UpgradePrompt({
   className = '' 
 }: UpgradePromptProps) {
   const router = useRouter();
-  const t = useTranslations('subscription');
+  const t = useTranslations('subscriptionFeatures');
 
   const handleUpgrade = () => {
     router.push('/en/configuracion?tab=subscription');
@@ -91,6 +92,104 @@ export function UpgradePrompt({
   );
 }
 
+interface UpgradeModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  feature: string;
+  featureDescription?: string;
+  requiredPlan?: 'pro' | 'business';
+}
+
+export function UpgradeModal({ 
+  isOpen, 
+  onClose, 
+  feature, 
+  featureDescription,
+  requiredPlan = 'pro' 
+}: UpgradeModalProps) {
+  const router = useRouter();
+  const t = useTranslations('subscriptionFeatures');
+
+  const handleUpgrade = () => {
+    onClose();
+    router.push('/en/configuracion?tab=subscription');
+  };
+
+  const planInfo = {
+    pro: {
+      name: 'Pro',
+      price: '$29',
+      color: 'from-blue-500 to-indigo-600',
+      features: ['Proposals', 'Digital Signatures', 'Custom Branding', 'Job Tracking']
+    },
+    business: {
+      name: 'Business',
+      price: '$49',
+      color: 'from-purple-500 to-pink-600',
+      features: ['Multi-Currency', 'Advanced Reports', 'Priority Support', 'API Access']
+    }
+  };
+
+  const plan = planInfo[requiredPlan];
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="">
+      <div className="text-center px-2 pb-2">
+        {/* Icon */}
+        <div className={`w-20 h-20 mx-auto mb-6 bg-gradient-to-br ${plan.color} rounded-2xl flex items-center justify-center shadow-lg`}>
+          <Crown className="w-10 h-10 text-white" />
+        </div>
+
+        {/* Title */}
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          {t('upgradeToUnlock')}
+        </h2>
+        
+        <p className="text-gray-600 dark:text-gray-400 mb-6">
+          {featureDescription || t('featureNotAvailableDesc', { feature })}
+        </p>
+
+        {/* Plan Card */}
+        <div className={`bg-gradient-to-br ${plan.color} rounded-xl p-1 mb-6`}>
+          <div className="bg-white dark:bg-gray-900 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-bold text-lg text-gray-900 dark:text-white">{plan.name}</span>
+              <span className="text-2xl font-bold text-gray-900 dark:text-white">
+                {plan.price}<span className="text-sm font-normal text-gray-500">/mo</span>
+              </span>
+            </div>
+            <ul className="space-y-2 text-left">
+              {plan.features.map((f, i) => (
+                <li key={i} className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                  <Zap className="w-4 h-4 text-yellow-500 mr-2 flex-shrink-0" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* CTA Buttons */}
+        <div className="space-y-3">
+          <Button 
+            onClick={handleUpgrade} 
+            className={`w-full bg-gradient-to-r ${plan.color} hover:opacity-90 text-white font-semibold py-3`}
+          >
+            <Sparkles className="w-5 h-5 mr-2" />
+            {t('upgradeNow')}
+          </Button>
+          <button 
+            onClick={onClose}
+            className="w-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm py-2"
+          >
+            {t('maybeLater')}
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
 interface UsageLimitWarningProps {
   resource: string;
   used: number;
@@ -99,7 +198,7 @@ interface UsageLimitWarningProps {
 }
 
 export function UsageLimitWarning({ resource, used, limit, className = '' }: UsageLimitWarningProps) {
-  const t = useTranslations('subscription');
+  const t = useTranslations('subscriptionFeatures');
   const router = useRouter();
   const percentage = limit > 0 ? (used / limit) * 100 : 0;
   const isNearLimit = percentage >= 80;
@@ -134,6 +233,72 @@ export function UsageLimitWarning({ resource, used, limit, className = '' }: Usa
   );
 }
 
+interface UsageLimitModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  resource: string;
+  used: number;
+  limit: number;
+}
+
+export function UsageLimitModal({ isOpen, onClose, resource, used, limit }: UsageLimitModalProps) {
+  const router = useRouter();
+  const t = useTranslations('subscriptionFeatures');
+
+  const handleUpgrade = () => {
+    onClose();
+    router.push('/en/configuracion?tab=subscription');
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title="">
+      <div className="text-center px-2 pb-2">
+        <div className="w-20 h-20 mx-auto mb-6 bg-red-100 dark:bg-red-900/30 rounded-2xl flex items-center justify-center">
+          <Lock className="w-10 h-10 text-red-600 dark:text-red-400" />
+        </div>
+
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          {t('limitReachedTitle')}
+        </h2>
+        
+        <p className="text-gray-600 dark:text-gray-400 mb-4">
+          {t('limitReachedDesc', { resource })}
+        </p>
+
+        {/* Progress bar */}
+        <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 mb-6">
+          <div className="flex justify-between text-sm mb-2">
+            <span className="text-gray-600 dark:text-gray-400">{t('usedThisMonth')}</span>
+            <span className="font-bold text-red-600 dark:text-red-400">{used} / {limit}</span>
+          </div>
+          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-red-500 rounded-full"
+              style={{ width: '100%' }}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <Button 
+            onClick={handleUpgrade} 
+            className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90 text-white font-semibold py-3"
+          >
+            <Sparkles className="w-5 h-5 mr-2" />
+            {t('upgradeForMore')}
+          </Button>
+          <button 
+            onClick={onClose}
+            className="w-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm py-2"
+          >
+            {t('maybeLater')}
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
 interface FeatureGateProps {
   feature: keyof import('@/contexts/SubscriptionContext').Plan;
   children: React.ReactNode;
@@ -154,4 +319,22 @@ export function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
   }
 
   return <>{children}</>;
+}
+
+// Pro Badge for buttons
+export function ProBadge({ className = '' }: { className?: string }) {
+  return (
+    <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-gradient-to-r from-blue-500 to-indigo-600 text-white ${className}`}>
+      PRO
+    </span>
+  );
+}
+
+// Business Badge for buttons
+export function BusinessBadge({ className = '' }: { className?: string }) {
+  return (
+    <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-gradient-to-r from-purple-500 to-pink-600 text-white ${className}`}>
+      BUSINESS
+    </span>
+  );
 }

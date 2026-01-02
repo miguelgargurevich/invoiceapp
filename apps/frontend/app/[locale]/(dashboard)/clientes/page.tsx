@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter, useParams } from 'next/navigation';
 import { Search, Filter, Download, Trash2, UserPlus, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import {
   Button,
   DataTable,
@@ -13,6 +14,7 @@ import {
   EmptyClients,
   type Column,
 } from '@/components/common';
+import { UsageLimitModal, UsageLimitWarning } from '@/components/common/UpgradePrompt';
 import api from '@/lib/api';
 
 interface Cliente {
@@ -28,10 +30,12 @@ interface Cliente {
 
 export default function ClientesPage() {
   const t = useTranslations('clients');
+  const tSub = useTranslations('subscriptionFeatures');
   const router = useRouter();
   const params = useParams();
   const locale = params.locale as string;
   const { empresa } = useAuth();
+  const { subscription, usage, plan, loading: subscriptionLoading } = useSubscription();
   
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,6 +46,22 @@ export default function ClientesPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [sortKey, setSortKey] = useState<string>('nombre');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  
+  // Modal state for client limit
+  const [showLimitModal, setShowLimitModal] = useState(false);
+  
+  // Check client limits
+  const clientsLimit = plan?.maxClients ?? 10;
+  const clientsUsed = usage?.clientsCount ?? 0;
+  const canCreateClient = clientsLimit === -1 || clientsUsed < clientsLimit;
+  
+  const handleCreateClick = () => {
+    if (!canCreateClient) {
+      setShowLimitModal(true);
+      return;
+    }
+    router.push(`/${locale}/clientes/nuevo`);
+  };
 
   const loadClientes = useCallback(async () => {
     if (!empresa?.id) return;
@@ -234,13 +254,29 @@ export default function ClientesPage() {
           </div>
         </div>
         <Button
-          onClick={() => router.push(`/${locale}/clientes/nuevo`)}
+          onClick={handleCreateClick}
           className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
         >
           <UserPlus className="w-5 h-5 mr-2" />
           {t('addClient')}
         </Button>
       </div>
+
+      {/* Usage limit warning */}
+      <UsageLimitWarning 
+        resource={t('title').toLowerCase()} 
+        used={clientsUsed} 
+        limit={clientsLimit} 
+      />
+
+      {/* Limit Modal when client limit reached */}
+      <UsageLimitModal
+        isOpen={showLimitModal}
+        onClose={() => setShowLimitModal(false)}
+        resource={t('title').toLowerCase()}
+        used={clientsUsed}
+        limit={clientsLimit}
+      />
 
       {/* Search and filters */}
       <Card className="!p-4">
@@ -273,7 +309,7 @@ export default function ClientesPage() {
         emptyState={
           <EmptyClients
             action={
-              <Button onClick={() => router.push(`/${locale}/clientes/nuevo`)}>
+              <Button onClick={handleCreateClick}>
                 <UserPlus className="w-4 h-4 mr-2" />
                 {t('addFirstClient')}
               </Button>

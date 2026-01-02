@@ -1635,19 +1635,30 @@
       "dedicatedManager": "Gerente de cuenta dedicado"
     }
   },
-  "subscription": {
+  "subscriptionFeatures": {
     "upgradeRequired": "Actualización Requerida",
+    "upgradeToUnlock": "Actualiza para Desbloquear Esta Función",
+    "upgradeNow": "Actualizar Ahora",
+    "upgradeForMore": "Actualiza para Límites Mayores",
+    "maybeLater": "Quizás Después",
     "featureNotAvailable": "La función {feature} no está disponible en tu plan actual",
     "featureNotAvailableDesc": "Actualiza tu plan para desbloquear {feature} y muchas más funciones poderosas.",
     "currentPlan": "Plan actual",
     "viewPlans": "Ver Planes",
     "upgrade": "Actualizar",
     "limitReached": "Has alcanzado el límite de {resource}",
+    "limitReachedTitle": "Límite Mensual Alcanzado",
+    "limitReachedDesc": "Has usado todos tus {resource} de este período. Actualiza tu plan para crear más.",
+    "usedThisMonth": "Usado este mes",
     "nearLimit": "{used} de {limit} {resource} usados este mes",
     "trialEndsIn": "Tu prueba termina en {days} días",
     "trialEnded": "Tu período de prueba ha terminado",
     "subscribeNow": "Suscribirse Ahora",
     "manageSubscription": "Administrar Suscripción",
+    "proposalsFeature": "Proformas y Presupuestos",
+    "proposalsFeatureDesc": "Crea proformas profesionales para ganar más clientes. Esta función te ayuda a presentar costos detallados y el alcance del proyecto antes de comenzar el trabajo.",
+    "signaturesFeature": "Firmas Digitales",
+    "signaturesFeatureDesc": "Obtén firmas electrónicas legalmente vinculantes en tus proformas y facturas. Tus clientes pueden firmar documentos digitalmente desde cualquier dispositivo.",
     "features": {
       "hasProposals": "Proformas",
       "hasDigitalSignatures": "Firmas Digitales",

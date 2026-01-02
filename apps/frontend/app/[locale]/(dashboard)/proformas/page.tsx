@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { Plus, Search, Filter, FileBarChart, CheckCircle, FileText, Clock, TrendingUp } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import {
   Button,
   DataTable,
@@ -15,6 +16,7 @@ import {
   SkeletonMetricCard,
   type Column,
 } from '@/components/common';
+import { UpgradeModal, UsageLimitModal, ProBadge } from '@/components/common/UpgradePrompt';
 
 import { formatDate } from '@/lib/utils';
 import { useCurrency } from '@/lib/hooks/useCurrency';
@@ -87,9 +89,11 @@ export default function ProformasPage({
   params: { locale: string };
 }) {
   const t = useTranslations('quotes');
+  const tSub = useTranslations('subscriptionFeatures');
   const router = useRouter();
   const { empresa } = useAuth();
   const { formatCurrency } = useCurrency();
+  const { subscription, usage, plan, loading: subscriptionLoading } = useSubscription();
   
   const [proformas, setProformas] = useState<ProformaListItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -100,6 +104,28 @@ export default function ProformasPage({
   const [totalPages, setTotalPages] = useState(1);
   const [sortKey, setSortKey] = useState<string>('fechaEmision');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  
+  // Modal states for subscription restrictions
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showLimitModal, setShowLimitModal] = useState(false);
+
+  // Check if user has proposals feature
+  const hasProposalsFeature = plan?.hasProposals ?? false;
+  const proposalsLimit = plan?.maxProposals ?? 0;
+  const proposalsUsed = usage?.proposalsCount ?? 0;
+  const canCreateProposal = hasProposalsFeature && (proposalsLimit === -1 || proposalsUsed < proposalsLimit);
+
+  const handleCreateClick = () => {
+    if (!hasProposalsFeature) {
+      setShowUpgradeModal(true);
+      return;
+    }
+    if (proposalsLimit !== -1 && proposalsUsed >= proposalsLimit) {
+      setShowLimitModal(true);
+      return;
+    }
+    router.push(`/${locale}/proformas/nueva`);
+  };
 
   const loadProformas = useCallback(async () => {
     if (!empresa?.id) return;
@@ -355,13 +381,32 @@ export default function ProformasPage({
           </div>
         </div>
         <Button 
-          onClick={() => router.push(`/${locale}/proformas/nueva`)}
+          onClick={handleCreateClick}
           className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 bg-emerald-600 dark:bg-emerald-500 hover:bg-emerald-700 dark:hover:bg-emerald-600 text-white"
         >
           <FileBarChart className="w-5 h-5 mr-2" />
           {t('create')}
+          {!hasProposalsFeature && <ProBadge className="ml-2" />}
         </Button>
       </div>
+
+      {/* Upgrade Modal for Proposals Feature */}
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        feature={tSub('proposalsFeature')}
+        featureDescription={tSub('proposalsFeatureDesc')}
+        requiredPlan="pro"
+      />
+
+      {/* Limit Modal when proposal limit reached */}
+      <UsageLimitModal
+        isOpen={showLimitModal}
+        onClose={() => setShowLimitModal(false)}
+        resource={t('title').toLowerCase()}
+        used={proposalsUsed}
+        limit={proposalsLimit}
+      />
 
       {/* Summary cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
