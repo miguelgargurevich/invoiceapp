@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken, getEmpresaFromUser } = require('../middleware/auth');
+const { checkFeature, checkLimit, incrementUsage } = require('../middleware/subscription');
 const prisma = require('../utils/prisma');
 const { z } = require('zod');
 const { sendProformaEmail } = require('../services/emailService');
@@ -322,7 +323,7 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
 });
 
 // POST /api/proformas - Crear proforma
-router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
+router.post('/', authenticateToken, getEmpresaFromUser, checkFeature('hasProposals'), checkLimit('proposal'), async (req, res) => {
   try {
     const validatedData = proformaSchema.parse(req.body);
     const { detalles, ...proformaData } = validatedData;
@@ -355,6 +356,9 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
         detalles: true
       }
     });
+
+    // Increment usage counter
+    await incrementUsage(req.empresa.id, 'proposal');
 
     res.status(201).json(proforma);
   } catch (error) {

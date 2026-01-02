@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken, getEmpresaFromUser } = require('../middleware/auth');
+const { checkLimit, incrementUsage } = require('../middleware/subscription');
 const prisma = require('../utils/prisma');
 const { z } = require('zod');
 const { sendInvoiceEmail, sendInvoiceCreationEmail, sendPaymentConfirmationEmail } = require('../services/emailService');
@@ -376,7 +377,7 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
 });
 
 // POST /api/facturas - Crear factura
-router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
+router.post('/', authenticateToken, getEmpresaFromUser, checkLimit('invoice'), async (req, res) => {
   try {
     const validatedData = facturaSchema.parse(req.body);
     const { detalles, totalMaterials, totalLabor, ...facturaData } = validatedData;
@@ -464,6 +465,9 @@ router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       // Don't fail the invoice creation if email fails
       console.error('[INVOICE] ❌ Failed to send automatic email:', emailError);
     }
+
+    // Increment usage counter
+    await incrementUsage(req.empresa.id, 'invoice');
 
     res.status(201).json(factura);
   } catch (error) {

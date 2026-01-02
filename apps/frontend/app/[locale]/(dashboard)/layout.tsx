@@ -2,6 +2,7 @@
 
 import { ReactNode } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { SubscriptionProvider } from '@/contexts/SubscriptionContext';
 import { AppLayout } from '@/components/global/AppLayout';
 import { LoadingPage } from '@/components/common';
 import { useRouter } from 'next/navigation';
@@ -63,5 +64,9 @@ export default function DashboardLayout({
     return null;
   }
 
-  return <AppLayout>{children}</AppLayout>;
+  return (
+    <SubscriptionProvider>
+      <AppLayout>{children}</AppLayout>
+    </SubscriptionProvider>
+  );
 }

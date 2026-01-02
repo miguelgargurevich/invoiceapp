@@ -1632,5 +1632,30 @@
       "teamManagement": "Team management",
       "dedicatedManager": "Dedicated account manager"
     }
+  },
+  "subscription": {
+    "upgradeRequired": "Upgrade Required",
+    "featureNotAvailable": "The {feature} feature is not available in your current plan",
+    "featureNotAvailableDesc": "Upgrade your plan to unlock {feature} and many more powerful features.",
+    "currentPlan": "Current plan",
+    "viewPlans": "View Plans",
+    "upgrade": "Upgrade",
+    "limitReached": "You've reached the limit for {resource}",
+    "nearLimit": "{used} of {limit} {resource} used this month",
+    "trialEndsIn": "Your trial ends in {days} days",
+    "trialEnded": "Your trial has ended",
+    "subscribeNow": "Subscribe Now",
+    "manageSubscription": "Manage Subscription",
+    "features": {
+      "hasProposals": "Proposals",
+      "hasDigitalSignatures": "Digital Signatures",
+      "hasReports": "Reports",
+      "hasCustomBranding": "Custom Branding",
+      "hasMultiCurrency": "Multi-Currency",
+      "hasJobTracking": "Job Tracking",
+      "hasAdvancedReports": "Advanced Reports",
+      "hasPrioritySupport": "Priority Support",
+      "hasApiAccess": "API Access"
+    }
   }
 }

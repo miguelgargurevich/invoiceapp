@@ -4,6 +4,7 @@ const { PrismaClient } = require('@prisma/client');
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const { sendSignatureRequestEmail, sendSignatureConfirmationEmail } = require('../services/emailService');
+const { getOrCreateSubscription } = require('../middleware/subscription');
 
 const prisma = new PrismaClient();
 
@@ -54,6 +55,26 @@ router.post('/request', async (req, res) => {
     }
 
     empresaId = document.empresaId;
+
+    // Check subscription for digital signatures feature
+    const subscription = await getOrCreateSubscription(empresaId);
+    if (!subscription) {
+      return res.status(403).json({ 
+        error: 'No subscription available',
+        code: 'NO_SUBSCRIPTION'
+      });
+    }
+    
+    if (!subscription.plan.hasDigitalSignatures) {
+      return res.status(403).json({
+        error: 'Digital signatures are not available in your current plan',
+        code: 'FEATURE_NOT_AVAILABLE',
+        feature: 'hasDigitalSignatures',
+        currentPlan: subscription.plan.slug,
+        planName: subscription.plan.name,
+        upgradeRequired: true
+      });
+    }
 
     // Generate unique token
     const token = crypto.randomBytes(32).toString('hex');

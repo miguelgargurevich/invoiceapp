@@ -1634,5 +1634,30 @@
       "teamManagement": "Gestión de equipos",
       "dedicatedManager": "Gerente de cuenta dedicado"
     }
+  },
+  "subscription": {
+    "upgradeRequired": "Actualización Requerida",
+    "featureNotAvailable": "La función {feature} no está disponible en tu plan actual",
+    "featureNotAvailableDesc": "Actualiza tu plan para desbloquear {feature} y muchas más funciones poderosas.",
+    "currentPlan": "Plan actual",
+    "viewPlans": "Ver Planes",
+    "upgrade": "Actualizar",
+    "limitReached": "Has alcanzado el límite de {resource}",
+    "nearLimit": "{used} de {limit} {resource} usados este mes",
+    "trialEndsIn": "Tu prueba termina en {days} días",
+    "trialEnded": "Tu período de prueba ha terminado",
+    "subscribeNow": "Suscribirse Ahora",
+    "manageSubscription": "Administrar Suscripción",
+    "features": {
+      "hasProposals": "Proformas",
+      "hasDigitalSignatures": "Firmas Digitales",
+      "hasReports": "Reportes",
+      "hasCustomBranding": "Marca Personalizada",
+      "hasMultiCurrency": "Multi-Moneda",
+      "hasJobTracking": "Seguimiento de Trabajos",
+      "hasAdvancedReports": "Reportes Avanzados",
+      "hasPrioritySupport": "Soporte Prioritario",
+      "hasApiAccess": "Acceso API"
+    }
   }
 }

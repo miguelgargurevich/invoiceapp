@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { authenticateToken, getEmpresaFromUser } = require('../middleware/auth');
+const { checkLimit } = require('../middleware/subscription');
 const prisma = require('../utils/prisma');
 const { z } = require('zod');
 
@@ -121,7 +122,7 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
 });
 
 // POST /api/clientes - Crear cliente
-router.post('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
+router.post('/', authenticateToken, getEmpresaFromUser, checkLimit('client'), async (req, res) => {
   try {
     console.log('[CLIENTES] Creating client, body:', JSON.stringify(req.body, null, 2));
     
