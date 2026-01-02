@@ -24,6 +24,7 @@ export interface InvoiceTemplate {
   defaultWorkDescription: string;
   defaultPaymentTerms: string;
   defaultNotes?: string;
+  defaultTerms?: string;
   suggestedItems: { description: string; isLabor: boolean }[];
 }
 
@@ -42,7 +43,10 @@ const INVOICE_TEMPLATES: InvoiceTemplate[] = [
 • Quality inspection completed
 • All work performed to code standards`,
     defaultPaymentTerms: `Payment due upon receipt. Late payments subject to 1.5% monthly interest.`,
-    defaultNotes: `Thank you for your business. All workmanship warranted for one (1) year from completion date.`,
+    defaultNotes: `If an attorney is used to enforce or collect any obligations due on this obligation, then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.`,
+    defaultTerms: `All material is guaranteed to be as specified. All work to be completed in a workmanlike manner according to standard practices. Any alteration or deviation from above specifications involving extra costs will be executed only upon written orders, and will become an extra charge over and above the estimate.
+All agreements contingent upon strikes, accidents or delays beyond our control. Owner to carry fire, windstorm and other necessary insurance.
+Our workers are fully covered by Workman's Compensation Insurance.`,
     suggestedItems: [
       { description: 'Labor - Installation', isLabor: true },
       { description: 'Labor - Site Preparation', isLabor: true },

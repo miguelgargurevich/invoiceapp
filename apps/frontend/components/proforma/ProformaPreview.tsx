@@ -181,7 +181,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
           </div>
         </div>
 
-        {/* Contract Terms and Conditions (if provided) */}
+        {/* Contract Terms and Conditions */}
         {proforma.condiciones && (
           <div className="mb-4 p-3 bg-gray-50 border border-gray-300 rounded">
             <p className="text-[10px] font-bold text-gray-900 mb-2">TERMS AND CONDITIONS</p>
@@ -190,45 +190,6 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
             </div>
           </div>
         )}
-
-        {/* Terms and Conditions */}
-        <div className="mb-3 grid grid-cols-2 gap-6">
-          {/* Left Side - Terms */}
-          <div className="text-[8px] text-gray-700 space-y-2">
-            <p>
-              <span className="font-bold">All material is guaranteed</span> to be as specified. All work to be completed 
-              in a workmanlike manner according to standard practices. Any alteration or deviation from above 
-              specifications involving extra costs will be executed only upon written orders, and will become an 
-              extra charge over and above the estimate.
-            </p>
-            <p>
-              All agreements contingent upon strikes, accidents or delays beyond our control. Owner to carry fire, 
-              windstorm and other necessary insurance.
-            </p>
-            <p>
-              <span className="font-bold">Our workers are fully covered by Workman's Compensation Insurance.</span>
-            </p>
-          </div>
-
-          {/* Right Side - Signature */}
-          <div className="text-center">
-            <p className="text-[10px] font-bold text-gray-900 mb-2">Authorized Signature</p>
-            {empresa?.firmaEmpresa ? (
-              <div className="flex justify-center">
-                <img
-                  src={empresa.firmaEmpresa}
-                  alt="Company Signature"
-                  style={{ width: '150px', height: '60px', maxHeight: '64px', objectFit: 'contain' }}
-                />
-              </div>
-            ) : (
-              <div className="border-t border-gray-800 mb-2 mt-16"></div>
-            )}
-            <p className="text-[8px] italic text-gray-600 mt-2">
-              This proposal may be withdrawn by us if not accepted within 30 days.
-            </p>
-          </div>
-        </div>
 
         {/* Separator Line */}
         <div className="border-t-2 border-gray-800 mb-3"></div>
@@ -311,13 +272,14 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
           </div>
         )}
 
-        {/* Attorney Fees Clause - Bottom of Page */}
-        <div className="text-center mt-6">
-          <p className="text-[8px] italic text-gray-700">
-            If an attorney is used to enforce or collect any obligations due on this obligation, 
-            then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.
-          </p>
-        </div>
+        {/* Footer - Notes/Observations */}
+        {proforma.observaciones && (
+          <div className="text-center mt-6">
+            <p className="text-[8px] italic text-gray-700">
+              {proforma.observaciones}
+            </p>
+          </div>
+        )}
       </div>
     );
   }

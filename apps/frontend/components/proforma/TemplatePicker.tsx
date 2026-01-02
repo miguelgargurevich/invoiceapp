@@ -25,6 +25,7 @@ export interface ProposalTemplate {
   defaultPaymentTerms: string;
   defaultWarranty?: string;
   defaultScope?: string;
+  defaultNotes?: string;
   suggestedSections: string[];
 }
 
@@ -37,11 +38,9 @@ const PROPOSAL_TEMPLATES: ProposalTemplate[] = [
     icon: HardHat,
     color: 'from-orange-500 to-amber-500',
     defaultTerms: 
-`1. All work to be completed in a workmanlike manner according to standard practices.
-2. Any changes to the scope of work will require a written change order.
-3. Client is responsible for obtaining necessary permits unless otherwise specified.
-4. Contractor maintains general liability and workers compensation insurance.
-5. All materials and labor guaranteed for one (1) year from completion date.`,
+`All material is guaranteed to be as specified. All work to be completed in a workmanlike manner according to standard practices. Any alteration or deviation from above specifications involving extra costs will be executed only upon written orders, and will become an extra charge over and above the estimate.
+All agreements contingent upon strikes, accidents or delays beyond our control. Owner to carry fire, windstorm and other necessary insurance.
+Our workers are fully covered by Workman's Compensation Insurance.`,
     defaultPaymentTerms: `PAYMENT TERMS:
 • 50% deposit required to schedule work
 • 25% upon substantial completion
@@ -54,6 +53,7 @@ All workmanship warranted for one (1) year from date of completion. Materials ca
 • Supply and install new materials as specified
 • Clean up work area upon completion
 • Final walkthrough with client`,
+    defaultNotes: `If an attorney is used to enforce or collect any obligations due on this obligation, then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.`,
     suggestedSections: ['Materials', 'Labor', 'Timeline', 'Permits', 'Warranty']
   },
   {
@@ -154,189 +154,191 @@ export function TemplatePicker({ isOpen, onClose, onSelect, selectedTemplate }: 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
         onClick={onClose}
       >
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl max-w-4xl w-full max-h-[85vh] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden"
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-700">
-            <div>
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                <FileText className="w-5 h-5 text-primary-500" />
-                {t('title')}
-              </h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                {t('subtitle')}
-              </p>
+          <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-xl">
+                <FileText className="w-6 h-6 text-primary-600 dark:text-primary-400" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                  {t('title')}
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {t('subtitle')}
+                </p>
+              </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
-              <X className="w-5 h-5 text-slate-500" />
+              <X className="w-5 h-5 text-gray-500" />
             </button>
           </div>
 
           {/* Content */}
-          <div className="p-6 overflow-y-auto max-h-[calc(85vh-140px)]">
+          <div className="p-6 overflow-y-auto max-h-[calc(85vh-100px)]">
             {previewTemplate ? (
               /* Template Preview */
-              <div>
+              <div className="space-y-6">
                 <button
                   onClick={() => setPreviewTemplate(null)}
-                  className="text-sm text-primary-500 hover:text-primary-600 mb-4 flex items-center gap-1"
+                  className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1"
                 >
                   ← {t('backToTemplates')}
                 </button>
-                
-                <div className="flex items-center gap-4 mb-6">
+                <div className="flex items-start gap-4">
                   <div className={`p-3 rounded-xl bg-gradient-to-r ${previewTemplate.color}`}>
                     <previewTemplate.icon className="w-8 h-8 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                       {t(`industries.${previewTemplate.industry}.name`)}
                     </h3>
-                    <p className="text-sm text-slate-500">
+                    <p className="text-gray-500 dark:text-gray-400">
                       {t(`industries.${previewTemplate.industry}.description`)}
                     </p>
                   </div>
                 </div>
 
-                <div className="space-y-6">
-                  {/* Terms Preview */}
-                  <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-4">
-                    <h4 className="font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                      {t('preview.terms')}
-                    </h4>
-                    <pre className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap font-sans">
-                      {previewTemplate.defaultTerms}
-                    </pre>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
+                        <FileText className="w-4 h-4" />
+                        {t('preview.terms')}
+                      </h4>
+                      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                        <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans">
+                          {previewTemplate.defaultTerms}
+                        </pre>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                        {t('preview.paymentTerms')}
+                      </h4>
+                      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                        <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans">
+                          {previewTemplate.defaultPaymentTerms}
+                        </pre>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Payment Terms Preview */}
-                  <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-4">
-                    <h4 className="font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                      {t('preview.paymentTerms')}
-                    </h4>
-                    <pre className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap font-sans">
-                      {previewTemplate.defaultPaymentTerms}
-                    </pre>
-                  </div>
+                  <div className="space-y-4">
+                    {previewTemplate.defaultScope && (
+                      <div>
+                        <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                          {t('preview.scope')}
+                        </h4>
+                        <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                          <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans">
+                            {previewTemplate.defaultScope}
+                          </pre>
+                        </div>
+                      </div>
+                    )}
 
-                  {/* Scope Preview */}
-                  {previewTemplate.defaultScope && (
-                    <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-4">
-                      <h4 className="font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                        {t('preview.scope')}
+                    {previewTemplate.defaultWarranty && (
+                      <div>
+                        <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                          {t('preview.warranty')}
+                        </h4>
+                        <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                          <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans">
+                            {previewTemplate.defaultWarranty}
+                          </pre>
+                        </div>
+                      </div>
+                    )}
+
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                        {t('preview.suggestedSections')}
                       </h4>
-                      <pre className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap font-sans">
-                        {previewTemplate.defaultScope}
-                      </pre>
-                    </div>
-                  )}
-
-                  {/* Warranty Preview (for contractors) */}
-                  {previewTemplate.defaultWarranty && (
-                    <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-4">
-                      <h4 className="font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                        {t('preview.warranty')}
-                      </h4>
-                      <pre className="text-sm text-slate-600 dark:text-slate-400 whitespace-pre-wrap font-sans">
-                        {previewTemplate.defaultWarranty}
-                      </pre>
-                    </div>
-                  )}
-
-                  {/* Suggested Sections */}
-                  <div>
-                    <h4 className="font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                      {t('preview.suggestedSections')}
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {previewTemplate.suggestedSections.map((section) => (
-                        <span
-                          key={section}
-                          className="px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm"
-                        >
-                          {section}
-                        </span>
-                      ))}
+                      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                        <ul className="space-y-2">
+                          {previewTemplate.suggestedSections.map((section, index) => (
+                            <li key={index} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                              <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                                {section}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => {
-                    onSelect(previewTemplate);
-                    onClose();
-                  }}
-                  className={`w-full mt-6 py-3 rounded-xl bg-gradient-to-r ${previewTemplate.color} text-white font-semibold flex items-center justify-center gap-2`}
-                >
-                  <Check className="w-5 h-5" />
-                  {t('useTemplate')}
-                </motion.button>
+                <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <button
+                    onClick={() => {
+                      onSelect(previewTemplate);
+                      onClose();
+                    }}
+                    className="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium transition-colors flex items-center gap-2"
+                  >
+                    <Check className="w-5 h-5" />
+                    {t('useTemplate')}
+                  </button>
+                </div>
               </div>
             ) : (
               /* Template Grid */
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {PROPOSAL_TEMPLATES.map((template) => {
-                  const Icon = template.icon;
-                  const isSelected = selectedTemplate === template.id;
-                  
-                  return (
-                    <motion.div
-                      key={template.id}
-                      whileHover={{ scale: 1.02 }}
-                      className={`
-                        relative p-5 rounded-xl border-2 cursor-pointer transition-all
-                        ${isSelected 
-                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' 
-                          : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'}
-                      `}
-                      onClick={() => setPreviewTemplate(template)}
-                    >
-                      {isSelected && (
-                        <div className="absolute top-3 right-3">
-                          <div className="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center">
-                            <Check className="w-4 h-4 text-white" />
-                          </div>
-                        </div>
-                      )}
-                      
-                      <div className="flex items-start gap-4">
-                        <div className={`p-3 rounded-xl bg-gradient-to-r ${template.color} flex-shrink-0`}>
-                          <Icon className="w-6 h-6 text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-slate-900 dark:text-white">
-                            {t(`industries.${template.industry}.name`)}
-                          </h3>
-                          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                            {t(`industries.${template.industry}.description`)}
-                          </p>
-                          <button
-                            className="text-sm text-primary-500 hover:text-primary-600 mt-2 flex items-center gap-1"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setPreviewTemplate(template);
-                            }}
-                          >
-                            {t('preview.view')} <ChevronRight className="w-4 h-4" />
-                          </button>
+              <div className="grid md:grid-cols-2 gap-4">
+                {PROPOSAL_TEMPLATES.map((template) => (
+                  <motion.div
+                    key={template.id}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`relative p-5 rounded-xl border-2 cursor-pointer transition-all ${
+                      selectedTemplate === template.id
+                        ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700'
+                    }`}
+                    onClick={() => setPreviewTemplate(template)}
+                  >
+                    {selectedTemplate === template.id && (
+                      <div className="absolute top-3 right-3">
+                        <div className="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center">
+                          <Check className="w-4 h-4 text-white" />
                         </div>
                       </div>
-                    </motion.div>
-                  );
-                })}
+                    )}
+                    
+                    <div className="flex items-start gap-4">
+                      <div className={`p-3 rounded-xl bg-gradient-to-r ${template.color}`}>
+                        <template.icon className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-900 dark:text-gray-100">
+                          {t(`industries.${template.industry}.name`)}
+                        </h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                          {t(`industries.${template.industry}.description`)}
+                        </p>
+                        <div className="flex items-center gap-1 mt-3 text-sm text-primary-600 dark:text-primary-400">
+                          {t('preview.view')}
+                          <ChevronRight className="w-4 h-4" />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
               </div>
             )}
           </div>

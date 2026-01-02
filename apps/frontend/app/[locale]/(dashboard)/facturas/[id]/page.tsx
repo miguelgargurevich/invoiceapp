@@ -26,7 +26,8 @@ import {
   Receipt,
   Plus,
   Trash2,
-  MapPin
+  MapPin,
+  Send
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -44,7 +45,7 @@ import {
 import { createTimelineFromDocument, TimelineEvent } from '@/components/common/ActivityTimeline';
 import { PrintPreviewModal, SendEmailModal, InvoicePreview } from '@/components/invoice';
 import { formatDate } from '@/lib/utils';
-import { useCurrency } from '@/lib/hooks/useCurrency';
+import { useCurrency, useInvoiceStatus } from '@/lib/hooks';
 import api from '@/lib/api';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -173,8 +174,8 @@ export default function FacturaDetailPage({
       setLoading(true);
       const response: any = await api.get(`/facturas/${id}`);
       const data = response.data || response;
-      console.log('Factura data:', data);
-      console.log('SignatureRequest:', data.signatureRequest);
+      // console.log('Factura data:', data);
+      // console.log('SignatureRequest:', data.signatureRequest);
       setFactura(data);
     } catch (error) {
       console.error('Error loading factura:', error);
@@ -556,27 +557,29 @@ export default function FacturaDetailPage({
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    const config: Record<string, { variant: 'success' | 'warning' | 'danger' | 'info' | 'neutral'; icon: React.ReactNode }> = {
-      PAGADA: { variant: 'success', icon: <CheckCircle className="w-4 h-4" /> },
-      EMITIDA: { variant: 'info', icon: <Clock className="w-4 h-4" /> },
-      PENDIENTE: { variant: 'warning', icon: <Clock className="w-4 h-4" /> },
-      VENCIDA: { variant: 'danger', icon: <XCircle className="w-4 h-4" /> },
-      ANULADA: { variant: 'neutral', icon: <XCircle className="w-4 h-4" /> },
-    };
-    return config[status] || { variant: 'neutral' as const, icon: null };
-  };
+  // Use centralized hook for status calculation
+  const statusResult = useInvoiceStatus(factura);
+  const effectiveStatus = statusResult?.effectiveStatus ?? 'pendiente';
+  const badgeVariant = statusResult?.badgeVariant ?? 'info';
+  const statusLabel = statusResult?.statusLabel ?? '';
+  const timelineEvents = statusResult?.timelineEvents ?? [];
+  const displayFlow = statusResult?.displayFlow;
 
-  const getStatusLabel = (status: string) => {
-    const normalizedStatus = status.toLowerCase();
-    const labels: Record<string, string> = {
-      pagada: t('statusPaid'),
-      emitida: t('statusIssued'),
-      pendiente: t('statusPending'),
-      vencida: t('statusOverdue'),
-      anulada: t('statusCancelled'),
+  const getStatusBadge = () => {
+    // Icons mapped by effective status
+    const icons: Record<string, React.ReactNode> = {
+      pagada: <CheckCircle className="w-4 h-4" />,
+      facturada: <FileText className="w-4 h-4" />,
+      firmada: <CheckCircle className="w-4 h-4" />,
+      emitida: <Send className="w-4 h-4" />,
+      pendiente: <Clock className="w-4 h-4" />,
+      vencida: <XCircle className="w-4 h-4" />,
+      anulada: <XCircle className="w-4 h-4" />,
     };
-    return labels[normalizedStatus] || status;
+    return { 
+      variant: badgeVariant, 
+      icon: icons[effectiveStatus] || null 
+    };
   };
 
   if (loading) {
@@ -594,7 +597,7 @@ export default function FacturaDetailPage({
     );
   }
 
-  const statusConfig = getStatusBadge(factura.estado);
+  const statusConfig = getStatusBadge();
 
   return (
     <div className="space-y-6">
@@ -619,7 +622,7 @@ export default function FacturaDetailPage({
               <Badge variant={statusConfig.variant}>
                 <span className="flex items-center gap-1">
                   {statusConfig.icon}
-                  {getStatusLabel(factura.estado)}
+                  {statusLabel}
                 </span>
               </Badge>
             </div>
@@ -1012,18 +1015,9 @@ export default function FacturaDetailPage({
               {t('activityTimeline') || 'Activity'}
             </h2>
             <ActivityTimeline 
-              events={createTimelineFromDocument({
-                createdAt: factura.fechaEmision,
-                sentAt: factura.signatureRequest?.sentAt || factura.signatureRequest?.createdAt,
-                signedAt: factura.signatureRequest?.signature?.signedAt,
-                invoicedAt: factura.fechaEmision, // Invoiced date is the creation date
-                paidAt: factura.saldoPendiente <= 0 && factura.pagos.length > 0 
-                  ? factura.pagos[factura.pagos.length - 1].fecha 
-                  : undefined,
-                status: factura.estado,
-                signerName: factura.signatureRequest?.signerName,
-              })}
-              currentStatus={factura.estado}
+              events={timelineEvents}
+              currentStatus={effectiveStatus}
+              displayFlow={displayFlow}
               compact
             />
           </Card>

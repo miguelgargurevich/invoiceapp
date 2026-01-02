@@ -611,6 +611,13 @@ export default function NuevaFacturaPage({
                 placeholder="Payment schedule and terms..."
                 rows={3}
               />
+              <Textarea
+                label={t('notes')}
+                value={observaciones}
+                onChange={(e) => setObservaciones(e.target.value)}
+                placeholder={t('notesPlaceholder')}
+                rows={3}
+              />
             </div>
           </Card>
         </div>

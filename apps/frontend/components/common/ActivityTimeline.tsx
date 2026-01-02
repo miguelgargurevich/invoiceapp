@@ -25,6 +25,13 @@ interface ActivityTimelineProps {
   events: TimelineEvent[];
   currentStatus?: string;
   compact?: boolean;
+  /** 
+   * Define which event types to display in the timeline.
+   * If not provided, defaults based on the events passed:
+   * - If 'invoiced' event exists: full flow (created → sent → signed → invoiced → paid)
+   * - Otherwise: direct invoice flow (created → sent → paid)
+   */
+  displayFlow?: TimelineEvent['type'][];
 }
 
 const EVENT_CONFIG = {
@@ -43,7 +50,7 @@ const EVENT_CONFIG = {
   signed: {
     icon: PenTool,
     color: 'bg-slate-500',
-    activeColor: 'bg-green-500',
+    activeColor: 'bg-violet-500',
     label: 'signed',
   },
   invoiced: {
@@ -72,9 +79,10 @@ const EVENT_CONFIG = {
   },
 };
 
-const DEFAULT_EVENTS: TimelineEvent['type'][] = ['created', 'sent', 'signed', 'invoiced', 'paid'];
+const PROPOSAL_FLOW: TimelineEvent['type'][] = ['created', 'sent', 'signed', 'invoiced', 'paid'];
+const DIRECT_INVOICE_FLOW: TimelineEvent['type'][] = ['created', 'sent', 'paid'];
 
-export function ActivityTimeline({ events, currentStatus, compact = false }: ActivityTimelineProps) {
+export function ActivityTimeline({ events, currentStatus, compact = false, displayFlow }: ActivityTimelineProps) {
   const t = useTranslations('timeline');
 
   // Create a map of completed events
@@ -82,8 +90,21 @@ export function ActivityTimeline({ events, currentStatus, compact = false }: Act
     events.map(event => [event.type, event])
   );
 
+  // Determine the flow to display
+  // If displayFlow is explicitly provided, use it
+  // Otherwise, determine based on events: if there's an 'invoiced' or 'signed' event, use full flow
+  const determineFlow = (): TimelineEvent['type'][] => {
+    if (displayFlow) return displayFlow;
+    
+    // Check if any event indicates this is from a proposal
+    const hasProposalEvents = events.some(e => e.type === 'invoiced' || e.type === 'signed');
+    return hasProposalEvents ? PROPOSAL_FLOW : DIRECT_INVOICE_FLOW;
+  };
+
+  const activeFlow = determineFlow();
+
   // Determine which events to show
-  const displayEvents = DEFAULT_EVENTS.map(type => {
+  const displayEvents = activeFlow.map(type => {
     const completedEvent = completedEvents.get(type);
     return {
       type,

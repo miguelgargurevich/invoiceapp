@@ -197,12 +197,11 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
             }
           },
           signatureRequests: {
-            select: {
-              status: true,
-              token: true
-            },
             orderBy: { createdAt: 'desc' },
-            take: 1
+            take: 1,
+            include: {
+              signature: true
+            }
           },
           pagos: {
             select: {
@@ -254,7 +253,8 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
         estado,
         montoPendiente,
         totalPagado,
-        signatureStatus: signatureRequest?.status || null
+        signatureStatus: signatureRequest?.status || null,
+        signatureRequest: signatureRequest || null
       };
     });
 
@@ -334,33 +334,10 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
     const totalPagado = factura.pagos.reduce((acc, pago) => acc + parseFloat(pago.monto), 0);
     const saldoPendiente = parseFloat(factura.total) - totalPagado;
 
-    // Get signature status - try from factura first, then from proforma origen
-    let signatureRequest = factura.signatureRequests?.[0] || null;
-    
-    // If no signature request on factura, get it from proforma origen
-    if (!signatureRequest && factura.proformaOrigenId) {
-      const proformaWithSignature = await prisma.proforma.findUnique({
-        where: { id: factura.proformaOrigenId },
-        include: {
-          signatureRequests: {
-            where: {
-              status: { in: ['PENDING', 'SIGNED'] }
-            },
-            include: {
-              signature: true
-            },
-            orderBy: { createdAt: 'desc' },
-            take: 1
-          }
-        }
-      });
-      
-      signatureRequest = proformaWithSignature?.signatureRequests?.[0] || null;
-    }
-    
-    const signatureStatus = signatureRequest 
-      ? signatureRequest.status 
-      : null;
+    // Get signature status - ONLY from the invoice itself, not from proforma origen
+    // This prevents confusing inherited signature status with the invoice's own status
+    const signatureRequest = factura.signatureRequests?.[0] || null;
+    const signatureStatus = signatureRequest?.status || null;
 
     res.json({
       ...factura,

@@ -161,9 +161,9 @@ export default function ConfiguracionPage({
   const handleSaveEmpresa = async () => {
     try {
       setSaving(true);
-      console.log('[CONFIG] Saving empresa data:', empresaForm);
+      //console.log('[CONFIG] Saving empresa data:', empresaForm);
       const response = await api.put('/empresas/mi-empresa', empresaForm) as any;
-      console.log('[CONFIG] Save response:', response);
+      //console.log('[CONFIG] Save response:', response);
       
       // Actualizar el formulario con la respuesta ANTES de refrescar el contexto
       setEmpresaForm({
@@ -285,7 +285,7 @@ export default function ConfiguracionPage({
         signatureDataUrl: pendingSignature
       }) as any;
       
-      console.log('[SIGNATURE] Saved signature response:', response.firmaEmpresa);
+      //console.log('[SIGNATURE] Saved signature response:', response.firmaEmpresa);
       
       // Update local state first
       setCompanySignature(response.firmaEmpresa);
@@ -361,9 +361,9 @@ export default function ConfiguracionPage({
   const handleSaveInvoiceConfig = async () => {
     try {
       setSaving(true);
-      console.log('[CONFIG] Saving invoice config:', invoiceConfig);
+      //console.log('[CONFIG] Saving invoice config:', invoiceConfig);
       const response = await api.put('/empresas/mi-empresa/config', invoiceConfig) as any;
-      console.log('[CONFIG] Invoice config save response:', response);
+      //console.log('[CONFIG] Invoice config save response:', response);
       
       // Actualizar el contexto
       await refreshEmpresa?.();
@@ -382,7 +382,7 @@ export default function ConfiguracionPage({
   const handleSaveNotifications = async () => {
     try {
       setSaving(true);
-      console.log('[CONFIG] Saving notification settings:', notifications);
+      //console.log('[CONFIG] Saving notification settings:', notifications);
       await api.put('/preferences', notifications);
       
       setMessage(t('savedSuccessfully'));

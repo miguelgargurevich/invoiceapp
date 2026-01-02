@@ -85,17 +85,17 @@ export default function ProformaPrintPreviewModal({
     }
 
     try {
-      console.log('[ProformaPDF] Starting PDF generation...');
+      //console.log('[ProformaPDF] Starting PDF generation...');
       
       // Esperar a que todas las fuentes se carguen
       await document.fonts.ready;
-      console.log('[ProformaPDF] Fonts loaded');
+      //console.log('[ProformaPDF] Fonts loaded');
 
       // Adjust scale based on device pixel ratio
       const dpr = window.devicePixelRatio || 1;
       const adjustedScale = 2.5 / Math.max(dpr, 1);
 
-      console.log('[ProformaPDF] Starting html2canvas with scale:', adjustedScale);
+      //console.log('[ProformaPDF] Starting html2canvas with scale:', adjustedScale);
       const canvas = await html2canvas(previewRef.current, {
         scale: adjustedScale,
         useCORS: true,
@@ -108,10 +108,10 @@ export default function ProformaPrintPreviewModal({
           }
         },
       });
-      console.log('[ProformaPDF] html2canvas completed, canvas size:', canvas.width, 'x', canvas.height);
+      //console.log('[ProformaPDF] html2canvas completed, canvas size:', canvas.width, 'x', canvas.height);
 
       const imgData = canvas.toDataURL('image/png', 1.0);
-      console.log('[ProformaPDF] Image data URL created, length:', imgData.length);
+      //console.log('[ProformaPDF] Image data URL created, length:', imgData.length);
       
       const pdf = new jsPDF({
         orientation: 'portrait',
@@ -119,7 +119,7 @@ export default function ProformaPrintPreviewModal({
         format: 'a4',
         compress: true,
       });
-      console.log('[ProformaPDF] jsPDF instance created');
+      //console.log('[ProformaPDF] jsPDF instance created');
 
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
@@ -131,13 +131,13 @@ export default function ProformaPrintPreviewModal({
       const scaledWidth = imgWidth * ratio;
       const scaledHeight = imgHeight * ratio;
 
-      console.log('[ProformaPDF] PDF dimensions:', {
-        pdfWidth,
-        pdfHeight,
-        imgWidth,
-        imgHeight,
-        scaledHeight,
-      });
+      // console.log('[ProformaPDF] PDF dimensions:', {
+      //   pdfWidth,
+      //   pdfHeight,
+      //   imgWidth,
+      //   imgHeight,
+      //   scaledHeight,
+      // });
 
       // Si la imagen es más alta que la página, necesitamos dividirla
       let position = 0;
@@ -179,13 +179,13 @@ export default function ProformaPrintPreviewModal({
             Math.min(pageCanvas.height * ratio, pdfHeight)
           );
           
-          console.log('[ProformaPDF] Added page', pageCount);
+          //console.log('[ProformaPDF] Added page', pageCount);
         }
         
         position += pageHeight;
       }
 
-      console.log('[ProformaPDF] PDF generation complete, total pages:', pageCount);
+      //console.log('[ProformaPDF] PDF generation complete, total pages:', pageCount);
       return pdf;
     } catch (error) {
       console.error('[ProformaPDF] Error in generatePDF:', error);
@@ -196,13 +196,13 @@ export default function ProformaPrintPreviewModal({
   const handleDownloadPDF = async () => {
     try {
       setDownloading(true);
-      console.log('[ProformaPDF] Starting PDF generation...');
+      //console.log('[ProformaPDF] Starting PDF generation...');
       const pdf = await generatePDF();
       if (pdf) {
-        console.log('[ProformaPDF] PDF generated successfully, saving...');
+        //console.log('[ProformaPDF] PDF generated successfully, saving...');
         pdf.save(`${t('title')}-${proforma.serie}-${proforma.numero}.pdf`);
       } else {
-        console.error('[ProformaPDF] PDF generation returned null');
+        //console.error('[ProformaPDF] PDF generation returned null');
         showError('Error generating PDF. Please try again.');
       }
     } catch (error) {
@@ -216,10 +216,10 @@ export default function ProformaPrintPreviewModal({
   const handleShare = async () => {
     try {
       setDownloading(true);
-      console.log('[ProformaPDF] Starting PDF generation for share...');
+      //console.log('[ProformaPDF] Starting PDF generation for share...');
       const pdf = await generatePDF();
       if (pdf) {
-        console.log('[ProformaPDF] PDF generated, creating blob...');
+        //console.log('[ProformaPDF] PDF generated, creating blob...');
         const pdfBlob = pdf.output('blob');
         const file = new File(
           [pdfBlob],
@@ -227,30 +227,30 @@ export default function ProformaPrintPreviewModal({
           { type: 'application/pdf' }
         );
 
-        console.log('[ProformaPDF] Checking share capability...', {
-          hasShare: !!navigator.share,
-          canShare: navigator.canShare ? navigator.canShare({ files: [file] }) : false
-        });
+        // console.log('[ProformaPDF] Checking share capability...', {
+        //   hasShare: !!navigator.share,
+        //   canShare: navigator.canShare ? navigator.canShare({ files: [file] }) : false
+        // });
 
         if (navigator.share && navigator.canShare({ files: [file] })) {
-          console.log('[ProformaPDF] Sharing via Web Share API...');
+          //console.log('[ProformaPDF] Sharing via Web Share API...');
           await navigator.share({
             files: [file],
             title: `${t('title')} ${proforma.serie}-${proforma.numero}`,
             text: `${t('title')} ${tCommon('for')} ${proforma.cliente.razonSocial}`,
           });
-          console.log('[ProformaPDF] Share completed successfully');
+          //console.log('[ProformaPDF] Share completed successfully');
         } else {
-          console.log('[ProformaPDF] Web Share API not available, falling back to download');
+          //console.log('[ProformaPDF] Web Share API not available, falling back to download');
           // Fallback: download the file
           pdf.save(`${t('title')}-${proforma.serie}-${proforma.numero}.pdf`);
         }
       } else {
-        console.error('[ProformaPDF] PDF generation returned null');
+        //console.error('[ProformaPDF] PDF generation returned null');
         showError('Error generating PDF. Please try again.');
       }
     } catch (error: any) {
-      console.error('[ProformaPDF] Error sharing:', error);
+      //console.error('[ProformaPDF] Error sharing:', error);
       // Only show error if it's not a user cancellation
       if (error.name !== 'AbortError') {
         showError('Error sharing PDF. Please try download instead.');

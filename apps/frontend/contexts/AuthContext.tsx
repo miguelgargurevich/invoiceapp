@@ -93,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async (event, session) => {
         if (!mounted) return;
         
-        console.log('[AuthContext] Auth state changed:', event);
+        //console.log('[AuthContext] Auth state changed:', event);
         setSession(session);
         
         if (session?.access_token) {

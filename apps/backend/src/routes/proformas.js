@@ -217,12 +217,25 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
               createdAt: 'desc'
             },
             take: 1,
+            include: {
+              signature: true
+            }
+          },
+          facturasGeneradas: {
             select: {
-              status: true
+              id: true,
+              estado: true,
+              fechaEmision: true,
+              pagos: {
+                select: {
+                  id: true,
+                  monto: true
+                }
+              }
             }
           },
           _count: {
-            select: { detalles: true, facturasGeneradas: true }
+            select: { detalles: true }
           }
         },
         orderBy: { fechaEmision: 'desc' },
@@ -232,11 +245,15 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
       prisma.proforma.count({ where })
     ]);
 
-    // Map signature status to each proforma
-    const proformasWithSignatureStatus = proformas.map(proforma => ({
-      ...proforma,
-      signatureStatus: proforma.signatureRequests?.[0]?.status || null
-    }));
+    // Map signature status and request to each proforma (same as detail endpoint)
+    const proformasWithSignatureStatus = proformas.map(proforma => {
+      const signatureRequest = proforma.signatureRequests?.[0];
+      return {
+        ...proforma,
+        signatureStatus: signatureRequest?.status || null,
+        signatureRequest: signatureRequest || null
+      };
+    });
 
     res.json({
       data: proformasWithSignatureStatus,

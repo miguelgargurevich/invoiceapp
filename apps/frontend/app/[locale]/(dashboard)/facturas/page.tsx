@@ -19,7 +19,7 @@ import {
 import { UsageLimitModal, UsageLimitWarning } from '@/components/common/UpgradePrompt';
 
 import { formatDate } from '@/lib/utils';
-import { useCurrency } from '@/lib/hooks/useCurrency';
+import { useCurrency, getInvoiceStatusInfo, type InvoiceDocument } from '@/lib/hooks';
 import api from '@/lib/api';
 
 interface Factura {
@@ -34,7 +34,20 @@ interface Factura {
   total: number;
   estado: string;
   montoPendiente: number;
+  saldoPendiente?: number;
   signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureRequest?: {
+    sentAt?: string | null;
+    createdAt?: string;
+    signature?: {
+      signedAt?: string | null;
+    };
+  };
+  pagos?: Array<{
+    id: string;
+    fecha: string;
+    monto: number;
+  }>;
 }
 
 interface DetalleFactura {
@@ -132,16 +145,36 @@ export default function FacturasPage({
       const facturasData = response.data || [];
       
       // Mapear los datos para asegurar que cliente tenga el formato correcto
-      const facturasMapped = facturasData.map((f: any) => ({
-        ...f,
-        estado: (f.estado || '').toLowerCase(), // Normalize estado to lowercase
-        cliente: {
-          nombre: f.cliente?.razonSocial || f.cliente?.nombre || '',
-          documento: f.cliente?.numeroDocumento || f.cliente?.documento || '',
-        },
-      }));
-      
-      //console.log('[FACTURAS] Sample estados:', facturasMapped.slice(0, 3).map((f: any) => ({ numero: f.numero, estado: f.estado })));
+      // y preservar todos los campos necesarios para calcular el estado efectivo
+      const facturasMapped = facturasData.map((f: any) => {
+        const mapped = {
+          ...f,
+          estado: (f.estado || '').toLowerCase(), // Normalize estado to lowercase
+          cliente: {
+            nombre: f.cliente?.razonSocial || f.cliente?.nombre || '',
+            documento: f.cliente?.numeroDocumento || f.cliente?.documento || '',
+          },
+          // Asegurar que estos campos existan
+          signatureRequest: f.signatureRequest || f.solicitudFirma || null,
+          signatureStatus: f.signatureStatus || f.estadoFirma || null,
+          saldoPendiente: f.saldoPendiente ?? f.montoPendiente ?? 0,
+          pagos: f.pagos || [],
+        };
+        
+        // Debug: log first item
+        // if (f.numero === facturasData[0]?.numero) {
+        //   console.log('[FACTURAS] First item raw:', {
+        //     numero: f.numero,
+        //     estado: f.estado,
+        //     signatureRequest: f.signatureRequest,
+        //     solicitudFirma: f.solicitudFirma,
+        //     saldoPendiente: f.saldoPendiente,
+        //     pagos: f.pagos?.length,
+        //   });
+        // }
+        
+        return mapped;
+      });
       
       setFacturas(facturasMapped);
       setTotalPages(response.pagination?.totalPages || 1);
@@ -224,28 +257,30 @@ export default function FacturasPage({
     loadFacturas();
   }, [loadFacturas]);
 
-  const getStatusBadge = (status: string) => {
-    const normalizedStatus = status.toUpperCase();
-    const variants: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'neutral'> = {
-      PAGADA: 'success',
-      EMITIDA: 'info',
-      PENDIENTE: 'warning',
-      VENCIDA: 'danger',
-      ANULADA: 'neutral',
-    };
-    return variants[normalizedStatus] || 'neutral';
+  // Translation object for status labels
+  const statusTranslations = {
+    statusPending: t('statusPending'),
+    statusSent: t('statusIssued'),
+    statusSigned: t('statusSigned') || 'Signed',
+    statusInvoiced: t('statusInvoiced') || 'Invoiced',
+    statusPaid: t('statusPaid'),
+    statusOverdue: t('statusOverdue'),
+    statusCancelled: t('statusCancelled'),
   };
 
-  const getStatusLabel = (status: string) => {
-    const normalizedStatus = status.toLowerCase();
-    const labels: Record<string, string> = {
-      pagada: t('statusPaid'),
-      emitida: t('statusIssued'),
-      pendiente: t('statusPending'),
-      vencida: t('statusOverdue'),
-      anulada: t('statusCancelled'),
+  // Wrapper function to use centralized status calculation
+  const getStatusDisplay = (factura: Factura) => {
+    const doc: InvoiceDocument = {
+      id: factura.id,
+      estado: factura.estado,
+      fechaEmision: factura.fechaEmision,
+      fechaVencimiento: factura.fechaVencimiento,
+      saldoPendiente: factura.saldoPendiente ?? factura.montoPendiente ?? 0,
+      signatureRequest: factura.signatureRequest,
+      signatureStatus: factura.signatureStatus,
+      pagos: factura.pagos,
     };
-    return labels[normalizedStatus] || status;
+    return getInvoiceStatusInfo(doc, statusTranslations);
   };
 
   const handleView = (factura: Factura) => {
@@ -351,11 +386,14 @@ export default function FacturasPage({
     {
       key: 'estado',
       header: t('status'),
-      render: (factura) => (
-        <Badge variant={getStatusBadge(factura.estado)}>
-          {getStatusLabel(factura.estado)}
-        </Badge>
-      ),
+      render: (factura) => {
+        const statusInfo = getStatusDisplay(factura);
+        return (
+          <Badge variant={statusInfo.variant}>
+            {statusInfo.label}
+          </Badge>
+        );
+      },
     },
   ];
 
@@ -372,9 +410,9 @@ export default function FacturasPage({
         (f.cliente?.nombre || '').toLowerCase().includes(searchLower) ||
         (f.cliente?.documento || '').includes(search);
       
-      // Normalize both sides to lowercase for comparison
-      const estadoLower = (f.estado || '').toLowerCase().trim();
-      const matchesEstado = filterEstados.length === 0 || filterEstados.some(fe => fe.toLowerCase().trim() === estadoLower);
+      // Use effective status for filtering
+      const effectiveStatus = getStatusDisplay(f).status.toLowerCase();
+      const matchesEstado = filterEstados.length === 0 || filterEstados.some(fe => fe.toLowerCase().trim() === effectiveStatus);
       
       return matchesSearch && matchesEstado;
     })
@@ -388,6 +426,9 @@ export default function FacturasPage({
       } else if (sortKey === 'numero') {
         aVal = `${a.serie}-${a.numero}`;
         bVal = `${b.serie}-${b.numero}`;
+      } else if (sortKey === 'estado') {
+        aVal = getStatusDisplay(a).status.toLowerCase();
+        bVal = getStatusDisplay(b).status.toLowerCase();
       } else {
         aVal = a[sortKey as keyof Factura];
         bVal = b[sortKey as keyof Factura];
@@ -624,8 +665,8 @@ export default function FacturasPage({
           {showStatusFilter && (
             <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
               {[
-                { value: 'emitida', label: t('statusIssued'), color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },
-                { value: 'pagada', label: t('statusPaid'), color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' },
+                { value: 'emitida', label: t('statusIssued'), color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300' },
+                { value: 'pagada', label: t('statusPaid'), color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300' },
                 { value: 'vencida', label: t('statusOverdue'), color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' },
                 { value: 'anulada', label: t('statusCancelled'), color: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300' },
               ].map((status) => (
@@ -686,36 +727,39 @@ export default function FacturasPage({
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={setCurrentPage}
-        renderMobileCard={(factura) => (
-          <div className="space-y-2">
-            <div className="flex items-start justify-between">
-              <div>
-                <span className="font-medium text-gray-900 dark:text-gray-100">
-                  {factura.serie}-{factura.numero}
+        renderMobileCard={(factura) => {
+          const statusInfo = getStatusDisplay(factura);
+          return (
+            <div className="space-y-2">
+              <div className="flex items-start justify-between">
+                <div>
+                  <span className="font-medium text-gray-900 dark:text-gray-100">
+                    {factura.serie}-{factura.numero}
+                  </span>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {factura.cliente.nombre}
+                  </p>
+                </div>
+                <Badge variant={statusInfo.variant} size="sm">
+                  {statusInfo.label}
+                </Badge>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500 dark:text-gray-400">
+                  {formatDate(factura.fechaEmision, locale)}
                 </span>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {factura.cliente.nombre}
-                </p>
+                <span className="font-medium text-gray-900 dark:text-gray-100">
+                  {formatCurrency(factura.total)}
+                </span>
               </div>
-              <Badge variant={getStatusBadge(factura.estado)} size="sm">
-                {getStatusLabel(factura.estado)}
-              </Badge>
+              {factura.montoPendiente > 0 && (
+                <div className="text-sm text-orange-600">
+                  {t('pendingAmount')}: {formatCurrency(factura.montoPendiente)}
+                </div>
+              )}
             </div>
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500 dark:text-gray-400">
-                {formatDate(factura.fechaEmision, locale)}
-              </span>
-              <span className="font-medium text-gray-900 dark:text-gray-100">
-                {formatCurrency(factura.total)}
-              </span>
-            </div>
-            {factura.montoPendiente > 0 && (
-              <div className="text-sm text-orange-600">
-                {t('pendingAmount')}: {formatCurrency(factura.montoPendiente)}
-              </div>
-            )}
-          </div>
-        )}
+          );
+        }}
       />
     </div>
   );

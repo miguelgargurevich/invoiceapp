@@ -489,9 +489,9 @@ export default function SubscriptionPage({
                 <li className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
                   <span className="text-sm">
-                    {plan.maxInvoices
-                      ? t('planFeatures.invoices', { count: plan.maxInvoices.toString() })
-                      : t('planFeatures.invoicesUnlimited')}
+                    {plan.maxInvoices === -1 || !plan.maxInvoices
+                      ? t('planFeatures.invoicesUnlimited')
+                      : t('planFeatures.invoices', { count: plan.maxInvoices.toString() })}
                   </span>
                 </li>
 
@@ -499,9 +499,9 @@ export default function SubscriptionPage({
                 <li className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
                   <span className="text-sm">
-                    {plan.maxClients
-                      ? t('planFeatures.clients', { count: plan.maxClients.toString() })
-                      : t('planFeatures.clientsUnlimited')}
+                    {plan.maxClients === -1 || !plan.maxClients
+                      ? t('planFeatures.clientsUnlimited')
+                      : t('planFeatures.clients', { count: plan.maxClients.toString() })}
                   </span>
                 </li>
 
@@ -509,9 +509,9 @@ export default function SubscriptionPage({
                 <li className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
                   <span className="text-sm">
-                    {plan.maxUsers
-                      ? t('planFeatures.users', { count: plan.maxUsers.toString() })
-                      : t('planFeatures.usersUnlimited')}
+                    {plan.maxUsers === -1 || !plan.maxUsers
+                      ? t('planFeatures.usersUnlimited')
+                      : t('planFeatures.users', { count: plan.maxUsers.toString() })}
                   </span>
                 </li>
 

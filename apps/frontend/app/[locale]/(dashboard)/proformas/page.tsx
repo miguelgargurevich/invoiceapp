@@ -19,7 +19,7 @@ import {
 import { UpgradeModal, UsageLimitModal, ProBadge } from '@/components/common/UpgradePrompt';
 
 import { formatDate } from '@/lib/utils';
-import { useCurrency } from '@/lib/hooks/useCurrency';
+import { useCurrency, getProposalStatusInfo, type ProposalDocument } from '@/lib/hooks';
 import api from '@/lib/api';
 
 interface ProformaListItem {
@@ -34,6 +34,22 @@ interface ProformaListItem {
   total: number;
   estado: string;
   signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureRequest?: {
+    sentAt?: string | null;
+    createdAt?: string;
+    signature?: {
+      signedAt?: string | null;
+    };
+  };
+  fechaAceptacion?: string;
+  facturasGeneradas?: Array<{
+    id: string;
+    pagos?: Array<{
+      id: string;
+      fecha: string;
+      monto: number;
+    }>;
+  }>;
 }
 
 interface DetalleProforma {
@@ -145,13 +161,20 @@ export default function ProformasPage({
       const proformasData = response.data || [];
       
       // Mapear los datos para asegurar que cliente tenga el formato correcto
+      // y preservar todos los campos necesarios para calcular el estado efectivo
       const proformasMapped = proformasData.map((p: any) => ({
         ...p,
         cliente: {
           nombre: p.cliente?.razonSocial || p.cliente?.nombre || '',
           documento: p.cliente?.numeroDocumento || p.cliente?.documento || '',
         },
+        // Asegurar que estos campos existan (incluso si son null)
+        signatureRequest: p.signatureRequest || null,
+        signatureStatus: p.signatureStatus || null,
+        fechaAceptacion: p.fechaAceptacion || null,
+        facturasGeneradas: p.facturasGeneradas || null,
       }));
+      
       
       setProformas(proformasMapped);
       setTotalPages(response.pagination?.totalPages || 1);
@@ -166,32 +189,31 @@ export default function ProformasPage({
     loadProformas();
   }, [loadProformas]);
 
-  const getEstadoBadge = (estado: string) => {
-    const normalizedEstado = estado.toLowerCase();
-    const variants = {
-      pendiente: 'warning' as const,
-      aceptada: 'success' as const,
-      rechazada: 'danger' as const,
-      vencida: 'warning' as const,
-      facturada: 'info' as const,
-      aprobada: 'success' as const,
-      anulada: 'neutral' as const,
-    };
-    return variants[normalizedEstado as keyof typeof variants] || 'default' as const;
+  // Translation object for status labels
+  const statusTranslations = {
+    statusPending: t('statuses.pendiente'),
+    statusSent: t('statuses.emitida'),
+    statusSigned: t('statuses.firmada'),
+    statusAccepted: t('statuses.aceptada'),
+    statusInvoiced: t('statuses.facturada'),
+    statusPaid: t('statuses.pagada'),
+    statusRejected: t('statuses.rechazada'),
+    statusExpired: t('statuses.vencida'),
   };
 
-  const getStatusLabel = (status: string) => {
-    const normalizedStatus = status.toLowerCase();
-    const statusMap: Record<string, string> = {
-      pendiente: t('statuses.pendiente'),
-      aceptada: t('statuses.aceptada'),
-      aprobada: t('statuses.aprobada'),
-      rechazada: t('statuses.rechazada'),
-      vencida: t('statuses.vencida'),
-      facturada: t('statuses.facturada'),
-      anulada: t('statuses.anulada'),
+  // Wrapper function to use centralized status calculation
+  const getStatusDisplay = (proforma: ProformaListItem) => {
+    const doc: ProposalDocument = {
+      id: proforma.id,
+      estado: proforma.estado,
+      fechaEmision: proforma.fechaEmision,
+      fechaVencimiento: proforma.fechaVencimiento,
+      signatureRequest: proforma.signatureRequest,
+      signatureStatus: proforma.signatureStatus,
+      fechaAceptacion: proforma.fechaAceptacion,
+      facturasGeneradas: proforma.facturasGeneradas,
     };
-    return statusMap[normalizedStatus] || status;
+    return getProposalStatusInfo(doc, statusTranslations);
   };
 
   const columns: Column<ProformaListItem>[] = [
@@ -231,11 +253,14 @@ export default function ProformasPage({
     {
       key: 'estado',
       header: t('status'),
-      render: (proforma) => (
-        <Badge variant={getEstadoBadge(proforma.estado)}>
-          {getStatusLabel(proforma.estado)}
-        </Badge>
-      ),
+      render: (proforma) => {
+        const statusInfo = getStatusDisplay(proforma);
+        return (
+          <Badge variant={statusInfo.variant}>
+            {statusInfo.label}
+          </Badge>
+        );
+      },
     },
   ];
 
@@ -251,8 +276,8 @@ export default function ProformasPage({
         proforma.numero.toLowerCase().includes(search.toLowerCase()) ||
         proforma.cliente.nombre.toLowerCase().includes(search.toLowerCase());
       
-      const estadoLower = proforma.estado.toLowerCase();
-      const matchesEstado = filterEstados.length === 0 || filterEstados.some(f => f.toLowerCase() === estadoLower);
+      const effectiveStatus = getStatusDisplay(proforma).status.toLowerCase();
+      const matchesEstado = filterEstados.length === 0 || filterEstados.some(f => f.toLowerCase() === effectiveStatus);
       
       return matchesSearch && matchesEstado;
     })
@@ -266,6 +291,9 @@ export default function ProformasPage({
       } else if (sortKey === 'numero') {
         aVal = `${a.serie}-${a.numero}`;
         bVal = `${b.serie}-${b.numero}`;
+      } else if (sortKey === 'estado') {
+        aVal = getStatusDisplay(a).status.toLowerCase();
+        bVal = getStatusDisplay(b).status.toLowerCase();
       } else {
         aVal = a[sortKey as keyof ProformaListItem];
         bVal = b[sortKey as keyof ProformaListItem];
@@ -283,7 +311,8 @@ export default function ProformasPage({
   const totals = filteredProformas.reduce(
     (acc, p) => {
       const total = Number(p.total) || 0;
-      const isAceptada = p.estado.toLowerCase() === 'aceptada' || p.estado.toLowerCase() === 'facturada';
+      const effectiveStatus = getStatusDisplay(p).status.toLowerCase();
+      const isAceptada = effectiveStatus === 'aceptada' || effectiveStatus === 'firmada' || effectiveStatus === 'facturada';
       return {
         total: acc.total + total,
         aceptadas: acc.aceptadas + (isAceptada ? total : 0),
@@ -502,11 +531,11 @@ export default function ProformasPage({
           {showStatusFilter && (
             <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
               {[
-                { value: 'pendiente', label: t('statuses.pendiente'), color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300' },
+                { value: 'pendiente', label: t('statuses.pendiente'), color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },
                 { value: 'aceptada', label: t('statuses.aceptada'), color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' },
                 { value: 'rechazada', label: t('statuses.rechazada'), color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' },
-                { value: 'vencida', label: t('statuses.vencida'), color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' },
-                { value: 'facturada', label: t('statuses.facturada'), color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },
+                { value: 'vencida', label: t('statuses.vencida'), color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' },
+                { value: 'facturada', label: t('statuses.facturada'), color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' },
               ].map((status) => (
                 <button
                   key={status.value}
@@ -567,31 +596,34 @@ export default function ProformasPage({
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
-            renderMobileCard={(proforma) => (
-              <div className="space-y-2">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <span className="font-medium text-gray-900 dark:text-gray-100">
-                      {proforma.serie}-{proforma.numero}
-                    </span>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {proforma.cliente.nombre}
-                    </p>
+            renderMobileCard={(proforma) => {
+              const statusInfo = getStatusDisplay(proforma);
+              return (
+                <div className="space-y-2">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <span className="font-medium text-gray-900 dark:text-gray-100">
+                        {proforma.serie}-{proforma.numero}
+                      </span>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {proforma.cliente.nombre}
+                      </p>
+                    </div>
+                    <Badge variant={statusInfo.variant} size="sm">
+                      {statusInfo.label}
+                    </Badge>
                   </div>
-                  <Badge variant={getEstadoBadge(proforma.estado)} size="sm">
-                    {getStatusLabel(proforma.estado)}
-                  </Badge>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500 dark:text-gray-400">
+                      {formatDate(proforma.fechaEmision)}
+                    </span>
+                    <span className="font-medium text-gray-900 dark:text-gray-100">
+                      {formatCurrency(proforma.total)}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-500 dark:text-gray-400">
-                    {formatDate(proforma.fechaEmision)}
-                  </span>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">
-                    {formatCurrency(proforma.total)}
-                  </span>
-                </div>
-              </div>
-            )}
+              );
+            }}
           />
         )}
       </Card>

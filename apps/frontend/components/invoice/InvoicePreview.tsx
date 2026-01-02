@@ -244,7 +244,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
 
         {/* Footer */}
         <div className="mt-6 pt-4 border-t border-gray-300 text-center text-[8px] text-gray-500">
-          <p>{t('thankYou')}</p>
+          <p>{factura.observaciones || t('thankYou')}</p>
         </div>
       </div>
     );

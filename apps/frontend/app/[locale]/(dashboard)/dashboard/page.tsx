@@ -35,6 +35,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { MetricCard, Card, Badge, SkeletonMetricCard, Skeleton } from '@/components/common';
 import { cn } from '@/lib/utils';
 import { useCurrency } from '@/lib/hooks/useCurrency';
+import {
+  getProposalStatusInfo,
+  getInvoiceStatusInfo,
+  type ProposalDocument,
+  type InvoiceDocument,
+} from '@/lib/hooks/useDocumentStatus';
 import api from '@/lib/api';
 
 interface DashboardStats {
@@ -55,7 +61,20 @@ interface RecentInvoice {
   total: number;
   estado: string;
   fechaEmision: string;
+  saldoPendiente?: number;
   signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureRequest?: {
+    sentAt?: string | null;
+    createdAt?: string;
+    signature?: {
+      signedAt?: string | null;
+    };
+  };
+  pagos?: Array<{
+    id: string;
+    fecha: string;
+    monto: number;
+  }>;
 }
 
 interface RecentProposal {
@@ -65,6 +84,23 @@ interface RecentProposal {
   total: number;
   estado: string;
   fechaEmision: string;
+  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureRequest?: {
+    sentAt?: string | null;
+    createdAt?: string;
+    signature?: {
+      signedAt?: string | null;
+    };
+  };
+  fechaAceptacion?: string;
+  facturasGeneradas?: Array<{
+    id: string;
+    pagos?: Array<{
+      id: string;
+      fecha: string;
+      monto: number;
+    }>;
+  }>;
 }
 
 interface MonthlyRevenue {
@@ -176,36 +212,54 @@ export default function DashboardPage({
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    const normalizedStatus = status.toLowerCase();
-    const variants: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'neutral'> = {
-      pagada: 'success',
-      emitida: 'info',
-      pendiente: 'warning',
-      vencida: 'danger',
-      anulada: 'neutral',
-      aceptada: 'success', // Accepted/Signed - green
-      aprobada: 'success', // Approved - green
-      rechazada: 'danger', // Rejected - red
-      facturada: 'info', // Invoiced - blue
-    };
-    return variants[normalizedStatus] || 'neutral';
+  // Translation objects for status functions
+  const invoiceTranslations = {
+    statusPending: t('statusPending'),
+    statusSent: t('statusIssued'),
+    statusSigned: t('statusSigned') || 'Signed',
+    statusInvoiced: t('statusInvoiced') || 'Invoiced',
+    statusPaid: t('statusPaid'),
+    statusOverdue: t('statusOverdue'),
+    statusCancelled: t('statusCancelled'),
   };
 
-  const getStatusLabel = (status: string) => {
-    const normalizedStatus = status.toLowerCase();
-    const statusMap: Record<string, string> = {
-      emitida: t('statusIssued'),
-      pagada: t('statusPaid'),
-      pendiente: t('statusPending'),
-      vencida: t('statusOverdue'),
-      anulada: t('statusCancelled'),
-      facturada: t('statusInvoiced'), // Invoiced status for converted proposals
-      aceptada: t('statusAccepted'), // Accepted status
-      aprobada: t('statusAccepted'), // Approved status (same as accepted)
-      rechazada: t('statusRejected'), // Rejected status
+  const proposalTranslations = {
+    statusPending: t('statusPending'),
+    statusSent: t('statusIssued'),
+    statusSigned: t('statusSigned') || 'Signed',
+    statusAccepted: t('statusAccepted'),
+    statusInvoiced: t('statusInvoiced'),
+    statusPaid: t('statusPaid'),
+    statusRejected: t('statusRejected'),
+    statusExpired: t('statusOverdue'),
+  };
+
+  // Get invoice status using centralized function
+  const getInvoiceStatusDisplay = (invoice: RecentInvoice) => {
+    const doc: InvoiceDocument = {
+      id: invoice.id,
+      estado: invoice.estado,
+      fechaEmision: invoice.fechaEmision,
+      saldoPendiente: invoice.saldoPendiente ?? 0,
+      signatureRequest: invoice.signatureRequest,
+      signatureStatus: invoice.signatureStatus,
+      pagos: invoice.pagos,
     };
-    return statusMap[normalizedStatus] || status;
+    return getInvoiceStatusInfo(doc, invoiceTranslations);
+  };
+
+  // Get proposal status using centralized function
+  const getProposalStatusDisplay = (proposal: RecentProposal) => {
+    const doc: ProposalDocument = {
+      id: proposal.id,
+      estado: proposal.estado,
+      fechaEmision: proposal.fechaEmision,
+      signatureRequest: proposal.signatureRequest,
+      signatureStatus: proposal.signatureStatus,
+      fechaAceptacion: proposal.fechaAceptacion,
+      facturasGeneradas: proposal.facturasGeneradas,
+    };
+    return getProposalStatusInfo(doc, proposalTranslations);
   };
 
   const percentageChange = stats
@@ -451,61 +505,67 @@ export default function DashboardPage({
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                   {activeTab === 'proposals' ? (
-                    recentProposals.map((proposal) => (
-                      <tr
-                        key={proposal.id}
-                        onClick={() => router.push(`/${locale}/proformas/${proposal.id}`)}
-                        className="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
-                      >
-                        <td className="py-3 px-4">
-                          <span className="font-medium text-gray-900 dark:text-gray-100">
-                            {proposal.numero}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          {proposal.cliente.nombre}
-                        </td>
-                        <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          {new Date(proposal.fechaEmision).toLocaleDateString()}
-                        </td>
-                        <td className="py-3 px-4 text-right font-medium text-gray-900 dark:text-gray-100">
-                          {formatCurrency(proposal.total)}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <Badge variant={getStatusBadge(proposal.estado)}>
-                            {getStatusLabel(proposal.estado)}
-                          </Badge>
-                        </td>
-                      </tr>
-                    ))
+                    recentProposals.map((proposal) => {
+                      const statusInfo = getProposalStatusDisplay(proposal);
+                      return (
+                        <tr
+                          key={proposal.id}
+                          onClick={() => router.push(`/${locale}/proformas/${proposal.id}`)}
+                          className="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
+                        >
+                          <td className="py-3 px-4">
+                            <span className="font-medium text-gray-900 dark:text-gray-100">
+                              {proposal.numero}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
+                            {proposal.cliente.nombre}
+                          </td>
+                          <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
+                            {new Date(proposal.fechaEmision).toLocaleDateString()}
+                          </td>
+                          <td className="py-3 px-4 text-right font-medium text-gray-900 dark:text-gray-100">
+                            {formatCurrency(proposal.total)}
+                          </td>
+                          <td className="py-3 px-4 text-center">
+                            <Badge variant={statusInfo.variant}>
+                              {statusInfo.label}
+                            </Badge>
+                          </td>
+                        </tr>
+                      );
+                    })
                   ) : (
-                    recentInvoices.map((invoice) => (
-                      <tr
-                        key={invoice.id}
-                        onClick={() => router.push(`/${locale}/facturas/${invoice.id}`)}
-                        className="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
-                      >
-                        <td className="py-3 px-4">
-                          <span className="font-medium text-gray-900 dark:text-gray-100">
-                            {invoice.numero}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          {invoice.cliente.nombre}
-                        </td>
-                        <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
-                          {new Date(invoice.fechaEmision).toLocaleDateString()}
-                        </td>
-                        <td className="py-3 px-4 text-right font-medium text-gray-900 dark:text-gray-100">
-                          {formatCurrency(invoice.total)}
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <Badge variant={getStatusBadge(invoice.estado)}>
-                            {getStatusLabel(invoice.estado)}
-                          </Badge>
-                        </td>
-                      </tr>
-                    ))
+                    recentInvoices.map((invoice) => {
+                      const statusInfo = getInvoiceStatusDisplay(invoice);
+                      return (
+                        <tr
+                          key={invoice.id}
+                          onClick={() => router.push(`/${locale}/facturas/${invoice.id}`)}
+                          className="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
+                        >
+                          <td className="py-3 px-4">
+                            <span className="font-medium text-gray-900 dark:text-gray-100">
+                              {invoice.numero}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
+                            {invoice.cliente.nombre}
+                          </td>
+                          <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
+                            {new Date(invoice.fechaEmision).toLocaleDateString()}
+                          </td>
+                          <td className="py-3 px-4 text-right font-medium text-gray-900 dark:text-gray-100">
+                            {formatCurrency(invoice.total)}
+                          </td>
+                          <td className="py-3 px-4 text-center">
+                            <Badge variant={statusInfo.variant}>
+                              {statusInfo.label}
+                            </Badge>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
@@ -514,61 +574,67 @@ export default function DashboardPage({
             {/* Mobile cards */}
             <div className="md:hidden space-y-3">
               {activeTab === 'proposals' ? (
-                recentProposals.map((proposal) => (
-                  <div
-                    key={proposal.id}
-                    onClick={() => router.push(`/${locale}/proformas/${proposal.id}`)}
-                    className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <span className="font-medium text-gray-900 dark:text-gray-100">
-                        {proposal.numero}
-                      </span>
-                      <Badge variant={getStatusBadge(proposal.estado)} size="sm">
-                        {getStatusLabel(proposal.estado)}
-                      </Badge>
+                recentProposals.map((proposal) => {
+                  const statusInfo = getProposalStatusDisplay(proposal);
+                  return (
+                    <div
+                      key={proposal.id}
+                      onClick={() => router.push(`/${locale}/proformas/${proposal.id}`)}
+                      className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <span className="font-medium text-gray-900 dark:text-gray-100">
+                          {proposal.numero}
+                        </span>
+                        <Badge variant={statusInfo.variant} size="sm">
+                          {statusInfo.label}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                        {proposal.cliente.nombre}
+                      </p>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-500 dark:text-gray-400">
+                          {new Date(proposal.fechaEmision).toLocaleDateString()}
+                        </span>
+                        <span className="font-medium text-gray-900 dark:text-gray-100">
+                          {formatCurrency(proposal.total)}
+                        </span>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      {proposal.cliente.nombre}
-                    </p>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500 dark:text-gray-400">
-                        {new Date(proposal.fechaEmision).toLocaleDateString()}
-                      </span>
-                      <span className="font-medium text-gray-900 dark:text-gray-100">
-                        {formatCurrency(proposal.total)}
-                      </span>
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               ) : (
-                recentInvoices.map((invoice) => (
-                  <div
-                    key={invoice.id}
-                    onClick={() => router.push(`/${locale}/facturas/${invoice.id}`)}
-                    className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <span className="font-medium text-gray-900 dark:text-gray-100">
-                        {invoice.numero}
-                      </span>
-                      <Badge variant={getStatusBadge(invoice.estado)} size="sm">
-                        {getStatusLabel(invoice.estado)}
-                      </Badge>
+                recentInvoices.map((invoice) => {
+                  const statusInfo = getInvoiceStatusDisplay(invoice);
+                  return (
+                    <div
+                      key={invoice.id}
+                      onClick={() => router.push(`/${locale}/facturas/${invoice.id}`)}
+                      className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <span className="font-medium text-gray-900 dark:text-gray-100">
+                          {invoice.numero}
+                        </span>
+                        <Badge variant={statusInfo.variant} size="sm">
+                          {statusInfo.label}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                        {invoice.cliente.nombre}
+                      </p>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-500 dark:text-gray-400">
+                          {new Date(invoice.fechaEmision).toLocaleDateString()}
+                        </span>
+                        <span className="font-medium text-gray-900 dark:text-gray-100">
+                          {formatCurrency(invoice.total)}
+                        </span>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                      {invoice.cliente.nombre}
-                    </p>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-500 dark:text-gray-400">
-                        {new Date(invoice.fechaEmision).toLocaleDateString()}
-                      </span>
-                      <span className="font-medium text-gray-900 dark:text-gray-100">
-                        {formatCurrency(invoice.total)}
-                      </span>
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
           </Card>

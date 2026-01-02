@@ -54,7 +54,7 @@ import {
 } from '@/components/proforma';
 import { JobPhotosGallery } from '@/components/job';
 import { formatDate } from '@/lib/utils';
-import { useCurrency } from '@/lib/hooks/useCurrency';
+import { useCurrency, useProposalStatus } from '@/lib/hooks';
 import api from '@/lib/api';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -176,7 +176,7 @@ export default function ProformaDetailPage({
   const [isEditJobInfoOpen, setIsEditJobInfoOpen] = useState(false);
   const [editingJobInfo, setEditingJobInfo] = useState(false);
   const [showJobMoreOptions, setShowJobMoreOptions] = useState(false);
-  const [jobInfoEdit, setJobInfoEdit] = useState({ jobName: '', jobLocation: '', workDescription: '', telefonoTrabajo: '' });
+  const [jobInfoEdit, setJobInfoEdit] = useState({ jobName: '', jobLocation: '', workDescription: '', paymentTerms: '', telefonoTrabajo: '' });
   const [isEditPaymentTermsOpen, setIsEditPaymentTermsOpen] = useState(false);
   const [editingPaymentTerms, setEditingPaymentTerms] = useState(false);
   const [paymentTermsEdit, setPaymentTermsEdit] = useState('');
@@ -521,6 +521,7 @@ export default function ProformaDetailPage({
       jobName: proforma.jobName || '',
       jobLocation: proforma.jobLocation || '',
       workDescription: proforma.workDescription || '',
+      paymentTerms: proforma.paymentTerms || '',
       telefonoTrabajo: proforma.telefonoTrabajo || ''
     });
     setIsEditJobInfoOpen(true);
@@ -664,17 +665,31 @@ export default function ProformaDetailPage({
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    const config: Record<string, { variant: 'success' | 'warning' | 'danger' | 'info' | 'neutral'; icon: React.ReactNode }> = {
-      aceptada: { variant: 'success', icon: <CheckCircle className="w-4 h-4" /> },
-      aprobada: { variant: 'success', icon: <CheckCircle className="w-4 h-4" /> },
-      pendiente: { variant: 'warning', icon: <Clock className="w-4 h-4" /> },
-      rechazada: { variant: 'danger', icon: <XCircle className="w-4 h-4" /> },
-      convertida: { variant: 'info', icon: <FileText className="w-4 h-4" /> },
-      facturada: { variant: 'info', icon: <FileText className="w-4 h-4" /> },
-      vencida: { variant: 'neutral', icon: <AlertTriangle className="w-4 h-4" /> },
+  // Use centralized hook for status calculation
+  const statusResult = useProposalStatus(proforma);
+  const effectiveStatus = statusResult?.effectiveStatus ?? 'pendiente';
+  const badgeVariant = statusResult?.badgeVariant ?? 'info';
+  const statusLabel = statusResult?.statusLabel ?? '';
+  const timelineEvents = statusResult?.timelineEvents ?? [];
+  const displayFlow = statusResult?.displayFlow;
+
+  const getStatusBadge = () => {
+    // Icons mapped by effective status
+    const icons: Record<string, React.ReactNode> = {
+      pagada: <CheckCircle className="w-4 h-4" />,
+      firmada: <CheckCircle className="w-4 h-4" />,
+      aceptada: <CheckCircle className="w-4 h-4" />,
+      facturada: <FileText className="w-4 h-4" />,
+      emitida: <Send className="w-4 h-4" />,
+      pendiente: <Clock className="w-4 h-4" />,
+      anulada: <XCircle className="w-4 h-4" />,
+      vencida: <AlertTriangle className="w-4 h-4" />,
+      rechazada: <XCircle className="w-4 h-4" />,
     };
-    return config[status] || { variant: 'neutral' as const, icon: null };
+    return { 
+      variant: badgeVariant, 
+      icon: icons[effectiveStatus] || null 
+    };
   };
 
   if (loading) {
@@ -692,8 +707,8 @@ export default function ProformaDetailPage({
     );
   }
 
-  const statusConfig = getStatusBadge(proforma.estado);
-  const canConvert = proforma.estado === 'pendiente' || proforma.estado === 'aprobada' || proforma.estado === 'aceptada';
+  const statusConfig = getStatusBadge();
+  const canConvert = effectiveStatus === 'pendiente' || effectiveStatus === 'emitida';
 
   return (
     <div className="space-y-6">
@@ -718,15 +733,9 @@ export default function ProformaDetailPage({
               <Badge variant={statusConfig.variant}>
                 <span className="flex items-center gap-1">
                   {statusConfig.icon}
-                  {t(`statuses.${proforma.estado}`)}
+                  {statusLabel}
                 </span>
               </Badge>
-              {proforma.signatureStatus === 'SIGNED' && proforma.estado !== 'aceptada' && (
-                <Badge variant="success">
-                  <CheckCircle className="w-3 h-3 mr-1" />
-                  {t('signed')}
-                </Badge>
-              )}
             </div>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
               {t('issuedOn', { date: formatDate(proforma.fechaEmision, locale) })}
@@ -912,7 +921,7 @@ export default function ProformaDetailPage({
           </Card>
 
           {/* Job Information */}
-          {(proforma.jobName || proforma.jobLocation || proforma.workDescription || proforma.telefonoTrabajo) && (
+          {(proforma.jobName || proforma.jobLocation || proforma.workDescription || proforma.paymentTerms || proforma.telefonoTrabajo) && (
             <Card>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
@@ -963,6 +972,14 @@ export default function ProformaDetailPage({
                   </p>
                 </div>
               )}
+              {proforma.paymentTerms && (
+                <div className="mt-4">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">{t('paymentTerms')}</span>
+                  <p className="mt-1 text-gray-900 dark:text-gray-100 whitespace-pre-wrap">
+                    {proforma.paymentTerms}
+                  </p>
+                </div>
+              )}
             </Card>
           )}
 
@@ -994,28 +1011,6 @@ export default function ProformaDetailPage({
             </Card>
           )}
 
-          {/* Payment Terms */}
-          {proforma.paymentTerms && (
-            <Card>
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                  <Receipt className="w-5 h-5" />
-                  {t('paymentTerms')}
-                </h2>
-                {proforma.estado !== 'facturada' && proforma.estado !== 'convertida' && (
-                  <button
-                    onClick={handleOpenEditPaymentTerms}
-                    className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-                    title="Edit payment terms"
-                  >
-                    <Edit2 className="w-4 h-4 text-gray-500" />
-                  </button>
-                )}
-              </div>
-              <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{proforma.paymentTerms}</p>
-            </Card>
-          )}
-
           {/* Terms & Conditions */}
           <Card>
             <div className="flex items-center justify-between mb-2">
@@ -1042,18 +1037,18 @@ export default function ProformaDetailPage({
             )}
           </Card>
 
-          {/* Observations */}
+          {/* Notes/Observations */}
           <Card>
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <FileText className="w-5 h-5" />
-                {t('observations')}
+                {t('notes')}
               </h2>
               {proforma.estado !== 'INVOICED' && proforma.estado !== 'CANCELLED' && (
                 <button
                   onClick={handleOpenEditObservations}
                   className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-                  title="Edit observations"
+                  title="Edit notes"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
                 </button>
@@ -1063,7 +1058,7 @@ export default function ProformaDetailPage({
               <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{proforma.observaciones}</p>
             ) : (
               <p className="text-gray-400 dark:text-gray-500 italic text-sm">
-                {t('observationsPlaceholder') || 'No observations'}
+                {t('notesPlaceholder') || 'No notes'}
               </p>
             )}
           </Card>
@@ -1139,18 +1134,9 @@ export default function ProformaDetailPage({
               {t('activityTimeline') || 'Activity'}
             </h2>
             <ActivityTimeline 
-              events={createTimelineFromDocument({
-                createdAt: proforma.fechaEmision,
-                sentAt: proforma.signatureRequest?.sentAt || (proforma.signatureRequest ? proforma.signatureRequest.createdAt : undefined),
-                signedAt: proforma.signatureRequest?.signature?.signedAt || proforma.fechaAceptacion,
-                invoicedAt: proforma.facturasGeneradas && proforma.facturasGeneradas.length > 0 
-                  ? proforma.facturasGeneradas[0].fechaEmision 
-                  : undefined,
-                paidAt: proforma.facturasGeneradas?.[0]?.pagos?.[0]?.fecha,
-                status: proforma.estado,
-                signerName: proforma.signatureRequest?.signerName,
-              })}
-              currentStatus={proforma.estado}
+              events={timelineEvents}
+              currentStatus={effectiveStatus}
+              displayFlow={displayFlow}
               compact
             />
           </Card>
@@ -1411,20 +1397,6 @@ export default function ProformaDetailPage({
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  {t('jobPhone')}
-                </label>
-                <input
-                  type="text"
-                  value={jobInfoEdit.telefonoTrabajo}
-                  onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, telefonoTrabajo: e.target.value })}
-                  disabled={editingJobInfo}
-                  placeholder={t('jobPhone')}
-                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   {t('workDescription')}
                 </label>
                 <textarea
@@ -1432,6 +1404,20 @@ export default function ProformaDetailPage({
                   onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, workDescription: e.target.value })}
                   disabled={editingJobInfo}
                   placeholder={t('workDescription')}
+                  rows={4}
+                  className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent resize-none transition-all placeholder:text-gray-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  {t('paymentTerms')}
+                </label>
+                <textarea
+                  value={jobInfoEdit.paymentTerms}
+                  onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, paymentTerms: e.target.value })}
+                  disabled={editingJobInfo}
+                  placeholder={t('paymentTerms')}
                   rows={4}
                   className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent resize-none transition-all placeholder:text-gray-400"
                 />
@@ -1454,7 +1440,7 @@ export default function ProformaDetailPage({
                 {t('moreOptions') || 'More options'}
               </button>
 
-              {/* Job Name & Location (Collapsible) */}
+              {/* Job Name, Location & Phone (Collapsible) */}
               {showJobMoreOptions && (
                 <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-top-2 duration-200">
                   <div>
@@ -1486,6 +1472,20 @@ export default function ProformaDetailPage({
                         className="w-full pl-11 pr-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
                       />
                     </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                      {t('jobPhone')}
+                    </label>
+                    <input
+                      type="text"
+                      value={jobInfoEdit.telefonoTrabajo}
+                      onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, telefonoTrabajo: e.target.value })}
+                      disabled={editingJobInfo}
+                      placeholder={t('jobPhone')}
+                      className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
+                    />
                   </div>
                 </div>
               )}
@@ -1585,32 +1585,30 @@ export default function ProformaDetailPage({
         </div>
       </Modal>
 
-      {/* Edit Observations Modal */}
+      {/* Edit Notes/Observations Modal */}
       <Modal
         isOpen={isEditObservationsOpen}
         onClose={() => !editingObservations && setIsEditObservationsOpen(false)}
-        title={t('observations')}
+        title={t('notes')}
         subtitle="Add notes or special instructions"
         icon={MessageSquare}
         size="md"
       >
         <div className="space-y-5">
-          {/* Textarea Field */}
           <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-              {t('observations')}
+              {t('notes')}
             </label>
             <textarea
               value={observacionesEdit}
               onChange={(e) => setObservacionesEdit(e.target.value)}
               disabled={editingObservations}
-              placeholder={t('observationsPlaceholder')}
+              placeholder={t('notesPlaceholder')}
               rows={5}
               className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent resize-none transition-all placeholder:text-gray-400"
             />
           </div>
 
-          {/* Actions */}
           <div className="flex gap-3 pt-2">
             <Button
               variant="outline"

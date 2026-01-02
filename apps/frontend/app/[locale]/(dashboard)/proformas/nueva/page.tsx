@@ -112,6 +112,9 @@ export default function NuevaProformaPage({
   const [telefonoTrabajo, setTelefonoTrabajo] = useState('');
   const [diasValidez, setDiasValidez] = useState<number>(30);
   
+  // Collapsible sections state
+  const [showJobMoreOptions, setShowJobMoreOptions] = useState(false);
+  
   // Template picker state
   const [isTemplatePickerOpen, setIsTemplatePickerOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<ProposalTemplate | null>(null);
@@ -120,8 +123,9 @@ export default function NuevaProformaPage({
   const handleTemplateSelect = (template: ProposalTemplate) => {
     setSelectedTemplate(template);
     // Apply template defaults to form
-    setCondiciones(template.defaultTerms);
-    setPaymentTerms(template.defaultPaymentTerms);
+    setCondiciones(template.defaultTerms || '');
+    setPaymentTerms(template.defaultPaymentTerms || '');
+    setObservaciones(template.defaultNotes || '');
     if (template.defaultScope) {
       setWorkDescription(template.defaultScope);
     }
@@ -526,19 +530,6 @@ export default function NuevaProformaPage({
             )}
           </Card>
 
-          {/* Observations */}
-          {/* <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-              {t('observations')}
-            </h2>
-            <Textarea
-              value={observaciones}
-              onChange={(e) => setObservaciones(e.target.value)}
-              placeholder="Condiciones, términos u otras observaciones..."
-              rows={3}
-            />
-          </Card> */}
-
           {/* Job Information */}
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
@@ -546,24 +537,6 @@ export default function NuevaProformaPage({
               {t('jobInformation')}
             </h2>
             <div className="space-y-4">
-              {/* <Input
-                label={t('jobName')}
-                value={jobName}
-                onChange={(e) => setJobName(e.target.value)}
-                placeholder="e.g., Kitchen Renovation"
-              />
-              <Input
-                label={t('jobLocation')}
-                value={jobLocation}
-                onChange={(e) => setJobLocation(e.target.value)}
-                placeholder="Job site address"
-              />
-              <Input
-                label={t('jobPhone')}
-                value={telefonoTrabajo}
-                onChange={(e) => setTelefonoTrabajo(e.target.value)}
-                placeholder="Job site phone"
-              /> */}
               <Textarea
                 label={t('workDescription')}
                 value={workDescription}
@@ -578,6 +551,38 @@ export default function NuevaProformaPage({
                 placeholder="Payment schedule and terms..."
                 rows={3}
               />
+
+              {/* More Options Toggle */}
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowJobMoreOptions(!showJobMoreOptions)}
+                  className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
+                >
+                  <svg 
+                    className={`w-4 h-4 transition-transform ${showJobMoreOptions ? 'rotate-180' : ''}`} 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                  {t('moreOptions') || 'More options'}
+                  <span className="text-xs text-gray-400">({t('optional') || 'Optional'})</span>
+                </button>
+
+                {/* Collapsible Content */}
+                {showJobMoreOptions && (
+                  <div className="space-y-4 pt-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <Input
+                      label={t('jobPhone')}
+                      value={telefonoTrabajo}
+                      onChange={(e) => setTelefonoTrabajo(e.target.value)}
+                      placeholder="Job site phone"
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </Card>
 
@@ -614,6 +619,20 @@ export default function NuevaProformaPage({
                 rows={6}
               />
             </div>
+          </Card>
+
+          {/* Notes/Observations */}
+          <Card>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-primary-600" />
+              {t('notes')}
+            </h2>
+            <Textarea
+              value={observaciones}
+              onChange={(e) => setObservaciones(e.target.value)}
+              placeholder={t('notesPlaceholder')}
+              rows={3}
+            />
           </Card>
         </div>
 

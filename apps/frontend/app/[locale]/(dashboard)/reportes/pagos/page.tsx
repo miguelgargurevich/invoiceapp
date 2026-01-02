@@ -89,7 +89,7 @@ export default function PaymentsReportPage({
         api.get<any>(`/facturas?limit=1000`), // Get all invoices with payments
       ]);
 
-      console.log('Facturas data received:', facturasData);
+      //console.log('Facturas data received:', facturasData);
 
       // Build payments from invoices
       const pagos: PagoReporte[] = [];
