@@ -30,15 +30,55 @@ router.get('/plans', async (req, res) => {
 // ==========================================
 router.get('/current', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
-    const subscription = await prisma.subscription.findUnique({
+    let subscription = await prisma.subscription.findUnique({
       where: { empresaId: req.empresa.id },
       include: {
         plan: true
       }
     });
 
+    // If no subscription exists, create a free trial on the Starter plan
     if (!subscription) {
-      return res.status(404).json({ error: 'No subscription found' });
+      // Find the starter plan (or any default plan)
+      const starterPlan = await prisma.plan.findFirst({
+        where: { 
+          OR: [
+            { slug: 'starter' },
+            { isActive: true }
+          ]
+        },
+        orderBy: { displayOrder: 'asc' }
+      });
+
+      if (!starterPlan) {
+        return res.status(404).json({ error: 'No plans available' });
+      }
+
+      // Create a trial subscription
+      const now = new Date();
+      const trialEnd = new Date(now);
+      trialEnd.setDate(trialEnd.getDate() + (starterPlan.trialDays || 14));
+
+      subscription = await prisma.subscription.create({
+        data: {
+          empresaId: req.empresa.id,
+          planId: starterPlan.id,
+          status: 'TRIALING',
+          billingInterval: 'MONTH',
+          trialStart: now,
+          trialEnd: trialEnd,
+          currentPeriodStart: now,
+          currentPeriodEnd: trialEnd,
+          invoicesUsed: 0,
+          proposalsUsed: 0,
+          storageUsedMb: 0
+        },
+        include: {
+          plan: true
+        }
+      });
+
+      console.log(`[SUBSCRIPTIONS] Created trial subscription for empresa ${req.empresa.id}`);
     }
 
     res.json(subscription);
@@ -245,7 +285,7 @@ router.post('/reactivate', authenticateToken, getEmpresaFromUser, async (req, re
 // ==========================================
 router.get('/usage', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
-    const subscription = await prisma.subscription.findUnique({
+    let subscription = await prisma.subscription.findUnique({
       where: { empresaId: req.empresa.id },
       include: {
         plan: {
@@ -259,8 +299,53 @@ router.get('/usage', authenticateToken, getEmpresaFromUser, async (req, res) => 
       }
     });
 
+    // If no subscription exists, create a free trial (same logic as /current)
     if (!subscription) {
-      return res.status(404).json({ error: 'No subscription found' });
+      const starterPlan = await prisma.plan.findFirst({
+        where: { 
+          OR: [
+            { slug: 'starter' },
+            { isActive: true }
+          ]
+        },
+        orderBy: { displayOrder: 'asc' }
+      });
+
+      if (!starterPlan) {
+        return res.status(404).json({ error: 'No plans available' });
+      }
+
+      const now = new Date();
+      const trialEnd = new Date(now);
+      trialEnd.setDate(trialEnd.getDate() + (starterPlan.trialDays || 14));
+
+      subscription = await prisma.subscription.create({
+        data: {
+          empresaId: req.empresa.id,
+          planId: starterPlan.id,
+          status: 'TRIALING',
+          billingInterval: 'MONTH',
+          trialStart: now,
+          trialEnd: trialEnd,
+          currentPeriodStart: now,
+          currentPeriodEnd: trialEnd,
+          invoicesUsed: 0,
+          proposalsUsed: 0,
+          storageUsedMb: 0
+        },
+        include: {
+          plan: {
+            select: {
+              maxInvoicesPerMonth: true,
+              maxClients: true,
+              maxProposalsPerMonth: true,
+              maxStorageMb: true
+            }
+          }
+        }
+      });
+
+      console.log(`[SUBSCRIPTIONS] Created trial subscription for usage - empresa ${req.empresa.id}`);
     }
 
     res.json({
