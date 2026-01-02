@@ -197,21 +197,14 @@ router.post('/submit', async (req, res) => {
       }
     });
 
-    // Update document status
-    if (signatureRequest.documentType === 'INVOICE' && signatureRequest.factura) {
-      await prisma.factura.update({
-        where: { id: signatureRequest.factura.id },
-        data: { 
-          signatureStatus: 'SIGNED',
-          firmaCliente: signatureImageUrl
-        }
-      });
-    } else if (signatureRequest.documentType === 'PROFORMA' && signatureRequest.proforma) {
+    // Update proforma with acceptance signature if applicable
+    if (signatureRequest.documentType === 'PROFORMA' && signatureRequest.proforma) {
       await prisma.proforma.update({
         where: { id: signatureRequest.proforma.id },
         data: { 
-          signatureStatus: 'SIGNED',
-          firmaCliente: signatureImageUrl
+          firmaAceptacion: signatureImageUrl,
+          fechaAceptacion: new Date(),
+          estado: 'aceptada'
         }
       });
     }
