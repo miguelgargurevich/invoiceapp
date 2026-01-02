@@ -1248,8 +1248,16 @@
   "templates": {
     "title": "Choose a Proposal Template",
     "subtitle": "Start with an industry-specific template to save time",
+    "selectInvoiceTemplate": "Choose an Invoice Template",
+    "invoiceTemplateSubtitle": "Start with an industry-specific template for your invoice",
     "backToTemplates": "Back to templates",
     "useTemplate": "Use This Template",
+    "useThisTemplate": "Use This Template",
+    "preview": "Preview",
+    "workDescription": "Work Description",
+    "paymentTerms": "Payment Terms",
+    "notes": "Notes",
+    "suggestedItems": "Suggested Line Items",
     "industries": {
       "contractor": {
         "name": "Contractor",
@@ -1267,14 +1275,6 @@
         "name": "Consultant",
         "description": "Business, IT, management, strategy"
       }
-    },
-    "preview": {
-      "view": "Preview",
-      "terms": "Terms & Conditions",
-      "paymentTerms": "Payment Terms",
-      "scope": "Scope of Work",
-      "warranty": "Warranty",
-      "suggestedSections": "Suggested Sections"
     }
   },
   "timeline": {

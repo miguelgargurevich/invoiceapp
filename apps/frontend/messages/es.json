@@ -1250,8 +1250,16 @@
   "templates": {
     "title": "Elige una Plantilla de Propuesta",
     "subtitle": "Comienza con una plantilla específica de industria para ahorrar tiempo",
+    "selectInvoiceTemplate": "Elige una Plantilla de Factura",
+    "invoiceTemplateSubtitle": "Comienza con una plantilla específica de industria para tu factura",
     "backToTemplates": "Volver a plantillas",
     "useTemplate": "Usar Esta Plantilla",
+    "useThisTemplate": "Usar Esta Plantilla",
+    "preview": "Vista previa",
+    "workDescription": "Descripción del Trabajo",
+    "paymentTerms": "Términos de Pago",
+    "notes": "Notas",
+    "suggestedItems": "Items Sugeridos",
     "industries": {
       "contractor": {
         "name": "Contratista",
@@ -1269,14 +1277,6 @@
         "name": "Consultor",
         "description": "Negocios, TI, gestión, estrategia"
       }
-    },
-    "preview": {
-      "view": "Vista previa",
-      "terms": "Términos y Condiciones",
-      "paymentTerms": "Términos de Pago",
-      "scope": "Alcance del Trabajo",
-      "warranty": "Garantía",
-      "suggestedSections": "Secciones Sugeridas"
     }
   },
   "timeline": {

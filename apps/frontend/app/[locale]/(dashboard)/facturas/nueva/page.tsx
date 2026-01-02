@@ -17,6 +17,7 @@ import {
   DollarSign,
   Briefcase,
   HardHat,
+  FileText,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -32,6 +33,7 @@ import {
   SkeletonFormPage,
   Modal,
 } from '@/components/common';
+import { InvoiceTemplatePicker, InvoiceTemplate } from '@/components/invoice/InvoiceTemplatePicker';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
 
@@ -86,6 +88,8 @@ export default function NuevaFacturaPage({
   const [loadingClientes, setLoadingClientes] = useState(true);
   const [loadingProductos, setLoadingProductos] = useState(true);
   const [isClientModalOpen, setIsClientModalOpen] = useState(false);
+  const [isTemplatePickerOpen, setIsTemplatePickerOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>();
 
   // Form state
   const [clienteId, setClienteId] = useState('');
@@ -331,6 +335,16 @@ export default function NuevaFacturaPage({
     }
   };
 
+  const handleTemplateSelect = (template: InvoiceTemplate) => {
+    setSelectedTemplate(template.id);
+    setWorkDescription(template.defaultWorkDescription);
+    setPaymentTerms(template.defaultPaymentTerms);
+    if (template.defaultNotes) {
+      setObservaciones(template.defaultNotes);
+    }
+    showSuccess(`Template "${template.name}" applied!`);
+  };
+
   if (loading) {
     return <SkeletonFormPage />;
   }
@@ -358,9 +372,19 @@ export default function NuevaFacturaPage({
             </p>
           </div>
         </div>
-        <Button variant="outline" onClick={() => router.back()} size="lg">
-          {t('cancel')}
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="outline" 
+            onClick={() => setIsTemplatePickerOpen(true)} 
+            size="lg"
+          >
+            <FileText className="w-5 h-5 mr-2" />
+            Templates
+          </Button>
+          <Button variant="outline" onClick={() => router.back()} size="lg">
+            {t('cancel')}
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -735,6 +759,14 @@ export default function NuevaFacturaPage({
           setIsClientModalOpen(false);
           await loadClientes();
         }}
+      />
+
+      {/* Invoice Template Picker */}
+      <InvoiceTemplatePicker
+        isOpen={isTemplatePickerOpen}
+        onClose={() => setIsTemplatePickerOpen(false)}
+        onSelect={handleTemplateSelect}
+        selectedTemplate={selectedTemplate}
       />
     </div>
   );
