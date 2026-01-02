@@ -157,13 +157,13 @@ export default function ProformasPage({
   const getStatusLabel = (status: string) => {
     const normalizedStatus = status.toLowerCase();
     const statusMap: Record<string, string> = {
-      pendiente: t('statusPending'),
-      aceptada: t('statusAccepted'),
-      aprobada: t('statusAccepted'),
-      rechazada: t('statusRejected'),
-      vencida: t('statusExpired'),
-      facturada: t('statusInvoiced'),
-      anulada: t('statusCancelled'),
+      pendiente: t('statuses.pendiente'),
+      aceptada: t('statuses.aceptada'),
+      aprobada: t('statuses.aprobada'),
+      rechazada: t('statuses.rechazada'),
+      vencida: t('statuses.vencida'),
+      facturada: t('statuses.facturada'),
+      anulada: t('statuses.anulada'),
     };
     return statusMap[normalizedStatus] || status;
   };
@@ -356,7 +356,7 @@ export default function ProformasPage({
         </div>
         <Button 
           onClick={() => router.push(`/${locale}/proformas/nueva`)}
-          className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 bg-emerald-600 hover:bg-emerald-700 text-white"
+          className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 bg-emerald-600 dark:bg-emerald-500 hover:bg-emerald-700 dark:hover:bg-emerald-600 text-white"
         >
           <FileBarChart className="w-5 h-5 mr-2" />
           {t('create')}
@@ -458,6 +458,7 @@ export default function ProformasPage({
             <div className="flex flex-wrap gap-2 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
               {[
                 { value: 'pendiente', label: t('statuses.pendiente'), color: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300' },
+                { value: 'aceptada', label: t('statuses.aceptada'), color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' },
                 { value: 'rechazada', label: t('statuses.rechazada'), color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' },
                 { value: 'vencida', label: t('statuses.vencida'), color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' },
                 { value: 'facturada', label: t('statuses.facturada'), color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },

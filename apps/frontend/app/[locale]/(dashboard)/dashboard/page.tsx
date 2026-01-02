@@ -184,6 +184,10 @@ export default function DashboardPage({
       pendiente: 'warning',
       vencida: 'danger',
       anulada: 'neutral',
+      aceptada: 'success', // Accepted/Signed - green
+      aprobada: 'success', // Approved - green
+      rechazada: 'danger', // Rejected - red
+      facturada: 'info', // Invoiced - blue
     };
     return variants[normalizedStatus] || 'neutral';
   };
@@ -197,6 +201,9 @@ export default function DashboardPage({
       vencida: t('statusOverdue'),
       anulada: t('statusCancelled'),
       facturada: t('statusIssued'), // Alias for issued status
+      aceptada: t('signed'), // Accepted/Signed status
+      aprobada: t('signed'), // Approved status
+      rechazada: t('statusCancelled'), // Rejected status
     };
     return statusMap[normalizedStatus] || status;
   };
@@ -330,9 +337,9 @@ export default function DashboardPage({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           whileTap={{ scale: 0.98 }}
-          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 p-8 shadow-xl hover:shadow-2xl transition-all duration-300"
+          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-600 dark:to-emerald-700 p-8 shadow-xl hover:shadow-2xl transition-all duration-300"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 dark:from-emerald-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="relative flex flex-col items-center justify-center text-white space-y-4">
             <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm group-hover:bg-white/30 transition-colors">
               <FileBarChart className="w-12 h-12" />
@@ -355,9 +362,9 @@ export default function DashboardPage({
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           whileTap={{ scale: 0.98 }}
-          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 p-8 shadow-xl hover:shadow-2xl transition-all duration-300"
+          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 p-8 shadow-xl hover:shadow-2xl transition-all duration-300"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 dark:from-blue-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="relative flex flex-col items-center justify-center text-white space-y-4">
             <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm group-hover:bg-white/30 transition-colors">
               <Receipt className="w-12 h-12" />

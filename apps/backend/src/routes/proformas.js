@@ -272,7 +272,22 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
           orderBy: { orden: 'asc' }
         },
         facturasGeneradas: {
-          select: { id: true, serie: true, numero: true, estado: true }
+          select: { 
+            id: true, 
+            serie: true, 
+            numero: true, 
+            estado: true,
+            fechaEmision: true,
+            pagos: {
+              select: {
+                id: true,
+                fecha: true,
+                monto: true,
+                metodoPago: true
+              },
+              orderBy: { fecha: 'asc' }
+            }
+          }
         },
         signatureRequests: {
           where: {

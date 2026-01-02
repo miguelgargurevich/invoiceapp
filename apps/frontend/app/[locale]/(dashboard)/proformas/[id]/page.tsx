@@ -122,6 +122,12 @@ interface Proforma {
     numero: number;
     estado: string;
     fechaEmision?: string;
+    pagos?: Array<{
+      id: string;
+      fecha: string;
+      monto: number;
+      metodoPago: string;
+    }>;
   }>;
 }
 
@@ -633,11 +639,14 @@ export default function ProformaDetailPage({
 
     try {
       setConverting(true);
+      showSuccess(t('convertingToInvoice') || 'Converting proposal to invoice...');
       const response: any = await api.post(`/proformas/${proforma.id}/convertir-factura`);
+      showSuccess(t('invoiceCreated') || 'Invoice created successfully!');
       setIsConvertDialogOpen(false);
       router.push(`/${locale}/facturas/${response.factura?.id || response.data?.factura?.id}`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error converting to invoice:', error);
+      showError(error.response?.data?.error || t('convertError') || 'Error converting to invoice');
     } finally {
       setConverting(false);
     }
@@ -657,6 +666,7 @@ export default function ProformaDetailPage({
 
   const getStatusBadge = (status: string) => {
     const config: Record<string, { variant: 'success' | 'warning' | 'danger' | 'info' | 'neutral'; icon: React.ReactNode }> = {
+      aceptada: { variant: 'success', icon: <CheckCircle className="w-4 h-4" /> },
       aprobada: { variant: 'success', icon: <CheckCircle className="w-4 h-4" /> },
       pendiente: { variant: 'warning', icon: <Clock className="w-4 h-4" /> },
       rechazada: { variant: 'danger', icon: <XCircle className="w-4 h-4" /> },
@@ -683,7 +693,7 @@ export default function ProformaDetailPage({
   }
 
   const statusConfig = getStatusBadge(proforma.estado);
-  const canConvert = proforma.estado === 'pendiente' || proforma.estado === 'aprobada';
+  const canConvert = proforma.estado === 'pendiente' || proforma.estado === 'aprobada' || proforma.estado === 'aceptada';
 
   return (
     <div className="space-y-6">
@@ -711,7 +721,7 @@ export default function ProformaDetailPage({
                   {t(`statuses.${proforma.estado}`)}
                 </span>
               </Badge>
-              {proforma.signatureStatus === 'SIGNED' && (
+              {proforma.signatureStatus === 'SIGNED' && proforma.estado !== 'aceptada' && (
                 <Badge variant="success">
                   <CheckCircle className="w-3 h-3 mr-1" />
                   {t('signed')}
@@ -1124,7 +1134,8 @@ export default function ProformaDetailPage({
 
           {/* Activity Timeline */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <Clock className="w-5 h-5" />
               {t('activityTimeline') || 'Activity'}
             </h2>
             <ActivityTimeline 
@@ -1135,7 +1146,7 @@ export default function ProformaDetailPage({
                 invoicedAt: proforma.facturasGeneradas && proforma.facturasGeneradas.length > 0 
                   ? proforma.facturasGeneradas[0].fechaEmision 
                   : undefined,
-                paidAt: undefined, // TODO: Get from factura pagos
+                paidAt: proforma.facturasGeneradas?.[0]?.pagos?.[0]?.fecha,
                 status: proforma.estado,
                 signerName: proforma.signatureRequest?.signerName,
               })}

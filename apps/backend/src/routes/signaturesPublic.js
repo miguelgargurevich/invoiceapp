@@ -197,16 +197,47 @@ router.post('/submit', async (req, res) => {
       }
     });
 
-    // Update proforma with acceptance signature if applicable
-    if (signatureRequest.documentType === 'PROFORMA' && signatureRequest.proforma) {
-      await prisma.proforma.update({
-        where: { id: signatureRequest.proforma.id },
-        data: { 
-          firmaAceptacion: signatureImageUrl,
-          fechaAceptacion: new Date(),
-          estado: 'aceptada'
-        }
-      });
+    // Update proforma/factura with acceptance signature
+    console.log('[SIGNATURE] Document info:', {
+      documentType: signatureRequest.documentType,
+      hasProforma: !!signatureRequest.proforma,
+      hasFactura: !!signatureRequest.factura,
+      proformaId: signatureRequest.proforma?.id,
+      facturaId: signatureRequest.factura?.id
+    });
+    
+    if (signatureRequest.documentType === 'PROFORMA' && signatureRequest.proformaId) {
+      console.log('[SIGNATURE] Updating proforma estado to aceptada:', signatureRequest.proformaId);
+      try {
+        const updatedProforma = await prisma.proforma.update({
+          where: { id: signatureRequest.proformaId },
+          data: { 
+            firmaAceptacion: signatureImageUrl,
+            fechaAceptacion: new Date(),
+            estado: 'aceptada'
+          }
+        });
+        console.log('[SIGNATURE] ✅ Proforma updated successfully. New estado:', updatedProforma.estado);
+      } catch (updateError) {
+        console.error('[SIGNATURE] ❌ Error updating proforma:', updateError);
+      }
+    } else if (signatureRequest.documentType === 'INVOICE' && signatureRequest.facturaId) {
+      console.log('[SIGNATURE] Updating factura with signature:', signatureRequest.facturaId);
+      try {
+        await prisma.factura.update({
+          where: { id: signatureRequest.facturaId },
+          data: { 
+            firmaCliente: signatureImageUrl,
+            fechaFirma: new Date()
+          }
+        });
+        console.log('[SIGNATURE] ✅ Factura updated successfully');
+      } catch (updateError) {
+        console.error('[SIGNATURE] ❌ Error updating factura:', updateError);
+      }
+    } else {
+      console.log('[SIGNATURE] ⚠️ NOT updating document - type:', signatureRequest.documentType, 
+        'proformaId:', signatureRequest.proformaId, 'facturaId:', signatureRequest.facturaId);
     }
 
     // Send confirmation email

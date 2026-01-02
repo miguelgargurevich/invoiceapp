@@ -143,17 +143,33 @@ export function ActivityTimeline({ events, currentStatus, compact = false }: Act
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
-      <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-        <Clock className="w-5 h-5 text-primary-500" />
-        {t('title')}
-      </h3>
-      
+    <div className="space-y-4">
+      {/* Current Status Banner */}
+      {lastCompletedIndex >= 0 && lastCompletedIndex < displayEvents.length - 1 && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-3 border border-blue-200 dark:border-blue-800">
+          <div className="flex items-center justify-between gap-2 text-sm">
+            <div className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full ${EVENT_CONFIG[displayEvents[lastCompletedIndex].type].activeColor} animate-pulse`} />
+              <span className="font-medium text-gray-900 dark:text-gray-100">
+                {t('currentStatus')}: {t(`events.${displayEvents[lastCompletedIndex].type}.label`)}
+              </span>
+            </div>
+            {lastCompletedIndex < displayEvents.length - 1 && (
+              <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                <span className="text-xs">{t('nextStep')}:</span>
+                <span className="font-medium">{t(`events.${displayEvents[lastCompletedIndex + 1].type}.label`)}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Timeline - Horizontal */}
       <div className="relative">
-        {/* Vertical line */}
-        <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-slate-200 dark:bg-slate-700" />
+        {/* Horizontal line */}
+        <div className="absolute left-0 right-0 top-[52px] h-0.5 bg-slate-200 dark:bg-slate-700 mx-8" />
         
-        <div className="space-y-6">
+        <div className="flex justify-between items-start">
           {displayEvents.map((event, index) => {
             const config = EVENT_CONFIG[event.type];
             const Icon = config.icon;
@@ -163,12 +179,18 @@ export function ActivityTimeline({ events, currentStatus, compact = false }: Act
             return (
               <motion.div
                 key={event.type}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="relative flex items-start gap-4"
+                className="flex flex-col items-center relative z-10"
+                style={{ width: `${100 / displayEvents.length}%` }}
               >
-                {/* Icon */}
+                {/* Icon above circle */}
+                <div className={`mb-2 ${isCompleted ? 'text-slate-700 dark:text-slate-200' : 'text-slate-300 dark:text-slate-600'}`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+
+                {/* Circle */}
                 <motion.div
                   animate={{
                     scale: isCurrent ? [1, 1.1, 1] : 1,
@@ -179,21 +201,21 @@ export function ActivityTimeline({ events, currentStatus, compact = false }: Act
                     repeatType: 'loop',
                   }}
                   className={`
-                    relative z-10 w-10 h-10 rounded-full flex items-center justify-center
+                    w-8 h-8 rounded-full flex items-center justify-center
                     ${isCompleted ? config.activeColor : 'bg-slate-200 dark:bg-slate-700'}
                     shadow-sm transition-colors duration-300
                   `}
                 >
                   {isCompleted ? (
-                    <Check className="w-5 h-5 text-white" />
+                    <Check className="w-4 h-4 text-white" />
                   ) : (
-                    <Icon className="w-5 h-5 text-slate-400" />
+                    <span className="w-3 h-3 rounded-full bg-slate-300 dark:bg-slate-600" />
                   )}
                 </motion.div>
                 
-                {/* Content */}
-                <div className="flex-1 min-w-0 pt-1">
-                  <p className={`font-medium ${
+                {/* Content below circle */}
+                <div className="mt-3 text-center">
+                  <p className={`text-xs font-medium ${
                     isCompleted 
                       ? 'text-slate-900 dark:text-white' 
                       : 'text-slate-400 dark:text-slate-500'
@@ -202,32 +224,11 @@ export function ActivityTimeline({ events, currentStatus, compact = false }: Act
                   </p>
                   
                   {event.date && (
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                       {new Date(event.date).toLocaleDateString(undefined, {
-                        year: 'numeric',
                         month: 'short',
                         day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
                       })}
-                    </p>
-                  )}
-                  
-                  {event.actor && (
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
-                      {t(`events.${event.type}.by`, { actor: event.actor })}
-                    </p>
-                  )}
-                  
-                  {event.details && (
-                    <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">
-                      {event.details}
-                    </p>
-                  )}
-                  
-                  {!isCompleted && index === lastCompletedIndex + 1 && (
-                    <p className="text-sm text-slate-400 dark:text-slate-500 italic mt-1">
-                      {t(`events.${event.type}.pending`)}
                     </p>
                   )}
                 </div>

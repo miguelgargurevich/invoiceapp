@@ -482,6 +482,7 @@
     "print": "Print",
     "client": "Client",
     "filterStatus": "Filter by status",
+    "clearFilters": "Clear all",
     "searchPlaceholder": "Search proposals...",
     "number": "Number",
     "status": "Status",
@@ -495,6 +496,9 @@
     "validUntil": "Valid Until",
     "activityTimeline": "Activity",
     "convertToInvoice": "Convert to Invoice",
+    "convertingToInvoice": "Converting proposal to invoice...",
+    "invoiceCreated": "Invoice created successfully!",
+    "convertError": "Error converting to invoice",
     "viewInvoice": "View Invoice",
     "requestSignature": "Request Signature",
     "resendSignature": "Resend Signature",
@@ -513,6 +517,7 @@
     "emailMessagePlaceholder": "Enter your message...",
     "emailAttachment": "Attachment",
     "sendEmailButton": "Send Email",
+    "sendingEmail": "Sending...",
     "statuses": {
       "pendiente": "Pending",
       "pending": "Pending",
@@ -525,7 +530,8 @@
       "expired": "Expired",
       "invoiced": "Invoiced",
       "vencida": "Expired",
-      "facturada": "Invoiced"
+      "facturada": "Invoiced",
+      "anulada": "Cancelled"
     },
     "messages": {
       "created": "Proposal successfully created",
@@ -1273,6 +1279,8 @@
   },
   "timeline": {
     "title": "Activity Timeline",
+    "currentStatus": "Current Status",
+    "nextStep": "Next Step",
     "events": {
       "created": {
         "label": "Created",

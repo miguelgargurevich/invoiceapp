@@ -145,7 +145,7 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
             type="submit"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-blue-600 dark:to-cyan-600 text-white font-semibold shadow-lg shadow-blue-500/30 dark:shadow-blue-600/30 hover:shadow-blue-500/50 dark:hover:shadow-blue-600/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!data.companyName.trim()}
           >
             {t('buttons.continue')}

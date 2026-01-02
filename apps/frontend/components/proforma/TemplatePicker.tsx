@@ -36,8 +36,8 @@ const PROPOSAL_TEMPLATES: ProposalTemplate[] = [
     description: 'Construction, renovation, electrical, plumbing',
     icon: HardHat,
     color: 'from-orange-500 to-amber-500',
-    defaultTerms: `TERMS AND CONDITIONS:
-1. All work to be completed in a workmanlike manner according to standard practices.
+    defaultTerms: 
+`1. All work to be completed in a workmanlike manner according to standard practices.
 2. Any changes to the scope of work will require a written change order.
 3. Client is responsible for obtaining necessary permits unless otherwise specified.
 4. Contractor maintains general liability and workers compensation insurance.
@@ -63,8 +63,8 @@ All workmanship warranted for one (1) year from date of completion. Materials ca
     description: 'Design, development, writing, marketing',
     icon: Laptop,
     color: 'from-purple-500 to-pink-500',
-    defaultTerms: `TERMS AND CONDITIONS:
-1. All deliverables remain property of client upon final payment.
+    defaultTerms: 
+`1. All deliverables remain property of client upon final payment.
 2. Client will provide timely feedback within 5 business days.
 3. Revisions limited to 2 rounds per deliverable unless otherwise specified.
 4. Additional revisions billed at hourly rate.
@@ -88,8 +88,8 @@ All workmanship warranted for one (1) year from date of completion. Materials ca
     description: 'Full-service marketing, creative, digital',
     icon: Building2,
     color: 'from-blue-500 to-cyan-500',
-    defaultTerms: `TERMS AND CONDITIONS:
-1. Client retains ownership of all final approved work upon full payment.
+    defaultTerms: 
+`1. Client retains ownership of all final approved work upon full payment.
 2. Agency retains right to use work in portfolio with client permission.
 3. Client provides brand guidelines and assets within 5 business days of kickoff.
 4. Third-party costs (stock photos, fonts, hosting) billed separately.
@@ -114,8 +114,8 @@ All workmanship warranted for one (1) year from date of completion. Materials ca
     description: 'Business, IT, management, strategy',
     icon: Briefcase,
     color: 'from-emerald-500 to-teal-500',
-    defaultTerms: `TERMS AND CONDITIONS:
-1. Consultant maintains confidentiality of all client information.
+    defaultTerms: 
+`1. Consultant maintains confidentiality of all client information.
 2. Deliverables are for client's internal use only unless otherwise specified.
 3. Client provides access to necessary personnel and information.
 4. Recommendations are advisory; implementation decisions rest with client.

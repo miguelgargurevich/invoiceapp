@@ -690,7 +690,7 @@ export default function ConfiguracionPage({
                   <button
                     onClick={handleSaveEmpresa}
                     disabled={saving}
-                    className="h-11 px-6 bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-base font-semibold rounded-lg hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
+                    className="h-11 px-6 bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700 text-white text-base font-semibold rounded-lg hover:from-blue-600 hover:to-indigo-700 dark:hover:from-blue-700 dark:hover:to-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
                   >
                     {saving ? (
                       <>

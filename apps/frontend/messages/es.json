@@ -252,6 +252,7 @@
     "previewDescription": "Vista previa de la factura. Puedes descargar o compartir el PDF.",
     "sendEmail": "Enviar por Email",
     "sendEmailButton": "Enviar Email",
+    "sendEmailSubtitle": "Enviar esta factura a tu cliente por correo",
     "sendingEmail": "Enviando...",
     "emailTo": "Para",
     "emailSubject": "Asunto",
@@ -261,8 +262,11 @@
     "emailMessagePlaceholder": "Escribe un mensaje para el destinatario...",
     "emailAttachment": "Archivo adjunto",
     "emailSentSuccess": "Email enviado exitosamente",
+    "emailSentSuccessDescription": "El documento se envió correctamente al cliente",
+    "emailErrorDescription": "Verifica los datos e intenta nuevamente",
     "emailRequired": "El email del destinatario es requerido",
     "sendEmailError": "Error al enviar el email",
+    "documentToSend": "Documento a enviar",
     "cancelInvoiceTitle": "Anular Factura",
     "cancelInvoiceMessage": "¿Estás seguro de que deseas anular esta factura? Esta acción no se puede deshacer.",
     "confirm": "Confirmar",
@@ -463,6 +467,7 @@
     "print": "Imprimir",
     "client": "Cliente",
     "filterStatus": "Filtrar por estado",
+    "clearFilters": "Limpiar todos",
     "searchPlaceholder": "Buscar proformas...",
     "number": "Número",
     "status": "Estado",
@@ -476,6 +481,9 @@
     "validUntil": "Válido Hasta",
     "activityTimeline": "Actividad",
     "convertToInvoice": "Convertir a Factura",
+    "convertingToInvoice": "Convirtiendo propuesta a factura...",
+    "invoiceCreated": "¡Factura creada exitosamente!",
+    "convertError": "Error al convertir a factura",
     "viewInvoice": "Ver Factura",
     "requestSignature": "Solicitar Firma",
     "resendSignature": "Reenviar Firma",
@@ -490,6 +498,8 @@
     "copied": "¡Copiado!",
     "signatureOptions": "Opciones de firma:",
     "signNowOption": "Firmar Ahora: Abrir el panel de firma en tu dispositivo actual",
+    "sendViaEmail": "Enviar por Email",
+    "emailSent": "Email Enviado",
     "sendToClientOption": "Enviar al cliente: Enviar el enlace por email o aplicaciones de mensajería",
     "linkExpiresIn": "El enlace expira en 7 días",
     "signatureRequestInfo": "Comparte el enlace de firma con tu cliente por email o aplicación de mensajería.",
@@ -514,6 +524,7 @@
       "pending": "Pendiente",
       "pendiente": "Pendiente",
       "accepted": "Aceptada",
+      "aceptada": "Aceptada",
       "aprobada": "Aprobada",
       "rejected": "Rechazada",
       "rechazada": "Rechazada",
@@ -521,7 +532,8 @@
       "vencida": "Vencida",
       "invoiced": "Facturada",
       "facturada": "Facturada",
-      "convertida": "Convertida"
+      "convertida": "Convertida",
+      "anulada": "Anulada"
     },
     "messages": {
       "created": "Proforma creada exitosamente",
@@ -1269,6 +1281,8 @@
   },
   "timeline": {
     "title": "Línea de Tiempo",
+    "currentStatus": "Estado Actual",
+    "nextStep": "Siguiente Paso",
     "events": {
       "created": {
         "label": "Creado",

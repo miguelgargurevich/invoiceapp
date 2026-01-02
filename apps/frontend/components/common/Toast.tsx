@@ -33,15 +33,15 @@ export default function Toast({
   };
 
   const bgColors = {
-    success: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
-    error: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800',
-    warning: 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800',
-    info: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800',
+    success: 'bg-green-50 dark:bg-green-900/90 border-green-200 dark:border-green-700',
+    error: 'bg-red-50 dark:bg-red-900/90 border-red-200 dark:border-red-700',
+    warning: 'bg-yellow-50 dark:bg-yellow-900/90 border-yellow-200 dark:border-yellow-700',
+    info: 'bg-blue-50 dark:bg-blue-900/90 border-blue-200 dark:border-blue-700',
   };
 
   return (
     <div
-      className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg animate-slide-in ${bgColors[type]}`}
+      className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg animate-slide-in backdrop-blur-sm ${bgColors[type]}`}
       role="alert"
     >
       {icons[type]}

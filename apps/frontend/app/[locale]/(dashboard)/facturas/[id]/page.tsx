@@ -172,7 +172,10 @@ export default function FacturaDetailPage({
     try {
       setLoading(true);
       const response: any = await api.get(`/facturas/${id}`);
-      setFactura(response);
+      const data = response.data || response;
+      console.log('Factura data:', data);
+      console.log('SignatureRequest:', data.signatureRequest);
+      setFactura(data);
     } catch (error) {
       console.error('Error loading factura:', error);
       // Mock data for development
@@ -619,18 +622,6 @@ export default function FacturaDetailPage({
                   {getStatusLabel(factura.estado)}
                 </span>
               </Badge>
-              {factura.signatureStatus === 'SIGNED' && (
-                <Badge variant="success">
-                  <CheckCircle className="w-3 h-3 mr-1" />
-                  {t('signed')}
-                </Badge>
-              )}
-              {factura.signatureStatus === 'PENDING' && (
-                <Badge variant="warning">
-                  <Clock className="w-3 h-3 mr-1" />
-                  {t('signaturePending')}
-                </Badge>
-              )}
             </div>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
               {t('issuedOn', { date: formatDate(factura.fechaEmision, locale) })}
@@ -1016,16 +1007,19 @@ export default function FacturaDetailPage({
 
           {/* Activity Timeline */}
           <Card>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <Clock className="w-5 h-5" />
               {t('activityTimeline') || 'Activity'}
             </h2>
             <ActivityTimeline 
               events={createTimelineFromDocument({
                 createdAt: factura.fechaEmision,
-                sentAt: factura.signatureRequest?.sentAt,
+                sentAt: factura.signatureRequest?.sentAt || factura.signatureRequest?.createdAt,
                 signedAt: factura.signatureRequest?.signature?.signedAt,
-                invoicedAt: undefined, // Facturas no se convierten a otra cosa
-                paidAt: factura.estado === 'PAGADA' ? factura.pagos?.[factura.pagos.length - 1]?.fecha : undefined,
+                invoicedAt: factura.fechaEmision, // Invoiced date is the creation date
+                paidAt: factura.saldoPendiente <= 0 && factura.pagos.length > 0 
+                  ? factura.pagos[factura.pagos.length - 1].fecha 
+                  : undefined,
                 status: factura.estado,
                 signerName: factura.signatureRequest?.signerName,
               })}
