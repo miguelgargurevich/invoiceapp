@@ -5,7 +5,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { AppLayout } from '@/components/global/AppLayout';
 import { LoadingPage } from '@/components/common';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import api from '@/lib/api';
 
 export default function DashboardLayout({
   children,
@@ -16,14 +17,41 @@ export default function DashboardLayout({
 }) {
   const { user, loading, empresa } = useAuth();
   const router = useRouter();
+  const [checkingSetup, setCheckingSetup] = useState(true);
 
   useEffect(() => {
     if (!loading && !user) {
       router.push(`/${locale}/login`);
+      return;
     }
-  }, [user, loading, router, locale]);
 
-  if (loading) {
+    // Check if user has completed setup
+    const checkSetupStatus = async () => {
+      if (user && empresa) {
+        try {
+          const response = await api.get('/api/empresa');
+          if (response.data && response.data.setupCompleted === false) {
+            // User hasn't completed setup, redirect to wizard
+            router.push(`/${locale}/setup`);
+            return;
+          }
+        } catch (error) {
+          // If no empresa exists, redirect to setup
+          if ((error as any)?.response?.status === 404) {
+            router.push(`/${locale}/setup`);
+            return;
+          }
+        }
+      }
+      setCheckingSetup(false);
+    };
+
+    if (!loading && user) {
+      checkSetupStatus();
+    }
+  }, [user, loading, router, locale, empresa]);
+
+  if (loading || checkingSetup) {
     return <LoadingPage message="Loading..." />;
   }
 

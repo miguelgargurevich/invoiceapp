@@ -62,9 +62,13 @@ model Empresa {
   licencia        String?   // License number (contractor license, etc.)
   tituloProfesional String? @map("titulo_profesional") // Professional title (e.g., "MASTER ELECTRICIAN")
   moneda          String    @default("PEN")
+  currency        String    @default("USD") // Currency code (USD, EUR, PEN, etc.)
+  locale          String    @default("en") // Locale for formatting (en, es)
   taxRate         Decimal   @default(18) @map("tax_rate") @db.Decimal(5, 2) // Tax rate percentage (e.g., 18 for 18%, 10 for 10%)
+  taxName         String    @default("Tax") @map("tax_name") // Tax name (VAT, IGV, IVA, etc.)
   serieFactura    String    @default("F001") @map("serie_factura")
   serieProforma   String    @default("P001") @map("serie_proforma")
+  setupCompleted  Boolean   @default(false) @map("setup_completed") // Whether user completed onboarding wizard
   userId          String    @unique @map("user_id")
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
@@ -435,7 +439,7 @@ model SignatureRequest {
   @@map("signature_requests")
 }
 
-// ✍️ Signatures - Stores completed signatures
+// ✍️ Signatures - Stores completed signatures with full audit trail
 model Signature {
   id                    String    @id @default(uuid())
   signatureRequestId    String    @unique @map("signature_request_id")
@@ -443,6 +447,7 @@ model Signature {
   // Signature data
   signatureImageUrl     String    @map("signature_image_url") // Path in Supabase Storage
   signedPdfUrl          String?   @map("signed_pdf_url") // Final signed PDF
+  documentHash          String?   @map("document_hash") // SHA-256 hash of signed PDF for immutability verification
   
   // Signer information
   signerName            String    @map("signer_name")
@@ -453,9 +458,9 @@ model Signature {
   consentGiven          Boolean   @default(true) @map("consent_given")
   consentText           String?   @map("consent_text")
   
-  // Audit metadata
-  ipAddress             String?   @map("ip_address")
-  userAgent             String?   @map("user_agent")
+  // Audit metadata (captured server-side for security)
+  ipAddress             String    @map("ip_address") // IP address of signer
+  userAgent             String    @map("user_agent") // Browser/device info
   deviceType            String?   @map("device_type") // 'mobile', 'tablet', 'desktop'
   
   // Timestamps
@@ -465,6 +470,7 @@ model Signature {
   signatureRequest      SignatureRequest @relation(fields: [signatureRequestId], references: [id], onDelete: Cascade)
   
   @@index([signatureRequestId])
+  @@index([documentHash])
   @@map("signatures")
 }
 

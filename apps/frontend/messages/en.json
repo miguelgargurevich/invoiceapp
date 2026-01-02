@@ -1126,5 +1126,84 @@
     "confirmationEmailSent": "You will receive a confirmation email with the signed document.",
     "done": "Done",
     "viewDocument": "View Document"
+  },
+  "setup": {
+    "timeEstimate": "Takes about 2 minutes to complete",
+    "steps": {
+      "welcome": { "label": "Welcome" },
+      "company": { "label": "Company Info" },
+      "logo": { "label": "Logo" },
+      "currency": { "label": "Currency" },
+      "tax": { "label": "Tax Settings" },
+      "complete": { "label": "Ready!" }
+    },
+    "buttons": {
+      "back": "Back",
+      "continue": "Continue",
+      "skip": "Skip for now"
+    },
+    "welcome": {
+      "title": "Welcome to Your Billing System! 🎉",
+      "subtitle": "Let's get you set up in just a few quick steps",
+      "feature1": "Takes only 2 minutes to complete",
+      "feature2": "Your data is secure and encrypted",
+      "feature3": "Start invoicing immediately after setup",
+      "getStarted": "Let's Get Started"
+    },
+    "company": {
+      "title": "Tell us about your business",
+      "subtitle": "This information will appear on your invoices and proposals",
+      "name": "Company Name",
+      "namePlaceholder": "Enter your company or business name",
+      "address": "Address",
+      "addressPlaceholder": "Street address, city, state, ZIP",
+      "phone": "Phone",
+      "phonePlaceholder": "+1 (555) 123-4567",
+      "email": "Email",
+      "emailPlaceholder": "contact@yourcompany.com",
+      "website": "Website"
+    },
+    "logo": {
+      "title": "Add your company logo",
+      "subtitle": "Your logo will appear on all documents",
+      "dropzone": "Drag & drop or click to upload",
+      "formats": "PNG, JPG, SVG (max 2MB)",
+      "uploaded": "Logo uploaded successfully!",
+      "skipNotice": "You can always add or change your logo later in Settings"
+    },
+    "currency": {
+      "title": "Select your currency",
+      "subtitle": "Choose your default currency and language",
+      "language": "Language",
+      "select": "Currency",
+      "preview": "Amount preview:"
+    },
+    "tax": {
+      "title": "Configure your tax settings",
+      "subtitle": "Set up tax rates for your invoices",
+      "enableTax": "Enable Tax",
+      "enableTaxDesc": "Add tax calculation to invoices",
+      "presets": "Common tax rates",
+      "name": "Tax Name",
+      "rate": "Tax Rate",
+      "preview": "Invoice preview:"
+    },
+    "complete": {
+      "title": "You're all set! 🚀",
+      "subtitle": "Here's a summary of your setup",
+      "company": "Company",
+      "logo": "Logo",
+      "logoUploaded": "Uploaded",
+      "logoSkipped": "Skipped",
+      "currency": "Currency",
+      "tax": "Tax",
+      "noTax": "No tax",
+      "whatsNext": "What's next?",
+      "next1": "Create your first client",
+      "next2": "Send your first invoice or proposal",
+      "next3": "Track payments and reports",
+      "saving": "Setting up...",
+      "launch": "Launch Dashboard"
+    }
   }
 }

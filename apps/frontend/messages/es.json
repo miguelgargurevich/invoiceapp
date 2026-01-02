@@ -1115,5 +1115,84 @@
     "confirmationEmailSent": "Recibirás un correo de confirmación con el documento firmado.",
     "done": "Listo",
     "viewDocument": "Ver Documento"
+  },
+  "setup": {
+    "timeEstimate": "Toma aproximadamente 2 minutos completar",
+    "steps": {
+      "welcome": { "label": "Bienvenida" },
+      "company": { "label": "Info Empresa" },
+      "logo": { "label": "Logo" },
+      "currency": { "label": "Moneda" },
+      "tax": { "label": "Impuestos" },
+      "complete": { "label": "¡Listo!" }
+    },
+    "buttons": {
+      "back": "Atrás",
+      "continue": "Continuar",
+      "skip": "Saltar por ahora"
+    },
+    "welcome": {
+      "title": "¡Bienvenido a tu Sistema de Facturación! 🎉",
+      "subtitle": "Vamos a configurarlo en solo unos pasos rápidos",
+      "feature1": "Toma solo 2 minutos completar",
+      "feature2": "Tus datos están seguros y encriptados",
+      "feature3": "Empieza a facturar inmediatamente después de configurar",
+      "getStarted": "Comenzar"
+    },
+    "company": {
+      "title": "Cuéntanos sobre tu negocio",
+      "subtitle": "Esta información aparecerá en tus facturas y propuestas",
+      "name": "Nombre de la Empresa",
+      "namePlaceholder": "Ingresa el nombre de tu empresa o negocio",
+      "address": "Dirección",
+      "addressPlaceholder": "Calle, ciudad, estado, código postal",
+      "phone": "Teléfono",
+      "phonePlaceholder": "+51 999 123 456",
+      "email": "Correo",
+      "emailPlaceholder": "contacto@tuempresa.com",
+      "website": "Sitio Web"
+    },
+    "logo": {
+      "title": "Agrega el logo de tu empresa",
+      "subtitle": "Tu logo aparecerá en todos los documentos",
+      "dropzone": "Arrastra y suelta o haz clic para subir",
+      "formats": "PNG, JPG, SVG (máx 2MB)",
+      "uploaded": "¡Logo subido exitosamente!",
+      "skipNotice": "Siempre puedes agregar o cambiar tu logo después en Configuración"
+    },
+    "currency": {
+      "title": "Selecciona tu moneda",
+      "subtitle": "Elige tu moneda e idioma predeterminados",
+      "language": "Idioma",
+      "select": "Moneda",
+      "preview": "Vista previa del monto:"
+    },
+    "tax": {
+      "title": "Configura tus impuestos",
+      "subtitle": "Configura las tasas de impuestos para tus facturas",
+      "enableTax": "Habilitar Impuestos",
+      "enableTaxDesc": "Agregar cálculo de impuestos a las facturas",
+      "presets": "Tasas de impuestos comunes",
+      "name": "Nombre del Impuesto",
+      "rate": "Tasa de Impuesto",
+      "preview": "Vista previa de factura:"
+    },
+    "complete": {
+      "title": "¡Todo listo! 🚀",
+      "subtitle": "Aquí está el resumen de tu configuración",
+      "company": "Empresa",
+      "logo": "Logo",
+      "logoUploaded": "Subido",
+      "logoSkipped": "Omitido",
+      "currency": "Moneda",
+      "tax": "Impuesto",
+      "noTax": "Sin impuestos",
+      "whatsNext": "¿Qué sigue?",
+      "next1": "Crea tu primer cliente",
+      "next2": "Envía tu primera factura o propuesta",
+      "next3": "Rastrea pagos y reportes",
+      "saving": "Configurando...",
+      "launch": "Ir al Panel"
+    }
   }
 }

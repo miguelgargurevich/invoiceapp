@@ -70,9 +70,14 @@ router.put('/mi-empresa', authenticateToken, async (req, res) => {
       email: req.body.email,
       web: req.body.web,
       moneda: req.body.moneda,
+      currency: req.body.currency,
+      locale: req.body.locale,
+      taxRate: req.body.taxRate !== undefined ? parseFloat(req.body.taxRate) : undefined,
+      taxName: req.body.taxName,
       serieFactura: req.body.serieFactura,
       serieProforma: req.body.serieProforma,
-      licencia: req.body.licencia
+      licencia: req.body.licencia,
+      setupCompleted: req.body.setupCompleted
     };
 
     // Remove undefined values

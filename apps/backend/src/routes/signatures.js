@@ -312,14 +312,24 @@ router.post('/submit', async (req, res) => {
       signedPdfDataUrl, 
       consentGiven, 
       consentText,
-      ipAddress,
-      userAgent,
+      // Client-provided metadata (optional, we'll capture server-side too)
+      userAgent: clientUserAgent,
       deviceType 
     } = req.body;
 
     if (!token || !signatureDataUrl || !consentGiven) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
+
+    // Capture IP address from request (server-side for security)
+    const ipAddress = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || 
+                      req.headers['x-real-ip'] || 
+                      req.socket?.remoteAddress || 
+                      req.ip || 
+                      'unknown';
+    
+    // Capture User-Agent from request headers (server-side for security)
+    const userAgent = req.headers['user-agent'] || clientUserAgent || 'unknown';
 
     // Find signature request
     const signatureRequest = await prisma.signatureRequest.findUnique({
@@ -348,6 +358,7 @@ router.post('/submit', async (req, res) => {
     // Upload signature image to Supabase Storage (if available)
     let signatureImageUrl;
     let signedPdfUrl = null;
+    let documentHash = null;
     
     if (supabase) {
       try {
@@ -400,7 +411,11 @@ router.post('/submit', async (req, res) => {
               .from('logos')
               .getPublicUrl(pdfFilePath);
             signedPdfUrl = pdfPublicUrl;
+            
+            // Generate SHA-256 hash of the signed PDF for immutability verification
+            documentHash = crypto.createHash('sha256').update(pdfBuffer).digest('hex');
             console.log('✅ Signed PDF uploaded successfully:', signedPdfUrl);
+            console.log('🔐 Document hash (SHA-256):', documentHash);
           }
         }
       } catch (error) {
@@ -413,21 +428,30 @@ router.post('/submit', async (req, res) => {
       signatureImageUrl = signatureDataUrl;
     }
 
-    // Create signature record
+    // Create signature record with full audit trail
     const signature = await prisma.signature.create({
       data: {
         signatureRequestId: signatureRequest.id,
         signatureImageUrl,
         signedPdfUrl,
+        documentHash,
         signerName: signatureRequest.signerName || 'Unknown',
         signerEmail: signatureRequest.signerEmail,
         signedAt: new Date(),
         consentGiven,
         consentText: consentText || 'I agree to electronically sign this document.',
-        ipAddress: ipAddress || null,
-        userAgent: userAgent || null,
+        ipAddress,
+        userAgent,
         deviceType: deviceType || null
       }
+    });
+
+    console.log('✅ Signature created with audit trail:', {
+      id: signature.id,
+      ipAddress,
+      userAgent: userAgent.substring(0, 50) + '...',
+      signedAt: signature.signedAt,
+      documentHash: documentHash ? documentHash.substring(0, 16) + '...' : 'N/A'
     });
 
     // Update signature request status
@@ -504,6 +528,112 @@ router.get('/status/:token', async (req, res) => {
   } catch (error) {
     console.error('Error checking status:', error);
     res.status(500).json({ error: 'Failed to check status' });
+  }
+});
+
+// GET /api/signatures/audit/:signatureId - Get full audit trail for a signature
+router.get('/audit/:signatureId', async (req, res) => {
+  try {
+    const { signatureId } = req.params;
+
+    const signature = await prisma.signature.findUnique({
+      where: { id: signatureId },
+      include: {
+        signatureRequest: {
+          select: {
+            id: true,
+            token: true,
+            documentType: true,
+            documentId: true,
+            signerEmail: true,
+            signerName: true,
+            status: true,
+            expiresAt: true,
+            createdAt: true,
+            sentAt: true,
+            viewedAt: true
+          }
+        }
+      }
+    });
+
+    if (!signature) {
+      return res.status(404).json({ error: 'Signature not found' });
+    }
+
+    // Return full audit trail
+    res.json({
+      signature: {
+        id: signature.id,
+        signedAt: signature.signedAt,
+        signerName: signature.signerName,
+        signerEmail: signature.signerEmail,
+        consentGiven: signature.consentGiven,
+        consentText: signature.consentText,
+        signedPdfUrl: signature.signedPdfUrl,
+        documentHash: signature.documentHash
+      },
+      auditTrail: {
+        ipAddress: signature.ipAddress,
+        userAgent: signature.userAgent,
+        deviceType: signature.deviceType,
+        timestamp: signature.signedAt,
+        createdAt: signature.createdAt
+      },
+      request: signature.signatureRequest,
+      verification: {
+        documentHashAlgorithm: 'SHA-256',
+        documentHash: signature.documentHash,
+        isVerifiable: !!signature.documentHash
+      }
+    });
+
+  } catch (error) {
+    console.error('Error getting audit trail:', error);
+    res.status(500).json({ error: 'Failed to get audit trail' });
+  }
+});
+
+// POST /api/signatures/verify - Verify document integrity using hash
+router.post('/verify', async (req, res) => {
+  try {
+    const { documentHash, signatureId } = req.body;
+
+    if (!documentHash || !signatureId) {
+      return res.status(400).json({ error: 'Missing documentHash or signatureId' });
+    }
+
+    const signature = await prisma.signature.findUnique({
+      where: { id: signatureId }
+    });
+
+    if (!signature) {
+      return res.status(404).json({ error: 'Signature not found' });
+    }
+
+    if (!signature.documentHash) {
+      return res.status(400).json({ 
+        error: 'No document hash available for verification',
+        verified: false
+      });
+    }
+
+    const isVerified = signature.documentHash === documentHash;
+
+    res.json({
+      verified: isVerified,
+      message: isVerified 
+        ? 'Document integrity verified - the document has not been modified since signing'
+        : 'Document integrity check FAILED - the document may have been modified',
+      signatureId: signature.id,
+      signedAt: signature.signedAt,
+      originalHash: signature.documentHash,
+      providedHash: documentHash
+    });
+
+  } catch (error) {
+    console.error('Error verifying document:', error);
+    res.status(500).json({ error: 'Failed to verify document' });
   }
 });
 
