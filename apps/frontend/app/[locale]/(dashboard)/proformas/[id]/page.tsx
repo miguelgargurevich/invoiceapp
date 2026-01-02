@@ -43,7 +43,9 @@ import {
   ConfirmDialog,
   Modal,
   DatePicker,
+  ActivityTimeline,
 } from '@/components/common';
+import { createTimelineFromDocument } from '@/components/common/ActivityTimeline';
 import {
   ProformaPrintPreviewModal,
   ProformaSendEmailModal,
@@ -1071,6 +1073,26 @@ export default function ProformaDetailPage({
                 <span>{formatDate(proforma.fechaValidez)}</span>
               </div>
             </div>
+          </Card>
+
+          {/* Activity Timeline */}
+          <Card>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              {t('activityTimeline') || 'Activity'}
+            </h2>
+            <ActivityTimeline 
+              events={createTimelineFromDocument({
+                createdAt: proforma.fechaEmision,
+                sentAt: proforma.signatureRequest?.sentAt,
+                viewedAt: proforma.signatureRequest?.viewedAt,
+                signedAt: proforma.signatureRequest?.signedAt,
+                paidAt: proforma.estado === 'facturada' ? undefined : undefined,
+                status: proforma.estado,
+                signerName: proforma.signatureRequest?.signerName,
+              })}
+              currentStatus={proforma.estado}
+              compact
+            />
           </Card>
 
           {/* Actions */}

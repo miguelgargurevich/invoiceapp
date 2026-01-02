@@ -39,7 +39,9 @@ import {
   SkeletonDetailPage,
   ConfirmDialog,
   DatePicker,
+  ActivityTimeline,
 } from '@/components/common';
+import { createTimelineFromDocument, TimelineEvent } from '@/components/common/ActivityTimeline';
 import { PrintPreviewModal, SendEmailModal, InvoicePreview } from '@/components/invoice';
 import { formatDate } from '@/lib/utils';
 import { useCurrency } from '@/lib/hooks/useCurrency';
@@ -1010,6 +1012,26 @@ export default function FacturaDetailPage({
                 <span>{formatDate(factura.fechaVencimiento)}</span>
               </div>
             </div>
+          </Card>
+
+          {/* Activity Timeline */}
+          <Card>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+              {t('activityTimeline') || 'Activity'}
+            </h2>
+            <ActivityTimeline 
+              events={createTimelineFromDocument({
+                createdAt: factura.fechaEmision,
+                sentAt: factura.signatureRequest?.sentAt,
+                viewedAt: factura.signatureRequest?.viewedAt,
+                signedAt: factura.signatureRequest?.signedAt,
+                paidAt: factura.estado === 'PAGADA' ? factura.pagos?.[factura.pagos.length - 1]?.fecha : undefined,
+                status: factura.estado,
+                signerName: factura.signatureRequest?.signerName,
+              })}
+              currentStatus={factura.estado}
+              compact
+            />
           </Card>
 
           {/* Actions */}

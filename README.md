@@ -50,6 +50,8 @@ Win more business with professional proposals
 - Digital signature collection
 - Proposal validity tracking
 - Custom branding and templates
+- **Industry Templates**: Pre-built templates for Contractors, Freelancers, Agencies, and Consultants
+- **Activity Timeline**: Visual lifecycle (Created → Sent → Viewed → Signed → Paid)
 
 ### 👥 Client Management
 Keep all client information organized
@@ -74,6 +76,15 @@ Collect client signatures electronically
 - Signature status tracking
 - Timestamped and legally compliant
 - Company signature support
+
+### ⚡ Quick Setup Wizard
+Get started in under 2 minutes
+- 6-step guided onboarding process
+- Company profile configuration
+- Logo upload with instant preview
+- Multi-currency selection (15+ currencies)
+- Tax rate and name configuration
+- Visual progress tracking
 
 ### 📱 Mobile-First Design
 Work from any device
@@ -150,6 +161,19 @@ Work from any device
 - Create detailed project proposals
 - Include scope, timeline, and pricing
 - Professional presentation impresses clients
+
+**Industry-Specific Templates**
+- 🔨 **Contractor** - Construction, renovation, electrical, plumbing
+- 💻 **Freelancer** - Design, development, writing, marketing
+- 🏢 **Agency** - Full-service marketing, creative, digital
+- 💼 **Consultant** - Business, IT, management, strategy
+- Pre-filled terms, payment conditions, and scope sections
+
+**Activity Timeline**
+- Visual document lifecycle tracking
+- See status at a glance: Created → Sent → Viewed → Signed → Paid
+- Compact and full view modes
+- Automatic status updates
 
 **Streamlined Workflow**
 - Convert accepted proposals to invoices with one click

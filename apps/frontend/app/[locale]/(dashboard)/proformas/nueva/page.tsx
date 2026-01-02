@@ -17,6 +17,7 @@ import {
   HardHat,
   Calendar,
   DollarSign,
+  FileText,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -32,6 +33,7 @@ import {
   SkeletonFormPage,
   Modal,
 } from '@/components/common';
+import { TemplatePicker, type ProposalTemplate } from '@/components/proforma';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
 
@@ -106,6 +108,23 @@ export default function NuevaProformaPage({
   const [fechaPlanos, setFechaPlanos] = useState<Date | null>(null);
   const [telefonoTrabajo, setTelefonoTrabajo] = useState('');
   const [diasValidez, setDiasValidez] = useState<number>(30);
+  
+  // Template picker state
+  const [isTemplatePickerOpen, setIsTemplatePickerOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<ProposalTemplate | null>(null);
+
+  // Handle template selection
+  const handleTemplateSelect = (template: ProposalTemplate) => {
+    setSelectedTemplate(template);
+    // Apply template defaults to form
+    setObservaciones(template.defaultTerms);
+    setPaymentTerms(template.defaultPaymentTerms);
+    if (template.defaultScope) {
+      setWorkDescription(template.defaultScope);
+    }
+    setIsTemplatePickerOpen(false);
+    showSuccess(`${template.name} template applied`);
+  };
 
   // Load data
   useEffect(() => {
@@ -282,9 +301,20 @@ export default function NuevaProformaPage({
             </p>
           </div>
         </div>
-        <Button variant="outline" onClick={() => router.back()} size="lg">
-          {t('cancel')}
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="outline" 
+            onClick={() => setIsTemplatePickerOpen(true)} 
+            size="lg"
+            className="border-dashed"
+          >
+            <FileText className="w-5 h-5 mr-2" />
+            {selectedTemplate ? selectedTemplate.name : t('useTemplate') || 'Use Template'}
+          </Button>
+          <Button variant="outline" onClick={() => router.back()} size="lg">
+            {t('cancel')}
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -662,6 +692,14 @@ export default function NuevaProformaPage({
           setIsClientModalOpen(false);
           await loadClientes();
         }}
+      />
+
+      {/* Template Picker */}
+      <TemplatePicker
+        isOpen={isTemplatePickerOpen}
+        onClose={() => setIsTemplatePickerOpen(false)}
+        onSelect={handleTemplateSelect}
+        selectedTemplate={selectedTemplate?.id}
       />
     </div>
   );

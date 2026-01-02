@@ -21,6 +21,17 @@ InvoiceApp is a comprehensive, web-based invoice and proposal management system 
 - **Payment Terms**: Specify payment schedules and terms clearly
 - **Digital Signatures**: Collect client signatures electronically
 - **Validity Tracking**: Set and monitor proposal expiration dates
+- **Industry Templates**: Pre-built templates for Contractors, Freelancers, Agencies, and Consultants
+- **Activity Timeline**: Visual lifecycle tracking (Created → Sent → Viewed → Signed → Paid)
+
+### Quick Setup Wizard
+- **2-Minute Onboarding**: Get started in under 2 minutes with guided setup
+- **Step-by-Step Process**: 6 easy steps to configure your business
+- **Company Profile**: Set up your business name and details
+- **Logo Upload**: Add your company branding instantly
+- **Currency Selection**: Choose from 15+ currencies (USD, EUR, GBP, PEN, etc.)
+- **Tax Configuration**: Set your default tax rate and name
+- **Progress Tracking**: Visual progress indicator throughout setup
 
 ### Client Management
 - **Client Database**: Comprehensive client information management
@@ -61,6 +72,9 @@ InvoiceApp is a comprehensive, web-based invoice and proposal management system 
 - **Real-time Updates**: Instant feedback on actions
 - **Search & Filters**: Powerful search and filtering capabilities
 - **Bulk Operations**: Perform actions on multiple records
+- **Visual Section Icons**: Form sections with intuitive icons for better navigation
+- **Animated Interactions**: Smooth transitions and feedback with Framer Motion
+- **Activity Timelines**: Track document lifecycle at a glance
 
 ## Technology Stack
 
