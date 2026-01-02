@@ -1130,7 +1130,7 @@ export default function ProformaDetailPage({
             <ActivityTimeline 
               events={createTimelineFromDocument({
                 createdAt: proforma.fechaEmision,
-                sentAt: proforma.signatureRequest?.sentAt,
+                sentAt: proforma.signatureRequest?.sentAt || (proforma.signatureRequest ? proforma.signatureRequest.createdAt : undefined),
                 signedAt: proforma.signatureRequest?.signature?.signedAt || proforma.fechaAceptacion,
                 invoicedAt: proforma.facturasGeneradas && proforma.facturasGeneradas.length > 0 
                   ? proforma.facturasGeneradas[0].fechaEmision 

@@ -516,6 +516,7 @@
     "statuses": {
       "pendiente": "Pending",
       "pending": "Pending",
+      "aceptada": "Accepted",
       "aprobada": "Approved",
       "accepted": "Accepted",
       "rechazada": "Rejected",
