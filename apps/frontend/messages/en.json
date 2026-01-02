@@ -1316,5 +1316,214 @@
         "pending": ""
       }
     }
+  },
+  "legal": {
+    "backToApp": "Back to App",
+    "allRightsReserved": "All rights reserved",
+    "termsOfService": "Terms of Service",
+    "privacyPolicy": "Privacy Policy",
+    "refundPolicy": "Refund Policy",
+    "contact": "Contact",
+    "terms": {
+      "title": "Terms of Service",
+      "lastUpdated": "Last Updated",
+      "acceptance": {
+        "title": "1. Acceptance of Terms",
+        "content": "By accessing or using InvoiceApp (the \"Service\"), you agree to be bound by these Terms of Service (\"Terms\"). If you disagree with any part of the terms, you may not access the Service."
+      },
+      "description": {
+        "title": "2. Description of Service",
+        "content": "InvoiceApp is a cloud-based invoicing and billing management platform that allows users to create, send, and manage invoices, proposals, and client relationships. The Service includes web applications, mobile applications, and related services."
+      },
+      "accounts": {
+        "title": "3. User Accounts",
+        "content": "When you create an account with us, you must provide accurate, complete, and current information. You are responsible for safeguarding the password and for all activities that occur under your account. You must notify us immediately of any unauthorized use."
+      },
+      "payment": {
+        "title": "4. Payment Terms",
+        "content": "Certain features of the Service may require payment. You agree to pay all fees associated with your chosen plan. Fees are non-refundable except as required by law or as explicitly stated in our Refund Policy. We reserve the right to change our prices with 30 days notice."
+      },
+      "intellectualProperty": {
+        "title": "5. Intellectual Property",
+        "content": "The Service and its original content, features, and functionality are owned by InvoiceApp and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws."
+      },
+      "userContent": {
+        "title": "6. User Content",
+        "content": "You retain ownership of any content you submit, post, or display on or through the Service. By submitting content, you grant us a worldwide, non-exclusive, royalty-free license to use, reproduce, and display such content solely for the purpose of providing the Service."
+      },
+      "prohibited": {
+        "title": "7. Prohibited Uses",
+        "content": "You may not use the Service for any illegal purpose, to violate any laws, to infringe on intellectual property rights, to harass or harm others, to transmit malware, to interfere with the Service's operation, or to impersonate others."
+      },
+      "termination": {
+        "title": "8. Termination",
+        "content": "We may terminate or suspend your account immediately, without prior notice, for any reason, including breach of these Terms. Upon termination, your right to use the Service will cease immediately. You may export your data before termination."
+      },
+      "disclaimer": {
+        "title": "9. Disclaimer of Warranties",
+        "content": "The Service is provided \"AS IS\" and \"AS AVAILABLE\" without warranties of any kind, either express or implied. We do not warrant that the Service will be uninterrupted, secure, or error-free."
+      },
+      "limitation": {
+        "title": "10. Limitation of Liability",
+        "content": "In no event shall InvoiceApp, its directors, employees, partners, agents, suppliers, or affiliates be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of profits, data, or goodwill."
+      },
+      "governing": {
+        "title": "11. Governing Law",
+        "content": "These Terms shall be governed by and construed in accordance with the laws of the State of Delaware, United States, without regard to its conflict of law provisions."
+      },
+      "changes": {
+        "title": "12. Changes to Terms",
+        "content": "We reserve the right to modify or replace these Terms at any time. We will provide notice of any changes by posting the new Terms on this page and updating the \"Last Updated\" date."
+      },
+      "contact": {
+        "title": "13. Contact Us",
+        "content": "If you have any questions about these Terms, please contact us:"
+      }
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "lastUpdated": "Last Updated",
+      "introduction": {
+        "title": "1. Introduction",
+        "content": "InvoiceApp (\"we\", \"our\", or \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our Service."
+      },
+      "informationCollected": {
+        "title": "2. Information We Collect",
+        "content": "We collect information you provide directly to us, including:",
+        "item1": "Account information (name, email address, password)",
+        "item2": "Company information (business name, address, tax ID)",
+        "item3": "Client and invoice data you enter into the Service",
+        "item4": "Payment information (processed by our payment providers)"
+      },
+      "howWeUse": {
+        "title": "3. How We Use Your Information",
+        "content": "We use the information we collect to:",
+        "item1": "Provide, maintain, and improve the Service",
+        "item2": "Process transactions and send related information",
+        "item3": "Send technical notices, updates, and support messages",
+        "item4": "Respond to your comments, questions, and requests"
+      },
+      "dataStorage": {
+        "title": "4. Data Storage and Retention",
+        "content": "Your data is stored on secure servers provided by industry-leading cloud service providers. We retain your information for as long as your account is active or as needed to provide you services, comply with legal obligations, resolve disputes, and enforce agreements."
+      },
+      "dataSecurity": {
+        "title": "5. Data Security",
+        "content": "We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. This includes encryption, access controls, and regular security assessments."
+      },
+      "thirdParty": {
+        "title": "6. Third-Party Services",
+        "content": "We may share your information with third-party service providers who perform services on our behalf, such as payment processing, email delivery, and analytics. These providers are obligated to protect your information."
+      },
+      "cookies": {
+        "title": "7. Cookies and Tracking",
+        "content": "We use cookies and similar tracking technologies to track activity on our Service and hold certain information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent."
+      },
+      "yourRights": {
+        "title": "8. Your Rights",
+        "content": "Depending on your location, you may have the following rights regarding your personal information:",
+        "item1": "Access and receive a copy of your personal data",
+        "item2": "Rectify inaccurate personal data",
+        "item3": "Request deletion of your personal data",
+        "item4": "Object to or restrict processing of your personal data"
+      },
+      "children": {
+        "title": "9. Children's Privacy",
+        "content": "Our Service is not intended for children under 16 years of age. We do not knowingly collect personal information from children under 16. If we become aware that we have collected such information, we will take steps to delete it."
+      },
+      "changes": {
+        "title": "10. Changes to This Policy",
+        "content": "We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the \"Last Updated\" date."
+      },
+      "contact": {
+        "title": "11. Contact Us",
+        "content": "If you have any questions about this Privacy Policy, please contact us:"
+      }
+    },
+    "refund": {
+      "title": "Refund Policy",
+      "lastUpdated": "Last Updated",
+      "overview": {
+        "title": "1. Overview",
+        "content": "At InvoiceApp, we want you to be completely satisfied with our Service. This Refund Policy outlines the circumstances under which you may be eligible for a refund."
+      },
+      "eligibility": {
+        "title": "2. Refund Eligibility",
+        "content": "You may be eligible for a refund in the following circumstances:",
+        "item1": "Within 14 days of initial subscription if you haven't used the Service significantly",
+        "item2": "Service was unavailable for an extended period due to our error",
+        "item3": "You were charged incorrectly or multiple times for the same service"
+      },
+      "nonRefundable": {
+        "title": "3. Non-Refundable Situations",
+        "content": "Refunds are generally not provided in the following situations:",
+        "item1": "After 14 days from initial purchase",
+        "item2": "For partial months of service when canceling mid-cycle",
+        "item3": "If your account was suspended or terminated for Terms of Service violations"
+      },
+      "process": {
+        "title": "4. Refund Process",
+        "content": "To request a refund:",
+        "step1": "Contact our billing team at billing@invoiceapp.com",
+        "step2": "Provide your account email and reason for the refund request",
+        "step3": "Our team will review your request within 5 business days",
+        "step4": "If approved, refunds are processed to the original payment method"
+      },
+      "timing": {
+        "title": "5. Refund Timing",
+        "content": "Approved refunds are typically processed within 5-10 business days. The time it takes for the refund to appear in your account depends on your payment provider and may take an additional 5-10 business days."
+      },
+      "cancellation": {
+        "title": "6. Subscription Cancellation",
+        "content": "You may cancel your subscription at any time from your account settings. Upon cancellation, you will retain access to the Service until the end of your current billing period. No refunds are provided for partial billing periods."
+      },
+      "contact": {
+        "title": "7. Contact Us",
+        "content": "For refund requests or questions about this policy, please contact:"
+      }
+    },
+    "contactPage": {
+      "title": "Contact Us",
+      "subtitle": "We're here to help. Reach out to us through any of the channels below.",
+      "companyName": "Gargurevich Digital LLC",
+      "companyType": "Limited Liability Company",
+      "address": {
+        "label": "Registered Address",
+        "line1": "1234 Business Ave, Suite 100",
+        "line2": "Wilmington, DE 19801, United States"
+      },
+      "email": {
+        "label": "Email Addresses",
+        "general": "General",
+        "support": "Support",
+        "billing": "Billing"
+      },
+      "supportHours": {
+        "title": "Support Hours",
+        "weekdays": "Monday - Friday",
+        "weekends": "Saturday - Sunday",
+        "closed": "Closed",
+        "responseTime": "We typically respond to inquiries within 24 hours on business days."
+      },
+      "departments": {
+        "title": "Departments",
+        "support": {
+          "title": "Technical Support",
+          "description": "Help with using the platform, troubleshooting, and technical questions."
+        },
+        "billing": {
+          "title": "Billing & Payments",
+          "description": "Questions about invoices, subscriptions, refunds, and payments."
+        },
+        "sales": {
+          "title": "Sales & Partnerships",
+          "description": "Enterprise plans, custom solutions, and partnership opportunities."
+        },
+        "legal": {
+          "title": "Legal & Compliance",
+          "description": "Legal inquiries, data requests, and compliance matters."
+        }
+      }
+    }
   }
 }

@@ -1318,5 +1318,214 @@
         "pending": ""
       }
     }
+  },
+  "legal": {
+    "backToApp": "Volver a la App",
+    "allRightsReserved": "Todos los derechos reservados",
+    "termsOfService": "Términos de Servicio",
+    "privacyPolicy": "Política de Privacidad",
+    "refundPolicy": "Política de Reembolso",
+    "contact": "Contacto",
+    "terms": {
+      "title": "Términos de Servicio",
+      "lastUpdated": "Última Actualización",
+      "acceptance": {
+        "title": "1. Aceptación de los Términos",
+        "content": "Al acceder o utilizar InvoiceApp (el \"Servicio\"), usted acepta estar sujeto a estos Términos de Servicio (\"Términos\"). Si no está de acuerdo con alguna parte de los términos, no podrá acceder al Servicio."
+      },
+      "description": {
+        "title": "2. Descripción del Servicio",
+        "content": "InvoiceApp es una plataforma de gestión de facturación y cobros basada en la nube que permite a los usuarios crear, enviar y gestionar facturas, propuestas y relaciones con clientes. El Servicio incluye aplicaciones web, aplicaciones móviles y servicios relacionados."
+      },
+      "accounts": {
+        "title": "3. Cuentas de Usuario",
+        "content": "Cuando crea una cuenta con nosotros, debe proporcionar información precisa, completa y actualizada. Usted es responsable de proteger la contraseña y de todas las actividades que ocurran bajo su cuenta. Debe notificarnos inmediatamente cualquier uso no autorizado."
+      },
+      "payment": {
+        "title": "4. Términos de Pago",
+        "content": "Ciertas funciones del Servicio pueden requerir pago. Usted acepta pagar todas las tarifas asociadas con su plan elegido. Las tarifas no son reembolsables excepto según lo requiera la ley o como se indique explícitamente en nuestra Política de Reembolso. Nos reservamos el derecho de cambiar nuestros precios con 30 días de aviso."
+      },
+      "intellectualProperty": {
+        "title": "5. Propiedad Intelectual",
+        "content": "El Servicio y su contenido original, características y funcionalidad son propiedad de InvoiceApp y están protegidos por leyes internacionales de derechos de autor, marcas comerciales, patentes, secretos comerciales y otras leyes de propiedad intelectual."
+      },
+      "userContent": {
+        "title": "6. Contenido del Usuario",
+        "content": "Usted conserva la propiedad de cualquier contenido que envíe, publique o muestre en o a través del Servicio. Al enviar contenido, nos otorga una licencia mundial, no exclusiva y libre de regalías para usar, reproducir y mostrar dicho contenido únicamente con el propósito de proporcionar el Servicio."
+      },
+      "prohibited": {
+        "title": "7. Usos Prohibidos",
+        "content": "No puede usar el Servicio para ningún propósito ilegal, para violar ninguna ley, para infringir derechos de propiedad intelectual, para acosar o dañar a otros, para transmitir malware, para interferir con la operación del Servicio, o para hacerse pasar por otros."
+      },
+      "termination": {
+        "title": "8. Terminación",
+        "content": "Podemos terminar o suspender su cuenta inmediatamente, sin previo aviso, por cualquier motivo, incluido el incumplimiento de estos Términos. Tras la terminación, su derecho a usar el Servicio cesará inmediatamente. Puede exportar sus datos antes de la terminación."
+      },
+      "disclaimer": {
+        "title": "9. Descargo de Garantías",
+        "content": "El Servicio se proporciona \"TAL CUAL\" y \"SEGÚN DISPONIBILIDAD\" sin garantías de ningún tipo, ya sean expresas o implícitas. No garantizamos que el Servicio sea ininterrumpido, seguro o libre de errores."
+      },
+      "limitation": {
+        "title": "10. Limitación de Responsabilidad",
+        "content": "En ningún caso InvoiceApp, sus directores, empleados, socios, agentes, proveedores o afiliados serán responsables de daños indirectos, incidentales, especiales, consecuentes o punitivos, incluida la pérdida de ganancias, datos o buena voluntad."
+      },
+      "governing": {
+        "title": "11. Ley Aplicable",
+        "content": "Estos Términos se regirán e interpretarán de acuerdo con las leyes del Estado de Delaware, Estados Unidos, sin tener en cuenta sus disposiciones sobre conflictos de leyes."
+      },
+      "changes": {
+        "title": "12. Cambios a los Términos",
+        "content": "Nos reservamos el derecho de modificar o reemplazar estos Términos en cualquier momento. Proporcionaremos aviso de cualquier cambio publicando los nuevos Términos en esta página y actualizando la fecha de \"Última Actualización\"."
+      },
+      "contact": {
+        "title": "13. Contáctenos",
+        "content": "Si tiene alguna pregunta sobre estos Términos, contáctenos:"
+      }
+    },
+    "privacy": {
+      "title": "Política de Privacidad",
+      "lastUpdated": "Última Actualización",
+      "introduction": {
+        "title": "1. Introducción",
+        "content": "InvoiceApp (\"nosotros\", \"nuestro\" o \"nos\") está comprometido a proteger su privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos, divulgamos y protegemos su información cuando utiliza nuestro Servicio."
+      },
+      "informationCollected": {
+        "title": "2. Información que Recopilamos",
+        "content": "Recopilamos información que usted nos proporciona directamente, incluyendo:",
+        "item1": "Información de la cuenta (nombre, dirección de correo electrónico, contraseña)",
+        "item2": "Información de la empresa (nombre comercial, dirección, identificación fiscal)",
+        "item3": "Datos de clientes y facturas que ingresa en el Servicio",
+        "item4": "Información de pago (procesada por nuestros proveedores de pago)"
+      },
+      "howWeUse": {
+        "title": "3. Cómo Usamos Su Información",
+        "content": "Usamos la información que recopilamos para:",
+        "item1": "Proporcionar, mantener y mejorar el Servicio",
+        "item2": "Procesar transacciones y enviar información relacionada",
+        "item3": "Enviar avisos técnicos, actualizaciones y mensajes de soporte",
+        "item4": "Responder a sus comentarios, preguntas y solicitudes"
+      },
+      "dataStorage": {
+        "title": "4. Almacenamiento y Retención de Datos",
+        "content": "Sus datos se almacenan en servidores seguros proporcionados por proveedores de servicios en la nube líderes en la industria. Retenemos su información mientras su cuenta esté activa o según sea necesario para proporcionarle servicios, cumplir con obligaciones legales, resolver disputas y hacer cumplir acuerdos."
+      },
+      "dataSecurity": {
+        "title": "5. Seguridad de Datos",
+        "content": "Implementamos medidas técnicas y organizativas apropiadas para proteger su información personal contra acceso no autorizado, alteración, divulgación o destrucción. Esto incluye cifrado, controles de acceso y evaluaciones de seguridad regulares."
+      },
+      "thirdParty": {
+        "title": "6. Servicios de Terceros",
+        "content": "Podemos compartir su información con proveedores de servicios externos que realizan servicios en nuestro nombre, como procesamiento de pagos, entrega de correo electrónico y análisis. Estos proveedores están obligados a proteger su información."
+      },
+      "cookies": {
+        "title": "7. Cookies y Seguimiento",
+        "content": "Usamos cookies y tecnologías de seguimiento similares para rastrear la actividad en nuestro Servicio y almacenar cierta información. Puede instruir a su navegador para que rechace todas las cookies o para que indique cuándo se está enviando una cookie."
+      },
+      "yourRights": {
+        "title": "8. Sus Derechos",
+        "content": "Dependiendo de su ubicación, puede tener los siguientes derechos con respecto a su información personal:",
+        "item1": "Acceder y recibir una copia de sus datos personales",
+        "item2": "Rectificar datos personales inexactos",
+        "item3": "Solicitar la eliminación de sus datos personales",
+        "item4": "Oponerse o restringir el procesamiento de sus datos personales"
+      },
+      "children": {
+        "title": "9. Privacidad de los Niños",
+        "content": "Nuestro Servicio no está dirigido a niños menores de 16 años. No recopilamos intencionalmente información personal de niños menores de 16 años. Si nos damos cuenta de que hemos recopilado dicha información, tomaremos medidas para eliminarla."
+      },
+      "changes": {
+        "title": "10. Cambios a Esta Política",
+        "content": "Podemos actualizar nuestra Política de Privacidad de vez en cuando. Le notificaremos cualquier cambio publicando la nueva Política de Privacidad en esta página y actualizando la fecha de \"Última Actualización\"."
+      },
+      "contact": {
+        "title": "11. Contáctenos",
+        "content": "Si tiene alguna pregunta sobre esta Política de Privacidad, contáctenos:"
+      }
+    },
+    "refund": {
+      "title": "Política de Reembolso",
+      "lastUpdated": "Última Actualización",
+      "overview": {
+        "title": "1. Descripción General",
+        "content": "En InvoiceApp, queremos que esté completamente satisfecho con nuestro Servicio. Esta Política de Reembolso describe las circunstancias bajo las cuales puede ser elegible para un reembolso."
+      },
+      "eligibility": {
+        "title": "2. Elegibilidad para Reembolso",
+        "content": "Puede ser elegible para un reembolso en las siguientes circunstancias:",
+        "item1": "Dentro de los 14 días posteriores a la suscripción inicial si no ha utilizado el Servicio significativamente",
+        "item2": "El Servicio no estuvo disponible por un período prolongado debido a un error nuestro",
+        "item3": "Se le cobró incorrectamente o varias veces por el mismo servicio"
+      },
+      "nonRefundable": {
+        "title": "3. Situaciones No Reembolsables",
+        "content": "Generalmente no se proporcionan reembolsos en las siguientes situaciones:",
+        "item1": "Después de 14 días desde la compra inicial",
+        "item2": "Por meses parciales de servicio al cancelar a mitad de ciclo",
+        "item3": "Si su cuenta fue suspendida o terminada por violaciones de los Términos de Servicio"
+      },
+      "process": {
+        "title": "4. Proceso de Reembolso",
+        "content": "Para solicitar un reembolso:",
+        "step1": "Contacte a nuestro equipo de facturación en billing@invoiceapp.com",
+        "step2": "Proporcione el correo electrónico de su cuenta y el motivo de la solicitud de reembolso",
+        "step3": "Nuestro equipo revisará su solicitud dentro de 5 días hábiles",
+        "step4": "Si se aprueba, los reembolsos se procesan al método de pago original"
+      },
+      "timing": {
+        "title": "5. Tiempo de Reembolso",
+        "content": "Los reembolsos aprobados generalmente se procesan dentro de 5-10 días hábiles. El tiempo que tarda el reembolso en aparecer en su cuenta depende de su proveedor de pago y puede tomar 5-10 días hábiles adicionales."
+      },
+      "cancellation": {
+        "title": "6. Cancelación de Suscripción",
+        "content": "Puede cancelar su suscripción en cualquier momento desde la configuración de su cuenta. Tras la cancelación, mantendrá acceso al Servicio hasta el final de su período de facturación actual. No se proporcionan reembolsos por períodos de facturación parciales."
+      },
+      "contact": {
+        "title": "7. Contáctenos",
+        "content": "Para solicitudes de reembolso o preguntas sobre esta política, contáctenos:"
+      }
+    },
+    "contactPage": {
+      "title": "Contáctenos",
+      "subtitle": "Estamos aquí para ayudar. Comuníquese con nosotros a través de cualquiera de los canales a continuación.",
+      "companyName": "Gargurevich Digital LLC",
+      "companyType": "Sociedad de Responsabilidad Limitada",
+      "address": {
+        "label": "Dirección Registrada",
+        "line1": "1234 Business Ave, Suite 100",
+        "line2": "Wilmington, DE 19801, Estados Unidos"
+      },
+      "email": {
+        "label": "Correos Electrónicos",
+        "general": "General",
+        "support": "Soporte",
+        "billing": "Facturación"
+      },
+      "supportHours": {
+        "title": "Horario de Soporte",
+        "weekdays": "Lunes - Viernes",
+        "weekends": "Sábado - Domingo",
+        "closed": "Cerrado",
+        "responseTime": "Normalmente respondemos a las consultas dentro de 24 horas en días hábiles."
+      },
+      "departments": {
+        "title": "Departamentos",
+        "support": {
+          "title": "Soporte Técnico",
+          "description": "Ayuda con el uso de la plataforma, solución de problemas y preguntas técnicas."
+        },
+        "billing": {
+          "title": "Facturación y Pagos",
+          "description": "Preguntas sobre facturas, suscripciones, reembolsos y pagos."
+        },
+        "sales": {
+          "title": "Ventas y Asociaciones",
+          "description": "Planes empresariales, soluciones personalizadas y oportunidades de asociación."
+        },
+        "legal": {
+          "title": "Legal y Cumplimiento",
+          "description": "Consultas legales, solicitudes de datos y asuntos de cumplimiento."
+        }
+      }
+    }
   }
 }
