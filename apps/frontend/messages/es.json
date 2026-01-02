@@ -779,6 +779,7 @@
     "logoUploaded": "Logo subido exitosamente",
     "errorUploadingLogo": "Error al subir el logo",
     "save": "Guardar Cambios",
+    "saving": "Guardando...",
     "company": "Empresa",
     "companyName": "Nombre de Empresa",
     "companyRuc": "RUC",
@@ -824,6 +825,8 @@
     "currentPassword": "Contraseña Actual",
     "newPassword": "Nueva Contraseña",
     "confirmPassword": "Confirmar Contraseña",
+    "signedInWithGoogle": "Conectado con Google",
+    "googleAccountManaged": "Tu contraseña es gestionada por tu cuenta de Google",
     "passwordMismatch": "Las contraseñas no coinciden",
     "savedSuccessfully": "Guardado exitosamente",
     "notificationSettings": "Configuración de Notificaciones",
@@ -842,6 +845,17 @@
       "signatureDeleted": "Firma eliminada exitosamente",
       "errorSavingSignature": "Error al guardar la firma",
       "errorDeletingSignature": "Error al eliminar la firma"
+    },
+    "currencies": {
+      "PEN": "Sol Peruano",
+      "USD": "Dólar Americano",
+      "EUR": "Euro",
+      "GBP": "Libra Esterlina",
+      "MXN": "Peso Mexicano",
+      "COP": "Peso Colombiano",
+      "ARS": "Peso Argentino",
+      "CLP": "Peso Chileno",
+      "BRL": "Real Brasileño"
     }
   },
   "payments": {

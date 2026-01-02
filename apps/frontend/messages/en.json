@@ -790,6 +790,7 @@
     "logoUploaded": "Logo uploaded successfully",
     "errorUploadingLogo": "Error uploading logo",
     "save": "Save Changes",
+    "saving": "Saving...",
     "company": "Company",
     "companyName": "Company Name",
     "companyRuc": "Tax ID",
@@ -835,6 +836,8 @@
     "currentPassword": "Current Password",
     "newPassword": "New Password",
     "confirmPassword": "Confirm Password",
+    "signedInWithGoogle": "Signed in with Google",
+    "googleAccountManaged": "Your password is managed by your Google account",
     "passwordMismatch": "Passwords do not match",
     "savedSuccessfully": "Saved successfully",
     "notificationSettings": "Notification Settings",
@@ -853,6 +856,17 @@
       "signatureDeleted": "Signature successfully deleted",
       "errorSavingSignature": "Error saving signature",
       "errorDeletingSignature": "Error deleting signature"
+    },
+    "currencies": {
+      "PEN": "Peruvian Sol",
+      "USD": "US Dollar",
+      "EUR": "Euro",
+      "GBP": "British Pound",
+      "MXN": "Mexican Peso",
+      "COP": "Colombian Peso",
+      "ARS": "Argentine Peso",
+      "CLP": "Chilean Peso",
+      "BRL": "Brazilian Real"
     }
   },
   "payments": {
