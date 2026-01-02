@@ -390,7 +390,7 @@ router.post('/submit', async (req, res) => {
             ? signatureRequest.factura 
             : signatureRequest.proforma;
           
-          const pdfBuffer = Buffer.from(signedPdfDataUrl.replace(/^data:application\/pdf;filename=generated\.pdf;base64,/, ''), 'base64');
+          const pdfBuffer = Buffer.from(signedPdfDataUrl.replace(/^data:application\/pdf;base64,/, ''), 'base64');
           const pdfFileName = `${document.serie}-${document.numero}-signed.pdf`;
           
           // Use 'proposals' folder for proformas, 'invoices' for invoices
