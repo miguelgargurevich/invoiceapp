@@ -20,12 +20,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/api';
 
 // Step Components
-import WelcomeStep from '@/components/setup/WelcomeStep';
-import CompanyStep from '@/components/setup/CompanyStep';
-import LogoStep from '@/components/setup/LogoStep';
-import CurrencyStep from '@/components/setup/CurrencyStep';
-import TaxStep from '@/components/setup/TaxStep';
-import CompleteStep from '@/components/setup/CompleteStep';
+import { 
+  WelcomeStep, 
+  CompanyStep, 
+  LogoStep, 
+  CurrencyStep, 
+  TaxStep, 
+  CompleteStep 
+} from '@/components/setup';
 
 interface SetupData {
   companyName: string;
@@ -39,6 +41,21 @@ interface SetupData {
   taxRate: number;
   taxName: string;
   taxEnabled: boolean;
+}
+
+interface EmpresaResponse {
+  id: string;
+  nombre: string;
+  direccion?: string;
+  telefono?: string;
+  email?: string;
+  web?: string;
+  logoUrl?: string;
+  currency?: string;
+  locale?: string;
+  taxRate?: number;
+  taxName?: string;
+  setupCompleted?: boolean;
 }
 
 const STEPS = [
@@ -76,28 +93,28 @@ export default function SetupWizardPage() {
   useEffect(() => {
     const checkSetupStatus = async () => {
       try {
-        const response = await api.get('/api/empresa');
-        if (response.data?.setupCompleted) {
+        const response = await api.get<EmpresaResponse>('/empresas/mi-empresa');
+        if (response.setupCompleted) {
           // Already completed setup, redirect to dashboard
           router.push('/dashboard');
           return;
         }
         
         // Pre-fill with existing data if any
-        if (response.data) {
+        if (response) {
           setSetupData(prev => ({
             ...prev,
-            companyName: response.data.nombre || '',
-            direccion: response.data.direccion || '',
-            telefono: response.data.telefono || '',
-            email: response.data.email || '',
-            website: response.data.website || '',
-            logo: response.data.logo || null,
-            currency: response.data.currency || 'USD',
-            locale: response.data.locale || 'en',
-            taxRate: response.data.taxRate || 0,
-            taxName: response.data.taxName || 'Tax',
-            taxEnabled: response.data.taxRate > 0,
+            companyName: response.nombre || '',
+            direccion: response.direccion || '',
+            telefono: response.telefono || '',
+            email: response.email || '',
+            website: response.web || '',
+            logo: response.logoUrl || null,
+            currency: response.currency || 'USD',
+            locale: response.locale || 'en',
+            taxRate: response.taxRate || 0,
+            taxName: response.taxName || 'Tax',
+            taxEnabled: (response.taxRate || 0) > 0,
           }));
         }
       } catch (error) {
@@ -131,16 +148,17 @@ export default function SetupWizardPage() {
     setIsSaving(true);
     try {
       // Save empresa data
-      await api.put('/api/empresa', {
+      await api.put('/empresas/mi-empresa', {
         nombre: setupData.companyName,
         direccion: setupData.direccion,
         telefono: setupData.telefono,
         email: setupData.email,
-        website: setupData.website,
-        logo: setupData.logo,
+        web: setupData.website,
+        logoUrl: setupData.logo,
         currency: setupData.currency,
         locale: setupData.locale,
         taxRate: setupData.taxEnabled ? setupData.taxRate : 0,
+        taxName: setupData.taxName,
         setupCompleted: true,
       });
 

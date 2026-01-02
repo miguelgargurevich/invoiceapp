@@ -43,12 +43,10 @@ export default function LogoStep({ data, onUpdate, onNext, onPrev }: LogoStepPro
       const formData = new FormData();
       formData.append('logo', file);
 
-      const response = await api.post('/api/empresa/logo', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+      const response = await api.upload<{ logoUrl: string }>('/empresa/logo', formData);
 
-      if (response.data.logoUrl) {
-        onUpdate({ logo: response.data.logoUrl });
+      if (response.logoUrl) {
+        onUpdate({ logo: response.logoUrl });
       }
     } catch (error) {
       console.error('Error uploading logo:', error);

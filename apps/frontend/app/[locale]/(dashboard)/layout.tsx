@@ -8,6 +8,10 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 
+interface EmpresaResponse {
+  setupCompleted?: boolean;
+}
+
 export default function DashboardLayout({
   children,
   params: { locale },
@@ -29,15 +33,15 @@ export default function DashboardLayout({
     const checkSetupStatus = async () => {
       if (user && empresa) {
         try {
-          const response = await api.get('/api/empresa');
-          if (response.data && response.data.setupCompleted === false) {
+          const response = await api.get<EmpresaResponse>('/empresas/mi-empresa');
+          if (response && response.setupCompleted === false) {
             // User hasn't completed setup, redirect to wizard
             router.push(`/${locale}/setup`);
             return;
           }
         } catch (error) {
           // If no empresa exists, redirect to setup
-          if ((error as any)?.response?.status === 404) {
+          if ((error as Error)?.message?.includes('404')) {
             router.push(`/${locale}/setup`);
             return;
           }
