@@ -389,23 +389,25 @@ export default function DashboardPage({
                 <button
                   onClick={() => setActiveTab('proposals')}
                   className={cn(
-                    "px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                    "px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2",
                     activeTab === 'proposals'
                       ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm"
                       : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                   )}
                 >
+                  <FileBarChart className="w-4 h-4" />
                   {t('recentProposals')}
                 </button>
                 <button
                   onClick={() => setActiveTab('invoices')}
                   className={cn(
-                    "px-4 py-2 rounded-md text-sm font-medium transition-colors",
+                    "px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2",
                     activeTab === 'invoices'
                       ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm"
                       : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
                   )}
                 >
+                  <Receipt className="w-4 h-4" />
                   {t('recentInvoices')}
                 </button>
               </div>
