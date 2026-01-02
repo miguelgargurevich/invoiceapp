@@ -181,6 +181,16 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
           </div>
         </div>
 
+        {/* Contract Terms and Conditions (if provided) */}
+        {proforma.condiciones && (
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+            <p className="text-[10px] font-bold text-gray-900 mb-2">TERMS AND CONDITIONS</p>
+            <div className="text-[9px] text-gray-800 whitespace-pre-wrap">
+              {proforma.condiciones}
+            </div>
+          </div>
+        )}
+
         {/* Terms and Conditions */}
         <div className="mb-3 grid grid-cols-2 gap-6">
           {/* Left Side - Terms */}

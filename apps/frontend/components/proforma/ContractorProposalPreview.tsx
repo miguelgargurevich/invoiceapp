@@ -242,6 +242,18 @@ const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalP
           </div>
         </div>
 
+        {/* CONTRACT TERMS AND CONDITIONS (if provided) */}
+        {proforma.condiciones && (
+          <div className="mb-4">
+            <p className="font-semibold text-sm mb-1">TERMS AND CONDITIONS</p>
+            <div className="border border-black p-2 bg-blue-50">
+              <div className="whitespace-pre-wrap text-xs">
+                {proforma.condiciones}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* GENERAL CONDITIONS */}
         <div className="text-xs mb-4 space-y-1 text-justify">
           <p><strong>Our workers are fully covered by Workman's Compensation Insurance.</strong></p>
