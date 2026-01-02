@@ -470,6 +470,7 @@
     "openSignaturePanelButton": "Open Signature Panel",
     "orSendToClient": "or send to client",
     "signatureOptions": "Signature options:",
+    "signNow": "Sign Now",
     "signNowOption": "Sign Now: Open the signature panel on your current device",
     "sendViaEmail": "Send via Email",
     "emailSent": "Email Sent",
