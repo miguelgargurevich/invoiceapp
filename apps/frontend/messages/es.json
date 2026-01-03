@@ -215,6 +215,7 @@
     "lineTotal": "Total Línea",
     "generatePdf": "Generar PDF",
     "registerPayment": "Registrar Pago",
+    "paymentsMade": "Pagos Realizados",
     "viewProposal": "Ver Proforma",
     "voidInvoice": "Anular Factura",
     "cancelInvoice": "Cancelar Factura",

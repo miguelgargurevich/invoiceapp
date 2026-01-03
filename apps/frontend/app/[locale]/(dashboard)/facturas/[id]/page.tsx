@@ -936,6 +936,64 @@ export default function FacturaDetailPage({
                   </span>
                 </div>
               </div>
+
+              {/* Payments Made Section */}
+              {factura.pagos && factura.pagos.length > 0 && (
+                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                    {t('paymentsMade')}
+                  </h3>
+                  <div className="space-y-3">
+                    {factura.pagos.map((pago) => (
+                      <div 
+                        key={pago.id}
+                        className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-3 space-y-2"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-2">
+                            <Receipt className="w-4 h-4 text-green-600 dark:text-green-400" />
+                            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                              {formatCurrency(pago.monto)}
+                            </span>
+                          </div>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            {formatDate(pago.fecha)}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                          <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded">
+                            {pago.metodoPago === 'EFECTIVO' && 'Cash'}
+                            {pago.metodoPago === 'TRANSFERENCIA' && 'Transfer'}
+                            {pago.metodoPago === 'TARJETA' && 'Card'}
+                            {pago.metodoPago === 'CHEQUE' && 'Check'}
+                            {pago.metodoPago === 'OTRO' && 'Other'}
+                            {!['EFECTIVO', 'TRANSFERENCIA', 'TARJETA', 'CHEQUE', 'OTRO'].includes(pago.metodoPago) && pago.metodoPago}
+                          </span>
+                          {pago.referencia && (
+                            <span className="text-gray-500">
+                              Ref: {pago.referencia}
+                            </span>
+                          )}
+                        </div>
+                        {pago.notas && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+                            {pago.notas}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600 dark:text-gray-400">Total Paid</span>
+                      <span className="font-semibold text-green-600 dark:text-green-400">
+                        {formatCurrency(factura.totalPagado)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {factura.saldoPendiente > 0 && factura.estado !== 'ANULADA' && (
                 <div className="flex justify-between text-orange-600 pt-2 border-t border-orange-200 dark:border-orange-800 mt-2">
                   <span className="font-medium">{t('pending')}</span>

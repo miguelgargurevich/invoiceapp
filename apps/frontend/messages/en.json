@@ -215,6 +215,7 @@
     "lineTotal": "Line Total",
     "generatePdf": "Generate PDF",
     "registerPayment": "Register Payment",
+    "paymentsMade": "Payments Made",
     "viewProposal": "View Proposal",
     "voidInvoice": "Void Invoice",
     "cancelInvoice": "Cancel Invoice",
