@@ -1556,6 +1556,7 @@
   "subscription": {
     "title": "Suscripción",
     "subtitle": "Administra tu suscripción y facturación",
+    "upgradeBanner": "Mejora tu Experiencia",
     "currentPlan": "Plan Actual",
     "noPlan": "Sin suscripción activa",
     "freeTier": "Plan Gratuito",
@@ -1623,6 +1624,10 @@
     "reactivatedDesc": "Tu suscripción ha sido reactivada",
     "checkoutError": "Error al crear sesión de pago",
     "portalError": "Error al abrir portal de facturación",
+    "subscriptionSuccess": "🎉 ¡Suscripción activada exitosamente! Bienvenido a tu nuevo plan.",
+    "subscriptionSuccessWithPlan": "🎉 ¡Felicitaciones! Te has suscrito exitosamente al plan {plan}. ¡Bienvenido a bordo!",
+    "subscriptionCanceled": "El proceso de pago fue cancelado. No se realizaron cargos.",
+    "yourCurrentPlan": "Tu Plan Actual",
     "loadingPlans": "Cargando planes...",
     "loadingSubscription": "Cargando suscripción...",
     "errorLoadingPlans": "Error al cargar planes",

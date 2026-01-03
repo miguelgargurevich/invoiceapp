@@ -79,15 +79,18 @@ export async function getCurrentSubscription(): Promise<SubscriptionResponse> {
   return api.get<SubscriptionResponse>('/subscriptions/current');
 }
 
-export async function createCheckoutSession(planId: string, billingInterval: 'monthly' | 'yearly'): Promise<CheckoutSessionResponse> {
+export async function createCheckoutSession(planId: string, billingInterval: 'monthly' | 'yearly', locale: string = 'en'): Promise<CheckoutSessionResponse> {
   return api.post<CheckoutSessionResponse>('/subscriptions/create-checkout-session', {
     planId,
     billingInterval,
+    locale,
   });
 }
 
-export async function createPortalSession(): Promise<PortalSessionResponse> {
-  return api.post<PortalSessionResponse>('/subscriptions/create-portal-session');
+export async function createPortalSession(locale: string = 'en'): Promise<PortalSessionResponse> {
+  return api.post<PortalSessionResponse>('/subscriptions/create-portal-session', {
+    locale,
+  });
 }
 
 export async function cancelSubscription(): Promise<{ message: string; subscription: Subscription }> {

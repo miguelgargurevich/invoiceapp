@@ -1554,6 +1554,7 @@
   "subscription": {
     "title": "Subscription",
     "subtitle": "Manage your subscription and billing",
+    "upgradeBanner": "Upgrade Your Experience",
     "currentPlan": "Current Plan",
     "noPlan": "No active subscription",
     "freeTier": "Free Tier",
@@ -1621,6 +1622,10 @@
     "reactivatedDesc": "Your subscription has been reactivated",
     "checkoutError": "Error creating checkout session",
     "portalError": "Error opening billing portal",
+    "subscriptionSuccess": "🎉 Subscription activated successfully! Welcome to your new plan.",
+    "subscriptionSuccessWithPlan": "🎉 Congratulations! You've successfully subscribed to the {plan} plan. Welcome aboard!",
+    "subscriptionCanceled": "Checkout was canceled. No charges were made.",
+    "yourCurrentPlan": "Your Current Plan",
     "loadingPlans": "Loading plans...",
     "loadingSubscription": "Loading subscription...",
     "errorLoadingPlans": "Error loading plans",

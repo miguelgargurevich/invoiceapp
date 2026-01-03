@@ -93,7 +93,16 @@ router.get('/current', authenticateToken, getEmpresaFromUser, async (req, res) =
 // ==========================================
 router.post('/create-checkout-session', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
-    const { planId, billingInterval = 'MONTH' } = req.body;
+    const { planId, billingInterval = 'monthly', locale = 'en' } = req.body;
+
+    // Convert frontend format (monthly/yearly) to backend format (MONTH/YEAR)
+    const intervalMap = {
+      'monthly': 'MONTH',
+      'yearly': 'YEAR',
+      'MONTH': 'MONTH',
+      'YEAR': 'YEAR'
+    };
+    const normalizedInterval = intervalMap[billingInterval] || 'MONTH';
 
     // Get plan details
     const plan = await prisma.plan.findUnique({
@@ -105,7 +114,7 @@ router.post('/create-checkout-session', authenticateToken, getEmpresaFromUser, a
     }
 
     // Determine the correct Stripe price ID based on billing interval
-    const stripePriceId = billingInterval === 'YEAR' 
+    const stripePriceId = normalizedInterval === 'YEAR' 
       ? plan.stripePriceIdYearly 
       : plan.stripePriceIdMonthly;
 
@@ -147,8 +156,8 @@ router.post('/create-checkout-session', authenticateToken, getEmpresaFromUser, a
       // {CHECKOUT_SESSION_ID} is a string literal; do not change it!
       // The actual Session ID is returned in the query parameter when your customer
       // is redirected to the success page.
-      success_url: `${process.env.FRONTEND_URL}/en/settings?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL}/en/settings?canceled=true`,
+      success_url: `${process.env.FRONTEND_URL}/${locale}/configuracion/suscripcion?success=true&session_id={CHECKOUT_SESSION_ID}&plan=${encodeURIComponent(plan.name)}`,
+      cancel_url: `${process.env.FRONTEND_URL}/${locale}/configuracion/suscripcion?canceled=true`,
       // Enable Customer Portal for subscription management
       customer_update: {
         address: 'auto',
@@ -179,6 +188,8 @@ router.post('/create-checkout-session', authenticateToken, getEmpresaFromUser, a
 // ==========================================
 router.post('/create-portal-session', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
+    const { locale = 'en' } = req.body;
+    
     const subscription = await prisma.subscription.findUnique({
       where: { empresaId: req.empresa.id }
     });
@@ -194,7 +205,7 @@ router.post('/create-portal-session', authenticateToken, getEmpresaFromUser, asy
     // Create a portal session
     const portalSession = await stripe.billingPortal.sessions.create({
       customer: subscription.stripeCustomerId,
-      return_url: `${process.env.FRONTEND_URL}/en/settings`,
+      return_url: `${process.env.FRONTEND_URL}/${locale}/configuracion/suscripcion`,
     });
 
     res.json({ url: portalSession.url });
