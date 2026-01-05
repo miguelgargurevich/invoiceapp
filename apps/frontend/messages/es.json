@@ -415,7 +415,10 @@
     "saveSuccess": "Proforma guardada exitosamente",
     "createSuccess": "Proforma creada exitosamente",
     "updateSuccess": "Proforma actualizada exitosamente",
-    "deleteSuccess": "Proforma eliminada exitosamente",    "createFirst": "Crea tu primera proforma",
+    "deleteSuccess": "Proforma eliminada exitosamente",
+    "noProformas": "Sin proformas aún",
+    "noProformasDescription": "Crea tu primera proforma para comenzar",
+    "createFirst": "Crea tu primera proforma",
     "newQuote": "Nueva Proforma",
     "newQuoteDescription": "Crear una nueva proforma para tu cliente",
     "useTemplate": "Usar Plantilla",
@@ -1696,6 +1699,256 @@
       "hasAdvancedReports": "Reportes Avanzados",
       "hasPrioritySupport": "Soporte Prioritario",
       "hasApiAccess": "Acceso API"
+    }
+  },
+  "landing": {
+    "nav": {
+      "features": "Características",
+      "pricing": "Precios",
+      "testimonials": "Testimonios",
+      "faq": "Preguntas",
+      "login": "Iniciar Sesión",
+      "getStarted": "Empezar Gratis"
+    },
+    "hero": {
+      "badge": "✨ Facturación Profesional Simplificada",
+      "titleLine1": "Crea Facturas",
+      "titleLine2": "Profesionales en Minutos",
+      "subtitle": "La plataforma de facturación todo en uno para contratistas, freelancers y pequeñas empresas. Crea facturas hermosas, rastrea pagos y haz crecer tu negocio.",
+      "benefit1": "Gratis para empezar",
+      "benefit2": "Sin tarjeta de crédito",
+      "benefit3": "Cancela cuando quieras",
+      "cta": {
+        "primary": "Prueba Gratis",
+        "secondary": "Ver Cómo Funciona"
+      },
+      "socialProof": {
+        "count": "10,000+",
+        "text": "profesionales ya confían en InvoiceApp"
+      },
+      "preview": {
+        "invoices": "Total Facturas",
+        "revenue": "Ingresos Mensuales",
+        "clients": "Clientes Activos",
+        "recentInvoices": "Facturas Recientes"
+      }
+    },
+    "features": {
+      "badge": "Características Poderosas",
+      "title": "Todo lo que Necesitas para Cobrar Más Rápido",
+      "subtitle": "Un kit completo de herramientas diseñado para optimizar tu proceso de facturación y ayudarte a enfocarte en lo que más importa.",
+      "items": {
+        "invoices": {
+          "title": "Facturas Profesionales",
+          "description": "Crea facturas impresionantes con plantillas personalizables en segundos."
+        },
+        "proposals": {
+          "title": "Proformas Inteligentes",
+          "description": "Gana más clientes con proformas y cotizaciones profesionales."
+        },
+        "clients": {
+          "title": "Gestión de Clientes",
+          "description": "Mantén toda la información de tus clientes organizada en un solo lugar."
+        },
+        "payments": {
+          "title": "Seguimiento de Pagos",
+          "description": "Rastrea pagos, envía recordatorios y cobra a tiempo."
+        },
+        "reports": {
+          "title": "Reportes Financieros",
+          "description": "Obtén información sobre tu negocio con análisis detallados."
+        },
+        "multilang": {
+          "title": "Multi-Idioma",
+          "description": "Crea facturas en múltiples idiomas para clientes globales."
+        },
+        "signatures": {
+          "title": "Firmas Digitales",
+          "description": "Recolecta firmas electrónicas legalmente vinculantes."
+        },
+        "photos": {
+          "title": "Documentación Fotográfica",
+          "description": "Adjunta fotos de trabajo y evidencia visual a las facturas."
+        },
+        "receipts": {
+          "title": "Gestión de Recibos",
+          "description": "Rastrea gastos y adjunta recibos a los trabajos."
+        },
+        "tracking": {
+          "title": "Control de Tiempo",
+          "description": "Registra horas de trabajo y sigue el progreso del proyecto."
+        },
+        "mobile": {
+          "title": "Optimizado para Móvil",
+          "description": "Gestiona tu negocio desde cualquier dispositivo, donde sea."
+        },
+        "fast": {
+          "title": "Ultra Rápido",
+          "description": "Crea y envía facturas en menos de 2 minutos."
+        }
+      }
+    },
+    "howItWorks": {
+      "badge": "Proceso Simple",
+      "title": "Comienza en 3 Simples Pasos",
+      "subtitle": "Sin configuración complicada. Sin curva de aprendizaje. Solo regístrate y empieza a facturar.",
+      "steps": {
+        "0": {
+          "title": "Crea tu Cuenta",
+          "description": "Regístrate gratis en segundos. No se requiere tarjeta de crédito para comenzar."
+        },
+        "1": {
+          "title": "Configura tu Negocio",
+          "description": "Agrega los datos de tu empresa, logo y personaliza tus plantillas de facturas."
+        },
+        "2": {
+          "title": "Envía tu Primera Factura",
+          "description": "Crea y envía facturas profesionales a tus clientes instantáneamente."
+        }
+      }
+    },
+    "pricing": {
+      "badge": "Precios Simples",
+      "title": "Planes que Crecen con tu Negocio",
+      "subtitle": "Empieza gratis, actualiza cuando lo necesites. Sin cargos ocultos, cancela cuando quieras.",
+      "monthly": "Mensual",
+      "yearly": "Anual",
+      "save": "Ahorra 17%",
+      "popular": "Más Popular",
+      "perMonth": "mes",
+      "billedYearly": "facturado anualmente",
+      "startFree": "Empezar Gratis",
+      "getStarted": "Comenzar",
+      "needCustom": "¿Necesitas un plan personalizado para tu equipo?",
+      "contactUs": "Contáctanos",
+      "plans": {
+        "free": {
+          "description": "Perfecto para comenzar"
+        },
+        "starter": {
+          "description": "Para negocios en crecimiento"
+        },
+        "professional": {
+          "description": "Para negocios establecidos"
+        },
+        "enterprise": {
+          "description": "Para grandes organizaciones"
+        }
+      }
+    },
+    "testimonials": {
+      "badge": "Clientes Felices",
+      "title": "Confían en Nosotros Miles de Profesionales",
+      "subtitle": "Mira lo que nuestros clientes dicen sobre InvoiceApp.",
+      "items": {
+        "1": {
+          "quote": "InvoiceApp ha transformado cómo manejo mi negocio de construcción. Crear facturas profesionales ahora toma segundos, y a mis clientes les encanta el diseño limpio.",
+          "name": "María González",
+          "role": "Contratista de Construcción"
+        },
+        "2": {
+          "quote": "Como freelancer, pasaba horas en facturación. Ahora creo y envío facturas en minutos. El seguimiento de pagos es un cambio total.",
+          "name": "James Rodríguez",
+          "role": "Diseñador Freelance"
+        },
+        "3": {
+          "quote": "El sistema de proformas me ayudó a ganar 40% más proyectos. Los clientes pueden firmar digitalmente y todo el proceso es fluido.",
+          "name": "Sarah Chen",
+          "role": "Consultora de Marketing"
+        },
+        "4": {
+          "quote": "Gestionar múltiples obras se volvió mucho más fácil. La documentación fotográfica y el seguimiento de recibos me ahorran horas cada semana.",
+          "name": "Antonio López",
+          "role": "Contratista General"
+        },
+        "5": {
+          "quote": "El soporte multi-idioma es perfecto para mis clientes internacionales. Puedo facturar en inglés o español con un clic.",
+          "name": "Rachel Cooper",
+          "role": "Consultora de Negocios"
+        },
+        "6": {
+          "quote": "La mejor app de facturación que he usado. La interfaz es intuitiva y el soporte al cliente es increíblemente receptivo.",
+          "name": "David Martínez",
+          "role": "Electricista"
+        }
+      },
+      "stats": {
+        "users": "Usuarios Felices",
+        "invoices": "Facturas Enviadas",
+        "uptime": "Disponibilidad",
+        "rating": "Calificación"
+      }
+    },
+    "faq": {
+      "badge": "Preguntas Frecuentes",
+      "title": "Preguntas Frecuentes",
+      "subtitle": "¿Tienes preguntas? Tenemos respuestas.",
+      "moreQuestions": "¿Aún tienes preguntas?",
+      "contactSupport": "Contacta nuestro equipo de soporte",
+      "items": {
+        "1": {
+          "question": "¿InvoiceApp es realmente gratis para empezar?",
+          "answer": "¡Sí! Nuestro plan Gratis te permite crear hasta 5 facturas al mes con 3 clientes sin costo. No se requiere tarjeta de crédito para registrarte. Puedes actualizar en cualquier momento a medida que tu negocio crece."
+        },
+        "2": {
+          "question": "¿Puedo personalizar mis facturas con mi marca?",
+          "answer": "Absolutamente. Puedes agregar el logo de tu empresa, elegir colores y personalizar plantillas para que coincidan con tu marca. Los planes profesionales ofrecen aún más opciones de personalización."
+        },
+        "3": {
+          "question": "¿Cómo funcionan las firmas digitales?",
+          "answer": "Envía facturas o proformas con una solicitud de firma. Tus clientes reciben un enlace por correo para firmar digitalmente. Todas las firmas tienen marca de tiempo y son legalmente vinculantes."
+        },
+        "4": {
+          "question": "¿Puedo rastrear pagos y enviar recordatorios?",
+          "answer": "Sí. Rastrea qué facturas están pagadas, pendientes o vencidas. Configura recordatorios automáticos de pago para asegurar que te paguen a tiempo."
+        },
+        "5": {
+          "question": "¿Mis datos están seguros?",
+          "answer": "La seguridad es nuestra máxima prioridad. Todos los datos están encriptados en tránsito y en reposo. Usamos prácticas de seguridad estándar de la industria y respaldos regulares."
+        },
+        "6": {
+          "question": "¿Puedo usar InvoiceApp en móvil?",
+          "answer": "¡Sí! InvoiceApp es totalmente responsivo y funciona genial en teléfonos y tablets. Crea, envía y gestiona facturas desde cualquier lugar."
+        },
+        "7": {
+          "question": "¿Qué métodos de pago aceptan?",
+          "answer": "Aceptamos todas las tarjetas de crédito principales a través de Stripe. Puedes pagar mensual o anualmente, con 17% de descuento en planes anuales."
+        },
+        "8": {
+          "question": "¿Puedo exportar mis datos?",
+          "answer": "Sí. Exporta tus facturas, datos de clientes y reportes a PDF, CSV o Excel en cualquier momento. Tus datos siempre son tuyos."
+        }
+      }
+    },
+    "cta": {
+      "badge": "¿Listo para empezar?",
+      "title": "Empieza a Crear Facturas Profesionales Hoy",
+      "subtitle": "Únete a miles de profesionales que confían en InvoiceApp para gestionar su facturación. Comienza en minutos.",
+      "primaryButton": "Prueba Gratis",
+      "secondaryButton": "Ver Precios",
+      "noCard": "Sin tarjeta de crédito • Plan gratuito disponible • Cancela cuando quieras"
+    },
+    "footer": {
+      "description": "La plataforma de facturación profesional para contratistas, freelancers y pequeñas empresas. Crea, envía y rastrea facturas con facilidad.",
+      "sections": {
+        "product": "Producto",
+        "company": "Empresa",
+        "legal": "Legal"
+      },
+      "links": {
+        "features": "Características",
+        "pricing": "Precios",
+        "testimonials": "Testimonios",
+        "faq": "Preguntas Frecuentes",
+        "about": "Sobre Nosotros",
+        "blog": "Blog",
+        "careers": "Carreras",
+        "contact": "Contacto",
+        "privacy": "Política de Privacidad",
+        "terms": "Términos de Servicio",
+        "cookies": "Política de Cookies"
+      },
+      "rights": "Todos los derechos reservados."
     }
   }
 }

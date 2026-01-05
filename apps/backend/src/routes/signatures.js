@@ -260,7 +260,7 @@ router.get('/validate/:token', async (req, res) => {
     }
 
     // Check if already signed
-    if (signatureRequest.status === 'SIGNED') {
+    if (signatureRequest.status === 'ACCEPTED') {
       return res.status(400).json({ 
         error: 'Document already signed',
         signedAt: signatureRequest.signature?.signedAt 
@@ -478,7 +478,7 @@ router.post('/submit', async (req, res) => {
     // Update signature request status
     await prisma.signatureRequest.update({
       where: { id: signatureRequest.id },
-      data: { status: 'SIGNED' }
+      data: { status: 'ACCEPTED' }
     });
 
     // Send confirmation emails - TEMPORARILY DISABLED

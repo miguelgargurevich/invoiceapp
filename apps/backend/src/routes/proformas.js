@@ -211,7 +211,7 @@ router.get('/', authenticateToken, getEmpresaFromUser, async (req, res) => {
           },
           signatureRequests: {
             where: {
-              status: { in: ['PENDING', 'SIGNED'] }
+              status: { in: ['PENDING'] }
             },
             orderBy: {
               createdAt: 'desc'
@@ -309,7 +309,7 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
         },
         signatureRequests: {
           where: {
-            status: { in: ['PENDING', 'SIGNED'] }
+            status: { in: ['PENDING', 'ACCEPTED'] }
           },
           orderBy: { createdAt: 'desc' },
           take: 1,

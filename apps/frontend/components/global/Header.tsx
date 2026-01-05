@@ -6,7 +6,6 @@ import { useTranslations } from 'next-intl';
 import {
   Menu,
   Search,
-  Bell,
   Sun,
   Moon,
   Globe,
@@ -14,96 +13,46 @@ import {
   LogOut,
   Settings,
   ChevronDown,
-  Clock,
-  AlertTriangle,
-  FileText,
-  DollarSign,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { cn, getInitials } from '@/lib/utils';
-import { useCurrency } from '@/lib/hooks/useCurrency';
-import api from '@/lib/api';
 
 interface HeaderProps {
   onMenuClick: () => void;
   onCommandPaletteOpen: () => void;
 }
 
-interface Notification {
-  id: string;
-  type: 'overdue' | 'due_soon' | 'proposal_pending' | 'pending_payment';
-  title: string;
-  message: string;
-  detail: string;
-  amount: number;
-  date: string;
-  link: string;
-  priority: 'high' | 'medium' | 'low';
-}
-
 export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
   const { user, empresa, signOut } = useAuth();
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const { formatCurrency } = useCurrency();
+  const { subscription } = useSubscription();
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations('common');
   const tAuth = useTranslations('auth');
   const tSettings = useTranslations('settings');
-  const tNotifications = useTranslations('notifications');
 
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showLangMenu, setShowLangMenu] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [loadingNotifications, setLoadingNotifications] = useState(false);
 
   const currentLocale = pathname.split('/')[1] || 'en';
 
-  // Cargar notificaciones
-  useEffect(() => {
-    if (empresa?.id) {
-      loadNotifications();
-      // Recargar cada 5 minutos
-      const interval = setInterval(loadNotifications, 5 * 60 * 1000);
-      return () => clearInterval(interval);
-    }
-  }, [empresa?.id]);
-
-  const loadNotifications = async () => {
-    try {
-      setLoadingNotifications(true);
-      const response = await api.get<{ notificaciones: Notification[]; unread: number }>('/notificaciones');
-      setNotifications(response.notificaciones || []);
-      setUnreadCount(response.unread || 0);
-    } catch (error) {
-      console.error('Error loading notifications:', error);
-    } finally {
-      setLoadingNotifications(false);
-    }
-  };
-
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'overdue':
-        return <AlertTriangle className="w-4 h-4 text-red-500" />;
-      case 'due_soon':
-        return <Clock className="w-4 h-4 text-yellow-500" />;
-      case 'proposal_pending':
-        return <FileText className="w-4 h-4 text-blue-500" />;
-      case 'pending_payment':
-        return <DollarSign className="w-4 h-4 text-green-500" />;
+  const getPlanBadgeStyle = (planName: string) => {
+    switch (planName?.toLowerCase()) {
+      case 'pro':
+        return 'bg-gradient-to-r from-purple-500 to-blue-500 text-white';
+      case 'business':
+        return 'bg-gradient-to-r from-orange-500 to-red-500 text-white';
+      case 'starter':
+        return 'bg-gradient-to-r from-green-500 to-teal-500 text-white';
+      case 'free':
+      case 'trial':
+        return 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
       default:
-        return <Bell className="w-4 h-4" />;
+        return 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
     }
-  };
-
-  const handleNotificationClick = (notification: Notification) => {
-    const locale = pathname.split('/')[1] || 'en';
-    router.push(`/${locale}${notification.link}`);
-    setShowNotifications(false);
   };
 
   const handleLanguageChange = (locale: string) => {
@@ -153,101 +102,18 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
             <Search className="w-5 h-5" />
           </button>
 
-          {/* Notificaciones */}
-          <div className="relative">
-            <button 
-              onClick={() => setShowNotifications(!showNotifications)}
-              className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              <Bell className="w-5 h-5" />
-              {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full" />
+          {/* Notificaciones - Reemplazado por Plan Badge */}
+          {subscription && (
+            <button
+              onClick={() => router.push(`/${currentLocale}/configuracion/suscripcion`)}
+              className={cn(
+                'px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:scale-105',
+                getPlanBadgeStyle(subscription.plan?.name || 'free')
               )}
+            >
+              {subscription.plan?.name || 'Free'}
             </button>
-
-            {showNotifications && (
-              <>
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setShowNotifications(false)}
-                />
-                <div className="absolute right-0 mt-2 w-96 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-20 max-h-[600px] flex flex-col">
-                  {/* Header */}
-                  <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                      {tNotifications('title')}
-                    </h3>
-                    {unreadCount > 0 && (
-                      <span className="text-xs bg-red-500 text-white px-2 py-1 rounded-full">
-                        {unreadCount}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Content */}
-                  <div className="overflow-y-auto flex-1">
-                    {loadingNotifications ? (
-                      <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                        {t('loading')}...
-                      </div>
-                    ) : notifications.length === 0 ? (
-                      <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                        <Bell className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                        <p>{tNotifications('noNotifications')}</p>
-                      </div>
-                    ) : (
-                      <div className="py-1">
-                        {notifications.map((notification) => (
-                          <button
-                            key={notification.id}
-                            onClick={() => handleNotificationClick(notification)}
-                            className="w-full px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50 text-left border-b border-gray-100 dark:border-gray-700/50 last:border-0 transition-colors"
-                          >
-                            <div className="flex gap-3">
-                              <div className="flex-shrink-0 mt-1">
-                                {getNotificationIcon(notification.type)}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-0.5">
-                                  {notification.title}
-                                </p>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                                  {notification.message}
-                                </p>
-                                <div className="flex items-center justify-between gap-2">
-                                  <span className="text-xs text-gray-500 dark:text-gray-500">
-                                    {notification.detail}
-                                  </span>
-                                  <span className="text-xs font-medium text-gray-900 dark:text-gray-100">
-                                    {formatCurrency(notification.amount)}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Footer */}
-                  {notifications.length > 0 && (
-                    <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-700">
-                      <button
-                        onClick={() => {
-                          router.push(`/${currentLocale}/facturas`);
-                          setShowNotifications(false);
-                        }}
-                        className="w-full text-center text-sm text-blue-500 hover:text-blue-600 py-1"
-                      >
-                        {tNotifications('viewAll')}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
+          )}
 
           {/* Theme toggle */}
           <button

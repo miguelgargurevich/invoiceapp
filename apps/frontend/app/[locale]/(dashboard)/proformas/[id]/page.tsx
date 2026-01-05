@@ -114,7 +114,7 @@ interface Proforma {
   diasValidez?: number;
   fechaAceptacion?: string;
   detalles: DetalleProforma[];
-  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureStatus?: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'CANCELLED' | null;
   signatureRequest?: any;
   facturasGeneradas?: Array<{
     id: string;
@@ -755,7 +755,7 @@ export default function ProformaDetailPage({
             <Camera className="w-5 h-5 mr-2" />
             {t('jobPhotos')} ({photos.length})
           </Button>
-          {proforma.estado !== 'ANULADA' && proforma.signatureStatus !== 'SIGNED' && (
+          {proforma.estado !== 'ANULADA' && proforma.signatureStatus !== 'ACCEPTED' && (
             <Button 
               size="sm" 
               onClick={handleRequestSignature}

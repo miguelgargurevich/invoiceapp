@@ -21,6 +21,7 @@ import {
   Info,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { Button, Card, LoadingSpinner } from '@/components/common';
 import { cn } from '@/lib/utils';
 import {
@@ -50,6 +51,7 @@ export default function SubscriptionPage({
   const router = useRouter();
   const searchParams = useSearchParams();
   const { empresa } = useAuth();
+  const { refreshSubscription } = useSubscription();
 
   const [plans, setPlans] = useState<Plan[]>([]);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -79,6 +81,10 @@ export default function SubscriptionPage({
         type: 'success', 
         text: successMessage
       });
+      
+      // Refresh subscription context
+      refreshSubscription();
+      
       // Limpiar URL
       router.replace(`/${locale}/configuracion/suscripcion`);
       // Auto-hide after 10 seconds
@@ -93,7 +99,7 @@ export default function SubscriptionPage({
       // Auto-hide after 5 seconds
       setTimeout(() => setMessage(null), 5000);
     }
-  }, [searchParams, router, locale, t]);
+  }, [searchParams, router, locale, t, refreshSubscription]);
 
   useEffect(() => {
     loadData();

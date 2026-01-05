@@ -61,7 +61,7 @@ export type BadgeVariant =
 
 export interface SignatureRequest {
   id?: string;
-  status?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED';
+  status?: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'CANCELLED';
   sentAt?: string | Date | null;
   createdAt?: string | Date | null;
   signerName?: string;
@@ -84,7 +84,7 @@ export interface BaseDocument {
   fechaEmision: string;
   fechaVencimiento?: string;
   signatureRequest?: SignatureRequest | null;
-  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureStatus?: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'CANCELLED' | null;
 }
 
 export interface ProposalDocument extends BaseDocument {
@@ -152,7 +152,7 @@ export function getProposalEffectiveStatus(proposal: ProposalDocument): Proposal
   // Check if signed/accepted
   if (proposal.signatureRequest?.signature?.signedAt || 
       proposal.fechaAceptacion || 
-      proposal.signatureStatus === 'SIGNED') {
+      proposal.signatureStatus === 'ACCEPTED') {
     return 'firmada';
   }
   

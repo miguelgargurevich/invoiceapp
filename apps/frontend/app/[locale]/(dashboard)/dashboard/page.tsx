@@ -62,7 +62,7 @@ interface RecentInvoice {
   estado: string;
   fechaEmision: string;
   saldoPendiente?: number;
-  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureStatus?: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'CANCELLED' | null;
   signatureRequest?: {
     sentAt?: string | null;
     createdAt?: string;
@@ -84,7 +84,7 @@ interface RecentProposal {
   total: number;
   estado: string;
   fechaEmision: string;
-  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureStatus?: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'CANCELLED' | null;
   signatureRequest?: {
     sentAt?: string | null;
     createdAt?: string;

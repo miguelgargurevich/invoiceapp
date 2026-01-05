@@ -72,7 +72,16 @@ export interface UsageResponse {
 
 // API Functions
 export async function getPlans(): Promise<Plan[]> {
-  return api.get<Plan[]>('/subscriptions/plans');
+  // Use direct fetch for this public endpoint to avoid auth issues
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+  const apiUrl = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
+  const response = await fetch(`${apiUrl}/subscriptions/plans`);
+  
+  if (!response.ok) {
+    throw new Error('Failed to fetch plans');
+  }
+  
+  return response.json();
 }
 
 export async function getCurrentSubscription(): Promise<SubscriptionResponse> {
@@ -110,7 +119,7 @@ export function formatPrice(price: number, currency: string = 'USD'): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: currency,
-  }).format(price / 100);
+  }).format(price);
 }
 
 export function getStatusColor(status: Subscription['status']): string {

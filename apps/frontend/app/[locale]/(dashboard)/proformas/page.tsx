@@ -33,7 +33,7 @@ interface ProformaListItem {
   igv: number;
   total: number;
   estado: string;
-  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureStatus?: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'CANCELLED' | null;
   signatureRequest?: {
     sentAt?: string | null;
     createdAt?: string;
