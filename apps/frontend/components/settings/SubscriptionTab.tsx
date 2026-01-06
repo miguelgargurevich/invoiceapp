@@ -593,14 +593,14 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
               key={plan.id}
               className={cn(
                 'relative p-6 flex flex-col transition-all hover:shadow-md border-2',
-                isPopular && 'ring-2 ring-primary',
-                isCurrent && 'bg-green-50 dark:bg-green-900/20 border-green-400 dark:border-green-600',
-                !isCurrent && 'border-gray-300 dark:border-gray-700'
+                isPopular && 'bg-gradient-to-b from-purple-50 to-white dark:from-purple-950/50 dark:to-slate-900 border-purple-300 dark:border-purple-700 shadow-xl shadow-purple-500/10',
+                isCurrent && !isPopular && 'bg-green-50 dark:bg-green-900/20 border-green-400 dark:border-green-600',
+                !isCurrent && !isPopular && 'border-gray-300 dark:border-gray-700'
               )}
             >
               {isPopular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-primary text-gray text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                  <span className="bg-gradient-to-r from-purple-500 to-purple-700 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg flex items-center gap-1">
                     <Star className="h-3 w-3 fill-current" />
                     {t('mostPopular')}
                   </span>

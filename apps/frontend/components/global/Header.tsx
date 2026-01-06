@@ -131,12 +131,11 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
           <div className="relative">
             <button
               onClick={() => setShowLangMenu(!showLangMenu)}
-              className="flex items-center gap-1 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
             >
-              <Globe className="w-5 h-5" />
-              <span className="hidden md:inline text-sm uppercase">
-                {currentLocale}
-              </span>
+              <Globe className="w-4 h-4" />
+              <span className="hidden md:inline uppercase">{currentLocale}</span>
+              <ChevronDown className={`w-3 h-3 transition-transform ${showLangMenu ? 'rotate-180' : ''}`} />
             </button>
 
             {showLangMenu && (
@@ -145,24 +144,20 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
                   className="fixed inset-0 z-10"
                   onClick={() => setShowLangMenu(false)}
                 />
-                <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1 z-20">
+                <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden z-20">
                   <button
                     onClick={() => handleLanguageChange('es')}
-                    className={cn(
-                      'w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700',
-                      currentLocale === 'es' && 'bg-gray-100 dark:bg-gray-700'
-                    )}
+                    className="flex items-center gap-2 px-4 py-3 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left"
                   >
-                    🇪🇸 {tSettings('spanish')}
+                    <Globe className="w-4 h-4" />
+                    Español
                   </button>
                   <button
                     onClick={() => handleLanguageChange('en')}
-                    className={cn(
-                      'w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700',
-                      currentLocale === 'en' && 'bg-gray-100 dark:bg-gray-700'
-                    )}
+                    className="flex items-center gap-2 px-4 py-3 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left"
                   >
-                    🇺🇸 {tSettings('english')}
+                    <Globe className="w-4 h-4" />
+                    English
                   </button>
                 </div>
               </>

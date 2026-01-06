@@ -60,7 +60,6 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
             placeholder={t('company.namePlaceholder')}
             className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             required
-            autoFocus
           />
         </div>
 

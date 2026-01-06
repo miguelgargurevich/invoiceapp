@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,7 +14,8 @@ import {
   ChevronLeft,
   Check,
   Sparkles,
-  Rocket
+  Rocket,
+  Lock
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/api';
@@ -22,10 +23,12 @@ import api from '@/lib/api';
 // Step Components
 import { 
   WelcomeStep, 
+  AuthStep,
   CompanyStep, 
   LogoStep, 
   CurrencyStep, 
   TaxStep, 
+  PlanStep,
   CompleteStep 
 } from '@/components/setup';
 
@@ -41,6 +44,7 @@ interface SetupData {
   taxRate: number;
   taxName: string;
   taxEnabled: boolean;
+  selectedPlan?: string;
 }
 
 interface EmpresaResponse {
@@ -60,17 +64,23 @@ interface EmpresaResponse {
 
 const STEPS = [
   { id: 'welcome', icon: Sparkles, color: 'from-purple-500 to-pink-500' },
+  { id: 'auth', icon: Lock, color: 'from-green-500 to-emerald-500' },
   { id: 'company', icon: Building2, color: 'from-blue-500 to-cyan-500' },
   { id: 'logo', icon: ImageIcon, color: 'from-green-500 to-emerald-500' },
   { id: 'currency', icon: DollarSign, color: 'from-yellow-500 to-orange-500' },
   { id: 'tax', icon: Percent, color: 'from-red-500 to-pink-500' },
+  { id: 'plan', icon: Check, color: 'from-green-500 to-emerald-500' },
   { id: 'complete', icon: Rocket, color: 'from-indigo-500 to-purple-500' },
 ];
 
-export default function SetupWizardPage() {
+export default function SetupWizardPage({
+  params: { locale },
+}: {
+  params: { locale: string };
+}) {
   const t = useTranslations('setup');
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, refreshEmpresa } = useAuth();
   
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -87,12 +97,33 @@ export default function SetupWizardPage() {
     taxRate: 0,
     taxName: 'Tax',
     taxEnabled: false,
+    selectedPlan: 'free',
   });
 
   // Check if user already completed setup
   useEffect(() => {
     const checkSetupStatus = async () => {
       try {
+        // Check if returning from Stripe
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+        const planId = urlParams.get('plan');
+        
+        if (sessionId && planId) {
+          // User returned from successful payment
+          // Update the plan in state and move to complete step
+          setSetupData(prev => ({ ...prev, selectedPlan: planId }));
+          setCurrentStep(7); // Go to CompleteStep
+          // Clean URL
+          window.history.replaceState({}, '', `/${locale}/setup`);
+        }
+
+        // Only check empresa if user is authenticated
+        if (!user) {
+          setIsLoading(false);
+          return;
+        }
+
         const response = await api.get<EmpresaResponse>('/empresas/mi-empresa');
         if (response.setupCompleted) {
           // Already completed setup, redirect to dashboard
@@ -118,19 +149,19 @@ export default function SetupWizardPage() {
           }));
         }
       } catch (error) {
-        // No empresa yet, that's fine
-        console.log('No empresa found, starting fresh setup');
+        // No empresa yet or not authenticated, that's fine
+        console.log('No empresa found or not authenticated, starting fresh setup');
       } finally {
         setIsLoading(false);
       }
     };
 
     checkSetupStatus();
-  }, [router]);
+  }, [router, locale, user]);
 
-  const updateSetupData = (data: Partial<SetupData>) => {
+  const updateSetupData = useCallback((data: Partial<SetupData>) => {
     setSetupData(prev => ({ ...prev, ...data }));
-  };
+  }, []);
 
   const nextStep = () => {
     if (currentStep < STEPS.length - 1) {
@@ -147,8 +178,17 @@ export default function SetupWizardPage() {
   const completeSetup = async () => {
     setIsSaving(true);
     try {
+      // Check if user is authenticated
+      if (!user) {
+        console.error('User not authenticated');
+        router.push(`/${locale}/login`);
+        return;
+      }
+
+      console.log('[SETUP] Saving empresa with data:', setupData);
+
       // Save empresa data
-      await api.put('/empresas/mi-empresa', {
+      const empresaResponse = await api.put('/empresas/mi-empresa', {
         nombre: setupData.companyName,
         direccion: setupData.direccion,
         telefono: setupData.telefono,
@@ -162,6 +202,22 @@ export default function SetupWizardPage() {
         setupCompleted: true,
       });
 
+      console.log('[SETUP] Empresa saved:', empresaResponse);
+
+      // Initialize subscription with selected plan
+      try {
+        const subscriptionResponse = await api.post('/subscriptions/initialize', {
+          planId: setupData.selectedPlan
+        });
+        console.log('[SETUP] Subscription initialized:', subscriptionResponse);
+      } catch (error) {
+        console.error('[SETUP] Error initializing subscription:', error);
+        // Continue anyway - subscription will be created on first access
+      }
+
+      // Refresh empresa in auth context
+      await refreshEmpresa();
+
       // Set preferred locale cookie for future visits
       document.cookie = `preferredLocale=${setupData.locale};path=/;max-age=31536000`;
 
@@ -169,6 +225,7 @@ export default function SetupWizardPage() {
       router.push(`/${setupData.locale}/dashboard`);
     } catch (error) {
       console.error('Error completing setup:', error);
+      alert('Error completing setup. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -181,60 +238,6 @@ export default function SetupWizardPage() {
       </div>
     );
   }
-
-  const CurrentStepComponent = () => {
-    switch (currentStep) {
-      case 0:
-        return <WelcomeStep onNext={nextStep} />;
-      case 1:
-        return (
-          <CompanyStep 
-            data={setupData} 
-            onUpdate={updateSetupData} 
-            onNext={nextStep}
-            onPrev={prevStep}
-          />
-        );
-      case 2:
-        return (
-          <LogoStep 
-            data={setupData} 
-            onUpdate={updateSetupData} 
-            onNext={nextStep}
-            onPrev={prevStep}
-          />
-        );
-      case 3:
-        return (
-          <CurrencyStep 
-            data={setupData} 
-            onUpdate={updateSetupData} 
-            onNext={nextStep}
-            onPrev={prevStep}
-          />
-        );
-      case 4:
-        return (
-          <TaxStep 
-            data={setupData} 
-            onUpdate={updateSetupData} 
-            onNext={nextStep}
-            onPrev={prevStep}
-          />
-        );
-      case 5:
-        return (
-          <CompleteStep 
-            data={setupData} 
-            onComplete={completeSetup}
-            onPrev={prevStep}
-            isSaving={isSaving}
-          />
-        );
-      default:
-        return null;
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col">
@@ -297,7 +300,7 @@ export default function SetupWizardPage() {
 
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center px-4 py-8">
-        <div className="w-full max-w-2xl">
+        <div className={`w-full ${currentStep === 6 ? 'max-w-7xl' : 'max-w-2xl'}`}>
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
@@ -306,7 +309,61 @@ export default function SetupWizardPage() {
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <CurrentStepComponent />
+              {currentStep === 0 && <WelcomeStep onNext={nextStep} />}
+              {currentStep === 1 && (
+                <AuthStep 
+                  onNext={nextStep}
+                  onPrev={prevStep}
+                />
+              )}
+              {currentStep === 2 && (
+                <CompanyStep 
+                  data={setupData} 
+                  onUpdate={updateSetupData} 
+                  onNext={nextStep}
+                  onPrev={prevStep}
+                />
+              )}
+              {currentStep === 3 && (
+                <LogoStep 
+                  data={setupData} 
+                  onUpdate={updateSetupData} 
+                  onNext={nextStep}
+                  onPrev={prevStep}
+                />
+              )}
+              {currentStep === 4 && (
+                <CurrencyStep 
+                  data={setupData} 
+                  onUpdate={updateSetupData} 
+                  onNext={nextStep}
+                  onPrev={prevStep}
+                />
+              )}
+              {currentStep === 5 && (
+                <TaxStep 
+                  data={setupData} 
+                  onUpdate={updateSetupData} 
+                  onNext={nextStep}
+                  onPrev={prevStep}
+                />
+              )}
+              {currentStep === 6 && (
+                <PlanStep 
+                  data={setupData} 
+                  onUpdate={updateSetupData} 
+                  onNext={nextStep}
+                  onPrev={prevStep}
+                />
+              )}
+              {currentStep === 7 && (
+                <CompleteStep 
+                  data={setupData} 
+                  onComplete={completeSetup}
+                  onPrev={prevStep}
+                  isSaving={isSaving}
+                />
+              )}
             </motion.div>
           </AnimatePresence>
         </div>

@@ -1195,10 +1195,12 @@
     "timeEstimate": "Takes about 2 minutes to complete",
     "steps": {
       "welcome": { "label": "Welcome" },
+      "auth": { "label": "Create Account" },
       "company": { "label": "Company Info" },
       "logo": { "label": "Logo" },
       "currency": { "label": "Currency" },
       "tax": { "label": "Tax Settings" },
+      "plan": { "label": "Choose Plan" },
       "complete": { "label": "Ready!" }
     },
     "buttons": {
@@ -1262,12 +1264,34 @@
       "currency": "Currency",
       "tax": "Tax",
       "noTax": "No tax",
+      "plan": "Plan",
+      "freePlan": "Free Plan",
+      "proPlan": "Pro Plan",
+      "premiumPlan": "Premium Plan",
       "whatsNext": "What's next?",
       "next1": "Create your first client",
       "next2": "Send your first invoice or proposal",
       "next3": "Track payments and reports",
       "saving": "Setting up...",
       "launch": "Launch Dashboard"
+    },
+    "auth": {
+      "title": "Create your account",
+      "subtitle": "Sign up to get started with your business",
+      "name": "Full Name",
+      "namePlaceholder": "John Doe",
+      "email": "Email",
+      "emailPlaceholder": "your@email.com",
+      "password": "Password",
+      "passwordPlaceholder": "Create a secure password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Re-enter your password",
+      "passwordHint": "At least 6 characters",
+      "allFieldsRequired": "All fields are required",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "signUpError": "Error creating account. Please try again.",
+      "creatingAccount": "Creating account..."
     }
   },
   "templates": {
@@ -1826,7 +1850,7 @@
       "subtitle": "Start free, upgrade when you need. No hidden fees, cancel anytime.",
       "monthly": "Monthly",
       "yearly": "Yearly",
-      "save": "Save 17%",
+      "save": "Save 20%",
       "popular": "Most Popular",
       "perMonth": "mo",
       "billedYearly": "billed yearly",
@@ -1925,7 +1949,7 @@
         },
         "7": {
           "question": "What payment methods do you accept?",
-          "answer": "We accept all major credit cards through Stripe. You can pay monthly or yearly, with a 17% discount on annual plans."
+          "answer": "We accept all major credit cards through Stripe. You can pay monthly or yearly, with a 20% discount on annual plans."
         },
         "8": {
           "question": "Can I export my data?",

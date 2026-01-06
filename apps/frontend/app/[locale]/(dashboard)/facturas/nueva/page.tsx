@@ -611,14 +611,21 @@ export default function NuevaFacturaPage({
                 placeholder="Payment schedule and terms..."
                 rows={3}
               />
-              <Textarea
-                label={t('notes')}
-                value={observaciones}
-                onChange={(e) => setObservaciones(e.target.value)}
-                placeholder={t('notesPlaceholder')}
-                rows={3}
-              />
             </div>
+          </Card>
+
+          {/* Attorney's Fees Clause */}
+          <Card>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-primary-600" />
+              Attorney&apos;s Fees Clause
+            </h2>
+            <Textarea
+              value={observaciones}
+              onChange={(e) => setObservaciones(e.target.value)}
+              placeholder={t('notesPlaceholder')}
+              rows={3}
+            />
           </Card>
         </div>
 

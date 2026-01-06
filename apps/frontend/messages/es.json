@@ -1198,10 +1198,12 @@
     "timeEstimate": "Toma aproximadamente 2 minutos completar",
     "steps": {
       "welcome": { "label": "Bienvenida" },
+      "auth": { "label": "Crear Cuenta" },
       "company": { "label": "Info Empresa" },
       "logo": { "label": "Logo" },
       "currency": { "label": "Moneda" },
       "tax": { "label": "Impuestos" },
+      "plan": { "label": "Elige Plan" },
       "complete": { "label": "¡Listo!" }
     },
     "buttons": {
@@ -1265,12 +1267,34 @@
       "currency": "Moneda",
       "tax": "Impuesto",
       "noTax": "Sin impuestos",
+      "plan": "Plan",
+      "freePlan": "Plan Gratuito",
+      "proPlan": "Plan Pro",
+      "premiumPlan": "Plan Premium",
       "whatsNext": "¿Qué sigue?",
       "next1": "Crea tu primer cliente",
       "next2": "Envía tu primera factura o propuesta",
       "next3": "Rastrea pagos y reportes",
       "saving": "Configurando...",
       "launch": "Ir al Panel"
+    },
+    "auth": {
+      "title": "Crea tu cuenta",
+      "subtitle": "Regístrate para comenzar con tu negocio",
+      "name": "Nombre completo",
+      "namePlaceholder": "Juan Pérez",
+      "email": "Correo",
+      "emailPlaceholder": "tu@correo.com",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Crea una contraseña segura",
+      "confirmPassword": "Confirmar Contraseña",
+      "confirmPasswordPlaceholder": "Vuelve a ingresar tu contraseña",
+      "passwordHint": "Al menos 6 caracteres",
+      "allFieldsRequired": "Todos los campos son requeridos",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+      "signUpError": "Error al crear la cuenta. Por favor intenta de nuevo.",
+      "creatingAccount": "Creando cuenta..."
     }
   },
   "templates": {
@@ -1829,7 +1853,7 @@
       "subtitle": "Empieza gratis, actualiza cuando lo necesites. Sin cargos ocultos, cancela cuando quieras.",
       "monthly": "Mensual",
       "yearly": "Anual",
-      "save": "Ahorra 17%",
+      "save": "Ahorra 20%",
       "popular": "Más Popular",
       "perMonth": "mes",
       "billedYearly": "facturado anualmente",
@@ -1928,7 +1952,7 @@
         },
         "7": {
           "question": "¿Qué métodos de pago aceptan?",
-          "answer": "Aceptamos todas las tarjetas de crédito principales a través de Stripe. Puedes pagar mensual o anualmente, con 17% de descuento en planes anuales."
+          "answer": "Aceptamos todas las tarjetas de crédito principales a través de Stripe. Puedes pagar mensual o anualmente, con 20% de descuento en planes anuales."
         },
         "8": {
           "question": "¿Puedo exportar mis datos?",

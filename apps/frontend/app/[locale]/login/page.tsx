@@ -47,7 +47,7 @@ export default function LoginPage({
 }) {
   const t = useTranslations('auth');
   const router = useRouter();
-  const { signIn, signInWithGoogle, user, loading: authLoading } = useAuth();
+  const { signIn, signInWithGoogle, user, empresa, loading: authLoading } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -78,16 +78,21 @@ export default function LoginPage({
   // Redirect if already logged in
   useEffect(() => {
     if (user && !authLoading) {
-      router.push(`/${locale}/dashboard`);
+      // If user has no empresa, redirect to setup wizard
+      if (empresa === null) {
+        router.push(`/${locale}/setup`);
+      } else {
+        router.push(`/${locale}/dashboard`);
+      }
     }
-  }, [user, authLoading, router, locale]);
+  }, [user, empresa, authLoading, router, locale]);
 
   const onSubmit = async (data: LoginForm) => {
     try {
       setError('');
       setIsLoading(true);
       await signIn(data.email, data.password);
-      router.push(`/${locale}/dashboard`);
+      // The redirect will be handled by the useEffect above
     } catch (err: unknown) {
       const error = err as Error;
       setError(error.message || t('signInError'));
@@ -474,7 +479,7 @@ export default function LoginPage({
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                   {t('noAccount')}{' '}
                   <Link
-                    href={`/${locale}/register`}
+                    href={`/${locale}/setup`}
                     className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold transition-colors"
                   >
                     {t('signUp')}

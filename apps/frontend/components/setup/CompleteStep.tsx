@@ -10,7 +10,8 @@ import {
   DollarSign, 
   Percent,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  CreditCard
 } from 'lucide-react';
 
 interface SetupData {
@@ -25,6 +26,7 @@ interface SetupData {
   taxRate: number;
   taxName: string;
   taxEnabled: boolean;
+  selectedPlan?: string;
 }
 
 interface CompleteStepProps {
@@ -61,6 +63,12 @@ export default function CompleteStep({ data, onComplete, onPrev, isSaving }: Com
       label: t('complete.tax'), 
       value: data.taxEnabled ? `${data.taxName} ${data.taxRate}%` : t('complete.noTax'),
       color: 'from-red-500 to-pink-500'
+    },
+    { 
+      icon: CreditCard, 
+      label: t('complete.plan'), 
+      value: data.selectedPlan === 'free' ? t('complete.freePlan') : data.selectedPlan === 'pro' ? t('complete.proPlan') : t('complete.premiumPlan'),
+      color: 'from-purple-500 to-indigo-500'
     },
   ];
 

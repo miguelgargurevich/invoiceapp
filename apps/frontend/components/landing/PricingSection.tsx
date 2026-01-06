@@ -32,18 +32,18 @@ export function PricingSection() {
     {
       id: 'free',
       name: 'Free',
-      description: 'Perfect for getting started',
+      description: 'For individuals getting started',
       priceMonthly: 0,
       priceYearly: 0,
       features: [
         '5 invoices per month',
-        '3 clients',
-        '1 user',
-        'Basic templates',
+        '5 clients',
+        '50 MB storage',
+        'Basic reports',
         'Email support',
       ],
       maxInvoices: 5,
-      maxClients: 3,
+      maxClients: 5,
       maxUsers: 1,
       isActive: true,
       sortOrder: 0,
@@ -51,57 +51,60 @@ export function PricingSection() {
     {
       id: 'starter',
       name: 'Starter',
-      description: 'For growing businesses',
-      priceMonthly: 9,
-      priceYearly: 90,
+      description: 'Great for small businesses',
+      priceMonthly: 15,
+      priceYearly: 144,
       features: [
-        '50 invoices per month',
-        '25 clients',
-        '2 users',
-        'Professional templates',
+        '20 invoices per month',
+        '10 clients',
+        '100 MB storage',
         'Digital signatures',
+        'Basic reports',
         'Priority support',
       ],
-      maxInvoices: 50,
-      maxClients: 25,
-      maxUsers: 2,
+      maxInvoices: 20,
+      maxClients: 10,
+      maxUsers: 1,
       isActive: true,
       sortOrder: 1,
     },
     {
-      id: 'professional',
-      name: 'Professional',
-      description: 'For established businesses',
+      id: 'pro',
+      name: 'Pro',
+      description: 'Advanced features for growing businesses',
       priceMonthly: 29,
-      priceYearly: 290,
+      priceYearly: 278,
       features: [
-        'Unlimited invoices',
-        'Unlimited clients',
-        '5 users',
+        '100 invoices per month',
+        '50 clients',
+        '500 MB storage',
+        'Proposals & quotes',
+        'Digital signatures',
         'Custom branding',
+        'Job tracking',
         'Advanced reports',
-        'API access',
-        '24/7 support',
       ],
-      maxInvoices: null,
-      maxClients: null,
-      maxUsers: 5,
+      maxInvoices: 100,
+      maxClients: 50,
+      maxUsers: 1,
       isActive: true,
       sortOrder: 2,
     },
     {
-      id: 'enterprise',
-      name: 'Enterprise',
-      description: 'For large organizations',
-      priceMonthly: 99,
-      priceYearly: 990,
+      id: 'business',
+      name: 'Business',
+      description: 'Enterprise solution - Unlimited usage',
+      priceMonthly: 49,
+      priceYearly: 470,
       features: [
-        'Everything in Professional',
-        'Unlimited users',
-        'Multi-company support',
-        'Custom integrations',
-        'Dedicated account manager',
-        'SLA guarantee',
+        'Unlimited invoices',
+        'Unlimited clients',
+        'Unlimited proposals',
+        '2 GB storage',
+        'Multi-currency support',
+        'Advanced reports',
+        'Priority support',
+        'API access',
       ],
       maxInvoices: null,
       maxClients: null,
@@ -135,6 +138,12 @@ export function PricingSection() {
   }, []);
 
   const displayPlans = plans.length > 0 ? plans : defaultPlans;
+
+  const calculateYearlySavings = (plan: Plan) => {
+    if (!plan.priceMonthly || !plan.priceYearly) return 0;
+    const monthlyTotal = plan.priceMonthly * 12;
+    return Math.round(((monthlyTotal - plan.priceYearly) / monthlyTotal) * 100);
+  };
 
   const planIcons: Record<string, typeof Sparkles> = {
     free: Sparkles,
@@ -252,9 +261,10 @@ export function PricingSection() {
               const planKey = getPlanKey(plan.name);
               const Icon = planIcons[planKey] || Sparkles;
               const colors = planColors[planKey] || planColors.starter;
-              const isPopular = planKey === 'professional';
+              const isPopular = planKey === 'pro';
               const price = isYearly ? plan.priceYearly : plan.priceMonthly;
               const monthlyPrice = isYearly ? Math.round(plan.priceYearly / 12) : plan.priceMonthly;
+              const savings = calculateYearlySavings(plan);
 
               return (
                 <motion.div
@@ -263,7 +273,7 @@ export function PricingSection() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className={`relative p-6 rounded-2xl border transition-all hover:scale-105 ${
+                  className={`relative p-6 rounded-2xl border transition-all hover:scale-105 flex flex-col ${
                     isPopular
                       ? 'bg-gradient-to-b from-purple-50 to-white dark:from-purple-950/50 dark:to-slate-900 border-purple-300 dark:border-purple-700 shadow-xl shadow-purple-500/10'
                       : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-lg'
@@ -305,10 +315,16 @@ export function PricingSection() {
                         ${price} {t('pricing.billedYearly')}
                       </p>
                     )}
+                    {isYearly && savings > 0 && (
+                      <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded text-xs font-semibold">
+                        <Zap className="h-3 w-3" />
+                        Save {savings}%
+                      </div>
+                    )}
                   </div>
 
                   {/* Features */}
-                  <ul className="space-y-3 mb-6">
+                  <ul className="space-y-3 mb-6 flex-grow">
                     {(plan.features || []).map((feature, i) => (
                       <li key={i} className="flex items-start gap-2">
                         <Check className={`w-5 h-5 mt-0.5 flex-shrink-0 ${

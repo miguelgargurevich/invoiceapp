@@ -42,68 +42,73 @@ router.get('/mi-empresa', authenticateToken, async (req, res) => {
   }
 });
 
-// PUT /api/empresas/mi-empresa - Actualizar empresa
+// PUT /api/empresas/mi-empresa - Crear o actualizar empresa (upsert)
 router.put('/mi-empresa', authenticateToken, async (req, res) => {
   try {
-    console.log('[EMPRESA] Update request from user:', req.user.id);
+    console.log('[EMPRESA] Upsert request from user:', req.user.id);
     console.log('[EMPRESA] Request body:', JSON.stringify(req.body, null, 2));
     
-    const empresa = await prisma.empresa.findFirst({
+    const existingEmpresa = await prisma.empresa.findFirst({
       where: { userId: req.user.id }
     });
 
-    if (!empresa) {
-      console.log('[EMPRESA] Empresa not found for user:', req.user.id);
-      return res.status(404).json({ error: 'Empresa no encontrada' });
-    }
-
-    console.log('[EMPRESA] Current empresa:', empresa.id, empresa.nombre);
-
     // Map frontend fields to backend schema
-    const updateData = {
-      nombre: req.body.nombre || req.body.razonSocial,
-      razonSocial: req.body.razonSocial,
+    const empresaData = {
+      nombre: req.body.nombre || req.body.razonSocial || 'Mi Empresa',
+      razonSocial: req.body.razonSocial || req.body.nombre,
       nombreComercial: req.body.nombreComercial,
-      ruc: req.body.ruc,
+      ruc: req.body.ruc || 'TEMP-' + Date.now(), // Temporal RUC if not provided
       direccion: req.body.direccion,
       telefono: req.body.telefono,
       email: req.body.email,
       web: req.body.web,
-      moneda: req.body.moneda,
-      currency: req.body.currency,
-      locale: req.body.locale,
-      taxRate: req.body.taxRate !== undefined ? parseFloat(req.body.taxRate) : undefined,
-      taxName: req.body.taxName,
-      serieFactura: req.body.serieFactura,
-      serieProforma: req.body.serieProforma,
+      logoUrl: req.body.logoUrl,
+      moneda: req.body.currency || req.body.moneda || 'USD',
+      currency: req.body.currency || req.body.moneda || 'USD',
+      locale: req.body.locale || 'en',
+      taxRate: req.body.taxRate !== undefined ? parseFloat(req.body.taxRate) : 0,
+      taxName: req.body.taxName || 'Tax',
+      serieFactura: req.body.serieFactura || 'F001',
+      serieProforma: req.body.serieProforma || 'P001',
       licencia: req.body.licencia,
-      setupCompleted: req.body.setupCompleted
+      setupCompleted: req.body.setupCompleted || false,
+      userId: req.user.id
     };
 
     // Remove undefined values
-    Object.keys(updateData).forEach(key => 
-      updateData[key] === undefined && delete updateData[key]
+    Object.keys(empresaData).forEach(key => 
+      empresaData[key] === undefined && delete empresaData[key]
     );
 
-    console.log('[EMPRESA] Updating with data:', JSON.stringify(updateData, null, 2));
+    let resultEmpresa;
 
-    const updatedEmpresa = await prisma.empresa.update({
-      where: { id: empresa.id },
-      data: updateData
-    });
-
-    console.log('[EMPRESA] Updated successfully:', updatedEmpresa.id);
+    if (existingEmpresa) {
+      // Update existing empresa
+      console.log('[EMPRESA] Updating existing empresa:', existingEmpresa.id);
+      resultEmpresa = await prisma.empresa.update({
+        where: { id: existingEmpresa.id },
+        data: empresaData
+      });
+      console.log('[EMPRESA] Updated successfully:', resultEmpresa.id);
+    } else {
+      // Create new empresa
+      console.log('[EMPRESA] Creating new empresa for user:', req.user.id);
+      resultEmpresa = await prisma.empresa.create({
+        data: empresaData
+      });
+      console.log('[EMPRESA] Created successfully:', resultEmpresa.id);
+    }
 
     // Return with frontend field names
     const empresaResponse = {
-      ...updatedEmpresa,
-      razonSocial: updatedEmpresa.razonSocial || updatedEmpresa.nombre,
-      nombreComercial: updatedEmpresa.nombreComercial || updatedEmpresa.nombre
+      ...resultEmpresa,
+      razonSocial: resultEmpresa.razonSocial || resultEmpresa.nombre,
+      nombreComercial: resultEmpresa.nombreComercial || resultEmpresa.nombre
     };
 
     res.json(empresaResponse);
   } catch (error) {
-    console.error('[EMPRESA] Error updating empresa:', error);
+    console.error('[EMPRESA] Error upserting empresa:', error);
     res.status(500).json({ error: 'Error interno del servidor: ' + error.message });
   }
 });
