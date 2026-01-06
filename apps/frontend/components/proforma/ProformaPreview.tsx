@@ -272,10 +272,9 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
           </div>
         )}
 
-        {/* Footer - Attorney's Fees Clause */}
+        {/* Footer - Notes */}
         {proforma.observaciones && (
-          <div className="mt-6 border-t border-gray-300 pt-4">
-            <h3 className="text-[10px] font-bold text-gray-900 mb-2 uppercase">ATTORNEY'S FEES CLAUSE</h3>
+          <div className="mt-6 border-t border-gray-300 pt-4 text-center">
             <p className="text-[8px] italic text-gray-700">
               {proforma.observaciones}
             </p>
