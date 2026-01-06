@@ -1556,6 +1556,7 @@
   "subscription": {
     "title": "Subscription",
     "subtitle": "Manage your subscription and billing",
+    "cancel": "Cancel",
     "upgradeBanner": "Upgrade Your Experience",
     "currentPlan": "Current Plan",
     "noPlan": "No active subscription",
@@ -1618,10 +1619,14 @@
     "confirmCancelDesc": "Your subscription will remain active until the end of the current billing period. You can reactivate at any time before then.",
     "confirmCancelButton": "Yes, Cancel Subscription",
     "keepSubscription": "Keep Subscription",
+    "confirmChangePlan": "Change to {plan}?",
+    "confirmChangePlanDesc": "You are about to change from {currentPlan} to {newPlan}. This change will be applied immediately.",
+    "confirmChangePlanButton": "Confirm Change",
     "canceled": "Subscription canceled",
     "canceledDesc": "Your subscription has been canceled and will end on {date}",
     "reactivated": "Subscription reactivated",
     "reactivatedDesc": "Your subscription has been reactivated",
+    "switchedToFree": "🎉 Successfully switched to the Free plan!",
     "checkoutError": "Error creating checkout session",
     "portalError": "Error opening billing portal",
     "subscriptionSuccess": "🎉 Subscription activated successfully! Welcome to your new plan.",
@@ -1643,6 +1648,12 @@
     "faqA2": "You'll continue to have access until the end of your current billing period.",
     "faqQ3": "What payment methods do you accept?",
     "faqA3": "We accept all major credit cards through our secure payment processor, Stripe.",
+    "faqQ4": "Can I upgrade or downgrade anytime?",
+    "faqA4": "Yes, you can change your plan at any time. Upgrades are prorated and downgrades take effect at the next billing cycle.",
+    "faqQ5": "Do you offer refunds?",
+    "faqA5": "We offer a 14-day money-back guarantee. If you're not satisfied with our service, contact us within 14 days for a full refund.",
+    "faqQ6": "Is my data secure?",
+    "faqA6": "Yes! We use industry-standard encryption and security practices. Your data is stored securely and we never share it with third parties.",
     "testMode": "Test Mode",
     "testModeDesc": "Stripe is in test mode. Use test card 4242 4242 4242 4242 with any future expiry and CVC.",
     "planFeatures": {
@@ -1823,13 +1834,13 @@
           "description": "Perfect for getting started"
         },
         "starter": {
+          "description": "For freelancers just getting started"
+        },
+        "pro": {
           "description": "For growing businesses"
         },
-        "professional": {
-          "description": "For established businesses"
-        },
-        "enterprise": {
-          "description": "For large organizations"
+        "business": {
+          "description": "Enterprise solution for teams"
         }
       }
     },

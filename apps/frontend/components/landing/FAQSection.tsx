@@ -57,7 +57,7 @@ export function FAQSection() {
               <div
                 className={`rounded-2xl border transition-all ${
                   openIndex === index
-                    ? 'bg-primary-50 dark:bg-primary-950/30 border-primary-200 dark:border-primary-800'
+                    ? 'bg-primary-50 dark:bg-slate-800 border-primary-200 dark:border-primary-800'
                     : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
                 }`}
               >

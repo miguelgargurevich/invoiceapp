@@ -110,6 +110,16 @@ export async function reactivateSubscription(): Promise<{ message: string; subsc
   return api.post<{ message: string; subscription: Subscription }>('/subscriptions/reactivate');
 }
 
+export async function switchToFreePlan(): Promise<{ message: string; subscription: Subscription }> {
+  return api.post<{ message: string; subscription: Subscription }>('/subscriptions/switch-to-free');
+}
+
+export async function syncSubscriptionFromSession(sessionId: string): Promise<{ message: string; subscription: Subscription }> {
+  return api.post<{ message: string; subscription: Subscription }>('/subscriptions/sync-from-session', {
+    sessionId
+  });
+}
+
 export async function getUsage(): Promise<UsageResponse> {
   return api.get<UsageResponse>('/subscriptions/usage');
 }

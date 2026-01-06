@@ -42,16 +42,16 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
   const getPlanBadgeStyle = (planName: string) => {
     switch (planName?.toLowerCase()) {
       case 'pro':
-        return 'bg-gradient-to-r from-purple-500 to-blue-500 text-white';
+        return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700';
       case 'business':
-        return 'bg-gradient-to-r from-orange-500 to-red-500 text-white';
+        return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700';
       case 'starter':
-        return 'bg-gradient-to-r from-green-500 to-teal-500 text-white';
+        return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700';
       case 'free':
       case 'trial':
-        return 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
+        return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700';
       default:
-        return 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
+        return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700';
     }
   };
 
@@ -105,7 +105,7 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
           {/* Notificaciones - Reemplazado por Plan Badge */}
           {subscription && (
             <button
-              onClick={() => router.push(`/${currentLocale}/configuracion/suscripcion`)}
+              onClick={() => router.push(`/${currentLocale}/configuracion?tab=suscripcion`)}
               className={cn(
                 'px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:scale-105',
                 getPlanBadgeStyle(subscription.plan?.name || 'free')

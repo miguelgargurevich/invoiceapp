@@ -80,61 +80,97 @@ router.post('/stripe', express.raw({ type: 'application/json' }), async (req, re
 // ==========================================
 
 async function handleCheckoutSessionCompleted(session) {
-  console.log('💳 Checkout session completed:', session.id);
+  try {
+    console.log('💳 Checkout session completed:', session.id);
+    console.log('📦 Session metadata:', JSON.stringify(session.metadata, null, 2));
 
-  const empresaId = session.metadata.empresa_id;
-  const planId = session.metadata.plan_id;
-  const billingInterval = session.metadata.billing_interval || 'MONTH';
+    const empresaId = session.metadata.empresa_id;
+    const planSlug = session.metadata.plan_id; // This is the slug, not the UUID
+    const rawBillingInterval = session.metadata.billing_interval || 'monthly';
+    
+    console.log('🔍 Looking for plan with slug:', planSlug);
+    
+    // Normalize billing interval to database format
+    const billingInterval = rawBillingInterval === 'monthly' ? 'MONTH' : 
+                            rawBillingInterval === 'yearly' ? 'YEAR' : 
+                            rawBillingInterval;
 
-  if (!empresaId || !planId) {
-    console.error('Missing metadata in checkout session');
-    return;
-  }
-
-  // Get the subscription from Stripe
-  const stripeSubscription = await stripe.subscriptions.retrieve(session.subscription);
-
-  // Create or update subscription in database (using camelCase)
-  await prisma.subscription.upsert({
-    where: { empresaId: empresaId },
-    update: {
-      planId: planId,
-      status: stripeSubscription.status.toUpperCase(),
-      billingInterval: billingInterval,
-      stripeCustomerId: session.customer,
-      stripeSubscriptionId: session.subscription,
-      currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000),
-      currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000),
-      trialStart: stripeSubscription.trial_start 
-        ? new Date(stripeSubscription.trial_start * 1000) 
-        : null,
-      trialEnd: stripeSubscription.trial_end 
-        ? new Date(stripeSubscription.trial_end * 1000) 
-        : null,
-      updatedAt: new Date()
-    },
-    create: {
-      id: require('crypto').randomUUID(),
-      empresaId: empresaId,
-      planId: planId,
-      status: stripeSubscription.status.toUpperCase(),
-      billingInterval: billingInterval,
-      stripeCustomerId: session.customer,
-      stripeSubscriptionId: session.subscription,
-      currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000),
-      currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000),
-      trialStart: stripeSubscription.trial_start 
-        ? new Date(stripeSubscription.trial_start * 1000) 
-        : null,
-      trialEnd: stripeSubscription.trial_end 
-        ? new Date(stripeSubscription.trial_end * 1000) 
-        : null,
-      createdAt: new Date(),
-      updatedAt: new Date()
+    if (!empresaId || !planSlug) {
+      console.error('❌ Missing metadata in checkout session:', { empresaId, planSlug });
+      return;
     }
-  });
 
-  console.log('✅ Subscription created/updated for empresa:', empresaId);
+    // Get plan by slug to get the UUID
+    const plan = await prisma.plan.findUnique({
+      where: { slug: planSlug }
+    });
+
+    if (!plan) {
+      console.error('❌ Plan not found for slug:', planSlug);
+      // Try to find by name as fallback
+      const planByName = await prisma.plan.findFirst({
+        where: { name: { contains: planSlug, mode: 'insensitive' } }
+      });
+      if (planByName) {
+        console.log('✅ Found plan by name instead:', planByName.name, planByName.id);
+      }
+      return;
+    }
+    
+    console.log('✅ Found plan:', plan.name, 'UUID:', plan.id);
+
+    // Get the subscription from Stripe
+    console.log('🔄 Retrieving Stripe subscription:', session.subscription);
+    const stripeSubscription = await stripe.subscriptions.retrieve(session.subscription);
+    console.log('✅ Got Stripe subscription, status:', stripeSubscription.status);
+
+    // Create or update subscription in database (using camelCase)
+    console.log('📝 Upserting subscription in DB for empresa:', empresaId);
+    const result = await prisma.subscription.upsert({
+      where: { empresaId: empresaId },
+      update: {
+        planId: plan.id, // Use the UUID from the plan
+        status: stripeSubscription.status.toUpperCase(),
+        billingInterval: billingInterval,
+        stripeCustomerId: session.customer,
+        stripeSubscriptionId: session.subscription,
+        currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000),
+        currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000),
+        trialStart: stripeSubscription.trial_start 
+          ? new Date(stripeSubscription.trial_start * 1000) 
+          : null,
+        trialEnd: stripeSubscription.trial_end 
+          ? new Date(stripeSubscription.trial_end * 1000) 
+          : null,
+        updatedAt: new Date()
+      },
+      create: {
+        id: require('crypto').randomUUID(),
+        empresaId: empresaId,
+        planId: plan.id, // Use the UUID from the plan
+        status: stripeSubscription.status.toUpperCase(),
+        billingInterval: billingInterval,
+        stripeCustomerId: session.customer,
+        stripeSubscriptionId: session.subscription,
+        currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000),
+        currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000),
+        trialStart: stripeSubscription.trial_start 
+          ? new Date(stripeSubscription.trial_start * 1000) 
+          : null,
+        trialEnd: stripeSubscription.trial_end 
+          ? new Date(stripeSubscription.trial_end * 1000) 
+          : null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      include: { plan: true }
+    });
+
+    console.log('✅ Subscription created/updated for empresa:', empresaId, '| Plan:', result.plan?.name, '| Status:', result.status);
+  } catch (error) {
+    console.error('❌ ERROR in handleCheckoutSessionCompleted:', error);
+    throw error; // Re-throw to trigger 500 response
+  }
 }
 
 async function handleSubscriptionCreated(subscription) {

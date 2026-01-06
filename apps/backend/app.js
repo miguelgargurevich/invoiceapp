@@ -25,7 +25,6 @@ const signaturesPublicRoutes = require('./src/routes/signaturesPublic');
 const preferencesRoutes = require('./src/routes/preferences');
 const notificacionesRoutes = require('./src/routes/notificaciones');
 const adminRoutes = require('./src/routes/admin');
-const subscriptionsRoutes = require('./src/routes/subscriptions');
 const webhooksRoutes = require('./src/routes/webhooks');
 
 const app = express();
@@ -37,7 +36,7 @@ app.set('trust proxy', 1);
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 300, // máximo 300 requests por ventana (aumentado de 100)
+  max: process.env.NODE_ENV === 'development' ? 1000 : 300, // 1000 para dev, 300 para producción
   message: { error: 'Demasiadas peticiones, intente más tarde' },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
@@ -46,7 +45,7 @@ const limiter = rateLimit({
 // Separate rate limiter for auth endpoints (more permissive)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 50, // máximo 50 requests por ventana para auth
+  max: process.env.NODE_ENV === 'development' ? 200 : 50, // 200 para dev, 50 para producción
   message: { error: 'Demasiadas peticiones de autenticación, intente más tarde' },
   standardHeaders: true,
   legacyHeaders: false,
@@ -174,6 +173,74 @@ app.use('/api/auth', authLimiter, authRoutes); // Auth routes with separate limi
 
 // Public signature routes (no authentication required)
 app.use('/api/signatures/public', limiter, signaturesPublicRoutes);
+
+// Public subscription plans (no authentication required - for landing page)
+const subscriptionsRoutes = require('./src/routes/subscriptions');
+app.get('/api/subscriptions/plans', limiter, async (req, res) => {
+  try {
+    const prisma = require('./src/utils/prisma');
+    const plans = await prisma.plan.findMany({
+      where: { isActive: true },
+      orderBy: { displayOrder: 'asc' }
+    });
+    
+    // Transform plans to include features array for frontend
+    const transformedPlans = plans.map(plan => {
+      const features = [];
+      
+      // Add invoice limit
+      if (plan.maxInvoicesPerMonth === -1) {
+        features.push('Unlimited invoices');
+      } else {
+        features.push(`${plan.maxInvoicesPerMonth} invoices per month`);
+      }
+      
+      // Add client limit
+      if (plan.maxClients === -1) {
+        features.push('Unlimited clients');
+      } else {
+        features.push(`${plan.maxClients} clients`);
+      }
+      
+      // Add storage
+      if (plan.maxStorageMb >= 1000) {
+        features.push(`${(plan.maxStorageMb / 1024).toFixed(0)}GB storage`);
+      } else {
+        features.push(`${plan.maxStorageMb}MB storage`);
+      }
+      
+      // Add feature flags
+      if (plan.hasProposals) features.push('Proposals');
+      if (plan.hasDigitalSignatures) features.push('Digital signatures');
+      if (plan.hasJobTracking) features.push('Job tracking');
+      if (plan.hasReports) features.push('Reports');
+      if (plan.hasAdvancedReports) features.push('Advanced reports');
+      if (plan.hasCustomBranding) features.push('Custom branding');
+      if (plan.hasMultiCurrency) features.push('Multi-currency');
+      if (plan.hasApiAccess) features.push('API access');
+      if (plan.hasPrioritySupport) features.push('Priority support');
+      
+      return {
+        id: plan.slug,
+        name: plan.name,
+        description: plan.description,
+        priceMonthly: parseFloat(plan.priceMonthly),
+        priceYearly: parseFloat(plan.priceYearly),
+        features,
+        maxInvoices: plan.maxInvoicesPerMonth === -1 ? null : plan.maxInvoicesPerMonth,
+        maxClients: plan.maxClients === -1 ? null : plan.maxClients,
+        maxUsers: null, // Not in current schema
+        isActive: plan.isActive,
+        sortOrder: plan.displayOrder
+      };
+    });
+    
+    res.json(transformedPlans);
+  } catch (error) {
+    console.error('Error fetching plans:', error);
+    res.status(500).json({ error: 'Error fetching plans' });
+  }
+});
 
 // Protected routes (authentication required)
 app.use('/api/empresas', limiter, authenticateToken, empresaRoutes);

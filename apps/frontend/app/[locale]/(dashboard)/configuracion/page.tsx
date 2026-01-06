@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import { supabase } from '@/lib/supabase';
 import SignatureCanvas from '@/components/signature/SignatureCanvas';
+import SubscriptionTab from '@/components/settings/SubscriptionTab';
 import {
   Building2,
   User,
@@ -28,7 +29,7 @@ import {
   CreditCard,
 } from 'lucide-react';
 
-type Tab = 'empresa' | 'usuario' | 'apariencia' | 'facturacion' | 'notificaciones';
+type Tab = 'empresa' | 'usuario' | 'apariencia' | 'facturacion' | 'notificaciones' | 'suscripcion';
 
 export default function ConfiguracionPage({
   params: { locale },
@@ -39,6 +40,7 @@ export default function ConfiguracionPage({
   const tSub = useTranslations('subscription');
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { user, empresa, refreshEmpresa } = useAuth();
   const { theme, setTheme, fontSize, setFontSize } = useTheme();
   const { updatePreferences } = usePreferences();
@@ -53,6 +55,14 @@ export default function ConfiguracionPage({
   const [pendingSignature, setPendingSignature] = useState<string | null>(null);
   const [uploadingSignature, setUploadingSignature] = useState(false);
   const [signatureKey, setSignatureKey] = useState(0); // Key to force remount of SignatureCanvas
+
+  // Detect tab from URL params
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && ['empresa', 'usuario', 'apariencia', 'facturacion', 'notificaciones', 'suscripcion'].includes(tabParam)) {
+      setActiveTab(tabParam as Tab);
+    }
+  }, [searchParams]);
 
   // Company form
   const [empresaForm, setEmpresaForm] = useState({
@@ -455,13 +465,21 @@ export default function ConfiguracionPage({
                 </button>
               ))}
               
-              {/* Subscription Link */}
+              {/* Subscription Tab */}
               <div className="pt-2 mt-2 border-t border-gray-200 dark:border-gray-700">
                 <button
-                  onClick={() => router.push(`/${locale}/configuracion/suscripcion`)}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 font-medium"
+                  onClick={() => setActiveTab('suscripcion')}
+                  className={cn(
+                    'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200',
+                    activeTab === 'suscripcion'
+                      ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 text-blue-700 dark:text-blue-400 shadow-sm font-semibold'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 font-medium'
+                  )}
                 >
-                  <CreditCard className="w-5 h-5" />
+                  <CreditCard className={cn(
+                    "w-5 h-5",
+                    activeTab === 'suscripcion' ? "text-blue-600 dark:text-blue-400" : ""
+                  )} />
                   <span>{tSub('title')}</span>
                 </button>
               </div>
@@ -1160,6 +1178,11 @@ export default function ConfiguracionPage({
                 </button>
               </div>
             </Card>
+          )}
+
+          {/* Subscription Settings */}
+          {activeTab === 'suscripcion' && (
+            <SubscriptionTab locale={locale} />
           )}
         </div>
       </div>

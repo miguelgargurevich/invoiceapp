@@ -1559,6 +1559,7 @@
   "subscription": {
     "title": "Suscripción",
     "subtitle": "Administra tu suscripción y facturación",
+    "cancel": "Cancelar",
     "upgradeBanner": "Mejora tu Experiencia",
     "currentPlan": "Plan Actual",
     "noPlan": "Sin suscripción activa",
@@ -1621,10 +1622,14 @@
     "confirmCancelDesc": "Tu suscripción permanecerá activa hasta el final del período de facturación actual. Puedes reactivarla en cualquier momento antes de esa fecha.",
     "confirmCancelButton": "Sí, Cancelar Suscripción",
     "keepSubscription": "Mantener Suscripción",
+    "confirmChangePlan": "¿Cambiar a {plan}?",
+    "confirmChangePlanDesc": "Estás a punto de cambiar de {currentPlan} a {newPlan}. Este cambio se aplicará inmediatamente.",
+    "confirmChangePlanButton": "Confirmar Cambio",
     "canceled": "Suscripción cancelada",
     "canceledDesc": "Tu suscripción ha sido cancelada y terminará el {date}",
     "reactivated": "Suscripción reactivada",
     "reactivatedDesc": "Tu suscripción ha sido reactivada",
+    "switchedToFree": "🎉 ¡Cambiado exitosamente al plan Gratis!",
     "checkoutError": "Error al crear sesión de pago",
     "portalError": "Error al abrir portal de facturación",
     "subscriptionSuccess": "🎉 ¡Suscripción activada exitosamente! Bienvenido a tu nuevo plan.",
@@ -1646,6 +1651,12 @@
     "faqA2": "Continuarás teniendo acceso hasta el final de tu período de facturación actual.",
     "faqQ3": "¿Qué métodos de pago aceptan?",
     "faqA3": "Aceptamos todas las tarjetas de crédito principales a través de nuestro procesador de pagos seguro, Stripe.",
+    "faqQ4": "¿Puedo cambiar de plan en cualquier momento?",
+    "faqA4": "Sí, puedes cambiar tu plan en cualquier momento. Las mejoras se prorratean y las rebajas toman efecto en el próximo ciclo de facturación.",
+    "faqQ5": "¿Ofrecen reembolsos?",
+    "faqA5": "Ofrecemos una garantía de devolución de dinero de 14 días. Si no estás satisfecho con nuestro servicio, contáctanos dentro de 14 días para un reembolso completo.",
+    "faqQ6": "¿Mis datos están seguros?",
+    "faqA6": "¡Sí! Utilizamos cifrado y prácticas de seguridad estándar de la industria. Tus datos se almacenan de forma segura y nunca los compartimos con terceros.",
     "testMode": "Modo de Prueba",
     "testModeDesc": "Stripe está en modo de prueba. Usa la tarjeta de prueba 4242 4242 4242 4242 con cualquier fecha futura y CVC.",
     "planFeatures": {
@@ -1826,13 +1837,13 @@
           "description": "Perfecto para comenzar"
         },
         "starter": {
+          "description": "Para freelancers que están empezando"
+        },
+        "pro": {
           "description": "Para negocios en crecimiento"
         },
-        "professional": {
-          "description": "Para negocios establecidos"
-        },
-        "enterprise": {
-          "description": "Para grandes organizaciones"
+        "business": {
+          "description": "Solución empresarial para equipos"
         }
       }
     },

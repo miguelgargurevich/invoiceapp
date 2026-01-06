@@ -139,8 +139,8 @@ export function PricingSection() {
   const planIcons: Record<string, typeof Sparkles> = {
     free: Sparkles,
     starter: Zap,
-    professional: Crown,
-    enterprise: Building2,
+    pro: Crown,
+    business: Building2,
   };
 
   const planColors: Record<string, { gradient: string; shadow: string; badge: string }> = {
@@ -154,12 +154,12 @@ export function PricingSection() {
       shadow: 'shadow-primary-500/20',
       badge: 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300',
     },
-    professional: {
+    pro: {
       gradient: 'from-purple-500 to-purple-700',
       shadow: 'shadow-purple-500/20',
       badge: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
     },
-    enterprise: {
+    business: {
       gradient: 'from-amber-500 to-orange-600',
       shadow: 'shadow-amber-500/20',
       badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
@@ -170,8 +170,8 @@ export function PricingSection() {
     const name = planName.toLowerCase();
     if (name.includes('free') || name.includes('gratis')) return 'free';
     if (name.includes('starter') || name.includes('básico') || name.includes('basic')) return 'starter';
-    if (name.includes('pro') || name.includes('professional')) return 'professional';
-    if (name.includes('enterprise') || name.includes('empresa')) return 'enterprise';
+    if (name.includes('pro')) return 'pro';
+    if (name.includes('business') || name.includes('enterprise') || name.includes('empresa')) return 'business';
     return 'starter';
   };
 
@@ -215,8 +215,8 @@ export function PricingSection() {
             }`}
           >
             <span
-              className={`absolute top-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform ${
-                isYearly ? 'translate-x-7' : 'translate-x-1'
+              className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform ${
+                isYearly ? 'translate-x-6' : 'translate-x-0'
               }`}
             />
           </button>
@@ -309,7 +309,7 @@ export function PricingSection() {
 
                   {/* Features */}
                   <ul className="space-y-3 mb-6">
-                    {plan.features.map((feature, i) => (
+                    {(plan.features || []).map((feature, i) => (
                       <li key={i} className="flex items-start gap-2">
                         <Check className={`w-5 h-5 mt-0.5 flex-shrink-0 ${
                           isPopular ? 'text-purple-500' : 'text-green-500'

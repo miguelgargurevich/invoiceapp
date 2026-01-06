@@ -4,7 +4,10 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Globe, ChevronDown, FileText } from 'lucide-react';
+import { Menu, X, Globe, ChevronDown, FileText, Moon, Sun, LayoutDashboard } from 'lucide-react';
+
+import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function LandingHeader() {
   const t = useTranslations('landing');
@@ -12,6 +15,8 @@ export function LandingHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
+  const { user } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -72,6 +77,14 @@ export function LandingHeader() {
 
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-3">
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+              </button>
               {/* Language Switcher */}
               <div className="relative">
                 <button
@@ -104,19 +117,31 @@ export function LandingHeader() {
                 </AnimatePresence>
               </div>
 
-              <Link
-                href={`/${locale}/login`}
-                className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-              >
-                {t('nav.login')}
-              </Link>
-              
-              <Link
-                href={`/${locale}/register`}
-                className="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 rounded-xl shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all hover:scale-105"
-              >
-                {t('nav.getStarted')}
-              </Link>
+              {user ? (
+                <Link
+                  href={`/${locale}/dashboard`}
+                  className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 rounded-xl shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all hover:scale-105"
+                >
+                  <LayoutDashboard className="w-4 h-4" />
+                  Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href={`/${locale}/login`}
+                    className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                  >
+                    {t('nav.login')}
+                  </Link>
+                  
+                  <Link
+                    href={`/${locale}/register`}
+                    className="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 rounded-xl shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all hover:scale-105"
+                  >
+                    {t('nav.getStarted')}
+                  </Link>
+                </>
+              )}
             </div>
 
             {/* Mobile Menu Button */}
@@ -162,6 +187,14 @@ export function LandingHeader() {
                 </nav>
                 
                 <div className="space-y-3 pt-6 border-t border-slate-200 dark:border-slate-700">
+                  <button
+                    onClick={toggleTheme}
+                    className="flex items-center gap-2 w-full px-4 py-3 text-base font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                  >
+                    {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                    {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                  </button>
+                  
                   <Link
                     href={`/${otherLocale}/landing`}
                     className="flex items-center gap-2 px-4 py-3 text-base font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
@@ -170,19 +203,31 @@ export function LandingHeader() {
                     {otherLocaleName}
                   </Link>
                   
-                  <Link
-                    href={`/${locale}/login`}
-                    className="block px-4 py-3 text-base font-medium text-slate-700 dark:text-slate-300 hover:text-primary-600 transition-colors"
-                  >
-                    {t('nav.login')}
-                  </Link>
-                  
-                  <Link
-                    href={`/${locale}/register`}
-                    className="block w-full px-4 py-3 text-center text-base font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl shadow-lg"
-                  >
-                    {t('nav.getStarted')}
-                  </Link>
+                  {user ? (
+                    <Link
+                      href={`/${locale}/dashboard`}
+                      className="flex items-center gap-2 w-full px-4 py-3 text-center text-base font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl shadow-lg"
+                    >
+                      <LayoutDashboard className="w-5 h-5" />
+                      Dashboard
+                    </Link>
+                  ) : (
+                    <>
+                      <Link
+                        href={`/${locale}/login`}
+                        className="block px-4 py-3 text-base font-medium text-slate-700 dark:text-slate-300 hover:text-primary-600 transition-colors"
+                      >
+                        {t('nav.login')}
+                      </Link>
+                      
+                      <Link
+                        href={`/${locale}/register`}
+                        className="block w-full px-4 py-3 text-center text-base font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl shadow-lg"
+                      >
+                        {t('nav.getStarted')}
+                      </Link>
+                    </>
+                  )}
                 </div>
               </div>
             </motion.div>

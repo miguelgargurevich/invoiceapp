@@ -110,11 +110,11 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       setError(null);
 
       const [subResponse, usageResponse] = await Promise.all([
-        api.get<Subscription>('/subscriptions/current'),
+        api.get<{ subscription: Subscription; empresa: { id: string; nombre: string } }>('/subscriptions/current'),
         api.get<UsageInfo>('/subscriptions/usage')
       ]);
 
-      setSubscription(subResponse);
+      setSubscription(subResponse.subscription);
       setUsage(usageResponse);
     } catch (err: any) {
       console.error('[SUBSCRIPTION] Error fetching subscription:', err);
