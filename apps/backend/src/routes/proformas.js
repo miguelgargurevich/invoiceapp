@@ -309,7 +309,7 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
         },
         signatureRequests: {
           where: {
-            status: { in: ['PENDING', 'ACCEPTED'] }
+            status: { in: ['PENDING', 'SIGNED'] }
           },
           orderBy: { createdAt: 'desc' },
           take: 1,

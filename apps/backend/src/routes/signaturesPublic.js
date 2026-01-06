@@ -56,7 +56,7 @@ router.get('/validate/:token', async (req, res) => {
     }
 
     // Check if expired (only if not already signed)
-    if (signatureRequest.status !== 'ACCEPTED' && new Date() > signatureRequest.expiresAt) {
+    if (signatureRequest.status !== 'SIGNED' && new Date() > signatureRequest.expiresAt) {
       return res.status(400).json({ error: 'Signature request has expired' });
     }
 
@@ -108,7 +108,7 @@ router.post('/submit', async (req, res) => {
 
     console.log('[SIGNATURE] Request status:', signatureRequest.status, 'ID:', signatureRequest.id);
 
-    if (signatureRequest.status === 'ACCEPTED') {
+    if (signatureRequest.status === 'SIGNED') {
       return res.status(400).json({ error: 'Document already signed' });
     }
 
@@ -124,12 +124,12 @@ router.post('/submit', async (req, res) => {
     console.log('[SIGNATURE] Existing signature:', existingSignature ? 'YES' : 'NO');
 
     if (existingSignature) {
-      // If signature exists but status is not ACCEPTED, fix the inconsistency
-      console.log('[SIGNATURE] Fixing inconsistent state - updating request to ACCEPTED');
+      // If signature exists but status is not SIGNED, fix the inconsistency
+      console.log('[SIGNATURE] Fixing inconsistent state - updating request to SIGNED');
       await prisma.signatureRequest.update({
         where: { id: signatureRequest.id },
         data: { 
-          status: 'ACCEPTED'
+          status: 'SIGNED'
         }
       });
       
@@ -193,7 +193,7 @@ router.post('/submit', async (req, res) => {
     await prisma.signatureRequest.update({
       where: { id: signatureRequest.id },
       data: { 
-        status: 'ACCEPTED'
+        status: 'SIGNED'
       }
     });
 

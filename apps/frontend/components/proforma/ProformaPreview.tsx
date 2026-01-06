@@ -58,7 +58,7 @@ interface Proforma {
   workDescription?: string;
   paymentTerms?: string;
   detalles: DetalleProforma[];
-  signatureStatus?: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
   signatureRequest?: {
     signature?: {
       signatureImageUrl?: string;

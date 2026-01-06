@@ -114,7 +114,7 @@ interface Proforma {
   diasValidez?: number;
   fechaAceptacion?: string;
   detalles: DetalleProforma[];
-  signatureStatus?: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
   signatureRequest?: any;
   facturasGeneradas?: Array<{
     id: string;
@@ -674,7 +674,7 @@ export default function ProformaDetailPage({
   }
 
   const statusConfig = getStatusBadge();
-  const canConvert = effectiveStatus === 'pendiente' || effectiveStatus === 'emitida';
+  const canConvert = ['pendiente', 'emitida', 'aceptada', 'firmada'].includes(effectiveStatus) && proforma.estado !== 'facturada';
 
   return (
     <div className="space-y-6">
@@ -721,7 +721,7 @@ export default function ProformaDetailPage({
             <Camera className="w-5 h-5 mr-2" />
             {t('jobPhotos')} ({photos.length})
           </Button>
-          {proforma.estado !== 'ANULADA' && proforma.signatureStatus !== 'ACCEPTED' && (
+          {proforma.estado !== 'ANULADA' && proforma.signatureStatus !== 'SIGNED' && (
             <Button 
               size="sm" 
               onClick={handleRequestSignature}
@@ -737,12 +737,12 @@ export default function ProformaDetailPage({
               }
             </Button>
           )}
-          {/* {canConvert && (
+          {canConvert && (
             <Button size="sm" onClick={() => setIsConvertDialogOpen(true)}>
               <FileText className="w-4 h-4 mr-1" />
               {t('convertToInvoice')}
             </Button>
-          )} */}
+          )}
           {proforma.estado === 'facturada' && proforma.facturasGeneradas && proforma.facturasGeneradas.length > 0 && (
             <Button size="sm" onClick={() => router.push(`/${locale}/facturas/${proforma.facturasGeneradas![0].id}`)}>
               <FileText className="w-4 h-4 mr-1" />

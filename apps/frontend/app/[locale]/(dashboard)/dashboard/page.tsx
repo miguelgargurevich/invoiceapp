@@ -84,7 +84,7 @@ interface RecentProposal {
   total: number;
   estado: string;
   fechaEmision: string;
-  signatureStatus?: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
   signatureRequest?: {
     sentAt?: string | null;
     createdAt?: string;
