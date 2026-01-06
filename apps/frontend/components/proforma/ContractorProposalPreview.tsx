@@ -254,10 +254,10 @@ const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalP
           </div>
         )}
 
-        {/* WARRANTY INFORMATION */}
+        {/* ATTORNEY'S FEES CLAUSE */}
         {proforma.observaciones && (
           <div className="mb-4">
-            <p className="font-semibold text-sm mb-1">WARRANTY INFORMATION</p>
+            <p className="font-semibold text-sm mb-1">ATTORNEY'S FEES CLAUSE</p>
             <div className="border border-black p-2 bg-yellow-50">
               <p className="text-xs italic">
                 {proforma.observaciones}

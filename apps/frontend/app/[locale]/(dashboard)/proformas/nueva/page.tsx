@@ -551,38 +551,6 @@ export default function NuevaProformaPage({
                 placeholder="Payment schedule and terms..."
                 rows={3}
               />
-
-              {/* More Options Toggle */}
-              <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowJobMoreOptions(!showJobMoreOptions)}
-                  className="flex items-center gap-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors"
-                >
-                  <svg 
-                    className={`w-4 h-4 transition-transform ${showJobMoreOptions ? 'rotate-180' : ''}`} 
-                    fill="none" 
-                    viewBox="0 0 24 24" 
-                    stroke="currentColor"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                  {t('moreOptions') || 'More options'}
-                  <span className="text-xs text-gray-400">({t('optional') || 'Optional'})</span>
-                </button>
-
-                {/* Collapsible Content */}
-                {showJobMoreOptions && (
-                  <div className="space-y-4 pt-4 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <Input
-                      label={t('jobPhone')}
-                      value={telefonoTrabajo}
-                      onChange={(e) => setTelefonoTrabajo(e.target.value)}
-                      placeholder="Job site phone"
-                    />
-                  </div>
-                )}
-              </div>
             </div>
           </Card>
 

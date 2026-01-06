@@ -408,6 +408,10 @@
     "quotesCount": "Propuestas",
     "acceptedAmount": "Monto Aceptado",
     "acceptanceRate": "Tasa de Aceptación",
+    "notFound": "Proforma no encontrada",
+    "proformaPage": {
+      "errorLoading": "Error al cargar la proforma"
+    },
     "create": "Nueva Proforma",
     "createError": "Error al crear la proforma",
     "updateError": "Error al actualizar la proforma",
@@ -462,8 +466,8 @@
     "architectName": "Nombre del Arquitecto",
     "plansDate": "Fecha de Planos",
     "validityDays": "Días de Validez",
-    "notes": "INFORMACIÓN DE GARANTÍA",
-    "notesPlaceholder": "Si se utiliza un abogado para hacer cumplir o cobrar cualquier obligación debida, el comprador acepta pagar honorarios razonables de abogado además de cualquier suma adeudada.",
+    "notes": "Cláusula de gastos de cobranza",
+    "notesPlaceholder": "Cláusula de gastos de cobranza...",
     "termsAndConditions": "Términos y Condiciones",
     "termsConditionsLabel": "Términos del Contrato",
     "termsConditionsPlaceholder": "Términos y condiciones estándar del contrato...",
@@ -1286,7 +1290,7 @@
       "terms": "Términos y Condiciones",
       "paymentTerms": "Términos de Pago",
       "scope": "Alcance del Trabajo",
-      "warranty": "Información de Garantía",
+      "attorneyFees": "Cláusula de Gastos de Cobranza",
       "suggestedSections": "Secciones Sugeridas"
     },
     "industries": {

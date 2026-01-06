@@ -203,67 +203,33 @@ export default function ProformaDetailPage({
       
       // Map API response to our interface
       const data = response.data || response;
+      
+      if (!data) {
+        throw new Error('No data received from API');
+      }
+      
       setProforma({
         ...data,
-        cliente: {
-          id: data.cliente?.id,
-          razonSocial: data.cliente?.razonSocial || data.cliente?.nombreComercial || data.cliente?.nombre,
-          numeroDocumento: data.cliente?.numeroDocumento || data.cliente?.documento,
-          tipoDocumento: data.cliente?.tipoDocumento || 'RUC',
-          direccion: data.cliente?.direccion,
-          email: data.cliente?.email,
+        cliente: data.cliente ? {
+          id: data.cliente.id,
+          razonSocial: data.cliente.razonSocial || data.cliente.nombreComercial || data.cliente.nombre || '',
+          numeroDocumento: data.cliente.numeroDocumento || data.cliente.documento || '',
+          tipoDocumento: data.cliente.tipoDocumento || 'RUC',
+          direccion: data.cliente.direccion,
+          email: data.cliente.email,
+        } : {
+          id: '',
+          razonSocial: '',
+          numeroDocumento: '',
+          tipoDocumento: 'RUC',
+          direccion: '',
+          email: '',
         },
         fechaValidez: data.fechaValidez || data.fechaVencimiento,
       });
     } catch (error) {
       console.error('Error loading proforma:', error);
-      // Mock data for development
-      setProforma({
-        id: '1',
-        numero: '000042',
-        serie: 'P001',
-        cliente: {
-          id: '1',
-          razonSocial: 'Empresa Demo S.A.C.',
-          numeroDocumento: '20123456789',
-          tipoDocumento: 'RUC',
-          direccion: 'Av. Principal 123, Lima',
-          email: 'contacto@empresademo.com',
-        },
-        fechaEmision: new Date().toISOString(),
-        fechaValidez: new Date(Date.now() + 30 * 86400000).toISOString(),
-        subtotal: 1694.92,
-        igv: 305.08,
-        total: 2000.00,
-        descuento: 0,
-        estado: 'pendiente',
-        observaciones: 'Cotización por servicios de consultoría',
-        condiciones: 'Pago a 30 días después de la aprobación.\nPrecios válidos por 30 días.',
-        detalles: [
-          {
-            id: '1',
-            descripcion: 'Servicio de Consultoría - Fase 1',
-            cantidad: 8,
-            precioUnitario: 150.00,
-            descuento: 0,
-            subtotal: 1016.95,
-            igv: 183.05,
-            total: 1200.00,
-            producto: { codigo: 'CONS001', nombre: 'Consultoría' },
-          },
-          {
-            id: '2',
-            descripcion: 'Capacitación al Personal',
-            cantidad: 4,
-            precioUnitario: 200.00,
-            descuento: 0,
-            subtotal: 677.97,
-            igv: 122.03,
-            total: 800.00,
-            producto: { codigo: 'CAP001', nombre: 'Capacitación' },
-          },
-        ],
-      });
+      showError(t('proformaPage.errorLoading') || 'Error loading proposal');
     } finally {
       setLoading(false);
     }

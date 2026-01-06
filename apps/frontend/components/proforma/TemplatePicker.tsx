@@ -46,8 +46,7 @@ Our workers are fully covered by Workman's Compensation Insurance.`,
 • 25% upon substantial completion
 • 25% final payment upon project completion
 • Late payments subject to 1.5% monthly interest`,
-    defaultWarranty: `WARRANTY:
-All workmanship warranted for one (1) year from date of completion. Materials carry manufacturer's warranty. Warranty does not cover damage caused by improper use or maintenance.`,
+    defaultWarranty: `If an attorney is used to enforce or collect any obligations due on this obligation, then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.`,
     defaultScope: `SCOPE OF WORK:
 • Remove and dispose of existing materials
 • Supply and install new materials as specified
@@ -258,7 +257,7 @@ export function TemplatePicker({ isOpen, onClose, onSelect, selectedTemplate }: 
                     {previewTemplate.defaultWarranty && (
                       <div>
                         <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                          {t('preview.warranty')}
+                          {t('preview.attorneyFees')}
                         </h4>
                         <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
                           <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans">

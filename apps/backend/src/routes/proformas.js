@@ -335,7 +335,13 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
     res.json(proformaWithSignature);
   } catch (error) {
     console.error('Error obteniendo proforma:', error);
-    res.status(500).json({ error: 'Error interno del servidor' });
+    console.error('Error stack:', error.stack);
+    console.error('Request params:', req.params);
+    console.error('Empresa ID:', req.empresa?.id);
+    res.status(500).json({ 
+      error: 'Error interno del servidor',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 

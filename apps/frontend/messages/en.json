@@ -408,6 +408,10 @@
     "acceptanceRate": "Acceptance Rate",
     "jobPhotos": "Job Photos",
     "jobPhotosSubtitle": "View and manage photos for this job",
+    "notFound": "Proposal not found",
+    "proformaPage": {
+      "errorLoading": "Error loading proposal"
+    },
     "create": "New Proposal",
     "createError": "Error creating proposal",
     "updateError": "Error updating proposal",
@@ -450,8 +454,8 @@
     "totals": "Totals",
     "observations": "Notes",
     "observationsPlaceholder": "Conditions, terms or other notes...",
-    "notes": "WARRANTY INFORMATION",
-    "notesPlaceholder": "If an attorney is used to enforce or collect any obligations due on this obligation, then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.",
+    "notes": "Attorney’s Fees Clause",
+    "notesPlaceholder": "Attorney’s Fees Clause...",
     "document": "Document",
     "address": "Address",    "jobName": "Job Name",
     "jobLocation": "Job Location",
@@ -1283,7 +1287,7 @@
       "terms": "Terms & Conditions",
       "paymentTerms": "Payment Terms",
       "scope": "Scope of Work",
-      "warranty": "Warranty Information",
+      "attorneyFees": "Attorney's Fees Clause",
       "suggestedSections": "Suggested Sections"
     },
     "industries": {
