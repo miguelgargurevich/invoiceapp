@@ -65,6 +65,10 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [hasProcessedReturn, setHasProcessedReturn] = useState(false);
+  const [showTestModeModal, setShowTestModeModal] = useState(false);
+  
+  // Check if we're in development mode
+  const isDeveloperMode = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.includes('test');
 
   useEffect(() => {
     const success = searchParams.get('success');
@@ -324,8 +328,19 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
           <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-md">
             <CreditCard className="w-6 h-6 text-white" />
           </div>
-          <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('title')}</h2>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('title')}</h2>
+              {isDeveloperMode && (
+                <button
+                  onClick={() => setShowTestModeModal(true)}
+                  className="p-1.5 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors"
+                  title="Test Mode Information"
+                >
+                  <Info className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
+                </button>
+              )}
+            </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{t('subtitle')}</p>
           </div>
         </div>
@@ -359,20 +374,6 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
             </button>
           </div>
         )}
-
-        {/* Test Mode Banner */}
-        <div className="mt-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-          <div className="flex items-start gap-3">
-            <Info className="h-5 w-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <h3 className="font-semibold text-yellow-900 dark:text-yellow-400 text-sm">{t('testMode')}</h3>
-              <p className="text-xs text-yellow-800 dark:text-yellow-500 mt-1">{t('testModeDesc')}</p>
-              <code className="inline-block mt-2 text-xs px-2 py-1 bg-white dark:bg-gray-800 rounded border border-yellow-200 dark:border-yellow-800">
-                4242 4242 4242 4242
-              </code>
-            </div>
-          </div>
-        </div>
 
         {/* Current Subscription */}
         {loading ? (
@@ -898,6 +899,40 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
               </Button>
             </div>
           </Card>
+        </div>
+      )}
+
+      {/* Test Mode Modal */}
+      {showTestModeModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowTestModeModal(false)}>
+          <div className="max-w-md w-full" onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+            <Card className="p-6">
+            <div className="flex items-start gap-3 mb-4">
+              <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+                <Info className="h-6 w-6 text-yellow-600 dark:text-yellow-500" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('testMode')}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{t('testModeDesc')}</p>
+              </div>
+              <button
+                onClick={() => setShowTestModeModal(false)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mt-4">
+              <p className="text-sm font-medium text-yellow-900 dark:text-yellow-400 mb-2">Test Card Number:</p>
+              <code className="block text-center text-base font-mono px-4 py-3 bg-white dark:bg-gray-800 rounded border border-yellow-200 dark:border-yellow-800 text-gray-900 dark:text-white">
+                4242 4242 4242 4242
+              </code>
+              <p className="text-xs text-yellow-800 dark:text-yellow-500 mt-3">
+                Use any future expiry date and any 3-digit CVC code.
+              </p>
+            </div>
+            </Card>
+          </div>
         </div>
       )}
 
