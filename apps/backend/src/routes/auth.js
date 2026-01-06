@@ -131,7 +131,16 @@ router.get('/me', async (req, res) => {
   try {
     const { data: { user }, error } = await getSupabaseClient().auth.getUser(token);
 
-    if (error || !user) {
+    if (error) {
+      console.error('[AUTH] getUser error:', error.message);
+      // Si el error es que el usuario no existe en Supabase, devolver 401
+      if (error.message && error.message.includes('does not exist')) {
+        return res.status(401).json({ error: 'Usuario no sincronizado aún. Intente de nuevo en un momento.' });
+      }
+      return res.status(403).json({ error: 'Token inválido' });
+    }
+
+    if (!user) {
       return res.status(403).json({ error: 'Token inválido' });
     }
 

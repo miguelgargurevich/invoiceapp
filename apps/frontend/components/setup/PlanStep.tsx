@@ -199,7 +199,7 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {plans.map((plan, index) => {
           const isSelected = selectedPlanId === plan.id;
-          const isPopular = index === 1; // Usually the middle plan
+          const isPopular = plan.name.toLowerCase().includes('pro'); // Mark PRO plan as popular
           const isFree = plan.priceMonthly === 0;
           const price = billingInterval === 'monthly' ? plan.priceMonthly : plan.priceYearly;
           const savings = calculateYearlySavings(plan);

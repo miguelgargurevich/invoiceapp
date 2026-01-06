@@ -13,23 +13,38 @@ import {
   UserPlus,
   Loader2
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+
+interface SetupData {
+  name: string;
+  email: string;
+  password: string;
+  companyName: string;
+  direccion: string;
+  telefono: string;
+  emailEmpresa: string;
+  website: string;
+  logoFile: File | null;
+  logo: string | null;
+  currency: string;
+  locale: string;
+  taxRate: number;
+  taxName: string;
+  taxEnabled: boolean;
+  selectedPlan?: string;
+}
 
 interface AuthStepProps {
+  data: SetupData;
+  onUpdate: (data: Partial<SetupData>) => void;
   onNext: () => void;
   onPrev: () => void;
 }
 
-export default function AuthStep({ onNext, onPrev }: AuthStepProps) {
+export default function AuthStep({ data, onUpdate, onNext, onPrev }: AuthStepProps) {
   const t = useTranslations('setup');
-  const { signUp } = useAuth();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,32 +52,23 @@ export default function AuthStep({ onNext, onPrev }: AuthStepProps) {
     setError('');
 
     // Validation
-    if (!name || !email || !password || !confirmPassword) {
+    if (!data.name || !data.email || !data.password || !confirmPassword) {
       setError(t('auth.allFieldsRequired'));
       return;
     }
 
-    if (password !== confirmPassword) {
+    if (data.password !== confirmPassword) {
       setError(t('auth.passwordsDoNotMatch'));
       return;
     }
 
-    if (password.length < 6) {
+    if (data.password.length < 6) {
       setError(t('auth.passwordTooShort'));
       return;
     }
 
-    setIsLoading(true);
-    try {
-      await signUp(email, password, name);
-      // Account created successfully, continue to next step
-      onNext();
-    } catch (err: unknown) {
-      const error = err as Error;
-      setError(error.message || t('auth.signUpError'));
-    } finally {
-      setIsLoading(false);
-    }
+    // Data is valid, continue to next step
+    onNext();
   };
 
   return (
@@ -94,8 +100,8 @@ export default function AuthStep({ onNext, onPrev }: AuthStepProps) {
             <UserPlus className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
             <input
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={data.name}
+              onChange={(e) => onUpdate({ name: e.target.value })}
               placeholder={t('auth.namePlaceholder')}
               className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
               required
@@ -112,8 +118,8 @@ export default function AuthStep({ onNext, onPrev }: AuthStepProps) {
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={data.email}
+              onChange={(e) => onUpdate({ email: e.target.value })}
               placeholder={t('auth.emailPlaceholder')}
               className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
               required
@@ -130,8 +136,8 @@ export default function AuthStep({ onNext, onPrev }: AuthStepProps) {
             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
             <input
               type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={data.password}
+              onChange={(e) => onUpdate({ password: e.target.value })}
               placeholder={t('auth.passwordPlaceholder')}
               className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-12 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
               required
@@ -179,8 +185,7 @@ export default function AuthStep({ onNext, onPrev }: AuthStepProps) {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onPrev}
-            disabled={isLoading}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 text-white/80 hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 text-white/80 hover:bg-white/20 transition-colors"
           >
             <ChevronLeft className="w-5 h-5" />
             {t('buttons.back')}
@@ -190,20 +195,11 @@ export default function AuthStep({ onNext, onPrev }: AuthStepProps) {
             type="submit"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            disabled={isLoading || !email || !password || !confirmPassword}
+            disabled={!data.email || !data.password || !confirmPassword}
             className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold shadow-lg shadow-green-500/30 hover:shadow-green-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-5 h-5 animate-spin" />
-                {t('auth.creatingAccount')}
-              </>
-            ) : (
-              <>
-                {t('buttons.continue')}
-                <ChevronRight className="w-5 h-5" />
-              </>
-            )}
+            {t('buttons.continue')}
+            <ChevronRight className="w-5 h-5" />
           </motion.button>
         </div>
       </form>

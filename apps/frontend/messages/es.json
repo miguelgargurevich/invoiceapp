@@ -1230,14 +1230,18 @@
       "phonePlaceholder": "+51 999 123 456",
       "email": "Correo",
       "emailPlaceholder": "contacto@tuempresa.com",
-      "website": "Sitio Web"
+      "website": "Sitio Web",
+      "showOptionalFields": "Mostrar más detalles",
+      "hideOptionalFields": "Ocultar campos opcionales"
     },
     "logo": {
-      "title": "Agrega el logo de tu empresa",
+      "title": "Logo",
       "subtitle": "Tu logo aparecerá en todos los documentos",
       "dropzone": "Arrastra y suelta o haz clic para subir",
       "formats": "PNG, JPG, SVG (máx 2MB)",
-      "uploaded": "¡Logo subido exitosamente!",
+      "uploaded": "Logo subido",
+      "uploadedDesc": "Tu logo está listo",
+      "uploading": "Subiendo...",
       "skipNotice": "Siempre puedes agregar o cambiar tu logo después en Configuración"
     },
     "currency": {

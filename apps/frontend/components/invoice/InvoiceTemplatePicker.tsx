@@ -317,7 +317,7 @@ export function InvoiceTemplatePicker({ isOpen, onClose, onSelect, selectedTempl
                           {t(`industries.${template.industry}.description`)}
                         </p>
                         <div className="flex items-center gap-1 mt-3 text-sm text-primary-600 dark:text-primary-400">
-                          {t('preview')}
+                          {t('preview.view')}
                           <ChevronRight className="w-4 h-4" />
                         </div>
                       </div>

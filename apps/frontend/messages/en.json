@@ -1227,14 +1227,18 @@
       "phonePlaceholder": "+1 (555) 123-4567",
       "email": "Email",
       "emailPlaceholder": "contact@yourcompany.com",
-      "website": "Website"
+      "website": "Website",
+      "showOptionalFields": "Show more details",
+      "hideOptionalFields": "Hide optional fields"
     },
     "logo": {
-      "title": "Add your company logo",
+      "title": "Logo",
       "subtitle": "Your logo will appear on all documents",
       "dropzone": "Drag & drop or click to upload",
       "formats": "PNG, JPG, SVG (max 2MB)",
-      "uploaded": "Logo uploaded successfully!",
+      "uploaded": "Logo uploaded",
+      "uploadedDesc": "Your logo is ready",
+      "uploading": "Uploading...",
       "skipNotice": "You can always add or change your logo later in Settings"
     },
     "currency": {

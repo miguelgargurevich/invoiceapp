@@ -15,17 +15,17 @@ import {
   Check,
   Sparkles,
   Rocket,
-  Lock
+  UserPlus
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/api';
+import { supabase } from '@/lib/supabase';
 
 // Step Components
 import { 
   WelcomeStep, 
   AuthStep,
   CompanyStep, 
-  LogoStep, 
   CurrencyStep, 
   TaxStep, 
   PlanStep,
@@ -33,11 +33,17 @@ import {
 } from '@/components/setup';
 
 interface SetupData {
+  // Auth fields
+  name: string;
+  email: string;
+  password: string;
+  // Company fields
   companyName: string;
   direccion: string;
   telefono: string;
-  email: string;
+  emailEmpresa: string;
   website: string;
+  logoFile: File | null;
   logo: string | null;
   currency: string;
   locale: string;
@@ -64,9 +70,8 @@ interface EmpresaResponse {
 
 const STEPS = [
   { id: 'welcome', icon: Sparkles, color: 'from-purple-500 to-pink-500' },
-  { id: 'auth', icon: Lock, color: 'from-green-500 to-emerald-500' },
+  { id: 'auth', icon: UserPlus, color: 'from-green-500 to-emerald-500' },
   { id: 'company', icon: Building2, color: 'from-blue-500 to-cyan-500' },
-  { id: 'logo', icon: ImageIcon, color: 'from-green-500 to-emerald-500' },
   { id: 'currency', icon: DollarSign, color: 'from-yellow-500 to-orange-500' },
   { id: 'tax', icon: Percent, color: 'from-red-500 to-pink-500' },
   { id: 'plan', icon: Check, color: 'from-green-500 to-emerald-500' },
@@ -80,17 +85,22 @@ export default function SetupWizardPage({
 }) {
   const t = useTranslations('setup');
   const router = useRouter();
-  const { user, refreshEmpresa } = useAuth();
+  const { user, signUp, signIn, refreshEmpresa } = useAuth();
+  const [currentUser, setCurrentUser] = useState(user);
   
   const [currentStep, setCurrentStep] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [setupData, setSetupData] = useState<SetupData>({
+    name: '',
+    email: '',
+    password: '',
     companyName: '',
     direccion: '',
     telefono: '',
-    email: '',
+    emailEmpresa: '',
     website: '',
+    logoFile: null,
     logo: null,
     currency: 'USD',
     locale: 'en',
@@ -159,6 +169,11 @@ export default function SetupWizardPage({
     checkSetupStatus();
   }, [router, locale, user]);
 
+  // Update currentUser when user changes
+  useEffect(() => {
+    setCurrentUser(user);
+  }, [user]);
+
   const updateSetupData = useCallback((data: Partial<SetupData>) => {
     setSetupData(prev => ({ ...prev, ...data }));
   }, []);
@@ -178,23 +193,84 @@ export default function SetupWizardPage({
   const completeSetup = async () => {
     setIsSaving(true);
     try {
-      // Check if user is authenticated
-      if (!user) {
-        console.error('User not authenticated');
-        router.push(`/${locale}/login`);
-        return;
+      console.log('[SETUP] Starting account creation...');
+      
+      // STEP 1: Create user account and sign in
+      if (!currentUser) {
+        try {
+          // First, create the account
+          await signUp(setupData.email, setupData.password, setupData.name);
+          console.log('[SETUP] Account created successfully');
+          
+          // Supabase may require email confirmation, so we sign in directly
+          // This works if email confirmation is disabled in Supabase settings
+          // Or if the user was auto-confirmed
+          console.log('[SETUP] Attempting to sign in...');
+          await signIn(setupData.email, setupData.password);
+          console.log('[SETUP] Sign in successful');
+          
+          // Wait for Supabase session to be established
+          let attempts = 0;
+          const maxAttempts = 30; // 15 seconds max
+          let session = null;
+          
+          while (attempts < maxAttempts) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+            // Check session directly from Supabase
+            const { data } = await supabase.auth.getSession();
+            if (data.session) {
+              session = data.session;
+              console.log('[SETUP] Session established:', data.session.user.email);
+              setCurrentUser(data.session.user as any);
+              break;
+            }
+            attempts++;
+          }
+          
+          if (!session) {
+            throw new Error('Authentication timeout. Please try logging in manually.');
+          }
+          
+          // Extra wait to ensure user is fully synced in Supabase database
+          // This prevents "User from sub claim in JWT does not exist" errors
+          console.log('[SETUP] Waiting for user sync...');
+          await new Promise(resolve => setTimeout(resolve, 3000));
+          console.log('[SETUP] User should be ready now');
+        } catch (error: any) {
+          console.error('[SETUP] Error creating account:', error);
+          alert('Error creating account: ' + (error.message || 'Please try again'));
+          setIsSaving(false);
+          return;
+        }
+      }
+
+      // STEP 2: Upload logo if exists
+      let logoUrl = setupData.logo;
+      if (setupData.logoFile) {
+        try {
+          console.log('[SETUP] Uploading logo...');
+          const formData = new FormData();
+          formData.append('logo', setupData.logoFile);
+          
+          const logoResponse = await api.upload<{ logoUrl: string }>('/empresa/logo', formData);
+          logoUrl = logoResponse.logoUrl;
+          console.log('[SETUP] Logo uploaded:', logoUrl);
+        } catch (error) {
+          console.error('[SETUP] Error uploading logo:', error);
+          // Continue without logo
+        }
       }
 
       console.log('[SETUP] Saving empresa with data:', setupData);
 
-      // Save empresa data
+      // STEP 3: Create/Update empresa
       const empresaResponse = await api.put('/empresas/mi-empresa', {
         nombre: setupData.companyName,
         direccion: setupData.direccion,
         telefono: setupData.telefono,
-        email: setupData.email,
+        email: setupData.emailEmpresa,
         web: setupData.website,
-        logoUrl: setupData.logo,
+        logoUrl: logoUrl,
         currency: setupData.currency,
         locale: setupData.locale,
         taxRate: setupData.taxEnabled ? setupData.taxRate : 0,
@@ -204,7 +280,7 @@ export default function SetupWizardPage({
 
       console.log('[SETUP] Empresa saved:', empresaResponse);
 
-      // Initialize subscription with selected plan
+      // STEP 4: Initialize subscription with selected plan
       try {
         const subscriptionResponse = await api.post('/subscriptions/initialize', {
           planId: setupData.selectedPlan
@@ -300,7 +376,7 @@ export default function SetupWizardPage({
 
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center px-4 py-8">
-        <div className={`w-full ${currentStep === 6 ? 'max-w-7xl' : 'max-w-2xl'}`}>
+        <div className={`w-full ${currentStep === 5 ? 'max-w-7xl' : 'max-w-2xl'}`}>
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
@@ -312,6 +388,8 @@ export default function SetupWizardPage({
               {currentStep === 0 && <WelcomeStep onNext={nextStep} />}
               {currentStep === 1 && (
                 <AuthStep 
+                  data={setupData}
+                  onUpdate={updateSetupData}
                   onNext={nextStep}
                   onPrev={prevStep}
                 />
@@ -325,14 +403,6 @@ export default function SetupWizardPage({
                 />
               )}
               {currentStep === 3 && (
-                <LogoStep 
-                  data={setupData} 
-                  onUpdate={updateSetupData} 
-                  onNext={nextStep}
-                  onPrev={prevStep}
-                />
-              )}
-              {currentStep === 4 && (
                 <CurrencyStep 
                   data={setupData} 
                   onUpdate={updateSetupData} 
@@ -340,7 +410,7 @@ export default function SetupWizardPage({
                   onPrev={prevStep}
                 />
               )}
-              {currentStep === 5 && (
+              {currentStep === 4 && (
                 <TaxStep 
                   data={setupData} 
                   onUpdate={updateSetupData} 
@@ -348,7 +418,7 @@ export default function SetupWizardPage({
                   onPrev={prevStep}
                 />
               )}
-              {currentStep === 6 && (
+              {currentStep === 5 && (
                 <PlanStep 
                   data={setupData} 
                   onUpdate={updateSetupData} 
@@ -356,7 +426,7 @@ export default function SetupWizardPage({
                   onPrev={prevStep}
                 />
               )}
-              {currentStep === 7 && (
+              {currentStep === 6 && (
                 <CompleteStep 
                   data={setupData} 
                   onComplete={completeSetup}
