@@ -395,7 +395,7 @@ export default function AdminPage({
                       {t('company') || 'Company'}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
-                      RUC
+                      {t('ruc') || 'RUC'}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                       {t('email') || 'Email'}
@@ -550,7 +550,7 @@ export default function AdminPage({
                       {t('company') || 'Company'}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
-                      RUC
+                      {t('ruc') || 'RUC'}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                       {t('email') || 'Email'}

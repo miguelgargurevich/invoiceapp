@@ -79,6 +79,7 @@ All workmanship warranted for one (1) year from date of completion. Materials ca
 • Design concepts and revisions
 • Final deliverables in specified formats
 • 30 days of post-delivery support`,
+    defaultNotes: `If an attorney is used to enforce or collect any obligations due on this obligation, then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.`,
     suggestedSections: ['Deliverables', 'Timeline', 'Revisions', 'Licensing']
   },
   {
@@ -105,6 +106,7 @@ All workmanship warranted for one (1) year from date of completion. Materials ca
 • Campaign management and optimization
 • Monthly reporting and analytics
 • Dedicated account manager`,
+    defaultNotes: `If an attorney is used to enforce or collect any obligations due on this obligation, then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.`,
     suggestedSections: ['Strategy', 'Creative', 'Media', 'Reporting', 'Timeline']
   },
   {
@@ -131,6 +133,7 @@ All workmanship warranted for one (1) year from date of completion. Materials ca
 • Presentation of findings to stakeholders
 • Implementation support and guidance
 • Follow-up review session`,
+    defaultNotes: `If an attorney is used to enforce or collect any obligations due on this obligation, then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.`,
     suggestedSections: ['Assessment', 'Analysis', 'Recommendations', 'Implementation', 'Follow-up']
   }
 ];

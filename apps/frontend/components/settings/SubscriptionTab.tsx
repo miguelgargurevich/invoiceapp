@@ -600,7 +600,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
             >
               {isPopular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-primary text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
+                  <span className="bg-primary text-gray text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1">
                     <Star className="h-3 w-3 fill-current" />
                     {t('mostPopular')}
                   </span>

@@ -385,13 +385,9 @@ export default function DashboardPage({
       {/* Giant Action Buttons */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Create Proposal Button */}
-        <motion.button
+        <button
           onClick={() => router.push(`/${locale}/proformas/nueva`)}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          whileTap={{ scale: 0.98 }}
-          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-600 dark:to-emerald-700 p-8 shadow-xl hover:shadow-2xl transition-all duration-300"
+          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-600 dark:to-emerald-700 p-8 shadow-xl hover:shadow-2xl transition-all duration-300 active:scale-[0.98]"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/20 dark:from-emerald-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="relative flex flex-col items-center justify-center text-white space-y-4">
@@ -407,16 +403,12 @@ export default function DashboardPage({
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
-        </motion.button>
+        </button>
 
         {/* Create Invoice Button */}
-        <motion.button
+        <button
           onClick={() => router.push(`/${locale}/facturas/nueva`)}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          whileTap={{ scale: 0.98 }}
-          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 p-8 shadow-xl hover:shadow-2xl transition-all duration-300"
+          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 p-8 shadow-xl hover:shadow-2xl transition-all duration-300 active:scale-[0.98]"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 dark:from-blue-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="relative flex flex-col items-center justify-center text-white space-y-4">
@@ -432,17 +424,13 @@ export default function DashboardPage({
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </div>
           </div>
-        </motion.button>
+        </button>
       </div>
 
       {/* Bottom Grid: Recent Documents */}
       <div>
           {/* Recent Documents with Tabs */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
+          <div>
             <Card>
             {/* Tabs Header */}
             <div className="flex items-center justify-between mb-6">
@@ -638,7 +626,7 @@ export default function DashboardPage({
               )}
             </div>
           </Card>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
