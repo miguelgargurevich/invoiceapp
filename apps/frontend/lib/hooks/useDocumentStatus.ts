@@ -84,7 +84,7 @@ export interface BaseDocument {
   fechaEmision: string;
   fechaVencimiento?: string;
   signatureRequest?: SignatureRequest | null;
-  signatureStatus?: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
 }
 
 export interface ProposalDocument extends BaseDocument {
@@ -152,7 +152,7 @@ export function getProposalEffectiveStatus(proposal: ProposalDocument): Proposal
   // Check if signed/accepted
   if (proposal.signatureRequest?.signature?.signedAt || 
       proposal.fechaAceptacion || 
-      proposal.signatureStatus === 'ACCEPTED') {
+      proposal.signatureStatus === 'SIGNED') {
     return 'firmada';
   }
   

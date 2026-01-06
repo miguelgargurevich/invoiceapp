@@ -105,7 +105,7 @@ interface Factura {
   totalLabor?: number;
   detalles: DetalleFactura[];
   pagos: PagoFactura[];
-  signatureStatus?: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
   signatureRequest?: any;
   proformaOrigenId?: string | null;
 }

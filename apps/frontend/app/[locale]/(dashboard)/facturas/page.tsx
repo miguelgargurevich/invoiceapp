@@ -35,7 +35,7 @@ interface Factura {
   estado: string;
   montoPendiente: number;
   saldoPendiente?: number;
-  signatureStatus?: 'PENDING' | 'ACCEPTED' | 'EXPIRED' | 'CANCELLED' | null;
+  signatureStatus?: 'PENDING' | 'SIGNED' | 'EXPIRED' | 'CANCELLED' | null;
   signatureRequest?: {
     sentAt?: string | null;
     createdAt?: string;
