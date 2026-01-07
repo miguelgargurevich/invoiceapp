@@ -1834,20 +1834,29 @@
     },
     "howItWorks": {
       "badge": "Proceso Simple",
-      "title": "Comienza en 3 Simples Pasos",
-      "subtitle": "Sin configuración complicada. Sin curva de aprendizaje. Solo regístrate y empieza a facturar.",
+      "title": "De la Propuesta al Pago en 5 Pasos",
+      "subtitle": "Rastrea tu flujo de trabajo completo desde la creación de propuestas hasta recibir el pago. El timeline visual te mantiene informado en cada etapa.",
+      "socialProof": "Más de 10,000 profesionales ya confían en InvoiceApp",
       "steps": {
         "0": {
-          "title": "Crea tu Cuenta",
-          "description": "Regístrate gratis en segundos. No se requiere tarjeta de crédito para comenzar."
+          "title": "Crear Propuesta",
+          "description": "Redacta propuestas profesionales con plantillas personalizadas para tu industria."
         },
         "1": {
-          "title": "Configura tu Negocio",
-          "description": "Agrega los datos de tu empresa, logo y personaliza tus plantillas de facturas."
+          "title": "Enviar al Cliente",
+          "description": "Comparte tu propuesta por email con solicitud de firma electrónica."
         },
         "2": {
-          "title": "Envía tu Primera Factura",
-          "description": "Crea y envía facturas profesionales a tus clientes instantáneamente."
+          "title": "Obtener Firma",
+          "description": "El cliente revisa y firma digitalmente. No se requiere impresión."
+        },
+        "3": {
+          "title": "Convertir a Factura",
+          "description": "Las propuestas aceptadas se convierten en facturas con un clic."
+        },
+        "4": {
+          "title": "Recibir Pago",
+          "description": "Rastrea pagos y marca facturas como pagadas automáticamente."
         }
       }
     },

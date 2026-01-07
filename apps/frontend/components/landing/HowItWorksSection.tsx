@@ -3,19 +3,48 @@
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { 
-  UserPlus,
-  Settings,
+  FileText,
   Send,
+  PenTool,
+  DollarSign,
   ArrowRight
 } from 'lucide-react';
 
 export function HowItWorksSection() {
   const t = useTranslations('landing');
 
+  // Timeline steps matching proposal flow: Created → Sent → Signed → Invoiced → Paid
   const steps = [
-    { icon: UserPlus, color: 'primary', number: '01' },
-    { icon: Settings, color: 'purple', number: '02' },
-    { icon: Send, color: 'green', number: '03' },
+    { 
+      icon: FileText, 
+      color: 'blue',
+      gradient: 'from-blue-500 to-blue-700',
+      shadow: 'shadow-blue-500/30'
+    },
+    { 
+      icon: Send, 
+      color: 'indigo',
+      gradient: 'from-indigo-500 to-indigo-700',
+      shadow: 'shadow-indigo-500/30'
+    },
+    { 
+      icon: PenTool, 
+      color: 'violet',
+      gradient: 'from-violet-500 to-violet-700',
+      shadow: 'shadow-violet-500/30'
+    },
+    { 
+      icon: FileText, 
+      color: 'amber',
+      gradient: 'from-amber-500 to-amber-700',
+      shadow: 'shadow-amber-500/30'
+    },
+    { 
+      icon: DollarSign, 
+      color: 'emerald',
+      gradient: 'from-emerald-500 to-emerald-700',
+      shadow: 'shadow-emerald-500/30'
+    },
   ];
 
   return (
@@ -43,56 +72,45 @@ export function HowItWorksSection() {
           </p>
         </motion.div>
 
-        {/* Steps */}
+        {/* Steps Timeline */}
         <div className="relative">
           {/* Connection Line */}
-          <div className="hidden lg:block absolute top-1/2 left-1/4 right-1/4 h-0.5 bg-gradient-to-r from-primary-500 via-purple-500 to-green-500 -translate-y-1/2" />
+          <div className="hidden lg:block absolute top-12 left-[10%] right-[10%] h-0.5 bg-gradient-to-r from-blue-500 via-indigo-500 via-violet-500 via-amber-500 to-emerald-500 -translate-y-1/2" />
           
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-4">
             {steps.map((step, index) => {
               const Icon = step.icon;
               
               return (
                 <motion.div
-                  key={step.number}
+                  key={index}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.15 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
                   className="relative"
                 >
                   <div className="text-center">
-                    {/* Step Number & Icon */}
+                    {/* Timeline Icon */}
                     <div className="relative inline-flex mb-6">
-                      <div className={`w-24 h-24 rounded-3xl bg-gradient-to-br ${
-                        step.color === 'primary' ? 'from-primary-500 to-primary-700' :
-                        step.color === 'purple' ? 'from-purple-500 to-purple-700' :
-                        'from-green-500 to-green-700'
-                      } flex items-center justify-center shadow-xl ${
-                        step.color === 'primary' ? 'shadow-primary-500/30' :
-                        step.color === 'purple' ? 'shadow-purple-500/30' :
-                        'shadow-green-500/30'
-                      }`}>
-                        <Icon className="w-10 h-10 text-white" />
+                      <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${step.gradient} flex items-center justify-center shadow-xl ${step.shadow}`}>
+                        <Icon className="w-9 h-9 text-white" />
                       </div>
-                      <span className="absolute -top-2 -right-2 w-8 h-8 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center text-sm font-bold text-slate-900 dark:text-white shadow-lg border border-slate-200 dark:border-slate-700">
-                        {step.number}
-                      </span>
                     </div>
                     
                     {/* Content */}
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
                       {t(`howItWorks.steps.${index}.title`)}
                     </h3>
-                    <p className="text-slate-600 dark:text-slate-400 max-w-sm mx-auto">
+                    <p className="text-sm text-slate-600 dark:text-slate-400 max-w-xs mx-auto">
                       {t(`howItWorks.steps.${index}.description`)}
                     </p>
                   </div>
                   
-                  {/* Arrow (Mobile) */}
+                  {/* Arrow (Mobile/Tablet) */}
                   {index < steps.length - 1 && (
                     <div className="lg:hidden flex justify-center py-6">
-                      <ArrowRight className="w-6 h-6 text-slate-400 rotate-90" />
+                      <ArrowRight className="w-6 h-6 text-slate-400 rotate-90 md:rotate-0" />
                     </div>
                   )}
                 </motion.div>
@@ -100,6 +118,19 @@ export function HowItWorksSection() {
             })}
           </div>
         </div>
+
+        {/* Social Proof */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+          className="text-center mt-16"
+        >
+          <p className="text-slate-600 dark:text-slate-400 font-medium">
+            {t('howItWorks.socialProof')}
+          </p>
+        </motion.div>
       </div>
     </section>
   );

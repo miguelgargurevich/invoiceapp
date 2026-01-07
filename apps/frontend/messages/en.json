@@ -1831,20 +1831,29 @@
     },
     "howItWorks": {
       "badge": "Simple Process",
-      "title": "Get Started in 3 Simple Steps",
-      "subtitle": "No complicated setup. No learning curve. Just sign up and start invoicing.",
+      "title": "From Proposal to Payment in 5 Steps",
+      "subtitle": "Track your entire workflow from proposal creation to getting paid. Visual timeline keeps you informed at every stage.",
+      "socialProof": "10,000+ professionals already trust InvoiceApp",
       "steps": {
         "0": {
-          "title": "Create Your Account",
-          "description": "Sign up for free in seconds. No credit card required to get started."
+          "title": "Create Proposal",
+          "description": "Draft professional proposals with custom templates for your industry."
         },
         "1": {
-          "title": "Set Up Your Business",
-          "description": "Add your company details, logo, and customize your invoice templates."
+          "title": "Send to Client",
+          "description": "Share your proposal via email with e-signature request."
         },
         "2": {
-          "title": "Send Your First Invoice",
-          "description": "Create and send professional invoices to your clients instantly."
+          "title": "Get Signed",
+          "description": "Client reviews and signs digitally. No printing required."
+        },
+        "3": {
+          "title": "Convert to Invoice",
+          "description": "Accepted proposals become invoices with one click."
+        },
+        "4": {
+          "title": "Get Paid",
+          "description": "Track payments and mark invoices as paid automatically."
         }
       }
     },
