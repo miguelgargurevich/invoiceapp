@@ -8,7 +8,10 @@ import {
   ArrowRight, 
   Sparkles, 
   CheckCircle2,
-  Play
+  Play,
+  Send,
+  PenTool,
+  DollarSign
 } from 'lucide-react';
 
 export function HeroSection() {
@@ -19,6 +22,35 @@ export function HeroSection() {
     t('hero.benefit1'),
     t('hero.benefit2'),
     t('hero.benefit3'),
+  ];
+
+  // Timeline icons matching proposal flow: Created → Sent → Signed → Invoiced → Paid
+  const timelineSteps = [
+    { 
+      icon: FileText, 
+      gradient: 'from-blue-500 to-blue-600',
+      bg: 'bg-blue-500'
+    },
+    { 
+      icon: Send, 
+      gradient: 'from-indigo-500 to-indigo-600',
+      bg: 'bg-indigo-500'
+    },
+    { 
+      icon: PenTool, 
+      gradient: 'from-violet-500 to-violet-600',
+      bg: 'bg-violet-500'
+    },
+    { 
+      icon: FileText, 
+      gradient: 'from-amber-500 to-amber-600',
+      bg: 'bg-amber-500'
+    },
+    { 
+      icon: DollarSign, 
+      gradient: 'from-emerald-500 to-emerald-600',
+      bg: 'bg-emerald-500'
+    },
   ];
 
   return (
@@ -119,14 +151,17 @@ export function HeroSection() {
             className="mt-12 flex flex-col items-center"
           >
             <div className="flex -space-x-3">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div
-                  key={i}
-                  className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-600 border-2 border-white dark:border-slate-900 flex items-center justify-center text-xs font-semibold text-slate-600 dark:text-slate-400"
-                >
-                  {String.fromCharCode(64 + i)}
-                </div>
-              ))}
+              {timelineSteps.map((step, i) => {
+                const Icon = step.icon;
+                return (
+                  <div
+                    key={i}
+                    className={`w-10 h-10 rounded-full bg-gradient-to-br ${step.gradient} border-2 border-white dark:border-slate-900 flex items-center justify-center shadow-lg`}
+                  >
+                    <Icon className="w-5 h-5 text-white" />
+                  </div>
+                );
+              })}
             </div>
             <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
               <span className="font-semibold text-slate-900 dark:text-white">{t('hero.socialProof.count')}</span>
