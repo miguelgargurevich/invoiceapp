@@ -339,7 +339,7 @@ export function PricingSection() {
 
                   {/* CTA Button */}
                   <Link
-                    href={`/${locale}/register?plan=${plan.id}`}
+                    href={`/${locale}/setup?plan=${plan.id}`}
                     className={`block w-full py-3 px-4 text-center text-sm font-semibold rounded-xl transition-all ${
                       isPopular
                         ? 'text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40'

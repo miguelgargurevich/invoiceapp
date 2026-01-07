@@ -94,7 +94,7 @@ export function HeroSection() {
             className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link
-              href={`/${locale}/register`}
+              href={`/${locale}/setup`}
               className="group relative inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl shadow-xl shadow-primary-500/25 hover:shadow-primary-500/40 transition-all hover:scale-105 overflow-hidden"
             >
               <span className="relative z-10">{t('hero.cta.primary')}</span>

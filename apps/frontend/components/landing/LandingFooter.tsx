@@ -148,7 +148,7 @@ export function LandingFooter() {
                 {t('nav.login')}
               </Link>
               <Link
-                href={`/${locale}/register`}
+                href={`/${locale}/setup`}
                 className="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors"
               >
                 {t('nav.getStarted')}

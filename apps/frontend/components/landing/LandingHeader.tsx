@@ -135,7 +135,7 @@ export function LandingHeader() {
                   </Link>
                   
                   <Link
-                    href={`/${locale}/register`}
+                    href={`/${locale}/setup`}
                     className="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 rounded-xl shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all hover:scale-105"
                   >
                     {t('nav.getStarted')}
@@ -221,7 +221,7 @@ export function LandingHeader() {
                       </Link>
                       
                       <Link
-                        href={`/${locale}/register`}
+                        href={`/${locale}/setup`}
                         className="block w-full px-4 py-3 text-center text-base font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl shadow-lg"
                       >
                         {t('nav.getStarted')}

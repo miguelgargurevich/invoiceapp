@@ -41,7 +41,7 @@ export function CTASection() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href={`/${locale}/register`}
+              href={`/${locale}/setup`}
               className="group inline-flex items-center gap-2 px-8 py-4 text-base font-semibold text-primary-700 bg-white rounded-2xl shadow-xl shadow-black/20 hover:shadow-black/30 transition-all hover:scale-105"
             >
               {t('cta.primaryButton')}
