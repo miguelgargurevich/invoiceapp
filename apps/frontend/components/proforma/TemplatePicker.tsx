@@ -156,18 +156,18 @@ export function TemplatePicker({ isOpen, onClose, onSelect, selectedTemplate }: 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 bg-black/50 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
         onClick={onClose}
       >
         <motion.div
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.95, opacity: 0 }}
+          initial={{ scale: 0.95, opacity: 0, y: 100 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.95, opacity: 0, y: 100 }}
           onClick={(e) => e.stopPropagation()}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[85vh] overflow-hidden"
+          className="bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] sm:max-h-[85vh] overflow-hidden flex flex-col"
         >
           {/* Header */}
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between flex-shrink-0">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-xl">
                 <FileText className="w-6 h-6 text-primary-600 dark:text-primary-400" />
@@ -190,10 +190,10 @@ export function TemplatePicker({ isOpen, onClose, onSelect, selectedTemplate }: 
           </div>
 
           {/* Content */}
-          <div className="p-6 overflow-y-auto max-h-[calc(85vh-100px)]">
+          <div className="p-4 sm:p-6 overflow-y-auto flex-1">
             {previewTemplate ? (
               /* Template Preview */
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 <button
                   onClick={() => setPreviewTemplate(null)}
                   className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1"
@@ -301,13 +301,12 @@ export function TemplatePicker({ isOpen, onClose, onSelect, selectedTemplate }: 
               </div>
             ) : (
               /* Template Grid */
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {PROPOSAL_TEMPLATES.map((template) => (
                   <motion.div
                     key={template.id}
-                    whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`relative p-5 rounded-xl border-2 cursor-pointer transition-all ${
+                    className={`relative p-4 sm:p-5 rounded-xl border-2 cursor-pointer transition-all active:scale-95 ${
                       selectedTemplate === template.id
                         ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
                         : 'border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-700'

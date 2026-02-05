@@ -499,10 +499,16 @@ export default function NuevaFacturaPage({
                               type="text"
                               inputMode="numeric"
                               pattern="[0-9]*"
-                              value={linea.cantidad}
-                              onChange={(e) =>
-                                updateLinea(linea.id, { cantidad: parseInt(e.target.value) || 1 })
-                              }
+                              value={linea.cantidad === 0 ? '' : linea.cantidad}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                updateLinea(linea.id, { cantidad: val === '' ? 0 : parseInt(val) || 0 });
+                              }}
+                              onBlur={(e) => {
+                                if (e.target.value === '' || linea.cantidad === 0) {
+                                  updateLinea(linea.id, { cantidad: 1 });
+                                }
+                              }}
                               className="w-full px-2 py-1.5 text-right border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-sm"
                             />
                           </td>
@@ -565,10 +571,19 @@ export default function NuevaFacturaPage({
                             type="text"
                             inputMode="numeric"
                             pattern="[0-9]*"
-                            value={linea.cantidad}
-                            onChange={(e) =>
-                              updateLinea(linea.id, { cantidad: parseInt(e.target.value) || 1 })
-                            }
+                            value={linea.cantidad === 0 ? '' : linea.cantidad}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              updateLinea(linea.id, { cantidad: val === '' ? 0 : parseInt(val) || 0 });
+                            }}
+                            onBlur={(e) => {
+                              if (e.target.value === '' || linea.cantidad === 0) {
+                                updateLinea(linea.id, { cantidad: 1 });
+                              }
+                            }}
+                            className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
+                          />
+                        </div>
                             className="w-full px-2 py-1 border rounded bg-white dark:bg-gray-800"
                           />
                         </div>
