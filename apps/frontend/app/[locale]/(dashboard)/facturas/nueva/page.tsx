@@ -379,8 +379,8 @@ export default function NuevaFacturaPage({
             size="lg"
             className="flex-shrink-0"
           >
-            <FileText className="w-5 h-5" />
-            <span className="hidden sm:inline ml-2">Templates</span>
+            <FileText className="w-5 h-5 mr-2" />
+            Templates
           </Button>
           <Button 
             variant="outline" 
@@ -388,8 +388,7 @@ export default function NuevaFacturaPage({
             size="lg"
             className="flex-shrink-0"
           >
-            <span className="hidden sm:inline">{t('cancel')}</span>
-            <span className="sm:hidden">✕</span>
+            {t('cancel')}
           </Button>
         </div>
       </div>

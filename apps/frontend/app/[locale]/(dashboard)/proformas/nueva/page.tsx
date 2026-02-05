@@ -319,10 +319,8 @@ export default function NuevaProformaPage({
             size="lg"
             className="border-dashed flex-shrink-0"
           >
-            <FileText className="w-5 h-5" />
-            <span className="hidden sm:inline ml-2">
-              {selectedTemplate ? selectedTemplate.name : t('useTemplate') || 'Use Template'}
-            </span>
+            <FileText className="w-5 h-5 mr-2" />
+            {selectedTemplate ? selectedTemplate.name : t('useTemplate') || 'Use Template'}
           </Button>
           <Button 
             variant="outline" 
@@ -330,8 +328,7 @@ export default function NuevaProformaPage({
             size="lg"
             className="flex-shrink-0"
           >
-            <span className="hidden sm:inline">{t('cancel')}</span>
-            <span className="sm:hidden">✕</span>
+            {t('cancel')}
           </Button>
         </div>
       </div>
