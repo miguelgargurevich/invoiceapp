@@ -27,7 +27,7 @@ export default function NuevoProductoPage({
     codigo: '',
     nombre: '',
     descripcion: '',
-    precioVenta: '',
+    precioVenta: '1.00',
     unidadMedida: 'SERVICIO',
     tipo: 'SERVICIO',
     afectoIgv: true,
