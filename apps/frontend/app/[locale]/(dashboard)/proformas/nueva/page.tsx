@@ -292,36 +292,46 @@ export default function NuevaProformaPage({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
           <button
             onClick={() => router.back()}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
           >
             <ArrowLeft className="w-5 h-5" />
-          </button>          <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl">
-            <FileBarChart className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-          </div>          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          </button>
+          <div className="p-2 sm:p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex-shrink-0">
+            <FileBarChart className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 dark:text-emerald-400" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">
               {t('newQuote')}
             </h1>
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
               {t('description')}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <Button 
             variant="outline" 
             onClick={() => setIsTemplatePickerOpen(true)} 
             size="lg"
-            className="border-dashed"
+            className="border-dashed flex-shrink-0"
           >
-            <FileText className="w-5 h-5 mr-2" />
-            {selectedTemplate ? selectedTemplate.name : t('useTemplate') || 'Use Template'}
+            <FileText className="w-5 h-5" />
+            <span className="hidden sm:inline ml-2">
+              {selectedTemplate ? selectedTemplate.name : t('useTemplate') || 'Use Template'}
+            </span>
           </Button>
-          <Button variant="outline" onClick={() => router.back()} size="lg">
-            {t('cancel')}
+          <Button 
+            variant="outline" 
+            onClick={() => router.back()} 
+            size="lg"
+            className="flex-shrink-0"
+          >
+            <span className="hidden sm:inline">{t('cancel')}</span>
+            <span className="sm:hidden">✕</span>
           </Button>
         </div>
       </div>
