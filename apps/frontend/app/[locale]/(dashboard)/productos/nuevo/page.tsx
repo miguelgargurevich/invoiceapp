@@ -166,9 +166,6 @@ export default function NuevoProductoPage({
               placeholder="Product or service name"
               required
             />
-            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              {formData.tipo === 'PRODUCTO' ? 'Product code will be auto-generated (PRD-0001)' : 'Service code will be auto-generated (SRV-0001)'}
-            </p>
           </div>
 
           {/* Description */}

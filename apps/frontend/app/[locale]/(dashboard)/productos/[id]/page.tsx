@@ -231,16 +231,8 @@ export default function ProductoDetailPage({
                 </div>
               </div>
 
-              {/* Code & Name */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Input
-                  label={t('code')}
-                  value={formData.codigo}
-                  onChange={(e) => setFormData({ ...formData, codigo: e.target.value })}
-                  placeholder="SKU-001"
-                  required
-                />
-                
+              {/* Name & Code (readonly display) */}
+              <div>
                 <Input
                   label={t('name')}
                   value={formData.nombre}
@@ -248,6 +240,9 @@ export default function ProductoDetailPage({
                   placeholder="Product or service name"
                   required
                 />
+                <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                  <span className="font-medium">Code:</span> {formData.codigo}
+                </p>
               </div>
 
               {/* Description */}
