@@ -24,6 +24,11 @@ const nextConfig = {
         hostname: 'cqvcauymipatkmckekrv.supabase.co',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: '*.r2.dev',
+        pathname: '/**',
+      },
     ],
   },
 };
