@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { Sparkles, Clock, Shield, Zap, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Sparkles, Clock, Shield, Zap, ChevronRight, ArrowLeft } from 'lucide-react';
 
 interface WelcomeStepProps {
   onNext: () => void;
@@ -10,6 +11,7 @@ interface WelcomeStepProps {
 
 export default function WelcomeStep({ onNext }: WelcomeStepProps) {
   const t = useTranslations('setup');
+  const router = useRouter();
 
   const features = [
     { icon: Clock, text: t('welcome.feature1'), color: 'text-blue-400' },
@@ -76,18 +78,29 @@ export default function WelcomeStep({ onNext }: WelcomeStepProps) {
       </motion.div>
 
       {/* CTA Button */}
-      <motion.button
+      <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.8 }}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={onNext}
-        className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all"
+        className="flex flex-col sm:flex-row items-center justify-center gap-4"
       >
-        {t('welcome.getStarted')}
-        <ChevronRight className="w-5 h-5" />
-      </motion.button>
+        <button
+          onClick={() => router.push('/')}
+          className="inline-flex items-center gap-2 text-white/60 hover:text-white/90 font-medium px-6 py-4 rounded-xl border border-white/10 hover:border-white/30 transition-all"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          {t('welcome.backToHome')}
+        </button>
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={onNext}
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all"
+        >
+          {t('welcome.getStarted')}
+          <ChevronRight className="w-5 h-5" />
+        </motion.button>
+      </motion.div>
     </div>
   );
 }

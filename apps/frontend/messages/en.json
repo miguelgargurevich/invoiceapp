@@ -1214,7 +1214,8 @@
       "feature1": "Takes only 2 minutes to complete",
       "feature2": "Your data is secure and encrypted",
       "feature3": "Start invoicing immediately after setup",
-      "getStarted": "Let's Get Started"
+      "getStarted": "Let's Get Started",
+      "backToHome": "Back to Home"
     },
     "company": {
       "title": "Tell us about your business",

@@ -1217,7 +1217,8 @@
       "feature1": "Toma solo 2 minutos completar",
       "feature2": "Tus datos están seguros y encriptados",
       "feature3": "Empieza a facturar inmediatamente después de configurar",
-      "getStarted": "Comenzar"
+      "getStarted": "Comenzar",
+      "backToHome": "Volver al inicio"
     },
     "company": {
       "title": "Cuéntanos sobre tu negocio",
