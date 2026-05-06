@@ -4,20 +4,11 @@ const multer = require('multer');
 const path = require('path');
 const { authenticateToken } = require('../middleware/auth');
 const prisma = require('../utils/prisma');
+const { uploadFile, deleteFile, extractStorageKeyFromUrl } = require('../utils/storage');
 
-// Configurar multer para subida de archivos
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/receipts/');
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'receipt-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
+// Configurar multer para memoria (subida a storage)
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
   fileFilter: (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png|pdf/;
@@ -117,8 +108,39 @@ router.post('/', authenticateToken, upload.single('file'), async (req, res) => {
       }
     }
 
-    // URL del archivo si se subió
-    const fileUrl = req.file ? `/uploads/receipts/${req.file.filename}` : null;
+    let fileUrl = null;
+    if (req.file) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const ext = path.extname(req.file.originalname);
+      const fileName = `receipt-${uniqueSuffix}${ext}`;
+
+      // Reuse company-level foldering convention
+      let empresaId;
+      if (facturaId) {
+        const factura = await prisma.factura.findUnique({
+          where: { id: facturaId },
+          select: { empresaId: true }
+        });
+        empresaId = factura?.empresaId;
+      } else {
+        const proforma = await prisma.proforma.findUnique({
+          where: { id: proformaId },
+          select: { empresaId: true }
+        });
+        empresaId = proforma?.empresaId;
+      }
+
+      if (!empresaId) {
+        return res.status(400).json({ error: 'No se pudo determinar la empresa del documento' });
+      }
+
+      const storagePath = `${empresaId}/job-receipts/${fileName}`;
+      const uploadResult = await uploadFile(storagePath, req.file.buffer, {
+        contentType: req.file.mimetype,
+        upsert: false,
+      });
+      fileUrl = uploadResult.publicUrl;
+    }
 
     const receipt = await prisma.jobReceipt.create({
       data: {
@@ -184,7 +206,6 @@ router.put('/:id', authenticateToken, async (req, res) => {
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const fs = require('fs');
 
     const existingReceipt = await prisma.jobReceipt.findFirst({
       where: {
@@ -200,11 +221,11 @@ router.delete('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Recibo no encontrado' });
     }
 
-    // Eliminar archivo físico si existe
+    // Eliminar archivo en storage si existe
     if (existingReceipt.url) {
-      const filePath = path.join(__dirname, '../..', existingReceipt.url);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
+      const storageKey = extractStorageKeyFromUrl(existingReceipt.url);
+      if (storageKey) {
+        await deleteFile(storageKey);
       }
     }
 

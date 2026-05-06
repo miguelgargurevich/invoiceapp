@@ -4,26 +4,9 @@ const multer = require('multer');
 const path = require('path');
 const { authenticateToken } = require('../middleware/auth');
 const prisma = require('../utils/prisma');
-const { createClient } = require('@supabase/supabase-js');
+const { uploadFile, deleteFile, extractStorageKeyFromUrl } = require('../utils/storage');
 
-// Lazy initialization of Supabase client
-let supabase = null;
-
-function getSupabaseClient() {
-  if (!supabase) {
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY;
-    
-    if (!supabaseUrl || !supabaseServiceKey) {
-      throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY environment variables are required for photo uploads');
-    }
-    
-    supabase = createClient(supabaseUrl, supabaseServiceKey);
-  }
-  return supabase;
-}
-
-// Configurar multer para memoria (para subir a Supabase)
+// Configurar multer para memoria (para subir a storage)
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
@@ -158,25 +141,12 @@ router.post('/', authenticateToken, (req, res, next) => {
     // Estructura: {empresaId}/job-photos/{fileName}
     const storagePath = `${empresaId}/job-photos/${fileName}`;
     
-    // Subir a Supabase Storage
-    const { data: uploadData, error: uploadError } = await getSupabaseClient().storage
-      .from('logos')
-      .upload(storagePath, req.file.buffer, {
-        contentType: req.file.mimetype,
-        upsert: false
-      });
+    const uploadResult = await uploadFile(storagePath, req.file.buffer, {
+      contentType: req.file.mimetype,
+      upsert: false,
+    });
 
-    if (uploadError) {
-      console.error('Error uploading to Supabase:', uploadError);
-      return res.status(500).json({ error: 'Error al subir imagen a storage' });
-    }
-
-    // Obtener URL pública
-    const { data: urlData } = getSupabaseClient().storage
-      .from('logos')
-      .getPublicUrl(storagePath);
-
-    const fileUrl = urlData.publicUrl;
+    const fileUrl = uploadResult.publicUrl;
 
     const photo = await prisma.jobPhoto.create({
       data: {
@@ -249,18 +219,13 @@ router.delete('/:id', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Foto no encontrada' });
     }
 
-    // Extraer el path de la URL de Supabase para eliminarlo
-    // URL format: https://xxx.supabase.co/storage/v1/object/public/logos/{userId}/job-photos/{fileName}
     const url = existingPhoto.url;
-    if (url && url.includes('supabase.co')) {
+    const storageKey = extractStorageKeyFromUrl(url);
+    if (storageKey) {
       try {
-        const pathMatch = url.match(/\/logos\/(.+)$/);
-        if (pathMatch) {
-          const storagePath = pathMatch[1];
-          await getSupabaseClient().storage.from('logos').remove([storagePath]);
-        }
+        await deleteFile(storageKey);
       } catch (storageError) {
-        console.error('Error deleting from Supabase storage:', storageError);
+        console.error('Error deleting from storage:', storageError);
         // Continue with DB deletion even if storage deletion fails
       }
     }

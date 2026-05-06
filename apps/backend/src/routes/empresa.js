@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const { authenticateToken, getSupabaseClient } = require('../middleware/auth');
+const { authenticateToken } = require('../middleware/auth');
 const prisma = require('../utils/prisma');
+const { uploadFile, deleteFile, getStorageProvider } = require('../utils/storage');
 
 // Configuración de multer para upload temporal
 const upload = multer({ storage: multer.memoryStorage() });
@@ -191,41 +192,25 @@ router.post('/logo', authenticateToken, upload.single('logo'), async (req, res) 
     // Always save as logo.png for consistency
     const fileName = `${empresa.id}/images/logo.png`;
     
-    console.log('[LOGO] Uploading to Supabase Storage as:', fileName);
-    console.log('[LOGO] Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'Set' : 'NOT SET');
-    console.log('[LOGO] Service Role Key:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'Set (length: ' + process.env.SUPABASE_SERVICE_ROLE_KEY.length + ')' : 'NOT SET');
+    const provider = getStorageProvider();
+    console.log(`[LOGO] Uploading to ${provider} Storage as:`, fileName);
 
-    // Subir a Supabase Storage
-    const { data, error } = await getSupabaseClient().storage
-      .from('logos')
-      .upload(fileName, req.file.buffer, {
-        contentType: req.file.mimetype,
-        upsert: true
-      });
+    const { publicUrl } = await uploadFile(fileName, req.file.buffer, {
+      contentType: req.file.mimetype,
+      upsert: true,
+    });
 
-    if (error) {
-      console.error('[LOGO] Supabase upload error:', error);
-      return res.status(500).json({ error: 'Error al subir logo: ' + error.message });
-    }
-
-    console.log('[LOGO] Upload successful:', data);
-
-    // Obtener URL pública
-    const { data: publicUrl } = getSupabaseClient().storage
-      .from('logos')
-      .getPublicUrl(fileName);
-
-    console.log('[LOGO] Public URL:', publicUrl.publicUrl);
+    console.log('[LOGO] Public URL:', publicUrl);
 
     // Actualizar empresa con URL del logo
     await prisma.empresa.update({
       where: { id: empresa.id },
-      data: { logoUrl: publicUrl.publicUrl }
+      data: { logoUrl: publicUrl }
     });
 
     console.log('[LOGO] Logo URL updated in database');
 
-    res.json({ logoUrl: publicUrl.publicUrl });
+    res.json({ logoUrl: publicUrl });
   } catch (error) {
     console.error('[LOGO] Error uploading logo:', error);
     res.status(500).json({ error: 'Error al subir logo: ' + error.message });
@@ -260,38 +245,20 @@ router.post('/firma', authenticateToken, async (req, res) => {
 
     let firmaUrl;
 
-    // Upload signature to Supabase Storage
-    if (getSupabaseClient()) {
-      try {
-        const signatureBuffer = Buffer.from(signatureDataUrl.replace(/^data:image\/\w+;base64,/, ''), 'base64');
-        const fileName = `${empresa.id}/signatures/company-signature.png`;
-        
-        console.log('[FIRMA] Uploading to Supabase Storage as:', fileName);
+    try {
+      const signatureBuffer = Buffer.from(signatureDataUrl.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+      const fileName = `${empresa.id}/signatures/company-signature.png`;
 
-        const { error: uploadError } = await getSupabaseClient().storage
-          .from('logos')
-          .upload(fileName, signatureBuffer, {
-            contentType: 'image/png',
-            upsert: true
-          });
+      const { publicUrl } = await uploadFile(fileName, signatureBuffer, {
+        contentType: 'image/png',
+        upsert: true,
+      });
 
-        if (uploadError) {
-          console.error('[FIRMA] Supabase upload error:', uploadError);
-          firmaUrl = signatureDataUrl; // Fallback to data URL
-        } else {
-          const { data: publicUrl } = getSupabaseClient().storage
-            .from('logos')
-            .getPublicUrl(fileName);
-          firmaUrl = publicUrl.publicUrl;
-          console.log('[FIRMA] Upload successful:', firmaUrl);
-        }
-      } catch (error) {
-        console.error('[FIRMA] Error with Supabase upload:', error);
-        firmaUrl = signatureDataUrl; // Fallback to data URL
-      }
-    } else {
-      console.log('[FIRMA] Storing signature as data URL (Supabase not configured)');
-      firmaUrl = signatureDataUrl;
+      firmaUrl = publicUrl;
+      console.log('[FIRMA] Upload successful:', firmaUrl);
+    } catch (error) {
+      console.error('[FIRMA] Error uploading signature to storage:', error);
+      firmaUrl = signatureDataUrl; // Fallback to data URL
     }
 
     // Update empresa with signature URL
@@ -323,13 +290,11 @@ router.delete('/firma', authenticateToken, async (req, res) => {
       return res.status(404).json({ error: 'Empresa no encontrada' });
     }
 
-    // Delete from Supabase if it's stored there
-    if (empresa.firmaEmpresa && !empresa.firmaEmpresa.startsWith('data:') && getSupabaseClient()) {
+    // Delete from storage if it's stored as URL
+    if (empresa.firmaEmpresa && !empresa.firmaEmpresa.startsWith('data:')) {
       const fileName = `${empresa.id}/signatures/company-signature.png`;
-      await getSupabaseClient().storage
-        .from('logos')
-        .remove([fileName]);
-      console.log('[FIRMA DELETE] Signature deleted from Supabase');
+      await deleteFile(fileName);
+      console.log('[FIRMA DELETE] Signature deleted from storage');
     }
 
     // Update empresa to remove signature

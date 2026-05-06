@@ -2,23 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const crypto = require('crypto');
-const { createClient } = require('@supabase/supabase-js');
 const { sendSignatureRequestEmail, sendSignatureConfirmationEmail } = require('../services/emailService');
 const { getOrCreateSubscription } = require('../middleware/subscription');
+const { uploadFile } = require('../utils/storage');
 
 const prisma = new PrismaClient();
-
-// Initialize Supabase client only if credentials are available
-let supabase = null;
-if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-  supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  );
-  console.log('✅ Supabase Storage initialized for signature images');
-} else {
-  console.warn('⚠️ Supabase credentials not found - signature images will be stored as data URLs');
-}
 
 // POST /api/signatures/request - Create signature request
 router.post('/request', async (req, res) => {
@@ -376,76 +364,49 @@ router.post('/submit', async (req, res) => {
       return res.status(400).json({ error: 'Signature request expired' });
     }
 
-    // Upload signature image to Supabase Storage (if available)
+    // Upload signature image and signed PDF to configured storage
     let signatureImageUrl;
     let signedPdfUrl = null;
     let documentHash = null;
-    
-    if (supabase) {
-      try {
-        // Upload signature image
-        const signatureBuffer = Buffer.from(signatureDataUrl.replace(/^data:image\/\w+;base64,/, ''), 'base64');
-        const signatureFileName = `${token}-signature.png`;
-        const signatureFilePath = `${signatureRequest.empresaId}/signatures/${signatureFileName}`;
-        
-        const { error: signatureUploadError } = await supabase.storage
-          .from('logos')
-          .upload(signatureFilePath, signatureBuffer, {
-            contentType: 'image/png',
-            upsert: true
-          });
 
-        if (signatureUploadError) {
-          console.error('Error uploading signature to Supabase:', signatureUploadError);
-          signatureImageUrl = signatureDataUrl;
-        } else {
-          const { data: { publicUrl } } = supabase.storage
-            .from('logos')
-            .getPublicUrl(signatureFilePath);
-          signatureImageUrl = publicUrl;
-        }
+    try {
+      // Upload signature image
+      const signatureBuffer = Buffer.from(signatureDataUrl.replace(/^data:image\/\w+;base64,/, ''), 'base64');
+      const signatureFileName = `${token}-signature.png`;
+      const signatureFilePath = `${signatureRequest.empresaId}/signatures/${signatureFileName}`;
 
-        // Upload signed PDF if provided
-        if (signedPdfDataUrl) {
-          const document = signatureRequest.documentType === 'INVOICE' 
-            ? signatureRequest.factura 
-            : signatureRequest.proforma;
-          
-          const pdfBuffer = Buffer.from(signedPdfDataUrl.replace(/^data:application\/pdf;base64,/, ''), 'base64');
-          const pdfFileName = `${document.serie}-${document.numero}-signed.pdf`;
-          
-          // Use 'proposals' folder for proformas, 'invoices' for invoices
-          const folderName = signatureRequest.documentType === 'PROFORMA' ? 'proposals' : 'invoices';
-          const pdfFilePath = `${signatureRequest.empresaId}/${folderName}/${pdfFileName}`;
-          
-          const { error: pdfUploadError } = await supabase.storage
-            .from('logos')
-            .upload(pdfFilePath, pdfBuffer, {
-              contentType: 'application/pdf',
-              upsert: true
-            });
+      const signatureUpload = await uploadFile(signatureFilePath, signatureBuffer, {
+        contentType: 'image/png',
+        upsert: true,
+      });
+      signatureImageUrl = signatureUpload.publicUrl;
 
-          if (pdfUploadError) {
-            console.error('Error uploading signed PDF to Supabase:', pdfUploadError);
-          } else {
-            const { data: { publicUrl: pdfPublicUrl } } = supabase.storage
-              .from('logos')
-              .getPublicUrl(pdfFilePath);
-            signedPdfUrl = pdfPublicUrl;
-            
-            // Generate SHA-256 hash of the signed PDF for immutability verification
-            documentHash = crypto.createHash('sha256').update(pdfBuffer).digest('hex');
-            console.log('✅ Signed PDF uploaded successfully:', signedPdfUrl);
-            console.log('🔐 Document hash (SHA-256):', documentHash);
-          }
-        }
-      } catch (error) {
-        console.error('Error with Supabase upload:', error);
-        signatureImageUrl = signatureDataUrl;
+      // Upload signed PDF if provided
+      if (signedPdfDataUrl) {
+        const document = signatureRequest.documentType === 'INVOICE'
+          ? signatureRequest.factura
+          : signatureRequest.proforma;
+
+        const pdfBuffer = Buffer.from(signedPdfDataUrl.replace(/^data:application\/pdf;base64,/, ''), 'base64');
+        const pdfFileName = `${document.serie}-${document.numero}-signed.pdf`;
+
+        // Use 'proposals' folder for proformas, 'invoices' for invoices
+        const folderName = signatureRequest.documentType === 'PROFORMA' ? 'proposals' : 'invoices';
+        const pdfFilePath = `${signatureRequest.empresaId}/${folderName}/${pdfFileName}`;
+
+        const pdfUpload = await uploadFile(pdfFilePath, pdfBuffer, {
+          contentType: 'application/pdf',
+          upsert: true,
+        });
+        signedPdfUrl = pdfUpload.publicUrl;
+
+        // Generate SHA-256 hash of the signed PDF for immutability verification
+        documentHash = crypto.createHash('sha256').update(pdfBuffer).digest('hex');
+        console.log('✅ Signed PDF uploaded successfully:', signedPdfUrl);
+        console.log('🔐 Document hash (SHA-256):', documentHash);
       }
-    } else {
-      // Supabase not available, store as data URL
-      console.log('📝 Storing signature as data URL (Supabase not configured)');
+    } catch (error) {
+      console.error('Error uploading signature assets to storage:', error);
       signatureImageUrl = signatureDataUrl;
     }
 

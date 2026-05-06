@@ -1,24 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
-const { createClient } = require('@supabase/supabase-js');
 const { sendSignatureConfirmationEmail } = require('../services/emailService');
+const { uploadFile } = require('../utils/storage');
 
 console.log('🔐 signaturesPublic.js loaded - version 2');
 
 const prisma = new PrismaClient();
-
-// Initialize Supabase client
-let supabase = null;
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY;
-
-if (supabaseUrl && supabaseServiceKey) {
-  supabase = createClient(supabaseUrl, supabaseServiceKey);
-  console.log('✅ Supabase client initialized for signatures');
-} else {
-  console.warn('⚠️ Supabase not configured - signatures will be stored as base64');
-}
 
 // GET /api/signatures/public/validate/:token - Validate token and get document (PUBLIC)
 router.get('/validate/:token', async (req, res) => {
@@ -143,30 +131,20 @@ router.post('/submit', async (req, res) => {
 
     let signatureImageUrl = signatureDataUrl;
 
-    // Upload signature to Supabase if available
-    if (supabase && signatureDataUrl.startsWith('data:image')) {
+    // Upload signature image to configured storage
+    if (signatureDataUrl.startsWith('data:image')) {
       try {
         const base64Data = signatureDataUrl.split(',')[1];
         const buffer = Buffer.from(base64Data, 'base64');
         const fileName = `${signatureRequest.empresaId}/signatures/${token}_${Date.now()}.png`;
 
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('logos')
-          .upload(fileName, buffer, {
-            contentType: 'image/png',
-            upsert: false
-          });
+        const uploadResult = await uploadFile(fileName, buffer, {
+          contentType: 'image/png',
+          upsert: false,
+        });
 
-        if (uploadError) {
-          console.error('Error uploading signature to Supabase:', uploadError);
-        } else {
-          const { data: publicUrlData } = supabase.storage
-            .from('logos')
-            .getPublicUrl(fileName);
-          
-          signatureImageUrl = publicUrlData.publicUrl;
-          console.log('✅ Signature uploaded to Supabase:', signatureImageUrl);
-        }
+        signatureImageUrl = uploadResult.publicUrl;
+        console.log('✅ Signature uploaded to storage:', signatureImageUrl);
       } catch (error) {
         console.error('Error processing signature upload:', error);
         // Continue with base64 if upload fails
