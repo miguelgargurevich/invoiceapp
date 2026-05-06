@@ -212,7 +212,7 @@ export default function SetupWizardPage({
           };
 
           // Register with empresa data - this creates both user and empresa
-          await signUp(setupData.email, setupData.password, setupData.name, empresaDataForSignUp);
+          await signUp(setupData.email, setupData.password, setupData.name);
           console.log('[SETUP] Account and empresa created successfully');
 
           // Ensure local state has a user right after signup
