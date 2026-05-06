@@ -97,6 +97,11 @@ router.post('/register', async (req, res) => {
           direccion: empresaData.direccion,
           telefono: empresaData.telefono,
           email: empresaData.email || email,
+          web: empresaData.web,
+          currency: empresaData.currency || 'USD',
+          locale: empresaData.locale || 'en',
+          taxRate: empresaData.taxRate !== undefined ? empresaData.taxRate : 18,
+          taxName: empresaData.taxName || 'Tax',
           userId: user.id
         }
       });

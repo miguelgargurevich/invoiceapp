@@ -180,8 +180,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     throw new Error('Google login no está disponible en auth local');
   };
 
-  const signUp = async (email: string, password: string, name: string) => {
-    const response: any = await apiClient.post('/auth/register', { email, password, name });
+  const signUp = async (email: string, password: string, name: string, empresaData?: any) => {
+    const response: any = await apiClient.post('/auth/register', { email, password, name, empresaData });
     const token = response?.session?.access_token;
 
     if (!token) {

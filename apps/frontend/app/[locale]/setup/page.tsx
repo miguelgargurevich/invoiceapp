@@ -194,18 +194,28 @@ export default function SetupWizardPage({
     try {
       console.log('[SETUP] Starting account creation...');
       
-      // STEP 1: Create user account and sign in
+      // STEP 1: Create user account with empresa data in one call
       if (!currentUser) {
         try {
-          // First, create the account
-          await signUp(setupData.email, setupData.password, setupData.name);
-          console.log('[SETUP] Account created successfully');
-          
-          console.log('[SETUP] Attempting to sign in...');
-          await signIn(setupData.email, setupData.password);
-          console.log('[SETUP] Sign in successful');
+          console.log('[SETUP] Creating account with empresa data...');
+          const empresaDataForSignUp = {
+            nombre: setupData.companyName,
+            ruc: `TEMP-${Date.now()}`,
+            direccion: setupData.direccion,
+            telefono: setupData.telefono,
+            email: setupData.emailEmpresa,
+            web: setupData.website,
+            currency: setupData.currency,
+            locale: setupData.locale,
+            taxRate: setupData.taxEnabled ? setupData.taxRate : 0,
+            taxName: setupData.taxName,
+          };
 
-          // Ensure local state has a user right after login
+          // Register with empresa data - this creates both user and empresa
+          await signUp(setupData.email, setupData.password, setupData.name, empresaDataForSignUp);
+          console.log('[SETUP] Account and empresa created successfully');
+
+          // Ensure local state has a user right after signup
           setCurrentUser({ email: setupData.email } as any);
 
           // Small delay for UI state propagation
@@ -219,42 +229,21 @@ export default function SetupWizardPage({
       }
 
       // STEP 2: Upload logo if exists
-      let logoUrl = setupData.logo;
       if (setupData.logoFile) {
         try {
           console.log('[SETUP] Uploading logo...');
           const formData = new FormData();
           formData.append('logo', setupData.logoFile);
           
-          const logoResponse = await api.upload<{ logoUrl: string }>('/empresa/logo', formData);
-          logoUrl = logoResponse.logoUrl;
-          console.log('[SETUP] Logo uploaded:', logoUrl);
+          const logoResponse = await api.upload<{ logoUrl: string }>('/empresas/logo', formData);
+          console.log('[SETUP] Logo uploaded:', logoResponse.logoUrl);
         } catch (error) {
           console.error('[SETUP] Error uploading logo:', error);
           // Continue without logo
         }
       }
 
-      console.log('[SETUP] Saving empresa with data:', setupData);
-
-      // STEP 3: Create/Update empresa
-      const empresaResponse = await api.put('/empresas/mi-empresa', {
-        nombre: setupData.companyName,
-        direccion: setupData.direccion,
-        telefono: setupData.telefono,
-        email: setupData.emailEmpresa,
-        web: setupData.website,
-        logoUrl: logoUrl,
-        currency: setupData.currency,
-        locale: setupData.locale,
-        taxRate: setupData.taxEnabled ? setupData.taxRate : 0,
-        taxName: setupData.taxName,
-        setupCompleted: true,
-      });
-
-      console.log('[SETUP] Empresa saved:', empresaResponse);
-
-      // STEP 4: Initialize subscription with selected plan
+      // STEP 3: Initialize subscription with selected plan
       try {
         const subscriptionResponse = await api.post('/subscriptions/initialize', {
           planId: setupData.selectedPlan
