@@ -10,7 +10,6 @@ import { usePreferences } from '@/contexts/PreferencesContext';
 import { Button, Card, Input, Textarea, LoadingSpinner } from '@/components/common';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
-import { supabase } from '@/lib/supabase';
 import SignatureCanvas from '@/components/signature/SignatureCanvas';
 import SubscriptionTab from '@/components/settings/SubscriptionTab';
 import {
@@ -232,31 +231,11 @@ export default function ConfiguracionPage({
       };
       reader.readAsDataURL(file);
 
-      // Obtener el token de Supabase
-      const { data: { session } } = await supabase.auth.getSession();
-      const token = session?.access_token;
-
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
       // Subir al servidor
       const formData = new FormData();
       formData.append('logo', file);
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/empresas/logo`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Error uploading logo');
-      }
-
-      const data = await response.json();
+      const data = await api.upload<{ logoUrl: string }>('/empresas/logo', formData);
       setLogoPreview(data.logoUrl);
       refreshEmpresa?.();
       setMessage(t('logoUploaded'));

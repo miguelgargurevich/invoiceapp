@@ -1,13 +1,28 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase';
 import { apiClient } from '@/lib/api';
 
-export interface UserWithRole extends User {
+export interface UserWithRole {
+  id: string;
+  email: string;
+  name?: string | null;
   role?: 'USER' | 'ADMIN' | 'SUPER_ADMIN';
   isActive?: boolean;
+  user_metadata?: {
+    nombre?: string;
+    [key: string]: unknown;
+  };
+  app_metadata?: {
+    provider?: string;
+    [key: string]: unknown;
+  };
+}
+
+export interface AuthSession {
+  access_token: string;
+  token_type: string;
+  user?: UserWithRole;
 }
 
 export interface Empresa {
@@ -21,9 +36,9 @@ export interface Empresa {
   email?: string;
   web?: string;
   logoUrl?: string;
-  firmaEmpresa?: string; // Company digital signature
+  firmaEmpresa?: string;
   moneda: string;
-  taxRate?: number | string; // Tax rate percentage (e.g., 18 for 18%)
+  taxRate?: number | string;
   serieFactura: string;
   serieProforma: string;
   userId: string;
@@ -33,7 +48,7 @@ export interface Empresa {
 
 interface AuthContextType {
   user: UserWithRole | null;
-  session: Session | null;
+  session: AuthSession | null;
   loading: boolean;
   empresa: Empresa | null;
   signIn: (email: string, password: string) => Promise<void>;
@@ -43,128 +58,24 @@ interface AuthContextType {
   refreshEmpresa: () => Promise<void>;
 }
 
+const AUTH_TOKEN_KEY = 'authToken';
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserWithRole | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [session, setSession] = useState<AuthSession | null>(null);
   const [loading, setLoading] = useState(true);
   const [empresa, setEmpresa] = useState<Empresa | null>(null);
-  
-  // Flags to prevent duplicate API calls
-  const [isLoadingUser, setIsLoadingUser] = useState(false);
   const [isLoadingEmpresa, setIsLoadingEmpresa] = useState(false);
 
-  useEffect(() => {
-    let mounted = true;
-    
-    // Obtener sesión inicial
-    const getInitialSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!mounted) return;
-        
-        setSession(session);
-        
-        if (session?.access_token) {
-          apiClient.setToken(session.access_token);
-          await loadUserWithRole(session.user);
-          await loadEmpresa();
-        } else {
-          setUser(null);
-        }
-      } catch (err) {
-        console.error('[AuthContext] Error getting initial session:', err);
-        if (mounted) {
-          setUser(null);
-          setSession(null);
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    };
-
-    getInitialSession();
-
-    // Escuchar cambios de autenticación
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!mounted) return;
-        
-        //console.log('[AuthContext] Auth state changed:', event);
-        setSession(session);
-        
-        if (session?.access_token) {
-          apiClient.setToken(session.access_token);
-          await loadUserWithRole(session.user);
-          await loadEmpresa();
-        } else {
-          apiClient.clearToken();
-          setUser(null);
-          setEmpresa(null);
-        }
-        
-        setLoading(false);
-      }
-    );
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  const loadUserWithRole = async (supabaseUser: User | null) => {
-    if (!supabaseUser) {
-      setUser(null);
-      return;
-    }
-    
-    // Prevent duplicate calls
-    if (isLoadingUser) {
-      console.log('[AuthContext] User already loading, skipping...');
-      return;
-    }
-
-    try {
-      setIsLoadingUser(true);
-      // Obtener datos del usuario desde el backend que incluye el rol
-      const response: any = await apiClient.get('/auth/me');
-      const userWithRole: UserWithRole = {
-        ...supabaseUser,
-        role: response.user.role,
-        isActive: response.user.isActive
-      };
-      setUser(userWithRole);
-    } catch (error) {
-      console.error('[AuthContext] Error loading user role:', error);
-      // Si hay error, crear UserWithRole con rol por defecto
-      const userWithRole: UserWithRole = {
-        ...supabaseUser,
-        role: 'USER',
-        isActive: true
-      };
-      setUser(userWithRole);
-    } finally {
-      setIsLoadingUser(false);
-    }
-  };
-
   const loadEmpresa = async () => {
-    // Prevent duplicate calls
-    if (isLoadingEmpresa) {
-      console.log('[AuthContext] Empresa already loading, skipping...');
-      return;
-    }
-    
+    if (isLoadingEmpresa) return;
+
     try {
       setIsLoadingEmpresa(true);
       const response = await apiClient.get<Empresa>('/empresas/mi-empresa');
       setEmpresa(response);
-    } catch (error) {
-      console.log('[AuthContext] No empresa found or error:', error);
+    } catch {
       setEmpresa(null);
     } finally {
       setIsLoadingEmpresa(false);
@@ -175,65 +86,141 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await loadEmpresa();
   };
 
+  useEffect(() => {
+    let mounted = true;
+
+    const bootstrapAuth = async () => {
+      try {
+        const savedToken = typeof window !== 'undefined' ? localStorage.getItem(AUTH_TOKEN_KEY) : null;
+
+        if (!savedToken) {
+          if (mounted) {
+            setLoading(false);
+          }
+          return;
+        }
+
+        apiClient.setToken(savedToken);
+        const response: any = await apiClient.get('/auth/me');
+
+        if (!mounted) return;
+
+        const restoredUser: UserWithRole = {
+          id: response.user.id,
+          email: response.user.email,
+          name: response.user.name,
+          role: response.user.role,
+          isActive: response.user.isActive,
+        };
+
+        setUser(restoredUser);
+        setSession({
+          access_token: savedToken,
+          token_type: 'Bearer',
+          user: restoredUser,
+        });
+
+        await loadEmpresa();
+      } catch {
+        apiClient.clearToken();
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem(AUTH_TOKEN_KEY);
+        }
+        if (mounted) {
+          setUser(null);
+          setSession(null);
+          setEmpresa(null);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    bootstrapAuth();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    const response: any = await apiClient.post('/auth/login', { email, password });
+    const token = response?.session?.access_token;
+
+    if (!token) {
+      throw new Error('No authentication token returned');
+    }
+
+    apiClient.setToken(token);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(AUTH_TOKEN_KEY, token);
+    }
+
+    const signedUser: UserWithRole = {
+      id: response.user.id,
+      email: response.user.email,
+      name: response.user.name,
+      role: response.user.role,
+      isActive: response.user.isActive,
+    };
+
+    setUser(signedUser);
+    setSession({
+      access_token: token,
+      token_type: response?.session?.token_type || 'Bearer',
+      user: signedUser,
     });
 
-    if (error) {
-      throw new Error(error.message);
-    }
-
-    if (data.session) {
-      apiClient.setToken(data.session.access_token);
-      await loadEmpresa();
-    }
+    await loadEmpresa();
   };
 
   const signInWithGoogle = async () => {
-    // Detectar URL base automáticamente
-    const baseUrl = typeof window !== 'undefined' 
-      ? window.location.origin 
-      : process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    
-    const redirectUrl = `${baseUrl}/es/dashboard`;
-    
-    console.log('[Google Auth] Redirect URL:', redirectUrl);
-    
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: redirectUrl,
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'consent',
-        },
-      },
-    });
-
-    if (error) {
-      throw new Error(error.message);
-    }
+    throw new Error('Google login no está disponible en auth local');
   };
 
   const signUp = async (email: string, password: string, name: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { name },
-      },
-    });
+    const response: any = await apiClient.post('/auth/register', { email, password, name });
+    const token = response?.session?.access_token;
 
-    if (error) {
-      throw new Error(error.message);
+    if (!token) {
+      throw new Error('No authentication token returned');
     }
+
+    apiClient.setToken(token);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(AUTH_TOKEN_KEY, token);
+    }
+
+    const newUser: UserWithRole = {
+      id: response.user.id,
+      email: response.user.email,
+      name: response.user.name,
+      role: response.user.role,
+      isActive: response.user.isActive,
+    };
+
+    setUser(newUser);
+    setSession({
+      access_token: token,
+      token_type: response?.session?.token_type || 'Bearer',
+      user: newUser,
+    });
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    try {
+      await apiClient.post('/auth/logout');
+    } catch {
+      // noop
+    }
+
     apiClient.clearToken();
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(AUTH_TOKEN_KEY);
+    }
+
     setUser(null);
     setSession(null);
     setEmpresa(null);

@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/api';
-import { supabase } from '@/lib/supabase';
 
 // Step Components
 import { 
@@ -202,40 +201,15 @@ export default function SetupWizardPage({
           await signUp(setupData.email, setupData.password, setupData.name);
           console.log('[SETUP] Account created successfully');
           
-          // Supabase may require email confirmation, so we sign in directly
-          // This works if email confirmation is disabled in Supabase settings
-          // Or if the user was auto-confirmed
           console.log('[SETUP] Attempting to sign in...');
           await signIn(setupData.email, setupData.password);
           console.log('[SETUP] Sign in successful');
-          
-          // Wait for Supabase session to be established
-          let attempts = 0;
-          const maxAttempts = 30; // 15 seconds max
-          let session = null;
-          
-          while (attempts < maxAttempts) {
-            await new Promise(resolve => setTimeout(resolve, 500));
-            // Check session directly from Supabase
-            const { data } = await supabase.auth.getSession();
-            if (data.session) {
-              session = data.session;
-              console.log('[SETUP] Session established:', data.session.user.email);
-              setCurrentUser(data.session.user as any);
-              break;
-            }
-            attempts++;
-          }
-          
-          if (!session) {
-            throw new Error('Authentication timeout. Please try logging in manually.');
-          }
-          
-          // Extra wait to ensure user is fully synced in Supabase database
-          // This prevents "User from sub claim in JWT does not exist" errors
-          console.log('[SETUP] Waiting for user sync...');
-          await new Promise(resolve => setTimeout(resolve, 3000));
-          console.log('[SETUP] User should be ready now');
+
+          // Ensure local state has a user right after login
+          setCurrentUser({ email: setupData.email } as any);
+
+          // Small delay for UI state propagation
+          await new Promise(resolve => setTimeout(resolve, 400));
         } catch (error: any) {
           console.error('[SETUP] Error creating account:', error);
           alert('Error creating account: ' + (error.message || 'Please try again'));

@@ -45,19 +45,20 @@ enum BillingInterval {
   YEAR
 }
 
-// 👤 User Profile (extends Supabase Auth)
+// 👤 Application User Profile (local JWT auth)
 model UserProfile {
-  id        String    @id // Same as Supabase Auth user id
-  email     String    @unique
-  name      String?
-  role      UserRole  @default(USER)
-  isActive  Boolean   @default(true) @map("is_active")
-  lastLogin DateTime? @map("last_login")
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @updatedAt @map("updated_at")
-  
-  empresa   Empresa?
-  
+  id           String    @id @default(uuid())
+  email        String    @unique
+  passwordHash String?   @map("password_hash")
+  name         String?
+  role         UserRole  @default(USER)
+  isActive     Boolean   @default(true) @map("is_active")
+  lastLogin    DateTime? @map("last_login")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  empresa      Empresa?
+
   @@map("user_profiles")
 }
 
