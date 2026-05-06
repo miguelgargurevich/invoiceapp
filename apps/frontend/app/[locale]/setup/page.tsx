@@ -50,6 +50,7 @@ interface SetupData {
   taxName: string;
   taxEnabled: boolean;
   selectedPlan?: string;
+  billingInterval?: 'monthly' | 'yearly';
 }
 
 interface EmpresaResponse {
@@ -107,6 +108,7 @@ export default function SetupWizardPage({
     taxName: 'Tax',
     taxEnabled: false,
     selectedPlan: 'free',
+    billingInterval: 'yearly',
   });
 
   // Check if user already completed setup
@@ -243,15 +245,50 @@ export default function SetupWizardPage({
         }
       }
 
-      // STEP 3: Initialize subscription with selected plan
+      // STEP 3: Handle subscription
+      // Fetch plans to determine if selected plan is paid
+      let isPaidPlan = false;
       try {
-        const subscriptionResponse = await api.post('/subscriptions/initialize', {
-          planId: setupData.selectedPlan
-        });
-        console.log('[SETUP] Subscription initialized:', subscriptionResponse);
+        const { getPlans } = await import('@/lib/subscriptions');
+        const plans = await getPlans();
+        const selectedPlan = plans.find(p => p.id === setupData.selectedPlan);
+        isPaidPlan = !!selectedPlan && selectedPlan.priceMonthly > 0;
       } catch (error) {
-        console.error('[SETUP] Error initializing subscription:', error);
-        // Continue anyway - subscription will be created on first access
+        console.error('[SETUP] Error fetching plans:', error);
+      }
+
+      if (isPaidPlan) {
+        // For paid plans: create Stripe checkout session now that we have a token
+        try {
+          console.log('[SETUP] Creating Stripe checkout session...');
+          const response = await api.post<{ url: string }>('/subscriptions/create-checkout-session', {
+            planId: setupData.selectedPlan,
+            billingInterval: setupData.billingInterval || 'yearly',
+            locale: setupData.locale,
+          });
+          if (response.url) {
+            // Set locale cookie before redirect
+            document.cookie = `preferredLocale=${setupData.locale};path=/;max-age=31536000`;
+            window.location.href = response.url;
+            return;
+          }
+        } catch (error) {
+          console.error('[SETUP] Error creating checkout session:', error);
+          alert(setupData.locale === 'es'
+            ? 'Error al procesar el pago. Por favor intenta de nuevo.'
+            : 'Error processing payment. Please try again.');
+          setIsSaving(false);
+          return;
+        }
+      } else {
+        // Free plan: initialize subscription directly
+        try {
+          await api.post('/subscriptions/initialize', { planId: setupData.selectedPlan });
+          console.log('[SETUP] Subscription initialized');
+        } catch (error) {
+          console.error('[SETUP] Error initializing subscription:', error);
+          // Continue anyway
+        }
       }
 
       // Refresh empresa in auth context

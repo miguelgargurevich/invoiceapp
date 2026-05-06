@@ -13,7 +13,6 @@ import {
   Crown,
   Star
 } from 'lucide-react';
-import api from '@/lib/api';
 import { getPlans, type Plan } from '@/lib/subscriptions';
 
 interface SetupData {
@@ -29,6 +28,7 @@ interface SetupData {
   taxName: string;
   taxEnabled: boolean;
   selectedPlan?: string;
+  billingInterval?: 'monthly' | 'yearly';
 }
 
 interface PlanStepProps {
@@ -56,7 +56,6 @@ const getPlanColor = (planName: string) => {
 
 export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepProps) {
   const t = useTranslations('setup');
-  const [isProcessing, setIsProcessing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [selectedPlanId, setSelectedPlanId] = useState(data.selectedPlan || '');
@@ -101,44 +100,12 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
     onUpdate({ selectedPlan: planId });
   };
 
-  const handleContinue = async () => {
+  const handleContinue = () => {
     if (!selectedPlanId) return;
-
-    const selectedPlan = plans.find(p => p.id === selectedPlanId);
-    if (!selectedPlan) return;
-
-    setIsProcessing(true);
-    try {
-      // Check if it's a free plan (price is 0)
-      const isFree = selectedPlan.priceMonthly === 0;
-      
-      if (isFree) {
-        // Free plan - just continue
-        onNext();
-      } else {
-        // Paid plan - create checkout session and redirect
-        const response = await api.post<{ url: string }>('/subscriptions/create-checkout-session', {
-          planId: selectedPlanId,
-          billingInterval,
-          locale,
-        });
-
-        if (response.url) {
-          // Save data to sessionStorage before redirect
-          sessionStorage.setItem('setupData', JSON.stringify(data));
-          // Redirect to Stripe Checkout
-          window.location.href = response.url;
-        }
-      }
-    } catch (error) {
-      console.error('Error processing plan selection:', error);
-      alert(locale === 'es' 
-        ? 'Hubo un error al procesar tu selección. Por favor intenta de nuevo.' 
-        : 'There was an error processing your selection. Please try again.'
-      );
-    } finally {
-      setIsProcessing(false);
-    }
+    // Save billing interval and proceed — actual Stripe checkout (for paid plans)
+    // is handled after account creation in completeSetup, so the token is available.
+    onUpdate({ selectedPlan: selectedPlanId, billingInterval });
+    onNext();
   };
 
   if (isLoading) {
@@ -294,7 +261,6 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onPrev}
-          disabled={isProcessing}
           className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 text-white/80 hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <ChevronLeft className="w-5 h-5" />
@@ -306,20 +272,13 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleContinue}
-          disabled={!selectedPlanId || isProcessing}
+          disabled={!selectedPlanId}
           className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isProcessing ? (
-            <>
-              <Loader2 className="w-5 h-5 animate-spin" />
-              {locale === 'es' ? 'Procesando...' : 'Processing...'}
-            </>
-          ) : (
-            <>
-              {locale === 'es' ? 'Continuar' : 'Continue'}
-              <ChevronRight className="w-5 h-5" />
-            </>
-          )}
+          <>
+            {locale === 'es' ? 'Continuar' : 'Continue'}
+            <ChevronRight className="w-5 h-5" />
+          </>
         </motion.button>
       </div>
     </div>
