@@ -584,9 +584,6 @@ export default function NuevaFacturaPage({
                             className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800"
                           />
                         </div>
-                            className="w-full px-2 py-1 border rounded bg-white dark:bg-gray-800"
-                          />
-                        </div>
                         <div>
                           <label className="text-xs text-gray-500">{t('price')}</label>
                           <input

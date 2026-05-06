@@ -11,7 +11,8 @@ export interface UserWithRole {
   isActive?: boolean;
   user_metadata?: {
     nombre?: string;
-    [key: string]: unknown;
+    name?: string;
+    [key: string]: string | undefined;
   };
   app_metadata?: {
     provider?: string;
