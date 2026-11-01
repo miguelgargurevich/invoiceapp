@@ -381,6 +381,16 @@
 
 - 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t2-archivos`, rama `feat/sunatf-t2-archivos`): Tarea 2 del plan del frontend SUNAT (XML y CDR servidos por el backend, almacén local para desarrollo). Hecho: `src/sunat/almacenLocal.js` (`crearAlmacenLocal(dir)`: rechaza claves que salen de la carpeta con «Clave de archivo inválida»); `src/sunat/index.js` exporta `crearAlmacen(env)` (con `SUNAT_ALMACEN_DIR` usa disco; con `NODE_ENV=production` lanza error; sin él, R2 privado) y `iniciarSunat` lo usa; `src/routes/comprobantes.js` ya NO redirige (302) el XML/CDR: los lee del almacén y los envía con `Content-Disposition: attachment; filename="<RUC>-<TT>-<SERIE>-<NUM>.xml|.cdr.zip"`; `.env.example` con `SUNAT_ALMACEN_DIR=`. Pruebas: `test/unit/sunat/almacenLocal.test.js` (3) y `test/db/rutas.test.js` ajustado al nuevo XML (200, nombre, CDR 404 antes de emitir). Verificado: `npm test` 95/95 y `npm run test:db` 44/44 contra `invoiceapp_test_t2`. Mutaciones (todas en rojo y restauradas con `cmp`): quitar el chequeo de `../`; permitir `SUNAT_ALMACEN_DIR` en producción; volver al 302; Content-Disposition sin el nombre SUNAT. Gotchas: el CDR con `cdrKey` real (200) no tiene prueba en esta suite (la de rutas solo cubre el 404 previo a emitir); `almacenLocal.js` se escribió antes de correr la prueba roja, así que en rojo solo falló `crearAlmacen`. El `prisma:error` del log de la prueba «series y alertas» es esperado (prueba de serie duplicada). Commit en la rama; sin push.
 
+- 2026-11-01 (claude-code, Opus 5.5): integrada la limpieza «sin Vercel ni Supabase» (Haiku, rama chore/sin-vercel-supabase)
+  en feat/sunat-frontend + fix de next.config (imágenes de /uploads con host/puerto de NEXT_PUBLIC_API_URL). Verificado:
+  backend 104/104, BD 47/47, frontend 35/35, tsc ok. App levantada en local: `docker compose up -d` (Postgres 5435 +
+  motor SUNAT 8089), backend en :4001 (el :4000 lo usa el proyecto house) con STORAGE_PROVIDER=local, frontend en :3000.
+  Probado en navegador: registro, login, empresa, subida de logo a disco (/uploads, 200 image/png vía next/image) y dashboard.
+  Gotchas: el frontend instala solo con `npm ci --legacy-peer-deps`; `prisma/seed_plans.sql` no está en git (.gitignore
+  ignora *.sql): sin él el registro no crea suscripción; el `.env` local de backend aún dice STORAGE_PROVIDER=r2
+  (cámbialo a local para no subir a R2 en desarrollo); quedan menciones a Supabase en dos docs históricos
+  (DIGITAL_SIGNATURE_IMPLEMENTATION.md y PROMPT_SISTEMA_FACTURACION.md).
+
 ## Próximos pasos
 
 - [x] Spec aprobado.
