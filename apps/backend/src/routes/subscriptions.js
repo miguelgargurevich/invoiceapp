@@ -297,6 +297,15 @@ router.post('/cancel', authenticateToken, getEmpresaFromUser, async (req, res) =
       return res.status(404).json({ error: 'No subscription found' });
     }
 
+    if (subscription?.proveedorPago === 'culqi') {
+      if (!subscription.culqiSubscriptionId) {
+        return res.status(400).json({ error: 'No tienes una suscripción activa con Culqi' });
+      }
+      const { obtenerServicioCulqi } = require('../pagos/culqi');
+      await obtenerServicioCulqi().cancelar(req.empresa.id);
+      return res.json({ message: 'Tu plan seguirá activo hasta el fin del período pagado' });
+    }
+
     if (!subscription.stripeSubscriptionId) {
       return res.status(400).json({ error: 'No active Stripe subscription' });
     }
@@ -333,6 +342,10 @@ router.post('/reactivate', authenticateToken, getEmpresaFromUser, async (req, re
 
     if (!subscription) {
       return res.status(404).json({ error: 'No subscription found' });
+    }
+
+    if (subscription.proveedorPago === 'culqi') {
+      return res.status(400).json({ error: 'En Culqi la cancelación no se puede deshacer: vuelve a contratar el plan' });
     }
 
     if (!subscription.cancelAtPeriodEnd) {
@@ -379,7 +392,14 @@ router.post('/switch-to-free', authenticateToken, getEmpresaFromUser, async (req
 
     // Suscripción de Culqi (Perú): nunca se llama a Stripe
     if (subscription?.proveedorPago === 'culqi') {
-      // La Tarea 2 cancela en Culqi aquí
+      try {
+        const { obtenerServicioCulqi } = require('../pagos/culqi');
+        await obtenerServicioCulqi().cancelar(req.empresa.id);
+        console.log(`[SUBSCRIPTIONS] Canceled Culqi subscription for empresa ${req.empresa.id}`);
+      } catch (culqiError) {
+        console.error('Error canceling Culqi subscription:', culqiError.message);
+        // Continue anyway - the user wants to switch to free
+      }
     } else if (subscription?.stripeSubscriptionId) {
       // If user has an active Stripe subscription, cancel it
       try {

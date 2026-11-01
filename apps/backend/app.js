@@ -203,6 +203,10 @@ app.use('/api/signatures', limiter, authenticateToken, signaturesRoutes);
 app.use('/api/preferences', limiter, authenticateToken, preferencesRoutes);
 app.use('/api/notificaciones', limiter, authenticateToken, notificacionesRoutes);
 app.use('/api/admin', limiter, authenticateToken, adminRoutes);
+// Pagos de Perú con Culqi (el servicio se crea al usarse: sin CULQI_SECRET_KEY la app arranca igual)
+const { crearRouterCulqi } = require('./src/routes/subscriptionsCulqi');
+const { obtenerServicioCulqi } = require('./src/pagos/culqi');
+app.use('/api/subscriptions/culqi', limiter, crearRouterCulqi({ prisma: require('./src/utils/prisma'), obtenerServicio: obtenerServicioCulqi }));
 app.use('/api/subscriptions', limiter, authenticateToken, subscriptionsRoutes);
 
 // 🇵🇪 Facturación electrónica SUNAT (se activa con SUNAT_ENGINE_URL)

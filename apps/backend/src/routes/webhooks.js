@@ -273,4 +273,23 @@ async function updateSubscriptionFromStripe(stripeSubscription) {
   }
 }
 
+// ==========================================
+// CULQI WEBHOOK (Perú)
+// ==========================================
+// Culqi no firma sus webhooks: solo se usa el id del evento y todo se vuelve a consultar con la sk.
+router.post('/culqi', express.json({ limit: '1mb' }), async (req, res) => {
+  const id = req.body?.id;
+  if (typeof id !== 'string' || !/^evt_(test|live)_[A-Za-z0-9]+$/.test(id)) {
+    return res.status(400).json({ error: 'Evento inválido' });
+  }
+  try {
+    const { obtenerServicioCulqi } = require('../pagos/culqi');
+    const r = await obtenerServicioCulqi().procesarEvento(id);
+    return res.json({ received: true, procesado: r.procesado });
+  } catch (error) {
+    console.error('[CULQI] Error procesando evento', id, error.message);
+    return res.status(500).json({ error: 'No se pudo procesar el evento' }); // Culqi reintenta
+  }
+});
+
 module.exports = router;
