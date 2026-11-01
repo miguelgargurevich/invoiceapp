@@ -87,19 +87,11 @@ export const metadata: Metadata = {
   category: 'Business Software',
 };
 
+// <html> y <body> viven en app/[locale]/layout.tsx, que es el que sabe el idioma (lang="es" o "en").
 export default function RootLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  return (
-    <html lang="es" suppressHydrationWarning>
-      <head>
-        <link rel="canonical" href={URL_SITIO} />
-      </head>
-      <body className="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased">
-        {children}
-      </body>
-    </html>
-  );
+  return children;
 }

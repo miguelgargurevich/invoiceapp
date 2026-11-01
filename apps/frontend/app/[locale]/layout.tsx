@@ -147,21 +147,29 @@ export default async function LocaleLayout({
   const messages = await getMessages();
   const jsonLd = locale === 'en' ? JSONLD_EN : JSONLD_ES;
 
+  // lang según la ruta: /es/... → es, /en/... → en (antes estaba fijo en es en app/layout.tsx).
   return (
-    <NextIntlClientProvider messages={messages} locale={locale}>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <AuthProvider>
-        <PreferencesProvider>
-          <ThemeProvider>
-            <ToastProvider>
-              {children}
-            </ToastProvider>
-          </ThemeProvider>
-        </PreferencesProvider>
-      </AuthProvider>
-    </NextIntlClientProvider>
+    <html lang={locale} suppressHydrationWarning>
+      <head>
+        <link rel="canonical" href={URL_SITIO} />
+      </head>
+      <body className="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased">
+        <NextIntlClientProvider messages={messages} locale={locale}>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          />
+          <AuthProvider>
+            <PreferencesProvider>
+              <ThemeProvider>
+                <ToastProvider>
+                  {children}
+                </ToastProvider>
+              </ThemeProvider>
+            </PreferencesProvider>
+          </AuthProvider>
+        </NextIntlClientProvider>
+      </body>
+    </html>
   );
 }
