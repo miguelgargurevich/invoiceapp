@@ -58,21 +58,17 @@ app.use(helmet());
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3001',
+  'http://127.0.0.1:3000',
   process.env.FRONTEND_URL,
-  'https://invoiceapp.vercel.app',
-  'https://invoice-app.vercel.app',
 ].filter(Boolean);
 
-// Patterns to match (regex)
-const allowedPatterns = [
-  /^https:\/\/.*\.vercel\.app$/, // Any Vercel subdomain
-  /^https:\/\/invoiceapp.*\.vercel\.app$/, // Any invoiceapp-* Vercel deployment
-];
+// Patterns to match (regex). Ninguno por defecto: los dominios se listan en FRONTEND_URL o CORS_ORIGINS.
+const allowedPatterns = [];
 
-// Optional: Allow additional domains from environment variable (comma-separated)
-if (process.env.ALLOWED_ORIGINS) {
-  const extraOrigins = process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim());
-  allowedOrigins.push(...extraOrigins);
+// Dominios extra separados por comas: CORS_ORIGINS (ALLOWED_ORIGINS, el nombre anterior, sigue aceptándose)
+const origenesExtra = [process.env.CORS_ORIGINS, process.env.ALLOWED_ORIGINS].filter(Boolean).join(',');
+if (origenesExtra) {
+  allowedOrigins.push(...origenesExtra.split(',').map(o => o.trim()).filter(Boolean));
 }
 
 app.use(cors({

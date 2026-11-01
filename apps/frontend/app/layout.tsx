@@ -1,9 +1,10 @@
 import { ReactNode } from 'react';
 import './globals.css';
 import type { Metadata } from 'next';
+import { URL_SITIO } from '@/lib/sitio';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://invoiceapp.vercel.app'),
+  metadataBase: new URL(URL_SITIO),
   title: {
     default: 'InvoiceApp - Professional Invoice & Proposal Management System',
     template: '%s | InvoiceApp'
@@ -38,7 +39,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     alternateLocale: ['es_ES'],
-    url: 'https://invoiceapp.vercel.app',
+    url: URL_SITIO,
     title: 'InvoiceApp - Professional Invoice & Proposal Management System',
     description: 'Comprehensive invoice and proposal management system for contractors and businesses. Create professional invoices, track payments, manage clients, and streamline your billing process.',
     siteName: 'InvoiceApp',
@@ -84,7 +85,7 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
-        <link rel="canonical" href="https://invoiceapp.vercel.app" />
+        <link rel="canonical" href={URL_SITIO} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -112,7 +113,7 @@ export default function RootLayout({
                 'Customizable Templates',
                 'Financial Reporting'
               ],
-              screenshot: 'https://invoiceapp.vercel.app/screenshot.png',
+              screenshot: `${URL_SITIO}/screenshot.png`,
               aggregateRating: {
                 '@type': 'AggregateRating',
                 ratingValue: '4.8',

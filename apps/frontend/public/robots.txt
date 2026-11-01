@@ -26,5 +26,5 @@ Disallow: /login
 Disallow: /register
 Disallow: /api/
 
-# Sitemap location
-Sitemap: https://invoiceapp.vercel.app/sitemap.xml
+# Sitemap: el sitemap se sirve en /sitemap.xml de cada despliegue.
+# Añade aquí "Sitemap: https://tu-dominio/sitemap.xml" en producción (el formato exige URL absoluta).

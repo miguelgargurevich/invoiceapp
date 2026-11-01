@@ -44,7 +44,7 @@ InvoiceApp is a professional invoice and proposal management system designed for
 - Frontend: Next.js 14, React, TypeScript, Tailwind CSS
 - Backend: Node.js, Express
 - Database: PostgreSQL with Prisma ORM
-- Storage: Supabase
+- Storage: local disk (development) or Cloudflare R2 (production)
 - PDF: html2canvas, jsPDF
 - Authentication: JWT
 
@@ -75,7 +75,7 @@ InvoiceApp is a professional invoice and proposal management system designed for
 - RESTful API
 - Email integration
 - Digital signature services
-- File storage (Supabase)
+- File storage (local disk or Cloudflare R2)
 
 ## Common Use Cases
 1. Billing for construction projects
@@ -93,7 +93,7 @@ InvoiceApp is a professional invoice and proposal management system designed for
 
 ## Support
 - Email: support@invoiceapp.com
-- Website: https://invoiceapp.vercel.app
+- Website: root of the deployed site (no fixed URL)
 - Documentation: Available in-app
 
 ## Data Privacy
@@ -108,7 +108,7 @@ InvoiceApp is a professional invoice and proposal management system designed for
 - New features based on user feedback
 
 ## Contact
-Website: https://invoiceapp.vercel.app
+Website: root of the deployed site (no fixed URL)
 Email: support@invoiceapp.com
 
 ---
