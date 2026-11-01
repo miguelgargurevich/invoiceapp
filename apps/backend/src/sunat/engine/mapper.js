@@ -148,6 +148,12 @@ function armarBaja({ correlativo, fechaGeneracion, fechaReferencia, items }) {
   };
 }
 
+// Greenter escribe <cbc:Percent> en el resumen: sin él SUNAT rechaza el RC (2992, tasa del tributo faltante).
+function porcentajeIgvResumen(f) {
+  if (aDecimal(f.igv).isZero()) return '0';
+  return f.empresa && f.empresa.taxRate != null ? aDecimal(f.empresa.taxRate).toString() : '18';
+}
+
 function armarResumen({ correlativo, fechaGeneracion, fechaReferencia, items }) {
   return {
     correlativo: String(correlativo),
@@ -167,6 +173,7 @@ function armarResumen({ correlativo, fechaGeneracion, fechaReferencia, items }) 
       exportacion: dos(f.totalExportacion),
       igv: dos(f.igv),
       icbper: dos(f.totalIcbper),
+      porcentajeIgv: porcentajeIgvResumen(f),
       docReferencia: f.docRelacionadoSerie
         ? { tipoDoc: f.docRelacionadoTipo, numero: `${f.docRelacionadoSerie}-${f.docRelacionadoNumero}` }
         : null,

@@ -74,3 +74,12 @@ test('baja y resumen', () => {
   assert.equal(resumen.detalles[0].estado, '3');
   assert.equal(nombreBase(empresa, factura()), '20000000001-01-F001-7');
 });
+
+test('armarResumen lleva el porcentaje de IGV de cada detalle', () => {
+  const r = armarResumen({ correlativo: 3, fechaGeneracion: '2026-11-03', fechaReferencia: '2026-11-01', items: [
+    { factura: factura({ tipoComprobante: '03', serie: 'B001', numero: 1 }) },
+    { factura: factura({ tipoComprobante: '03', serie: 'B001', numero: 2, igv: '0' }) },
+    { factura: factura({ tipoComprobante: '03', serie: 'B001', numero: 3, empresa: { taxRate: 10 } }) },
+  ] });
+  assert.deepEqual(r.detalles.map((d) => d.porcentajeIgv), ['18', '0', '10']);
+});

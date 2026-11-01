@@ -250,6 +250,23 @@
   registrando el error completo en el log (`console.error('[SUNAT]', error)`): revisar que no imprima secretos si
   algún servicio mete datos sensibles en un mensaje de error.
 
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunat-fix-fechas-rc`, rama `fix/sunat-fix-fechas-rc`):
+  Corrección del E2E contra SUNAT beta (fechas corridas un día y resumen RC rechazado con 2992). Hecho:
+  `apps/sunat-engine/src/Mapper.php` con `fecha()`: una fecha sin hora («2026-11-01») se toma al mediodía de
+  `America/Lima`; se usa en emisión, cuotas, resumen y baja. `Mapper::resumen` pone `setPorcentajeIgv` en cada
+  `SummaryDetail`. `mapper.js` (`armarResumen`) manda `porcentajeIgv` por detalle (`taxRate` de la empresa, si no 18;
+  `0` si la boleta no tiene IGV). `tests/smoke.sh`: `PUERTO` (8089 por defecto), verificación de la cuota en el XML
+  firmado (`PaymentDueDate>2030-12-31<`, sin `2030-12-30`), y con `BETA=1` envío del RC (`fixtures/resumen.json`, anula
+  B001-1) con sondeo de `/tickets/consultar` hasta `codigo 0`. Sin BETA solo comprueba que `/resumenes/enviar` responde 422.
+  Verificado: `npm test` 92/92; `./tests/smoke.sh` verde; `BETA=1 ./tests/smoke.sh` verde (factura, baja, RC aceptado).
+  Mutaciones (todas en rojo): sin mediodía de Lima (falla la cuota); sin `setPorcentajeIgv` (SUNAT 2992 en el envío);
+  sin `porcentajeIgv` en `armarResumen` (falla la prueba de Node).
+  Gotchas: (1) quitar solo la zona y dejar el mediodía NO falla: con mediodía el día es el mismo en cualquier zona
+  razonable; la mutación útil es quitar el mediodía y la zona. (2) El 2992 de un RC llega YA en la respuesta de
+  `/resumenes/enviar` (`ticket: null`), no al consultar el ticket. (3) Cada corrida BETA envía un RC nuevo con correlativo
+  `date +%s % 99999 + 1`: SUNAT beta acumula RC de prueba. (4) `vendor/` se instaló con `composer:2` en Docker (no hay PHP
+  local). (5) El cliente de la boleta de la fixture es DNI 12345678 (dato de prueba).
+
 ## Próximos pasos
 
 - [x] Spec aprobado.
