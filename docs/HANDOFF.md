@@ -12,6 +12,19 @@
 
 ## Última sesión
 
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t5-componentes`, rama `feat/sunatf-t5-componentes`):
+  Tarea 5 del plan del frontend SUNAT (componentes de estado, acciones, anulación, historial y alertas). Hecho, en
+  `apps/frontend/components/sunat/`: `EstadoSunatBadge.tsx`, `HistorialEnvios.tsx`, `AlertasSunat.tsx`, `AnularModal.tsx` y
+  `AccionesComprobante.tsx`. El código del plan se copió tal cual: ninguna prop ni ícono hubo que corregirlo (cada prop se
+  comprobó contra `components/common/*` y cada ícono contra lucide-react 0.562.0; las claves i18n existen en `es.json` y `en.json`).
+  Pruebas: `npm test` 35/35 (sin pruebas nuevas: el plan no las pide para estos componentes); `npx tsc --noEmit` sin errores.
+  `next lint` no se corrió (roto en el repo, ver gotcha c de la Tarea 4). Mutaciones (un archivo, restaurado con cp + cmp, `tsc` 0 tras restaurar):
+  3 de 3 en rojo con TS2322: `variant="inexistente"` en Badge, `variant="success"` en ConfirmDialog y `iconColor="rojo"` en Modal.
+  Gotchas: (1) `AnularModal` navega a `/comprobantes/nuevo?tipo=07&afecta=…&motivo=01` y `AccionesComprobante` a `/comprobantes/:id/editar`
+  y `/comprobantes/nuevo?tipo=0x&afecta=…`: esas rutas las crea la Tarea 7. (2) `AccionesComprobante` exige la prop `ruc`
+  (la página de la Tarea 7 la pasa como `empresa?.ruc`, plan línea 3013) y `onCambio` para refrescar el comprobante tras emitir o anular.
+  (3) `AlertasSunat` se queda en `null` si la llamada falla: un error de red no se muestra.
+  Pendiente: push y OK de Miguel (sesión principal); `next build` no se corrió.
 - 2026-11-01 (Claude Code con Sonnet 5.5, delegado en worktree `.claude/worktrees/sunatf-t4-formulario`, rama `feat/sunatf-t4-formulario`):
   Tarea 4 del plan del frontend SUNAT (formulario, cliente de API y hooks). Hecho: `apps/frontend/lib/sunat/formulario.ts`
   (estado del formulario, `aPayload`, cuotas en céntimos enteros, visibilidad, series y clientes permitidos; solo `import type`),
