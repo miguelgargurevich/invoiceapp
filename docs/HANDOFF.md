@@ -5,7 +5,10 @@
 ## Estado actual
 
 - App de facturación orientada a EE. UU. (Next.js 14 + Express + Prisma + Postgres, R2, Stripe) en producción.
-- Facturación electrónica SUNAT (Perú): diseño aprobado, sin código todavía. Rama `feat/sunat-diseno`.
+- Facturación electrónica SUNAT (Perú): núcleo de emisión CONSTRUIDO en la rama local `feat/sunat-diseno` (sin push):
+  backend `src/sunat/**` + API `/api/comprobantes` y `/api/sunat` + motor `apps/sunat-engine` (PHP/Greenter).
+  E2E contra SUNAT beta: 8/8 aceptados (factura contado, factura crédito+detracción, boleta, NC, ND, baja RA, anulación RC).
+  Suites: `npm test` 92/92, `npm run test:db` 44/44. Falta: frontend, despliegue y verificar parámetros contra la norma.
 
 ## Última sesión
 
@@ -266,12 +269,25 @@
   `/resumenes/enviar` (`ticket: null`), no al consultar el ticket. (3) Cada corrida BETA envía un RC nuevo con correlativo
   `date +%s % 99999 + 1`: SUNAT beta acumula RC de prueba. (4) `vendor/` se instaló con `composer:2` en Docker (no hay PHP
   local). (5) El cliente de la boleta de la fixture es DNI 12345678 (dato de prueba).
+- 2026-11-01 (claude-code, Opus 5.5, orquestador): ejecución del plan delegando por riesgo (Sonnet: 3, 4, 7, 8, 11, 12, 15;
+  Haiku: 1, 2, 5, 6, 9, 10, 13, 14 y el arreglo de fechas/RC). Cada tarea revisada (diff), suites corridas sobre la rama
+  integrada e integrada con cherry-pick. Correcciones fuera del plan: bloqueo de fila en emitir, editar y anular
+  (doble emisión/anulación simultánea); `router.param` 404 para comprobantes ajenos; `singletonKey` + `policy: 'short'`
+  en pg-boss; fechas sin hora al mediodía de Lima en el motor (Greenter escribe en hora de Lima: salían un día antes,
+  también las cuotas) y `porcentajeIgv` en el resumen (SUNAT rechazaba el RC con 2992). E2E `scripts/sunat-beta-e2e.js`
+  8/8 en beta; guía `docs/sunat/DESPLIEGUE.md`.
 
 ## Próximos pasos
 
 - [x] Spec aprobado.
 - [x] Plan de implementación: `docs/superpowers/plans/2026-11-01-sunat-nucleo-emision.md` (16 tareas, backend + motor; el frontend va en un plan aparte).
-- [ ] Ejecutar el plan (delegado por riesgo; las tareas 2, 4, 6 y 8 se pueden correr en paralelo después de la 1).
+- [x] Ejecutar el plan del núcleo de emisión (16 tareas + arreglo de fechas/RC; E2E beta 8/8).
+- [ ] Decidir: cuando el precio incluye IGV, redondear por línea deja céntimos de diferencia (3 × 33.33 → 100.02); ¿IGV de línea = precio − valor?
+- [ ] Decidir `.gitignore`: ignora `prisma/migrations/` y `*.sql` desde el commit inicial (la migración SUNAT entró con `git add -f`).
+- [ ] Verificar contra la norma vigente: porcentajes de detracción/percepción, umbrales (700) y plazos (3 y 7 días) de `catalogos/parametros.js`.
+- [ ] Probar la firma con un `.pfx` real de una entidad certificadora peruana (solo se probó con autofirmados).
+- [ ] Plan del frontend para empresas `PE` (formulario de comprobante, emisor/certificado, estados, anular, PDF).
+- [ ] Despliegue según `docs/sunat/DESPLIEGUE.md` (con OK de Miguel; `prisma migrate status` contra producción primero).
 - [ ] Diseñar subproyectos 3 (guía de remisión), 4 (retención/percepción) y 5 (SaaS/PSE).
 
 ## Decisiones recientes
