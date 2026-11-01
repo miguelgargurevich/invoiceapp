@@ -259,6 +259,20 @@ app.use('/api/notificaciones', limiter, authenticateToken, notificacionesRoutes)
 app.use('/api/admin', limiter, authenticateToken, adminRoutes);
 app.use('/api/subscriptions', limiter, authenticateToken, subscriptionsRoutes);
 
+// 🇵🇪 Facturación electrónica SUNAT (se activa con SUNAT_ENGINE_URL)
+const prismaSunat = require('./src/utils/prisma');
+const { iniciarSunat } = require('./src/sunat');
+const { crearRouterComprobantes } = require('./src/routes/comprobantes');
+const { crearRouterSunat } = require('./src/routes/sunat');
+
+const sunatListo = iniciarSunat({ prisma: prismaSunat }).catch((error) => {
+  console.error('[SUNAT] No se pudo iniciar el módulo:', error.message);
+  return null;
+});
+const obtenerSunat = () => sunatListo;
+app.use('/api/comprobantes', limiter, crearRouterComprobantes({ prisma: prismaSunat, obtenerSunat }));
+app.use('/api/sunat', limiter, crearRouterSunat({ prisma: prismaSunat, obtenerSunat }));
+
 // Servir archivos estáticos (uploads)
 app.use('/uploads', express.static('uploads'));
 

@@ -226,6 +226,29 @@
   verifica al integrar. `node --check` sí pasa. (3) `npm install qrcode` reordenó `bcryptjs` y
   `@supabase/supabase-js` en `package.json`: revertido a mano. (4) La prueba «varias páginas» del PDF no cuenta las
   páginas: solo comprueba cabecera `%PDF` y tamaño mayor a 2000 bytes.
+- 2026-11-01 (Claude Code con Sonnet 5.5, worktree `.claude/worktrees/sunat-t15-api`, rama `feat/sunat-t15-api`):
+  Tarea 15 del plan (API). Hecho: `src/sunat/http.js` (`responderError`, `soloPeru`, `bloquearElectronicos`),
+  `src/routes/comprobantes.js` (`/api/comprobantes`), `src/routes/sunat.js` (`/api/sunat`: emisor, series, alertas),
+  montaje en `app.js`, y en `src/routes/facturas.js` solo el paso 6 (`bloquearSiSunat` en 7 rutas, 409 en POST para
+  empresas PE, 400 de pagos en borrador). `npm test` 91/91 y `npm run test:db` 44/44 en verde. Código del plan copiado
+  tal cual salvo: (1) `router.param('id')` en `comprobantes.js` verifica que el comprobante sea electrónico y de la
+  empresa (404 si no); sin eso, PUT y emitir de un comprobante AJENO respondían 400/409 con «no encontrado» (los
+  servicios lanzan `ErrorBorrador`/`ErrorEstado`), no 404. (2) Pruebas extra: secretos en detalle y lista, segunda
+  empresa PE (404 en GET, PUT, DELETE, emitir, anular, corregir, xml, cdr, pdf y lista vacía), certificado vencido,
+  mensajes crudos del motor/500 y una prueba que monta el router REAL de `/api/facturas` con JWT real.
+  `editado.json.total === '236'` coincide con la serialización real de Prisma: sin ajuste.
+  Mutaciones (archivo copiado al scratchpad, restaurado con `cp` + `cmp`), todas en rojo: GET /:id y lista con
+  `INCLUDE_COMPROBANTE`; `router.param` sin `empresaId`; quitar `soloPeru`; `bloquearElectronicos` sin `empresaId`;
+  503 y 500 con mensaje crudo; PRODUCCION sin `confirmarProduccion`; no comparar RUC del certificado; no validar
+  vencimiento (sobrevivía: se añadió la aserción); `vistaEmisor` con `solClaveCifrada`; quitar `bloquearSiSunat` de
+  PUT /:id y de payment-summary; quitar el 409 PE y el 400 de pagos en borrador. Única que sobrevive: quitar el
+  filtro `empresaId` solo de `buscar()` (lo cubre `router.param`: doble barrera deliberada).
+  Gotchas: (1) arrancar `app.js` exige también `STRIPE_SECRET_KEY` (`webhooks.js` crea el cliente de Stripe al
+  cargarse), además de `RESEND_API_KEY`, `JWT_SECRET` y `DATABASE_URL`. (2) La prueba de `/api/facturas` crea un
+  plan `prueba-rutas` en la BD de pruebas (la tabla `plans` no se trunca en `limpiar()`). (3) `PUT /api/sunat/emisor`
+  no lleva `soloPeru` a propósito: configurar el emisor convierte la empresa en PE. (4) El 500 genérico sigue
+  registrando el error completo en el log (`console.error('[SUNAT]', error)`): revisar que no imprima secretos si
+  algún servicio mete datos sensibles en un mensaje de error.
 
 ## Próximos pasos
 

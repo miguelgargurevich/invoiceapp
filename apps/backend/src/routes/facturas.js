@@ -5,6 +5,8 @@ const { checkLimit, incrementUsage } = require('../middleware/subscription');
 const prisma = require('../utils/prisma');
 const { z } = require('zod');
 const { sendInvoiceEmail, sendInvoiceCreationEmail, sendPaymentConfirmationEmail } = require('../services/emailService');
+const { bloquearElectronicos } = require('../sunat/http');
+const bloquearSiSunat = bloquearElectronicos(prisma);
 
 // Esquema de validación para detalle
 const detalleSchema = z.object({
@@ -356,6 +358,9 @@ router.get('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
 // POST /api/facturas - Crear factura
 router.post('/', authenticateToken, getEmpresaFromUser, checkLimit('invoice'), async (req, res) => {
   try {
+    if (req.empresa.pais === 'PE') {
+      return res.status(409).json({ error: 'Las empresas de Perú emiten comprobantes desde /api/comprobantes' });
+    }
     const validatedData = facturaSchema.parse(req.body);
     const { detalles, totalMaterials, totalLabor, ...facturaData } = validatedData;
 
@@ -464,7 +469,7 @@ router.post('/', authenticateToken, getEmpresaFromUser, checkLimit('invoice'), a
 });
 
 // PUT /api/facturas/:id - Actualizar factura (solo si está emitida)
-router.put('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
+router.put('/:id', authenticateToken, getEmpresaFromUser, bloquearSiSunat, async (req, res) => {
   try {
     const existingFactura = await prisma.factura.findFirst({
       where: {
@@ -528,7 +533,7 @@ router.put('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
 });
 
 // DELETE /api/facturas/:id - Anular factura
-router.delete('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
+router.delete('/:id', authenticateToken, getEmpresaFromUser, bloquearSiSunat, async (req, res) => {
   try {
     const existingFactura = await prisma.factura.findFirst({
       where: {
@@ -578,6 +583,9 @@ router.post('/:id/pagos', authenticateToken, getEmpresaFromUser, async (req, res
 
     if (factura.estado === 'anulada') {
       return res.status(400).json({ error: 'No se pueden registrar pagos en facturas anuladas' });
+    }
+    if (factura.estadoSunat === 'BORRADOR') {
+      return res.status(400).json({ error: 'No se pueden registrar pagos en un comprobante que aún no se emite' });
     }
 
     const totalPagado = factura.pagos.reduce((acc, pago) => acc + parseFloat(pago.monto), 0);
@@ -660,7 +668,7 @@ router.post('/:id/pagos', authenticateToken, getEmpresaFromUser, async (req, res
 });
 
 // PUT /api/facturas/:id/dates - Actualizar fechas de factura
-router.put('/:id/dates', authenticateToken, getEmpresaFromUser, async (req, res) => {
+router.put('/:id/dates', authenticateToken, getEmpresaFromUser, bloquearSiSunat, async (req, res) => {
   try {
     const { fechaEmision, fechaVencimiento } = req.body;
 
@@ -703,7 +711,7 @@ router.put('/:id/dates', authenticateToken, getEmpresaFromUser, async (req, res)
 });
 
 // PUT /api/facturas/:id/observations - Actualizar observaciones de factura
-router.put('/:id/observations', authenticateToken, getEmpresaFromUser, async (req, res) => {
+router.put('/:id/observations', authenticateToken, getEmpresaFromUser, bloquearSiSunat, async (req, res) => {
   try {
     const { observaciones } = req.body;
 
@@ -740,7 +748,7 @@ router.put('/:id/observations', authenticateToken, getEmpresaFromUser, async (re
 });
 
 // PUT /api/facturas/:id/order-type - Actualizar tipo de orden de factura
-router.put('/:id/order-type', authenticateToken, getEmpresaFromUser, async (req, res) => {
+router.put('/:id/order-type', authenticateToken, getEmpresaFromUser, bloquearSiSunat, async (req, res) => {
   try {
     const { orderType } = req.body;
 
@@ -783,7 +791,7 @@ router.put('/:id/order-type', authenticateToken, getEmpresaFromUser, async (req,
 });
 
 // PUT /api/facturas/:id/job-info - Actualizar información del trabajo
-router.put('/:id/job-info', authenticateToken, getEmpresaFromUser, async (req, res) => {
+router.put('/:id/job-info', authenticateToken, getEmpresaFromUser, bloquearSiSunat, async (req, res) => {
   try {
     const { jobName, jobLocation, workDescription, paymentTerms } = req.body;
 
@@ -823,7 +831,7 @@ router.put('/:id/job-info', authenticateToken, getEmpresaFromUser, async (req, r
 });
 
 // PUT /api/facturas/:id/payment-summary - Actualizar resumen de pago
-router.put('/:id/payment-summary', authenticateToken, getEmpresaFromUser, async (req, res) => {
+router.put('/:id/payment-summary', authenticateToken, getEmpresaFromUser, bloquearSiSunat, async (req, res) => {
   try {
     const { totalMaterials, totalLabor } = req.body;
 
