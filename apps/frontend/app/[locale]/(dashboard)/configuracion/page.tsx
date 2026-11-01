@@ -61,7 +61,7 @@ export default function ConfiguracionPage({
   // Detect tab from URL params
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (tabParam && ['empresa', 'usuario', 'apariencia', 'facturacion', 'notificaciones', 'suscripcion'].includes(tabParam)) {
+    if (tabParam && ['empresa', 'usuario', 'apariencia', 'facturacion', 'notificaciones', 'sunat', 'suscripcion'].includes(tabParam)) {
       setActiveTab(tabParam as Tab);
     }
   }, [searchParams]);

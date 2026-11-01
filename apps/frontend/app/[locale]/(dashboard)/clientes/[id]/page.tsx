@@ -19,6 +19,7 @@ interface Cliente {
   direccion: string;
   email: string;
   telefono: string;
+  esAgenteRetencion?: boolean;
   createdAt: string;
 }
 
@@ -38,6 +39,7 @@ export default function ClienteDetailPage({
 }) {
   const t = useTranslations('clients');
   const tInvoices = useTranslations('invoices');
+  const tSunat = useTranslations('sunat.clientes');
   const router = useRouter();
   const { empresa } = useAuth();
   const { showSuccess, showError } = useToast();
@@ -55,6 +57,7 @@ export default function ClienteDetailPage({
     direccion: '',
     email: '',
     telefono: '',
+    esAgenteRetencion: false,
   });
 
   useEffect(() => {
@@ -73,6 +76,7 @@ export default function ClienteDetailPage({
         direccion: response.direccion || '',
         email: response.email || '',
         telefono: response.telefono || '',
+        esAgenteRetencion: Boolean(response.esAgenteRetencion),
       });
       
       // Load client invoices
@@ -267,13 +271,21 @@ export default function ClienteDetailPage({
                     onChange={(e) => setFormData({ ...formData, tipoDocumento: e.target.value })}
                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
                   >
-                    <option value="OTHER">Other / None</option>
-                    <option value="SSN">SSN (Social Security Number)</option>
-                    <option value="EIN">EIN (Employer ID Number)</option>
-                    <option value="ITIN">ITIN (Individual Tax ID)</option>
-                    <option value="DRIVER_LICENSE">Driver's License</option>
-                    <option value="STATE_ID">State ID</option>
-                    <option value="PASSPORT">Passport</option>
+                    {empresa?.pais === 'PE' ? (
+                      (['RUC', 'DNI', 'CE', 'PASAPORTE', 'OTHER'] as const).map((codigo) => (
+                        <option key={codigo} value={codigo}>{tSunat(`tiposDoc.${codigo}`)}</option>
+                      ))
+                    ) : (
+                      <>
+                        <option value="OTHER">Other / None</option>
+                        <option value="SSN">SSN (Social Security Number)</option>
+                        <option value="EIN">EIN (Employer ID Number)</option>
+                        <option value="ITIN">ITIN (Individual Tax ID)</option>
+                        <option value="DRIVER_LICENSE">Driver's License</option>
+                        <option value="STATE_ID">State ID</option>
+                        <option value="PASSPORT">Passport</option>
+                      </>
+                    )}
                   </select>
                 </div>
                 
@@ -284,6 +296,17 @@ export default function ClienteDetailPage({
                   placeholder="Optional"
                 />
               </div>
+
+              {empresa?.pais === 'PE' && (
+                <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                  <input
+                    type="checkbox"
+                    checked={formData.esAgenteRetencion}
+                    onChange={(e) => setFormData({ ...formData, esAgenteRetencion: e.target.checked })}
+                  />
+                  {tSunat('agenteRetencion')}
+                </label>
+              )}
 
               {/* Actions */}
               <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-gray-700">

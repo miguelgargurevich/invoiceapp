@@ -28,6 +28,21 @@
   inicial falla, sale el toast pero la pantalla se queda en el esqueleto (`inicial` sigue en `null`): mejorar con un estado de error.
   (d) La pantalla no se probó en el navegador (Tarea 10).
   Pendiente: push y OK de Miguel (sesión principal).
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t9-integracion`, rama `feat/sunatf-t9-integracion`):
+  Tarea 9 del plan del frontend SUNAT (integración: menú, redirección, dashboard y clientes peruanos). Hecho:
+  `components/global/Sidebar.tsx` cambia «Facturas» por «Comprobantes» (`/comprobantes`) cuando `empresa.pais === 'PE'`;
+  `facturas/page.tsx` redirige con `router.replace` a `/comprobantes` si el emisor es peruano; `dashboard/page.tsx` muestra
+  `<AlertasSunat locale={locale} />` solo para PE; `clientes/nuevo` y `clientes/[id]` usan los tipos de documento SUNAT
+  (RUC, DNI, CE, PASAPORTE, OTHER) para PE, con la casilla «Agente de retención» (`esAgenteRetencion`); las opciones de EE. UU.
+  quedan igual. `configuracion/page.tsx`: `?tab=sunat` se acepta en la lista de pestañas permitidas (único cambio).
+  Pruebas: `npx tsc --noEmit` sin errores y `npm test` 35/35. Mutaciones (un archivo cada una, restaurado con `cp` + `cmp`,
+  `tsc` 0 tras restaurar): prop inventado en `AlertasSunat`, en el `<input>` de la casilla (nuevo y detalle), propiedad
+  inventada `paisInventado` en Sidebar y facturas, y `TabInventada` en configuración: 6 de 6 en rojo.
+  Gotchas: `next lint` no se usó (roto en el repo, ver Tarea 4). No hay pruebas de UI para esta tarea: lo verificado es
+  tipado y las mutaciones, no el render en el navegador (eso es la Tarea 10). El `tipoDocumento` inicial de «nuevo» depende
+  de que `empresa` esté cargada al montar; el layout del dashboard espera a `loading` del AuthContext, que pasa a `false`
+  después de `loadEmpresa()`. Commit en la rama; sin push.
+
 - 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t5-componentes`, rama `feat/sunatf-t5-componentes`):
   Tarea 5 del plan del frontend SUNAT (componentes de estado, acciones, anulación, historial y alertas). Hecho, en
   `apps/frontend/components/sunat/`: `EstadoSunatBadge.tsx`, `HistorialEnvios.tsx`, `AlertasSunat.tsx`, `AnularModal.tsx` y
