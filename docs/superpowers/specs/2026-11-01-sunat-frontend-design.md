@@ -137,7 +137,11 @@ Código nuevo:
 
 - Frontend, lógica pura: `apps/frontend/lib/sunat/*.test.ts` con `node --test` (Node 26 ejecuta TypeScript con solo
   tipos borrables, sin dependencias nuevas). Script `test` en `apps/frontend/package.json`:
-  `node --test "lib/**/*.test.ts"`. Casos mínimos: `accionesPermitidas` por cada estado; `etiquetaEstado` de todos;
+  `node --test "lib/**/*.test.ts"`. Regla para que Node y Next lean los mismos archivos: `estados.ts` y
+  `formulario.ts` no importan código de otros archivos en tiempo de ejecución (entre ellos y desde `tipos.ts` solo
+  `import type`, que se borra); los `.test.ts` importan el archivo probado con extensión (`./estados.ts`), y no usan
+  sintaxis que no se pueda borrar (enums, `namespace`, parámetros de propiedad). `api.ts` no se prueba con `node --test`.
+  Casos mínimos: `accionesPermitidas` por cada estado; `etiquetaEstado` de todos;
   `aPayload` para factura contado, crédito con cuotas, detracción, nota de crédito con documento afectado y boleta;
   `repartirCuotas` suma exacto al céntimo (el residuo va a la última) y fechas mensuales; `camposVisibles`
   (detracción solo con `1001`, percepción solo con emisor agente).
