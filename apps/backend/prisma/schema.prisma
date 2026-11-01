@@ -575,11 +575,16 @@ model Plan {
   priceMonthly    Decimal  @map("price_monthly") @db.Decimal(10, 2)
   priceYearly     Decimal  @map("price_yearly") @db.Decimal(10, 2)
   currency        String   @default("USD")
-  
+  pais            String   @default("US") // "US" | "PE"
+
   // Stripe IDs
   stripePriceIdMonthly String? @map("stripe_price_id_monthly")
   stripePriceIdYearly  String? @map("stripe_price_id_yearly")
   stripeProductId      String? @map("stripe_product_id")
+
+  // Culqi (planes de Perú)
+  culqiPlanIdMensual String? @map("culqi_plan_id_mensual")
+  culqiPlanIdAnual   String? @map("culqi_plan_id_anual")
   
   // Limits (-1 means unlimited)
   maxInvoicesPerMonth   Int     @default(-1) @map("max_invoices_per_month")
@@ -597,6 +602,7 @@ model Plan {
   hasAdvancedReports    Boolean @default(false) @map("has_advanced_reports")
   hasPrioritySupport    Boolean @default(false) @map("has_priority_support")
   hasApiAccess          Boolean @default(false) @map("has_api_access")
+  hasRegimenesSunat     Boolean @default(false) @map("has_regimenes_sunat") // detracción y percepción
   
   // Metadata
   isActive      Boolean  @default(true) @map("is_active")
@@ -625,6 +631,12 @@ model Subscription {
   // Stripe
   stripeCustomerId      String? @unique @map("stripe_customer_id")
   stripeSubscriptionId  String? @unique @map("stripe_subscription_id")
+
+  // Proveedor de pago: "stripe" (EE. UU.) | "culqi" (Perú)
+  proveedorPago         String  @default("stripe") @map("proveedor_pago")
+  culqiCustomerId       String? @map("culqi_customer_id")
+  culqiCardId           String? @map("culqi_card_id")
+  culqiSubscriptionId   String? @unique @map("culqi_subscription_id")
   
   // Dates
   trialStart          DateTime? @map("trial_start")
@@ -663,6 +675,15 @@ model UsageEvent {
   @@index([eventType])
   @@index([createdAt])
   @@map("usage_events")
+}
+
+// Eventos de Culqi ya procesados (idempotencia del webhook)
+model EventoCulqi {
+  id          String   @id // evt_test_… / evt_live_…
+  tipo        String
+  procesadoEn DateTime @default(now()) @map("procesado_en")
+
+  @@map("eventos_culqi")
 }
 
 // 🇵🇪 Emisor SUNAT (1:1 con la empresa). Los secretos van cifrados (src/sunat/seguridad/cifrado.js).

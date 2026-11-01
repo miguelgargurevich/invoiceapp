@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { authenticateToken, getEmpresaFromUser } = require('../middleware/auth');
 const prisma = require('../utils/prisma');
+const { planGratisDe } = require('../planes/catalogo');
 
 // Initialize Stripe with your secret key
 // Remember to switch to your live secret key in production
@@ -369,17 +370,18 @@ router.post('/switch-to-free', authenticateToken, getEmpresaFromUser, async (req
       include: { plan: true }
     });
 
-    // Get the free plan
-    const freePlan = await prisma.plan.findUnique({
-      where: { slug: 'free' }
-    });
+    // Plan gratis del país de la empresa (EE. UU.: free; Perú: pe-gratis)
+    const freePlan = await planGratisDe(prisma, req.empresa.pais);
 
     if (!freePlan) {
       return res.status(404).json({ error: 'Free plan not found' });
     }
 
-    // If user has an active Stripe subscription, cancel it
-    if (subscription?.stripeSubscriptionId) {
+    // Suscripción de Culqi (Perú): nunca se llama a Stripe
+    if (subscription?.proveedorPago === 'culqi') {
+      // La Tarea 2 cancela en Culqi aquí
+    } else if (subscription?.stripeSubscriptionId) {
+      // If user has an active Stripe subscription, cancel it
       try {
         await stripe.subscriptions.cancel(subscription.stripeSubscriptionId);
         console.log(`[SUBSCRIPTIONS] Canceled Stripe subscription ${subscription.stripeSubscriptionId} for empresa ${req.empresa.id}`);
@@ -398,6 +400,7 @@ router.post('/switch-to-free', authenticateToken, getEmpresaFromUser, async (req
         status: 'ACTIVE',
         billingInterval: 'MONTH',
         stripeSubscriptionId: null,
+        culqiSubscriptionId: null,
         cancelAtPeriodEnd: false,
         canceledAt: null,
         currentPeriodStart: now,
@@ -577,26 +580,24 @@ router.post('/initialize', authenticateToken, getEmpresaFromUser, async (req, re
       return res.json({ subscription: existingSubscription, message: 'Subscription already exists' });
     }
 
-    // Get the selected plan
+    // Plan elegido: por id o por slug (el asistente manda el slug).
+    // Si no existe o es de otro país que la empresa, va el plan gratis de su país.
+    const paisEmpresa = req.empresa.pais || 'US';
     let selectedPlan = null;
     if (planId) {
-      selectedPlan = await prisma.plan.findUnique({
-        where: { id: planId }
+      selectedPlan = await prisma.plan.findFirst({
+        where: { OR: [{ id: planId }, { slug: planId }] }
       });
     }
+    if (!selectedPlan || selectedPlan.pais !== paisEmpresa) {
+      selectedPlan = await planGratisDe(prisma, paisEmpresa);
+    }
 
-    // If no plan specified or not found, use free plan
-    if (!selectedPlan) {
-      selectedPlan = await prisma.plan.findFirst({
-        where: { 
-          OR: [
-            { slug: 'free' },
-            { priceMonthly: 0 }
-          ],
-          isActive: true
-        },
-        orderBy: { displayOrder: 'asc' }
-      });
+    // Perú: el plan de pago se contrata con Culqi desde Configuración; aquí solo queda el gratis activo.
+    let pagoPendiente;
+    if (paisEmpresa === 'PE' && selectedPlan && Number(selectedPlan.priceMonthly) > 0) {
+      pagoPendiente = selectedPlan.slug;
+      selectedPlan = await planGratisDe(prisma, 'PE');
     }
 
     if (!selectedPlan) {
@@ -607,7 +608,7 @@ router.post('/initialize', authenticateToken, getEmpresaFromUser, async (req, re
     let subscriptionData;
 
     // Check if it's a free plan (price is 0)
-    const isFree = selectedPlan.priceMonthly === 0 && selectedPlan.priceYearly === 0;
+    const isFree = Number(selectedPlan.priceMonthly) === 0 && Number(selectedPlan.priceYearly) === 0;
 
     if (isFree) {
       // FREE PLAN: Create active subscription immediately (no trial)
@@ -653,7 +654,7 @@ router.post('/initialize', authenticateToken, getEmpresaFromUser, async (req, re
 
     console.log(`[SUBSCRIPTIONS] Subscription initialized successfully for empresa ${req.empresa.id}`);
 
-    res.json({ subscription });
+    res.json({ subscription, pagoPendiente });
   } catch (error) {
     console.error('Error initializing subscription:', error);
     res.status(500).json({ error: 'Error initializing subscription' });

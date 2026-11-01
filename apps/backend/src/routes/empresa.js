@@ -73,6 +73,7 @@ router.put('/mi-empresa', authenticateToken, async (req, res) => {
       serieProforma: req.body.serieProforma || 'P001',
       licencia: req.body.licencia,
       setupCompleted: req.body.setupCompleted || false,
+      pais: ['US', 'PE'].includes(req.body.pais) ? req.body.pais : undefined,
       userId: req.user.id
     };
 
@@ -80,6 +81,11 @@ router.put('/mi-empresa', authenticateToken, async (req, res) => {
     Object.keys(empresaData).forEach(key => 
       empresaData[key] === undefined && delete empresaData[key]
     );
+
+    if (existingEmpresa && empresaData.pais && empresaData.pais !== existingEmpresa.pais) {
+      const emisor = await prisma.emisorSunat.findUnique({ where: { empresaId: existingEmpresa.id }, select: { id: true } });
+      if (emisor) delete empresaData.pais; // ya factura en SUNAT: el país no cambia desde el asistente
+    }
 
     let resultEmpresa;
 

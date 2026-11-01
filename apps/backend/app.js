@@ -175,63 +175,13 @@ const subscriptionsRoutes = require('./src/routes/subscriptions');
 app.get('/api/subscriptions/plans', limiter, async (req, res) => {
   try {
     const prisma = require('./src/utils/prisma');
+    const { planPublico } = require('./src/planes/catalogo');
+    const pais = req.query.pais === 'PE' ? 'PE' : 'US';
     const plans = await prisma.plan.findMany({
-      where: { isActive: true },
+      where: { isActive: true, pais },
       orderBy: { displayOrder: 'asc' }
     });
-    
-    // Transform plans to include features array for frontend
-    const transformedPlans = plans.map(plan => {
-      const features = [];
-      
-      // Add invoice limit
-      if (plan.maxInvoicesPerMonth === -1) {
-        features.push('Unlimited invoices');
-      } else {
-        features.push(`${plan.maxInvoicesPerMonth} invoices per month`);
-      }
-      
-      // Add client limit
-      if (plan.maxClients === -1) {
-        features.push('Unlimited clients');
-      } else {
-        features.push(`${plan.maxClients} clients`);
-      }
-      
-      // Add storage
-      if (plan.maxStorageMb >= 1000) {
-        features.push(`${(plan.maxStorageMb / 1024).toFixed(0)}GB storage`);
-      } else {
-        features.push(`${plan.maxStorageMb}MB storage`);
-      }
-      
-      // Add feature flags
-      if (plan.hasProposals) features.push('Proposals');
-      if (plan.hasDigitalSignatures) features.push('Digital signatures');
-      if (plan.hasJobTracking) features.push('Job tracking');
-      if (plan.hasReports) features.push('Reports');
-      if (plan.hasAdvancedReports) features.push('Advanced reports');
-      if (plan.hasCustomBranding) features.push('Custom branding');
-      if (plan.hasMultiCurrency) features.push('Multi-currency');
-      if (plan.hasApiAccess) features.push('API access');
-      if (plan.hasPrioritySupport) features.push('Priority support');
-      
-      return {
-        id: plan.slug,
-        name: plan.name,
-        description: plan.description,
-        priceMonthly: parseFloat(plan.priceMonthly),
-        priceYearly: parseFloat(plan.priceYearly),
-        features,
-        maxInvoices: plan.maxInvoicesPerMonth === -1 ? null : plan.maxInvoicesPerMonth,
-        maxClients: plan.maxClients === -1 ? null : plan.maxClients,
-        maxUsers: null, // Not in current schema
-        isActive: plan.isActive,
-        sortOrder: plan.displayOrder
-      };
-    });
-    
-    res.json(transformedPlans);
+    res.json(plans.map(planPublico));
   } catch (error) {
     console.error('Error fetching plans:', error);
     res.status(500).json({ error: 'Error fetching plans' });

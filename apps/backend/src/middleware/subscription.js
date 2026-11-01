@@ -1,4 +1,5 @@
 const prisma = require('../utils/prisma');
+const { planGratisDe } = require('../planes/catalogo');
 
 /**
  * Get or create subscription for empresa
@@ -11,9 +12,25 @@ async function getOrCreateSubscription(empresaId) {
   });
 
   if (!subscription) {
-    // Find starter plan
+    const empresa = await prisma.empresa.findUnique({ where: { id: empresaId }, select: { pais: true } });
+    const pais = empresa?.pais || 'US';
+
+    if (pais === 'PE') {
+      // Perú: sin prueba gratuita; arranca en el plan gratis.
+      const gratis = await planGratisDe(prisma, 'PE');
+      if (!gratis) return null;
+      subscription = await prisma.subscription.create({
+        data: { empresaId, planId: gratis.id, status: 'ACTIVE', billingInterval: 'MONTH', currentPeriodStart: new Date() },
+        include: { plan: true }
+      });
+      console.log(`[SUBSCRIPTION] Created pe-gratis subscription for empresa ${empresaId}`);
+      return subscription;
+    }
+
+    // Find starter plan (EE. UU.)
     const starterPlan = await prisma.plan.findFirst({
       where: { 
+        pais: 'US',
         OR: [
           { slug: 'starter' },
           { isActive: true }

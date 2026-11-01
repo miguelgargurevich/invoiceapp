@@ -15,6 +15,14 @@
 
 ## Última sesión
 
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/oferta-t1`, rama `feat/oferta-t1` sobre `feat/oferta-peru`): **Tarea 1 de la oferta para Perú** (esquema, planes de Perú y visibilidad por país; plan `docs/superpowers/plans/2026-11-01-oferta-peru.md`):
+  - Esquema: `Plan.pais` (default `US`), `culqiPlanIdMensual/Anual`, `hasRegimenesSunat`; `Subscription.proveedorPago` (default `stripe`), `culqiCustomerId/CardId/SubscriptionId` (único); modelo `EventoCulqi`. Migración `20261101010000_oferta_peru` (con `git add -f`) y semilla `prisma/seed_plans_pe.sql` (4 planes en PEN: pe-gratis, pe-emprendedor, pe-negocio, pe-empresa).
+  - `src/planes/catalogo.js`: `planGratisDe(prisma, pais)`, `planPublico(plan)`. `GET /api/subscriptions/plans?pais=PE|US` filtra por país.
+  - `getOrCreateSubscription`: empresa PE arranca en `pe-gratis` ACTIVE (sin prueba); EE. UU. sin cambios salvo el filtro `pais: 'US'`.
+  - `/initialize` acepta id o slug; si el plan no es del país de la empresa usa el gratis. En PE con plan de pago responde `pagoPendiente: <slug>`. `/switch-to-free` usa el gratis del país y tiene el hueco `// La Tarea 2 cancela en Culqi aquí`.
+  - `PUT /mi-empresa` acepta `pais` (si ya hay emisor SUNAT, no cambia).
+  - Suites: `npm test` 104/104; `TEST_DATABASE_URL=…invoiceapp_test_ofe1 npm run test:db` 58/58 (54 previas + 4 de `planes-pais.test.js`). Mutaciones en rojo: `planGratisDe` fijo a `free` (2 fallos) y quitar «Detracción y percepción» de `planPublico` (1 fallo); restauradas con `cp` + `cmp`.
+  - Gotchas: (1) la base de pruebas no tiene `_prisma_migrations`: se aplica con `prisma db push --accept-data-loss` (el aviso es solo por el índice único nuevo sobre una columna en NULL). El SQL de `migration.sql` coincide con `prisma migrate diff` en columnas, tabla e índice (orden distinto). (2) **Cambio en EE. UU.**: el `isFree` de `/initialize` ahora compara con `Number(...)`; antes un plan gratis salía TRIALING y ahora sale ACTIVE. Lo pidió el plan, pero contradice «nada cambia EE. UU.»: revisar antes de integrar. (3) Sin prueba automática: el filtro `pais` del endpoint público (`app.js` no se monta en pruebas) y `/initialize` / `/switch-to-free`; cubiertos solo por revisión y la prueba de `planPublico`.
 - 2026-11-01 (OpenCode con cadena gratis del gateway `chain:delegar-construccion`, worktree `.claude/worktrees/oc-recibos-aislamiento`, rama `fix/oc-recibos-aislamiento`, sobre `feat/marca-facturo`):
   Refuerzo de seguridad (defensa en profundidad) en `POST /api/job-receipts`:
   - Cambio en `apps/backend/src/routes/jobReceipts.js`: el `findFirst` que valida permiso ahora selecciona `empresaId` y se guarda en variable `documento`; se usan sus datos para la ruta de almacenamiento y se eliminan los dos `findUnique` sin filtro de usuario.
