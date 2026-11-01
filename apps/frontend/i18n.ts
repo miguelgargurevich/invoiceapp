@@ -1,10 +1,11 @@
 import {getRequestConfig} from 'next-intl/server';
 
-// Supported languages - English first as default
+// Idiomas soportados. Español es el predeterminado: Facturo es para Perú (SUNAT, soles, IGV).
+// Quien elige inglés queda guardado en la cookie `preferredLocale`, que manda sobre este valor.
 export const locales = ['en', 'es'] as const;
 export type Locale = (typeof locales)[number];
 
-export const defaultLocale: Locale = 'en';
+export const defaultLocale: Locale = 'es';
 
 export default getRequestConfig(async ({requestLocale}) => {
   // Get the locale from the request

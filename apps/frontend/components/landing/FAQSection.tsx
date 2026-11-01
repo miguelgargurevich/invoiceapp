@@ -9,16 +9,8 @@ export function FAQSection() {
   const t = useTranslations('landing');
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-  const faqs = [
-    { id: 1 },
-    { id: 2 },
-    { id: 3 },
-    { id: 4 },
-    { id: 5 },
-    { id: 6 },
-    { id: 7 },
-    { id: 8 },
-  ];
+  // Cada idioma trae sus propias preguntas (en español son 7, en inglés 8).
+  const faqs = Object.keys(t.raw('faq.items') as Record<string, unknown>).map((id) => ({ id }));
 
   return (
     <section id="faq" className="py-20 md:py-32 bg-white dark:bg-slate-900">

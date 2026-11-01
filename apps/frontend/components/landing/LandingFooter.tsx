@@ -15,7 +15,7 @@ export function LandingFooter() {
     product: [
       { href: '#features', label: t('footer.links.features') },
       { href: '#pricing', label: t('footer.links.pricing') },
-      { href: '#testimonials', label: t('footer.links.testimonials') },
+      ...(t.has('footer.links.testimonials') ? [{ href: '#testimonials', label: t('footer.links.testimonials') }] : []),
       { href: '#faq', label: t('footer.links.faq') },
     ],
     company: [

@@ -1,57 +1,75 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { 
+import {
   FileText,
   Send,
   PenTool,
   DollarSign,
-  ArrowRight
+  ArrowRight,
+  UserPlus,
+  KeyRound,
+  FilePlus,
+  ShieldCheck,
+  Wallet
 } from 'lucide-react';
 
 export function HowItWorksSection() {
   const t = useTranslations('landing');
+  const locale = useLocale();
 
+  // Colores y degradados por paso (los mismos en ambos idiomas).
   // Timeline steps matching proposal flow: Created → Sent → Signed → Invoiced → Paid
-  const steps = [
-    { 
-      icon: FileText, 
+  const stepsEn = [
+    {
+      icon: FileText,
       color: 'blue',
       gradient: 'from-primary-500 to-primary-700',
       shadow: 'shadow-primary-500/30'
     },
-    { 
-      icon: Send, 
+    {
+      icon: Send,
       color: 'indigo',
       gradient: 'from-primary-500 to-primary-700',
       shadow: 'shadow-primary-500/30'
     },
-    { 
-      icon: PenTool, 
+    {
+      icon: PenTool,
       color: 'violet',
       gradient: 'from-violet-500 to-violet-700',
       shadow: 'shadow-violet-500/30'
     },
-    { 
-      icon: FileText, 
+    {
+      icon: FileText,
       color: 'amber',
       gradient: 'from-amber-500 to-amber-700',
       shadow: 'shadow-amber-500/30'
     },
-    { 
-      icon: DollarSign, 
+    {
+      icon: DollarSign,
       color: 'emerald',
       gradient: 'from-emerald-500 to-emerald-700',
       shadow: 'shadow-emerald-500/30'
     },
   ];
 
+  // Español (Perú): crear cuenta, conectar certificado, emitir, respuesta de SUNAT, cobrar.
+  const stepsEs = [
+    { icon: UserPlus, color: 'blue', gradient: 'from-primary-500 to-primary-700', shadow: 'shadow-primary-500/30' },
+    { icon: KeyRound, color: 'indigo', gradient: 'from-primary-500 to-primary-700', shadow: 'shadow-primary-500/30' },
+    { icon: FilePlus, color: 'violet', gradient: 'from-violet-500 to-violet-700', shadow: 'shadow-violet-500/30' },
+    { icon: ShieldCheck, color: 'amber', gradient: 'from-amber-500 to-amber-700', shadow: 'shadow-amber-500/30' },
+    { icon: Wallet, color: 'emerald', gradient: 'from-emerald-500 to-emerald-700', shadow: 'shadow-emerald-500/30' },
+  ];
+
+  const steps = locale === 'es' ? stepsEs : stepsEn;
+
   return (
     <section className="py-20 md:py-32 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#8882_1px,transparent_1px),linear-gradient(to_bottom,#8882_1px,transparent_1px)] bg-[size:24px_24px] opacity-50" />
-      
+
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <motion.div
@@ -76,11 +94,11 @@ export function HowItWorksSection() {
         <div className="relative">
           {/* Connection Line */}
           <div className="hidden lg:block absolute top-12 left-[10%] right-[10%] h-0.5 bg-gradient-to-r from-primary-500 via-violet-500 to-emerald-500 -translate-y-1/2" />
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-4">
             {steps.map((step, index) => {
               const Icon = step.icon;
-              
+
               return (
                 <motion.div
                   key={index}
@@ -97,7 +115,7 @@ export function HowItWorksSection() {
                         <Icon className="w-9 h-9 text-white" />
                       </div>
                     </div>
-                    
+
                     {/* Content */}
                     <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
                       {t(`howItWorks.steps.${index}.title`)}
@@ -106,7 +124,7 @@ export function HowItWorksSection() {
                       {t(`howItWorks.steps.${index}.description`)}
                     </p>
                   </div>
-                  
+
                   {/* Arrow (Mobile/Tablet) */}
                   {index < steps.length - 1 && (
                     <div className="lg:hidden flex justify-center py-6">
@@ -119,18 +137,20 @@ export function HowItWorksSection() {
           </div>
         </div>
 
-        {/* Social Proof */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="text-center mt-16"
-        >
-          <p className="text-slate-600 dark:text-slate-400 font-medium">
-            {t('howItWorks.socialProof')}
-          </p>
-        </motion.div>
+        {/* Social Proof: solo en los idiomas que la traen (en español no hay cifras de clientes todavía). */}
+        {t.has('howItWorks.socialProof') && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="text-center mt-16"
+          >
+            <p className="text-slate-600 dark:text-slate-400 font-medium">
+              {t('howItWorks.socialProof')}
+            </p>
+          </motion.div>
+        )}
       </div>
     </section>
   );

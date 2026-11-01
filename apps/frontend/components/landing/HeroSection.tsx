@@ -11,12 +11,17 @@ import {
   Play,
   Send,
   PenTool,
-  DollarSign
+  DollarSign,
+  ShieldCheck,
+  Receipt,
+  Wallet
 } from 'lucide-react';
+import { datosVistaPrevia } from '@/lib/landing';
 
 export function HeroSection() {
   const t = useTranslations('landing');
   const locale = useLocale();
+  const datos = datosVistaPrevia(locale);
 
   const benefits = [
     t('hero.benefit1'),
@@ -25,7 +30,16 @@ export function HeroSection() {
   ];
 
   // Timeline icons matching proposal flow: Created → Sent → Signed → Invoiced → Paid
-  const timelineSteps = [
+  // En español, los íconos siguen el flujo de comprobantes: emitir, enviar a SUNAT, aceptar, cobrar.
+  const timelineStepsEs = [
+    { icon: FileText, gradient: 'from-primary-500 to-primary-600', bg: 'bg-primary-500' },
+    { icon: Send, gradient: 'from-primary-500 to-primary-600', bg: 'bg-primary-500' },
+    { icon: ShieldCheck, gradient: 'from-violet-500 to-violet-600', bg: 'bg-violet-500' },
+    { icon: Receipt, gradient: 'from-amber-500 to-amber-600', bg: 'bg-amber-500' },
+    { icon: Wallet, gradient: 'from-emerald-500 to-emerald-600', bg: 'bg-emerald-500' },
+  ];
+
+  const timelineStepsEn = [
     { 
       icon: FileText, 
       gradient: 'from-primary-500 to-primary-600',
@@ -52,6 +66,8 @@ export function HeroSection() {
       bg: 'bg-emerald-500'
     },
   ];
+
+  const timelineSteps = locale === 'es' ? timelineStepsEs : timelineStepsEn;
 
   return (
     <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
@@ -165,7 +181,7 @@ export function HeroSection() {
             </div>
             <p className="mt-3 text-sm text-slate-600 dark:text-slate-400">
               <span className="font-semibold text-slate-900 dark:text-white">{t('hero.socialProof.count')}</span>
-              {' '}{t('hero.socialProof.text')}
+              {t.has('hero.socialProof.text') && <>{' '}{t('hero.socialProof.text')}</>}
             </p>
           </motion.div>
         </div>
@@ -192,7 +208,7 @@ export function HeroSection() {
                 </div>
                 <div className="flex-1 flex justify-center">
                   <div className="px-4 py-1 bg-white dark:bg-slate-800 rounded-lg text-xs text-slate-500 dark:text-slate-400 font-mono">
-                    app.facturo.pe
+                    {datos.dominio}
                   </div>
                 </div>
               </div>
@@ -202,9 +218,9 @@ export function HeroSection() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Stats Cards */}
                   {[
-                    { label: t('hero.preview.invoices'), value: '247', color: 'primary' },
-                    { label: t('hero.preview.revenue'), value: '$48,500', color: 'green' },
-                    { label: t('hero.preview.clients'), value: '89', color: 'purple' },
+                    { label: t('hero.preview.invoices'), value: datos.valores[0], color: 'primary' },
+                    { label: t('hero.preview.revenue'), value: datos.valores[1], color: 'green' },
+                    { label: t('hero.preview.clients'), value: datos.valores[2], color: 'purple' },
                   ].map((stat, i) => (
                     <motion.div
                       key={stat.label}
@@ -231,7 +247,18 @@ export function HeroSection() {
                     <div className="h-6 w-20 bg-slate-100 dark:bg-slate-700 rounded animate-pulse" />
                   </div>
                   <div className="space-y-3">
-                    {[1, 2, 3].map((i) => (
+                    {datos.filas?.map((fila) => (
+                      <div key={fila.numero} className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-700 last:border-0">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
+                            <FileText className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                          </div>
+                          <p className="text-sm font-medium text-slate-900 dark:text-white">{fila.numero}</p>
+                        </div>
+                        <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300">{fila.estado}</span>
+                      </div>
+                    ))}
+                    {!datos.filas && [1, 2, 3].map((i) => (
                       <div key={i} className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-700 last:border-0">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">

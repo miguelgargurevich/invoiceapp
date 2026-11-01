@@ -1,23 +1,9 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { 
-  FileText, 
-  Users, 
-  CreditCard, 
-  BarChart3,
-  Globe,
-  Shield,
-  Smartphone,
-  Zap,
-  Clock,
-  FileSignature,
-  Camera,
-  Receipt
-} from 'lucide-react';
-
-const iconMap = {
+import type { LucideIcon } from 'lucide-react';
+import {
   FileText,
   Users,
   CreditCard,
@@ -30,25 +16,61 @@ const iconMap = {
   FileSignature,
   Camera,
   Receipt,
-};
+  FilePen,
+  ShieldCheck,
+  Calculator,
+  Percent,
+  IdCard,
+  FileDown,
+  XCircle,
+  ClipboardList,
+  AlertTriangle,
+  Lock,
+} from 'lucide-react';
+
+interface ItemLanding {
+  // Clave dentro de `landing.features.items` de cada idioma.
+  key: string;
+  icon: LucideIcon;
+  color: string;
+}
+
+// Inglés: los doce ítems de siempre (producto de EE. UU.).
+const ITEMS_EN: ItemLanding[] = [
+  { icon: FileText, color: 'primary', key: 'invoices' },
+  { icon: FileSignature, color: 'purple', key: 'proposals' },
+  { icon: Users, color: 'cyan', key: 'clients' },
+  { icon: CreditCard, color: 'green', key: 'payments' },
+  { icon: BarChart3, color: 'orange', key: 'reports' },
+  { icon: Globe, color: 'blue', key: 'multilang' },
+  { icon: Shield, color: 'red', key: 'signatures' },
+  { icon: Camera, color: 'pink', key: 'photos' },
+  { icon: Receipt, color: 'indigo', key: 'receipts' },
+  { icon: Clock, color: 'teal', key: 'tracking' },
+  { icon: Smartphone, color: 'violet', key: 'mobile' },
+  { icon: Zap, color: 'amber', key: 'fast' },
+];
+
+// Español (Perú): lo que Facturo resuelve para emitir comprobantes en regla.
+const ITEMS_ES: ItemLanding[] = [
+  { icon: FileText, color: 'primary', key: 'comprobantes' },
+  { icon: FilePen, color: 'purple', key: 'notas' },
+  { icon: ShieldCheck, color: 'green', key: 'envio' },
+  { icon: Calculator, color: 'orange', key: 'igv' },
+  { icon: Percent, color: 'pink', key: 'regimenes' },
+  { icon: IdCard, color: 'cyan', key: 'clientes' },
+  { icon: FileDown, color: 'primary', key: 'pdf' },
+  { icon: XCircle, color: 'red', key: 'anulaciones' },
+  { icon: ClipboardList, color: 'teal', key: 'proformas' },
+  { icon: BarChart3, color: 'blue', key: 'reportes' },
+  { icon: AlertTriangle, color: 'amber', key: 'rechazos' },
+  { icon: Lock, color: 'violet', key: 'claves' },
+];
 
 export function FeaturesSection() {
   const t = useTranslations('landing');
-
-  const features = [
-    { icon: 'FileText', color: 'primary', key: 'invoices' },
-    { icon: 'FileSignature', color: 'purple', key: 'proposals' },
-    { icon: 'Users', color: 'cyan', key: 'clients' },
-    { icon: 'CreditCard', color: 'green', key: 'payments' },
-    { icon: 'BarChart3', color: 'orange', key: 'reports' },
-    { icon: 'Globe', color: 'blue', key: 'multilang' },
-    { icon: 'Shield', color: 'red', key: 'signatures' },
-    { icon: 'Camera', color: 'pink', key: 'photos' },
-    { icon: 'Receipt', color: 'indigo', key: 'receipts' },
-    { icon: 'Clock', color: 'teal', key: 'tracking' },
-    { icon: 'Smartphone', color: 'violet', key: 'mobile' },
-    { icon: 'Zap', color: 'amber', key: 'fast' },
-  ];
+  const locale = useLocale();
+  const features = locale === 'es' ? ITEMS_ES : ITEMS_EN;
 
   const colorClasses: Record<string, { bg: string; icon: string; glow: string }> = {
     primary: {
@@ -138,9 +160,9 @@ export function FeaturesSection() {
         {/* Features Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {features.map((feature, index) => {
-            const Icon = iconMap[feature.icon as keyof typeof iconMap];
+            const Icon = feature.icon;
             const colors = colorClasses[feature.color];
-            
+
             return (
               <motion.div
                 key={feature.key}

@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { motion } from 'framer-motion';
 import { Check, Sparkles, Zap, Crown, Building2 } from 'lucide-react';
 import { formatPrice } from '@/lib/precios';
+import { equivalenteMensual, porcentajeAhorro } from '@/lib/landing';
 
 interface Plan {
   id: string;
@@ -242,11 +243,7 @@ export function PricingSection() {
 
   const displayPlans = plans.length > 0 ? plans : (locale === 'es' ? defaultPlansPe : defaultPlans);
 
-  const calculateYearlySavings = (plan: Plan) => {
-    if (!plan.priceMonthly || !plan.priceYearly) return 0;
-    const monthlyTotal = plan.priceMonthly * 12;
-    return Math.round(((monthlyTotal - plan.priceYearly) / monthlyTotal) * 100);
-  };
+  const calculateYearlySavings = (plan: Plan) => porcentajeAhorro(plan.priceMonthly, plan.priceYearly);
 
   const planIcons: Record<string, typeof Sparkles> = {
     free: Sparkles,
@@ -368,7 +365,7 @@ export function PricingSection() {
               const isPopular = plan.isPopular ?? planKey === 'pro';
               const moneda = plan.currency || 'USD';
               const price = isYearly ? plan.priceYearly : plan.priceMonthly;
-              const monthlyPrice = isYearly ? Math.round(plan.priceYearly / 12) : plan.priceMonthly;
+              const monthlyPrice = isYearly ? equivalenteMensual(plan.priceYearly) : plan.priceMonthly;
               const savings = calculateYearlySavings(plan);
 
               return (
@@ -423,7 +420,7 @@ export function PricingSection() {
                     {isYearly && savings > 0 && (
                       <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded text-xs font-semibold">
                         <Zap className="h-3 w-3" />
-                        Save {savings}%
+                        {t('pricing.save').replace(/\d+%/, `${savings}%`)}
                       </div>
                     )}
                     {moneda === 'PEN' && (

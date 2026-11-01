@@ -30,7 +30,8 @@ export function LandingHeader() {
   const navItems = [
     { href: '#features', label: t('nav.features') },
     { href: '#pricing', label: t('nav.pricing') },
-    { href: '#testimonials', label: t('nav.testimonials') },
+    // Testimonios solo en los idiomas que los traen (en español todavía no hay clientes reales que citar).
+    ...(t.has('nav.testimonials') ? [{ href: '#testimonials', label: t('nav.testimonials') }] : []),
     { href: '#faq', label: t('nav.faq') },
   ];
 

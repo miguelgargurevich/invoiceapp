@@ -3,6 +3,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { URL_SITIO } from '@/lib/sitio';
 
+// Metadatos por defecto en español (Facturo es para Perú). El inglés se define en app/[locale]/layout.tsx.
 export const viewport: Viewport = {
   themeColor: '#6B2C6E',
 };
@@ -10,26 +11,23 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(URL_SITIO),
   title: {
-    default: 'Facturo - Professional Invoice & Proposal Management System',
+    default: 'Facturo — Facturación electrónica SUNAT para emprendedores y pymes del Perú',
     template: '%s | Facturo'
   },
-  description: 'Comprehensive invoice and proposal management system for contractors and businesses. Create professional invoices, track payments, manage clients, and streamline your billing process.',
+  description: 'Emite facturas y boletas electrónicas válidas ante SUNAT, con el IGV calculado y el CDR guardado. Plan gratis para empezar.',
   keywords: [
-    'invoice software',
-    'proposal management',
-    'billing system',
-    'contractor invoicing',
-    'payment tracking',
-    'client management',
-    'business invoicing',
-    'electronic billing',
-    'invoice generator',
-    'proposal creator',
-    'work order management',
-    'payment terms',
-    'job tracking',
-    'construction invoicing',
-    'professional billing'
+    'facturación electrónica',
+    'facturación electrónica Perú',
+    'factura electrónica SUNAT',
+    'boleta electrónica',
+    'nota de crédito electrónica',
+    'comprobantes electrónicos',
+    'emisor electrónico SUNAT',
+    'IGV',
+    'detracción',
+    'emprendedores Perú',
+    'pymes Perú',
+    'facturador electrónico'
   ],
   applicationName: 'Facturo',
   icons: {
@@ -49,25 +47,25 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: 'en_US',
-    alternateLocale: ['es_ES'],
+    locale: 'es_PE',
+    alternateLocale: ['en_US'],
     url: URL_SITIO,
-    title: 'Facturo - Professional Invoice & Proposal Management System',
-    description: 'Comprehensive invoice and proposal management system for contractors and businesses. Create professional invoices, track payments, manage clients, and streamline your billing process.',
+    title: 'Facturo — Facturación electrónica SUNAT para emprendedores y pymes del Perú',
+    description: 'Emite facturas y boletas electrónicas válidas ante SUNAT, con el IGV calculado y el CDR guardado. Plan gratis para empezar.',
     siteName: 'Facturo',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'Facturo - Professional Invoicing Solution',
+        alt: 'Facturo — Facturación electrónica SUNAT',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Facturo - Professional Invoice & Proposal Management',
-    description: 'Create professional invoices, track payments, and manage your business billing efficiently.',
+    title: 'Facturo — Facturación electrónica SUNAT',
+    description: 'Emite comprobantes electrónicos válidos ante SUNAT y guarda el CDR. Plan gratis para empezar.',
     images: ['/og-image.png'],
     creator: '@invoiceapp',
   },
@@ -98,42 +96,6 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <head>
         <link rel="canonical" href={URL_SITIO} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'SoftwareApplication',
-              name: 'Facturo',
-              applicationCategory: 'BusinessApplication',
-              offers: {
-                '@type': 'Offer',
-                price: '0',
-                priceCurrency: 'USD'
-              },
-              operatingSystem: 'Web',
-              description: 'Professional invoice and proposal management system for contractors and businesses. Features include invoice creation, payment tracking, client management, work order tracking, and comprehensive reporting.',
-              features: [
-                'Invoice Creation and Management',
-                'Proposal Generation',
-                'Payment Tracking',
-                'Client Management',
-                'Work Order Management',
-                'Job Photo Documentation',
-                'Digital Signatures',
-                'Multi-language Support',
-                'Customizable Templates',
-                'Financial Reporting'
-              ],
-              screenshot: `${URL_SITIO}/screenshot.png`,
-              aggregateRating: {
-                '@type': 'AggregateRating',
-                ratingValue: '4.8',
-                ratingCount: '150'
-              }
-            })
-          }}
-        />
       </head>
       <body className="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 antialiased">
         {children}

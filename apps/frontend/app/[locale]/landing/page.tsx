@@ -24,7 +24,8 @@ export default function LandingPage() {
         <FeaturesSection />
         <HowItWorksSection />
         <PricingSection />
-        <TestimonialsSection />
+        {/* Testimonios y cifras de clientes solo donde el idioma los trae (en español no hay clientes reales todavía). */}
+        {t.has('testimonials.title') && <TestimonialsSection />}
         <FAQSection />
         <CTASection />
       </main>

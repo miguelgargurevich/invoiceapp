@@ -1803,123 +1803,120 @@
   },
   "landing": {
     "nav": {
-      "features": "Características",
+      "features": "Funciones",
       "pricing": "Precios",
-      "testimonials": "Testimonios",
       "faq": "Preguntas",
-      "login": "Iniciar Sesión",
-      "getStarted": "Empezar Gratis"
+      "login": "Iniciar sesión",
+      "getStarted": "Empieza gratis"
     },
     "hero": {
-      "badge": "✨ Facturación Profesional Simplificada",
-      "titleLine1": "Crea Facturas",
-      "titleLine2": "Profesionales en Minutos",
-      "subtitle": "La plataforma de facturación todo en uno para contratistas, freelancers y pequeñas empresas. Crea facturas hermosas, rastrea pagos y haz crecer tu negocio.",
-      "benefit1": "Gratis para empezar",
-      "benefit2": "Sin tarjeta de crédito",
-      "benefit3": "Cancela cuando quieras",
+      "badge": "Facturación electrónica SUNAT",
+      "titleLine1": "Emite facturas y boletas",
+      "titleLine2": "electrónicas en minutos",
+      "subtitle": "Facturo firma tus comprobantes con tu certificado, los envía a SUNAT y guarda el CDR. El IGV se calcula solo y te avisamos si algo se rechaza. Hecho para emprendedores y pymes del Perú.",
+      "benefit1": "Plan gratis para siempre",
+      "benefit2": "Sin tarjeta para empezar",
+      "benefit3": "Conexión directa con SUNAT",
       "cta": {
-        "primary": "Prueba Gratis",
-        "secondary": "Ver Cómo Funciona"
+        "primary": "Empieza gratis",
+        "secondary": "Cómo funciona"
       },
       "socialProof": {
-        "count": "10,000+",
-        "text": "profesionales ya confían en Facturo"
+        "count": "Factura · Boleta · Notas de crédito y débito · Detracción y percepción"
       },
       "preview": {
-        "invoices": "Total Facturas",
-        "revenue": "Ingresos Mensuales",
-        "clients": "Clientes Activos",
-        "recentInvoices": "Facturas Recientes"
+        "invoices": "Comprobantes del mes",
+        "revenue": "Ventas del mes",
+        "clients": "Aceptados por SUNAT",
+        "recentInvoices": "Últimos comprobantes"
       }
     },
     "features": {
-      "badge": "Características Poderosas",
-      "title": "Todo lo que Necesitas para Cobrar Más Rápido",
-      "subtitle": "Un kit completo de herramientas diseñado para optimizar tu proceso de facturación y ayudarte a enfocarte en lo que más importa.",
+      "badge": "Todo para facturar en regla",
+      "title": "Comprobantes electrónicos sin complicaciones",
+      "subtitle": "Lo que exige SUNAT, resuelto: tú solo eliges el cliente y los productos.",
       "items": {
-        "invoices": {
-          "title": "Facturas Profesionales",
-          "description": "Crea facturas impresionantes con plantillas personalizables en segundos."
+        "comprobantes": {
+          "title": "Factura y boleta electrónica",
+          "description": "Comprobantes válidos ante SUNAT, con serie y número correlativo automáticos."
         },
-        "proposals": {
-          "title": "Proformas Inteligentes",
-          "description": "Gana más clientes con proformas y cotizaciones profesionales."
+        "notas": {
+          "title": "Notas de crédito y débito",
+          "description": "Corrige o anula un comprobante con la nota correcta, ligada al original."
         },
-        "clients": {
-          "title": "Gestión de Clientes",
-          "description": "Mantén toda la información de tus clientes organizada en un solo lugar."
+        "envio": {
+          "title": "Envío automático a SUNAT",
+          "description": "Firmamos el XML con tu certificado, lo enviamos y guardamos la constancia (CDR)."
         },
-        "payments": {
-          "title": "Seguimiento de Pagos",
-          "description": "Rastrea pagos, envía recordatorios y cobra a tiempo."
+        "igv": {
+          "title": "IGV sin errores",
+          "description": "Operaciones gravadas, exoneradas e inafectas, ICBPER y el monto en letras, calculados solos."
         },
-        "reports": {
-          "title": "Reportes Financieros",
-          "description": "Obtén información sobre tu negocio con análisis detallados."
+        "regimenes": {
+          "title": "Detracción, percepción y retención",
+          "description": "Aplica el régimen que corresponde y muestra la leyenda en el comprobante."
         },
-        "multilang": {
-          "title": "Multi-Idioma",
-          "description": "Crea facturas en múltiples idiomas para clientes globales."
+        "clientes": {
+          "title": "Clientes con RUC o DNI",
+          "description": "Validamos el RUC con su dígito verificador antes de emitir."
         },
-        "signatures": {
-          "title": "Firmas Digitales",
-          "description": "Recolecta firmas electrónicas legalmente vinculantes."
+        "pdf": {
+          "title": "PDF con código QR",
+          "description": "La representación impresa, lista para descargar o enviar por correo."
         },
-        "photos": {
-          "title": "Documentación Fotográfica",
-          "description": "Adjunta fotos de trabajo y evidencia visual a las facturas."
+        "anulaciones": {
+          "title": "Anulaciones dentro del plazo",
+          "description": "Comunicación de baja para facturas y resumen diario para boletas."
         },
-        "receipts": {
-          "title": "Gestión de Recibos",
-          "description": "Rastrea gastos y adjunta recibos a los trabajos."
+        "proformas": {
+          "title": "Proformas",
+          "description": "Cotiza y convierte la proforma aceptada en comprobante."
         },
-        "tracking": {
-          "title": "Control de Tiempo",
-          "description": "Registra horas de trabajo y sigue el progreso del proyecto."
+        "reportes": {
+          "title": "Reportes de ventas",
+          "description": "Ventas por cliente, por producto y por mes."
         },
-        "mobile": {
-          "title": "Optimizado para Móvil",
-          "description": "Gestiona tu negocio desde cualquier dispositivo, donde sea."
+        "rechazos": {
+          "title": "Avisos de rechazo",
+          "description": "Si SUNAT rechaza u observa un comprobante, lo ves en tu panel con el motivo."
         },
-        "fast": {
-          "title": "Ultra Rápido",
-          "description": "Crea y envía facturas en menos de 2 minutos."
+        "claves": {
+          "title": "Tus claves, cifradas",
+          "description": "El certificado y tu usuario SOL se guardan cifrados (AES-256)."
         }
       }
     },
     "howItWorks": {
-      "badge": "Proceso Simple",
-      "title": "De la Propuesta al Pago en 5 Pasos",
-      "subtitle": "Rastrea tu flujo de trabajo completo desde la creación de propuestas hasta recibir el pago. El timeline visual te mantiene informado en cada etapa.",
-      "socialProof": "Más de 10,000 profesionales ya confían en Facturo",
+      "badge": "En 5 pasos",
+      "title": "De tu RUC a tu primera factura",
+      "subtitle": "Configúralo una vez y emite desde el primer día.",
       "steps": {
         "0": {
-          "title": "Crear Propuesta",
-          "description": "Redacta propuestas profesionales con plantillas personalizadas para tu industria."
+          "title": "Crea tu cuenta",
+          "description": "Registra tu empresa con su RUC y elige tu plan."
         },
         "1": {
-          "title": "Enviar al Cliente",
-          "description": "Comparte tu propuesta por email con solicitud de firma electrónica."
+          "title": "Conecta tu certificado",
+          "description": "Sube tu certificado digital y tu usuario SOL secundario. Puedes probar primero en el ambiente de pruebas de SUNAT."
         },
         "2": {
-          "title": "Obtener Firma",
-          "description": "El cliente revisa y firma digitalmente. No se requiere impresión."
+          "title": "Emite",
+          "description": "Elige factura o boleta, el cliente y los productos. El IGV se calcula solo."
         },
         "3": {
-          "title": "Convertir a Factura",
-          "description": "Las propuestas aceptadas se convierten en facturas con un clic."
+          "title": "SUNAT responde",
+          "description": "Facturo envía el comprobante y guarda el CDR. Si hay un problema, te avisa."
         },
         "4": {
-          "title": "Recibir Pago",
-          "description": "Rastrea pagos y marca facturas como pagadas automáticamente."
+          "title": "Envía y cobra",
+          "description": "Manda el PDF a tu cliente por correo y controla lo que está pendiente de cobro."
         }
       }
     },
     "pricing": {
       "badge": "Precios Simples",
       "title": "Planes que Crecen con tu Negocio",
-      "subtitle": "Empieza gratis, actualiza cuando lo necesites. Sin cargos ocultos, cancela cuando quieras.",
+      "subtitle": "Empieza gratis con 10 comprobantes al mes. Los precios incluyen IGV.",
       "monthly": "Mensual",
       "yearly": "Anual",
       "save": "Ahorra 20%",
@@ -1929,64 +1926,21 @@
       "billedYearly": "facturado anualmente",
       "startFree": "Empezar Gratis",
       "getStarted": "Comenzar",
-      "needCustom": "¿Necesitas un plan personalizado para tu equipo?",
-      "contactUs": "Contáctanos",
+      "needCustom": "¿Emites más de 500 comprobantes al mes?",
+      "contactUs": "Escríbenos",
       "plans": {
         "free": {
-          "description": "Perfecto para comenzar"
+          "description": "Para empezar a emitir comprobantes"
         },
         "starter": {
-          "description": "Para freelancers que están empezando"
+          "description": "Para emprendedores que están empezando"
         },
         "pro": {
           "description": "Para negocios en crecimiento"
         },
         "business": {
-          "description": "Solución empresarial para equipos"
+          "description": "Solución para empresas con alto volumen"
         }
-      }
-    },
-    "testimonials": {
-      "badge": "Clientes Felices",
-      "title": "Confían en Nosotros Miles de Profesionales",
-      "subtitle": "Mira lo que nuestros clientes dicen sobre Facturo.",
-      "items": {
-        "1": {
-          "quote": "Facturo ha transformado cómo manejo mi negocio de construcción. Crear facturas profesionales ahora toma segundos, y a mis clientes les encanta el diseño limpio.",
-          "name": "María González",
-          "role": "Contratista de Construcción"
-        },
-        "2": {
-          "quote": "Como freelancer, pasaba horas en facturación. Ahora creo y envío facturas en minutos. El seguimiento de pagos es un cambio total.",
-          "name": "James Rodríguez",
-          "role": "Diseñador Freelance"
-        },
-        "3": {
-          "quote": "El sistema de proformas me ayudó a ganar 40% más proyectos. Los clientes pueden firmar digitalmente y todo el proceso es fluido.",
-          "name": "Sarah Chen",
-          "role": "Consultora de Marketing"
-        },
-        "4": {
-          "quote": "Gestionar múltiples obras se volvió mucho más fácil. La documentación fotográfica y el seguimiento de recibos me ahorran horas cada semana.",
-          "name": "Antonio López",
-          "role": "Contratista General"
-        },
-        "5": {
-          "quote": "El soporte multi-idioma es perfecto para mis clientes internacionales. Puedo facturar en inglés o español con un clic.",
-          "name": "Rachel Cooper",
-          "role": "Consultora de Negocios"
-        },
-        "6": {
-          "quote": "La mejor app de facturación que he usado. La interfaz es intuitiva y el soporte al cliente es increíblemente receptivo.",
-          "name": "David Martínez",
-          "role": "Electricista"
-        }
-      },
-      "stats": {
-        "users": "Usuarios Felices",
-        "invoices": "Facturas Enviadas",
-        "uptime": "Disponibilidad",
-        "rating": "Calificación"
       }
     },
     "faq": {
@@ -1997,58 +1951,53 @@
       "contactSupport": "Contacta nuestro equipo de soporte",
       "items": {
         "1": {
-          "question": "¿Facturo es realmente gratis para empezar?",
-          "answer": "¡Sí! Nuestro plan Gratis te permite crear hasta 5 facturas al mes con 3 clientes sin costo. No se requiere tarjeta de crédito para registrarte. Puedes actualizar en cualquier momento a medida que tu negocio crece."
+          "question": "¿Los comprobantes son válidos ante SUNAT?",
+          "answer": "Sí. Facturo firma cada comprobante con tu certificado digital y lo envía a SUNAT, que responde con la constancia de recepción (CDR). Guardamos el XML y el CDR por ti."
         },
         "2": {
-          "question": "¿Puedo personalizar mis facturas con mi marca?",
-          "answer": "Absolutamente. Puedes agregar el logo de tu empresa, elegir colores y personalizar plantillas para que coincidan con tu marca. Los planes profesionales ofrecen aún más opciones de personalización."
+          "question": "¿Qué necesito para empezar a emitir?",
+          "answer": "Tu RUC, un certificado digital y un usuario SOL secundario con permiso para emitir. Mientras los tramitas, puedes probar todo en el ambiente de pruebas de SUNAT."
         },
         "3": {
-          "question": "¿Cómo funcionan las firmas digitales?",
-          "answer": "Envía facturas o proformas con una solicitud de firma. Tus clientes reciben un enlace por correo para firmar digitalmente. Todas las firmas tienen marca de tiempo y son legalmente vinculantes."
+          "question": "¿El plan Gratis es realmente gratis?",
+          "answer": "Sí, para siempre: incluye 10 comprobantes al mes y 10 clientes. No pedimos tarjeta."
         },
         "4": {
-          "question": "¿Puedo rastrear pagos y enviar recordatorios?",
-          "answer": "Sí. Rastrea qué facturas están pagadas, pendientes o vencidas. Configura recordatorios automáticos de pago para asegurar que te paguen a tiempo."
+          "question": "¿Cuentan las boletas y las notas en el límite del plan?",
+          "answer": "Sí: cuenta cada factura, boleta o nota que emites. Los borradores y las anulaciones no consumen tu cupo."
         },
         "5": {
-          "question": "¿Mis datos están seguros?",
-          "answer": "La seguridad es nuestra máxima prioridad. Todos los datos están encriptados en tránsito y en reposo. Usamos prácticas de seguridad estándar de la industria y respaldos regulares."
+          "question": "¿Puedo anular un comprobante?",
+          "answer": "Sí, dentro del plazo de SUNAT: las facturas con comunicación de baja y las boletas con resumen diario. Fuera de plazo, se emite una nota de crédito."
         },
         "6": {
-          "question": "¿Puedo usar Facturo en móvil?",
-          "answer": "¡Sí! Facturo es totalmente responsivo y funciona genial en teléfonos y tablets. Crea, envía y gestiona facturas desde cualquier lugar."
+          "question": "¿Emiten recibos por honorarios o guías de remisión?",
+          "answer": "Todavía no. Los recibos por honorarios se emiten en SUNAT Operaciones en Línea. Las guías de remisión están en nuestros planes."
         },
         "7": {
-          "question": "¿Qué métodos de pago aceptan?",
-          "answer": "Aceptamos todas las tarjetas de crédito principales a través de Stripe. Puedes pagar mensual o anualmente, con 20% de descuento en planes anuales."
-        },
-        "8": {
-          "question": "¿Puedo exportar mis datos?",
-          "answer": "Sí. Exporta tus facturas, datos de clientes y reportes a PDF, CSV o Excel en cualquier momento. Tus datos siempre son tuyos."
+          "question": "¿Mis datos y mis claves están seguros?",
+          "answer": "Tu certificado y tu clave SOL se guardan cifrados y nunca se muestran. La conexión con Facturo va siempre por HTTPS."
         }
       }
     },
     "cta": {
       "badge": "¿Listo para empezar?",
-      "title": "Empieza a Crear Facturas Profesionales Hoy",
-      "subtitle": "Únete a miles de profesionales que confían en Facturo para gestionar su facturación. Comienza en minutos.",
-      "primaryButton": "Prueba Gratis",
+      "title": "Emite tu primer comprobante hoy",
+      "subtitle": "Crea tu cuenta gratis y prueba en el ambiente de pruebas de SUNAT antes de emitir de verdad.",
+      "primaryButton": "Empieza gratis",
       "secondaryButton": "Ver Precios",
-      "noCard": "Sin tarjeta de crédito • Plan gratuito disponible • Cancela cuando quieras"
+      "noCard": "Plan gratis para siempre • Sin tarjeta para empezar"
     },
     "footer": {
-      "description": "La plataforma de facturación profesional para contratistas, freelancers y pequeñas empresas. Crea, envía y rastrea facturas con facilidad.",
+      "description": "Facturación electrónica SUNAT para emprendedores y pymes del Perú. Emite, envía y guarda tus comprobantes desde un solo lugar.",
       "sections": {
         "product": "Producto",
         "company": "Empresa",
         "legal": "Legal"
       },
       "links": {
-        "features": "Características",
+        "features": "Funciones",
         "pricing": "Precios",
-        "testimonials": "Testimonios",
         "faq": "Preguntas Frecuentes",
         "about": "Sobre Nosotros",
         "blog": "Blog",
