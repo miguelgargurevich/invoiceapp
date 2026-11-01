@@ -179,6 +179,20 @@
   150 ms de retardo para que ambas lleguen al chequeo antes de que una confirme. (4) `procesarEnvio` no bloquea la fila:
   dos ejecuciones simultáneas del mismo comprobante enviarían dos veces a SUNAT (la cola de la Tarea 13 debe evitarlo
   o el servicio debe bloquear).
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunat-t13-cola`, rama `feat/sunat-t13-cola`):
+  Tarea 13 del plan (cola pg-boss y manejadores). Hecho: `src/sunat/cola/manejadores.js` (`crearManejadores`),
+  `src/sunat/cola/index.js` (`crearCola`, `COLAS`) y `test/unit/sunat/manejadores.test.js` (4 pruebas).
+  `pg-boss` fijado en `10.4.2` exacto (`npm install pg-boss@10.4.2 --save-exact`, sin `^`). Código del plan copiado
+  tal cual; no hubo que corregir nada. Verificado sin base de datos: `require('./src/sunat/cola')` carga y `crearCola`
+  construye sin conectar; en 10.4.2 existen `start`, `stop`, `getQueue`, `createQueue`, `send` (con `startAfter` en
+  segundos) y `work` (el handler recibe un arreglo de jobs). `npm test` 81/81 en verde. Mutaciones (archivo copiado al
+  scratchpad, restaurado con `cp` + `cmp`): reintentar fuera de plazo, no notificar al aceptar, error del correo que
+  rompe el trabajo, reconsultar el ticket a 30 s → 4 de 4 en rojo.
+  Gotchas: (1) `npm install` reordenó `bcryptjs` y `@supabase/supabase-js` en `package.json`: revertido a mano. El lock
+  solo añade 5 paquetes (pg-boss, cron-parser, luxon, serialize-error, type-fest). `npm audit` sigue con 17
+  vulnerabilidades preexistentes, sin tocar. (2) `startAfter` numérico > 0 se pasa como texto; 0 equivale a inmediato.
+  (3) `crearCola` no tiene pruebas unitarias: su comportamiento real contra Postgres (schema `pgboss`, `work`, `stop`)
+  queda sin probar hasta la base de datos de pruebas. Usar conexión directa, no el pooler en modo transacción.
 
 ## Próximos pasos
 
