@@ -156,6 +156,29 @@
   `serie: null` lanza `TypeError` en vez de devolver un mensaje; la serie debe venir validada de `ConfiguracionSeries`.
   (4) Los plazos (3 y 7 días) y el umbral de boleta (700) están en `catalogos/parametros.js` y siguen pendientes de
   verificar contra la norma vigente, como el resto de parámetros.
+- 2026-11-01 (Claude Code con Sonnet 5.5, delegado en worktree `.claude/worktrees/sunat-t11-emision`, rama `feat/sunat-t11-emision`):
+  Tarea 11 del plan (servicio de emisión) más tres correcciones de la revisión de la Tarea 7. Hecho:
+  `src/sunat/emision/servicio.js` (`crearServicioEmision` → `emitir` y `procesarEnvio`; `claveArchivo`),
+  `test/db/falsos.js` (`engineFalso`, `almacenFalso`, `colaFalsa`) y `test/db/servicio.test.js`. Código del plan copiado
+  tal cual, salvo lo siguiente. (1) `emitir` bloquea la fila de la factura (`SELECT … FOR UPDATE` filtrado por
+  `empresa_id`) antes de leerla y chequear `BORRADOR`: dos emisiones simultáneas del mismo borrador ya no sacan dos
+  números (una cumple, la otra falla con `ErrorEstado`; `ultimoNumero` queda en 1). (2) `guardarBorrador` lee el estado
+  dentro de la transacción con el mismo bloqueo, así que editar mientras se emite espera y luego rechaza con
+  `ErrorBorrador`. (3) `datosDesdeFactura` conserva `fechaVencimiento` (ISO string, solo si existe).
+  Pruebas añadidas a las del plan: doble emisión del mismo borrador, emitir con otra empresa, fallo del motor sin XML
+  guardado, 1033 que consulta y guarda el CDR, edición bloqueada por una emisión en curso y edición desde otra empresa.
+  `npm test` 77/77 y `npm run test:db` 30/30 en verde. Mutaciones (archivo copiado al scratchpad, restaurado con `cp` +
+  `cmp`), todas en rojo: sin `FOR UPDATE` de la factura, sin `FOR UPDATE` de la serie, no revertir si falla la firma
+  (número consumido), 1033 sin consultar CDR, no guardar el CDR, emitir sin filtrar por empresa, `guardarBorrador` sin
+  chequeo de estado en la transacción, sin su `FOR UPDATE` y `datosDesdeFactura` sin `fechaVencimiento`.
+  Gotchas: (1) `emitir` firma y guarda el XML dentro de la transacción (hasta 30 s): mientras tanto la serie y la fila
+  quedan bloqueadas, y una edición del mismo borrador espera con la transacción por defecto de Prisma (5 s), así que
+  con un motor lento podría fallar por tiempo agotado en vez de por `ErrorBorrador` (sin probar). (2) Si la
+  transacción se revierte después de `almacen.guardar`, el XML queda huérfano en el almacén; la clave es determinista
+  (el número no se consume) y el siguiente intento la sobrescribe. (3) La prueba de doble emisión usa una firma con
+  150 ms de retardo para que ambas lleguen al chequeo antes de que una confirme. (4) `procesarEnvio` no bloquea la fila:
+  dos ejecuciones simultáneas del mismo comprobante enviarían dos veces a SUNAT (la cola de la Tarea 13 debe evitarlo
+  o el servicio debe bloquear).
 
 ## Próximos pasos
 
