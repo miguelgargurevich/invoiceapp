@@ -1,0 +1,100 @@
+# Facturo en Coolify: UN recurso «Docker Compose desde el repo» (rama main, este archivo). Guía: docs/sunat/DESPLIEGUE.md.
+#
+# Las llaves secretas NO se escriben a mano: Coolify genera y guarda solo el valor de las variables mágicas
+#   SERVICE_PASSWORD_<ID>     -> 32 caracteres sin símbolos
+#   SERVICE_PASSWORD_64_<ID>  -> 64 caracteres sin símbolos
+# (el <ID> va pegado, sin guion bajo: SUNATMASTER, no SUNAT_MASTER) y las deja en Environment Variables del recurso.
+# El mismo nombre completo en dos servicios da el MISMO valor (así ENGINE_TOKEN y SUNAT_ENGINE_TOKEN coinciden).
+# Los dominios se enrutan con SERVICE_FQDN_<SERVICIO>_<PUERTO>: el puerto es el del contenedor.
+#
+# Correos, Stripe y Culqi quedan apagados con valores inofensivos que se pueden sobrescribir desde Coolify.
+
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=facturo
+      - POSTGRES_DB=facturo
+      - POSTGRES_PASSWORD=${SERVICE_PASSWORD_POSTGRES}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U facturo -d facturo"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  sunat-engine:
+    build:
+      context: ./apps/sunat-engine
+    restart: unless-stopped
+    environment:
+      - ENGINE_TOKEN=${SERVICE_PASSWORD_64_ENGINE}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost/salud > /dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  backend:
+    build:
+      context: ./apps/backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      sunat-engine:
+        condition: service_healthy
+    environment:
+      - SERVICE_FQDN_BACKEND_4001
+      - PORT=4001
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://facturo:${SERVICE_PASSWORD_POSTGRES}@postgres:5432/facturo
+      - DIRECT_URL=postgresql://facturo:${SERVICE_PASSWORD_POSTGRES}@postgres:5432/facturo
+      - JWT_SECRET=${SERVICE_PASSWORD_64_JWT}
+      - FRONTEND_URL=https://facturo.gargurevich.dev
+      - PUBLIC_BACKEND_URL=https://api.facturo.gargurevich.dev
+      # SUNAT: motor interno (sin dominio) y llave maestra. SUNAT_MASTER_SECRET NO se debe regenerar nunca:
+      # con otro valor los certificados y claves SOL ya cifrados dejan de poder abrirse.
+      - SUNAT_ENGINE_URL=http://sunat-engine
+      - SUNAT_ENGINE_TOKEN=${SERVICE_PASSWORD_64_ENGINE}
+      - SUNAT_MASTER_SECRET=${SERVICE_PASSWORD_64_SUNATMASTER}
+      # Archivos y XML/CDR en el volumen /data (respaldar ese volumen; ver DESPLIEGUE.md antes de emitir en PRODUCCION).
+      - STORAGE_PROVIDER=local
+      - LOCAL_UPLOADS_DIR=/data/uploads
+      - SUNAT_ALMACEN_DIR=/data/sunat
+      - SUNAT_ALMACEN_PERSISTENTE=si
+      # Servicios apagados por ahora. Para encenderlos, pon el valor real en Environment Variables de Coolify.
+      - RESEND_API_KEY=${RESEND_API_KEY:-desactivado}
+      - RESEND_FROM_EMAIL=${RESEND_FROM_EMAIL:-}
+      - RESEND_FROM_NAME=${RESEND_FROM_NAME:-}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-sk_test_desactivado}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
+      - CULQI_SECRET_KEY=${CULQI_SECRET_KEY:-}
+    volumes:
+      - backend-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:4001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      # db push y la siembra de planes corren antes de que Express escuche.
+      start_period: 90s
+
+  frontend:
+    build:
+      context: ./apps/frontend
+      args:
+        # Next incrusta las NEXT_PUBLIC_* al compilar. La API va sin /api (el cliente lo agrega).
+        - NEXT_PUBLIC_API_URL=https://api.facturo.gargurevich.dev
+        - NEXT_PUBLIC_SITE_URL=https://facturo.gargurevich.dev
+        - NEXT_PUBLIC_CULQI_PUBLIC_KEY=${NEXT_PUBLIC_CULQI_PUBLIC_KEY:-}
+    restart: unless-stopped
+    environment:
+      - SERVICE_FQDN_FRONTEND_3000
+
+volumes:
+  postgres-data:
+  backend-data:
