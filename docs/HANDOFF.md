@@ -209,6 +209,23 @@
   rechazaría el duplicado). (2) `procesarTicket` no bloquea el proceso: dos ejecuciones simultáneas duplicarían la fila
   de `EnvioSunat`, pero el resultado final sobre la factura es idempotente. (3) Un RC con varias boletas por proceso no
   está soportado: cada anulación es su propio proceso (decisión del plan).
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunat-t14-pdf`, rama `feat/sunat-t14-pdf`):
+  Tarea 14 del plan (PDF con QR, correo y arranque del módulo). Hecho: `src/sunat/pdf/representacion.js` (`textoQr`,
+  `generarPdf`, `NOMBRES_COMPROBANTE`), `src/sunat/notificador.js` (`crearNotificador`: PDF y XML al correo del cliente;
+  sin correo no envía), `src/sunat/index.js` (`iniciarSunat`; sin `SUNAT_ENGINE_URL` queda desactivado) y `qrcode@^1.5.4`.
+  Cola: `encolarEnvio` y `encolarTicket` con `singletonKey`; `crearCola` acepta `schema` (por defecto `pgboss`) y la
+  prueba `test/db/cola.test.js` corre contra el Postgres de pruebas en el esquema `pgboss_prueba` (se borra al empezar).
+  `npm test` 86/86 en verde; `test/db/cola.test.js` 1/1. Código del plan copiado tal cual salvo: la fecha del QR
+  tiene una prueba extra con 02:30 UTC (en Lima es el día anterior), porque la fixture del plan no distingue Lima de UTC.
+  Mutaciones (archivo copiado al scratchpad, restaurado con `cp` + `cmp`), todas en rojo: QR sin hash; fecha en UTC;
+  adjuntar solo el PDF; enviar sin correo de cliente; cola sin `singletonKey`; cola sin `policy: 'short'`.
+  Gotchas: (1) `singletonKey` NO deduplica con la política estándar de pg-boss: la cola se crea con `policy: 'short'`
+  (índice `job_i1`, deduplica por `COALESCE(singleton_key, '')`). `iniciar` solo crea colas que faltan: una cola ya
+  creada con la política estándar no se corrige sola (hay que borrarla o cambiarla con `updateQueue`). (2)
+  `src/sunat/index.js` requiere `./emision/anulacion` (Tarea 12), que no existe en este worktree: su carga completa se
+  verifica al integrar. `node --check` sí pasa. (3) `npm install qrcode` reordenó `bcryptjs` y
+  `@supabase/supabase-js` en `package.json`: revertido a mano. (4) La prueba «varias páginas» del PDF no cuenta las
+  páginas: solo comprueba cabecera `%PDF` y tamaño mayor a 2000 bytes.
 
 ## Próximos pasos
 
