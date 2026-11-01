@@ -381,7 +381,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
             <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
           </Card>
         ) : subscription && (
-          <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+          <div className="mt-6 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex items-start gap-4">
                 <div className={cn(
@@ -466,7 +466,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
       {usage && subscription && (
         <Card className="shadow-sm p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Star className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <Star className="h-5 w-5 text-primary-600 dark:text-primary-400" />
             <h3 className="text-lg font-bold">{t('usage')}</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -483,12 +483,12 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                 <div
                   className={cn(
                     'h-full rounded-full transition-all duration-500',
-                    usage.limits.maxInvoices === -1 ? 'bg-blue-500' :
+                    usage.limits.maxInvoices === -1 ? 'bg-primary-500' :
                     (usage.percentages.invoices ?? 0) > 90
                       ? 'bg-red-500'
                       : (usage.percentages.invoices ?? 0) > 70
                       ? 'bg-yellow-500'
-                      : 'bg-blue-500'
+                      : 'bg-primary-500'
                   )}
                   style={{ width: usage.limits.maxInvoices === -1 ? '10%' : `${Math.min(usage.percentages.invoices ?? 0, 100)}%` }}
                 />
@@ -865,7 +865,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                   newPlan: selectedPlan.name 
                 })}
               </p>
-              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
                 <div className="flex items-baseline gap-1">
                   <span className="text-2xl font-bold text-gray-900 dark:text-white">
                     {formatPrice(billingInterval === 'monthly' ? selectedPlan.priceMonthly : selectedPlan.priceYearly)}

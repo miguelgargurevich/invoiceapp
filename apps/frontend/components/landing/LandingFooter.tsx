@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
-import { FileText, Twitter, Github, Linkedin, Mail } from 'lucide-react';
+import { Twitter, Github, Linkedin, Mail } from 'lucide-react';
+import { LogoFacturo } from '@/components/marca/LogoFacturo';
 
 export function LandingFooter() {
   const t = useTranslations('landing');
@@ -45,12 +46,7 @@ export function LandingFooter() {
           {/* Brand Column */}
           <div className="col-span-2 lg:col-span-2">
             <Link href={`/${locale}/landing`} className="flex items-center gap-2 group mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/25">
-                <FileText className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-slate-900 dark:text-white">
-                Facturo
-              </span>
+              <LogoFacturo tamano={36} />
             </Link>
             <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-sm">
               {t('footer.description')}

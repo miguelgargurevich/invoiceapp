@@ -192,7 +192,7 @@ export function HeroSection() {
                 </div>
                 <div className="flex-1 flex justify-center">
                   <div className="px-4 py-1 bg-white dark:bg-slate-800 rounded-lg text-xs text-slate-500 dark:text-slate-400 font-mono">
-                    app.invoiceapp.io
+                    app.facturo.pe
                   </div>
                 </div>
               </div>

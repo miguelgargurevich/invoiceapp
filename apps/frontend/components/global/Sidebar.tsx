@@ -79,8 +79,8 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
 
     // Fallback: logo de Facturo
     return (
-      <div className="w-8 h-8 flex items-center justify-center">
-        <IconoFacturo tamano={32} />
+      <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+        <IconoFacturo tamano={28} />
       </div>
     );
   };

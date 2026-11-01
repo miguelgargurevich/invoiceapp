@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Globe, ChevronDown, FileText, Moon, Sun, LayoutDashboard } from 'lucide-react';
+import { Menu, X, Globe, ChevronDown, Moon, Sun, LayoutDashboard } from 'lucide-react';
+import { LogoFacturo } from '@/components/marca/LogoFacturo';
 
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -51,15 +52,7 @@ export function LandingHeader() {
           <div className="flex items-center justify-between h-16 md:h-20">
             {/* Logo */}
             <Link href={`/${locale}/landing`} className="flex items-center gap-2 group">
-              <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/25 group-hover:shadow-primary-500/40 transition-shadow">
-                  <FileText className="w-5 h-5 text-white" />
-                </div>
-                <div className="absolute -inset-1 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl blur opacity-25 group-hover:opacity-40 transition-opacity" />
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-                Facturo
-              </span>
+              <LogoFacturo tamano={36} className="group-hover:opacity-90 transition-opacity" />
             </Link>
 
             {/* Desktop Navigation */}
