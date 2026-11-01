@@ -312,6 +312,31 @@
   en pg-boss; fechas sin hora al mediodía de Lima en el motor (Greenter escribe en hora de Lima: salían un día antes,
   también las cuotas) y `porcentajeIgv` en el resumen (SUNAT rechazaba el RC con 2992). E2E `scripts/sunat-beta-e2e.js`
   8/8 en beta; guía `docs/sunat/DESPLIEGUE.md`.
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sin-vercel-supabase`, rama `chore/sin-vercel-supabase`):
+  quitar Vercel y Supabase, y dejar el proyecto corriendo en local. Hecho: (1) almacenamiento en `utils/storage.js` con
+  dos proveedores, `r2` y `local` (por defecto). `local` escribe en `LOCAL_UPLOADS_DIR` (por defecto `apps/backend/uploads/`)
+  y devuelve `PUBLIC_BACKEND_URL/uploads/<key>`, que sirve `app.js`; rechaza claves con `../`; se borró
+  `@supabase/supabase-js` del backend; pruebas en `test/unit/storage.test.js` (9). (2) Frontend sin Google ni Supabase:
+  sale `signInWithGoogle` de `AuthContext`, el botón de Google del registro y `lib/supabase.ts`; se desinstalan
+  `@supabase/ssr` y `@supabase/supabase-js` (`--legacy-peer-deps`). (3) Sin Vercel: se borra `vercel.json`; la URL del sitio
+  sale de `NEXT_PUBLIC_SITE_URL` (`apps/frontend/lib/sitio.ts`); CORS sin `*.vercel.app`. (4) `docker-compose.yml`
+  (Postgres 16 en 5435, motor SUNAT en 8089) y README con «Desarrollo local».
+  Verificado: `npm test` 101/101 (92 previas + 9), `npm run test:db` 44/44, `tsc --noEmit` sin errores, `next build` exit 0,
+  `docker compose config` OK, CORS probado contra el backend en marcha (5 orígenes permitidos, 2 `*.vercel.app` bloqueados).
+  Mutaciones del proveedor local (quitar el chequeo `../`, default `supabase`, `extractStorageKeyFromUrl` local roto): 3 de 3 en rojo.
+  Commits: `fdbc23f` (almacenamiento), `d97c959` (login sin Google y frontend sin Supabase), `5cc4893` (Vercel, local, docs).
+  Gotchas: (a) con `STORAGE_PROVIDER=supabase` (o cualquier valor distinto de `r2`/`local`) el backend ahora FALLA al subir,
+  en vez de caer al disco: en Coolify cambiar a `r2` antes de desplegar. (b) En producción sin `r2` los archivos van al disco
+  del contenedor y se pierden al redesplegar. (c) `NEXT_PUBLIC_SITE_URL` debe estar definida antes de `next build`; si no,
+  metadatos y sitemap apuntan a `localhost:3000`. (d) `robots.txt` ya no tiene la línea `Sitemap:` (el formato exige URL
+  absoluta): añadirla en producción. (e) Si el frontend de producción estaba en Vercel, su dominio ya no está en CORS: añadirlo
+  a `FRONTEND_URL` o `CORS_ORIGINS`. `ALLOWED_ORIGINS` sigue aceptado como alias. (f) Fuera de «Permitidos» siguen menciones a
+  Supabase/Vercel en `docs/PROMPT_SISTEMA_FACTURACION.md`, `docs/DIGITAL_SIGNATURE_IMPLEMENTATION.md` y
+  `docs/RESEND_EMAIL_SETUP.md`: pendiente de limpiar. (g) `configuracion/page.tsx` conserva `signedInWithGoogle` y
+  `googleAccountManaged`; ya no tienen efecto (el provider de Supabase no existe). (h) `docker compose` fija `name: invoiceapp`,
+  así el volumen es `invoiceapp_invoiceapp-pg` en cualquier carpeta. (i) `@types/node` y `undici-types` pasaron a `dev` en el
+  lock del frontend (npm lo recalcula al quitar Supabase). (j) Al cargar `app.js` para la prueba de CORS, dotenv leyó el
+  `.env` local (sin imprimirlo): los datos de prueba se pasaron por variables de entorno.
 
 - 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t2-archivos`, rama `feat/sunatf-t2-archivos`): Tarea 2 del plan del frontend SUNAT (XML y CDR servidos por el backend, almacén local para desarrollo). Hecho: `src/sunat/almacenLocal.js` (`crearAlmacenLocal(dir)`: rechaza claves que salen de la carpeta con «Clave de archivo inválida»); `src/sunat/index.js` exporta `crearAlmacen(env)` (con `SUNAT_ALMACEN_DIR` usa disco; con `NODE_ENV=production` lanza error; sin él, R2 privado) y `iniciarSunat` lo usa; `src/routes/comprobantes.js` ya NO redirige (302) el XML/CDR: los lee del almacén y los envía con `Content-Disposition: attachment; filename="<RUC>-<TT>-<SERIE>-<NUM>.xml|.cdr.zip"`; `.env.example` con `SUNAT_ALMACEN_DIR=`. Pruebas: `test/unit/sunat/almacenLocal.test.js` (3) y `test/db/rutas.test.js` ajustado al nuevo XML (200, nombre, CDR 404 antes de emitir). Verificado: `npm test` 95/95 y `npm run test:db` 44/44 contra `invoiceapp_test_t2`. Mutaciones (todas en rojo y restauradas con `cmp`): quitar el chequeo de `../`; permitir `SUNAT_ALMACEN_DIR` en producción; volver al 302; Content-Disposition sin el nombre SUNAT. Gotchas: el CDR con `cdrKey` real (200) no tiene prueba en esta suite (la de rutas solo cubre el 404 previo a emitir); `almacenLocal.js` se escribió antes de correr la prueba roja, así que en rojo solo falló `crearAlmacen`. El `prisma:error` del log de la prueba «series y alertas» es esperado (prueba de serie duplicada). Commit en la rama; sin push.
 
@@ -336,8 +361,11 @@
 - 2026-11-01: cola con pg-boss sobre el Postgres existente (sin Redis).
 - 2026-11-01: se reutiliza `ConfiguracionSeries` (tipos 01/03/07/08) y `Cliente.tipoDocumento` no se migra (se lee con `codigoDocIdentidad`).
 - 2026-11-01: se extiende `Factura` con `Empresa.pais` (`US` | `PE`) en vez de una tabla paralela; `estadoSunat` separado de `estado` (cobranza).
+- 2026-11-01: almacenamiento por defecto `local` (disco del backend); `r2` en producción. Un `STORAGE_PROVIDER` desconocido falla en vez de caer al disco. CORS sin patrones: solo localhost, `FRONTEND_URL` y `CORS_ORIGINS`.
 
 ## Gotchas
 
 - `Factura` hoy se puede editar estando «emitida» y «anular» solo cambia el estado: con SUNAT eso deja de valer para empresas `PE`.
 - Los montos se calculan con flotantes (`subtotal * taxRate`): pasar a `decimal.js` antes de emitir a SUNAT.
+- `STORAGE_PROVIDER` en Coolify: si sigue en `supabase`, el backend falla al subir archivos. Debe ser `r2` (producción) o `local` (desarrollo).
+- Quedan menciones de Supabase/Vercel fuera de «Permitidos» (`docs/PROMPT_SISTEMA_FACTURACION.md`, `docs/DIGITAL_SIGNATURE_IMPLEMENTATION.md`, `docs/RESEND_EMAIL_SETUP.md`).
