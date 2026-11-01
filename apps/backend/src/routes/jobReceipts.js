@@ -89,21 +89,24 @@ router.post('/', authenticateToken, upload.single('file'), async (req, res) => {
       return res.status(400).json({ error: 'Debe proporcionar facturaId o proformaId (no ambos)' });
     }
 
-    // Verificar permisos
+    // Verificar permisos y obtener documento con empresaId
+    let documento = null;
     if (facturaId) {
-      const factura = await prisma.factura.findFirst({
-        where: { id: facturaId, empresa: { userId: req.user.id } }
+      documento = await prisma.factura.findFirst({
+        where: { id: facturaId, empresa: { userId: req.user.id } },
+        select: { id: true, empresaId: true }
       });
-      if (!factura) {
+      if (!documento) {
         return res.status(404).json({ error: 'Factura no encontrada' });
       }
     }
 
     if (proformaId) {
-      const proforma = await prisma.proforma.findFirst({
-        where: { id: proformaId, empresa: { userId: req.user.id } }
+      documento = await prisma.proforma.findFirst({
+        where: { id: proformaId, empresa: { userId: req.user.id } },
+        select: { id: true, empresaId: true }
       });
-      if (!proforma) {
+      if (!documento) {
         return res.status(404).json({ error: 'Proforma no encontrada' });
       }
     }
@@ -114,22 +117,8 @@ router.post('/', authenticateToken, upload.single('file'), async (req, res) => {
       const ext = path.extname(req.file.originalname);
       const fileName = `receipt-${uniqueSuffix}${ext}`;
 
-      // Reuse company-level foldering convention
-      let empresaId;
-      if (facturaId) {
-        const factura = await prisma.factura.findUnique({
-          where: { id: facturaId },
-          select: { empresaId: true }
-        });
-        empresaId = factura?.empresaId;
-      } else {
-        const proforma = await prisma.proforma.findUnique({
-          where: { id: proformaId },
-          select: { empresaId: true }
-        });
-        empresaId = proforma?.empresaId;
-      }
-
+      // Usar empresaId del documento ya validado (defensa en profundidad)
+      const empresaId = documento.empresaId;
       if (!empresaId) {
         return res.status(400).json({ error: 'No se pudo determinar la empresa del documento' });
       }
