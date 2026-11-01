@@ -141,6 +141,21 @@
   devuelve `0` sin avisar, y un `netoPendiente` nulo da `0.00` en crédito. Rechazar esos casos antes de mapear.
   (3) El motor responde 500 con `Error interno del motor: <mensaje>`; ese texto llega a `ErrorEngineNoDisponible` y no
   debe mostrarse tal cual al usuario. (4) Sin probar contra el motor vivo: solo contrato estático y `fetchImpl` simulado.
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunat-t10-estados`, rama `feat/sunat-t10-estados`):
+  Tarea 10 del plan (estados, plazos y validación previa). Hecho: `src/sunat/emision/estados.js` (`ESTADO`,
+  `clasificarRespuesta`, `siguienteReintento`), `src/sunat/emision/plazos.js` (`dentroDePlazoEnvio`,
+  `dentroDePlazoBaja`, `diasDesdeEmision`), `src/sunat/emision/validacion.js` (`validarParaEmision`), y pruebas
+  `test/unit/sunat/estados.test.js` (3) y `test/unit/sunat/validacion.test.js` (6). Código del plan copiado tal cual.
+  Se añadieron a `estados.test.js` los bordes 1999, 2000 y 4000: sin ellos, la mutación «2000 como aceptado»
+  sobrevivía con las pruebas del plan. `npm test` 70/70 en verde. Mutaciones (archivo copiado al scratchpad,
+  restaurado con `cp` + `cmp`): 1033 como error temporal, plazo de baja de 8 días, factura sin exigir RUC y boleta
+  sin umbral → rojo; 2000 como aceptado → rojo solo con los bordes nuevos.
+  Gotchas: (1) `clasificarRespuesta` devuelve el string `'CONSULTAR_CDR'` para 1033, que no está en `ESTADO`: el
+  llamador debe consultar el CDR y no guardar ese valor como estado. (2) `siguienteReintento(0)` devuelve `undefined`
+  (el plan no lo prueba): el primer intento es el 1. (3) `validarParaEmision` hace `f.serie[0]` sin guarda: con
+  `serie: null` lanza `TypeError` en vez de devolver un mensaje; la serie debe venir validada de `ConfiguracionSeries`.
+  (4) Los plazos (3 y 7 días) y el umbral de boleta (700) están en `catalogos/parametros.js` y siguen pendientes de
+  verificar contra la norma vigente, como el resto de parámetros.
 
 ## Próximos pasos
 
