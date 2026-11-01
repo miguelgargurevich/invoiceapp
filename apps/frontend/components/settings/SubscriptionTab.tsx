@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
@@ -24,6 +24,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { Button, Card, LoadingSpinner } from '@/components/common';
 import { cn } from '@/lib/utils';
+import ContratarCulqiModal from '@/components/settings/ContratarCulqiModal';
+import { intervaloCulqi, leerContratarDeUrl, type IntervaloCulqi } from '@/lib/culqi';
 import {
   getPlans,
   getCurrentSubscription,
@@ -35,6 +37,7 @@ import {
   syncSubscriptionFromSession,
   getUsage,
   formatPrice,
+  esPlanGratis,
   getStatusColor,
   type Plan,
   type Subscription,
@@ -43,11 +46,16 @@ import {
 
 type BillingInterval = 'monthly' | 'yearly';
 
+// Contratación o cambio de tarjeta con Culqi (empresas de Perú).
+type PedidoCulqi = { plan: Plan; intervalo: IntervaloCulqi; modo: 'contratar' | 'tarjeta' };
+
 export default function SubscriptionTab({ locale }: { locale: string }) {
   const t = useTranslations('subscription');
   const router = useRouter();
   const searchParams = useSearchParams();
   const { refreshSubscription } = useSubscription();
+  const { user, empresa, loading: authLoading } = useAuth();
+  const esPeru = empresa?.pais === 'PE';
 
   const [plans, setPlans] = useState<Plan[]>([]);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -66,9 +74,13 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [hasProcessedReturn, setHasProcessedReturn] = useState(false);
   const [showTestModeModal, setShowTestModeModal] = useState(false);
+  const [pedidoCulqi, setPedidoCulqi] = useState<PedidoCulqi | null>(null);
+  const contratarDeUrlProcesado = useRef(false);
   
   // Check if we're in development mode
-  const isDeveloperMode = process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.includes('test');
+  // La ayuda de modo de prueba habla de Stripe: no aplica a las empresas de Perú (Culqi).
+  const isDeveloperMode = !esPeru && (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.includes('test'));
+  const esCulqi = subscription?.proveedorPago === 'culqi';
 
   useEffect(() => {
     const success = searchParams.get('success');
@@ -131,16 +143,37 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
     }
   }, [searchParams, hasProcessedReturn]);
 
+  // Se espera a conocer la empresa: de su país depende qué planes se piden.
   useEffect(() => {
+    if (authLoading) return;
     loadData();
-  }, []);
+  }, [authLoading, esPeru]);
+
+  // Redirección del asistente: ?contratar=<slug>&intervalo=MONTH|YEAR abre el modal con ese plan.
+  useEffect(() => {
+    if (contratarDeUrlProcesado.current || loading || !esPeru || plans.length === 0) return;
+    const pedido = leerContratarDeUrl(searchParams);
+    if (!pedido) return;
+    contratarDeUrlProcesado.current = true;
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete('contratar');
+    url.searchParams.delete('intervalo');
+    window.history.replaceState({}, '', url.toString());
+
+    const plan = plans.find((p) => p.id === pedido.planSlug);
+    if (plan && !esPlanGratis(plan)) {
+      setBillingInterval(pedido.intervalo === 'YEAR' ? 'yearly' : 'monthly');
+      setPedidoCulqi({ plan, intervalo: pedido.intervalo, modo: 'contratar' });
+    }
+  }, [plans, loading, esPeru, searchParams]);
 
   const loadData = async () => {
     try {
       setLoading(true);
       setError(null);
       const [plansData, subData, usageData] = await Promise.all([
-        getPlans(),
+        getPlans(esPeru ? 'PE' : 'US'),
         getCurrentSubscription(),
         getUsage().catch(() => null),
       ]);
@@ -160,8 +193,8 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
     const plan = plans.find(p => p.id === planId);
     if (!plan) return;
     
-    // If user has a subscription, show confirmation modal
-    if (subscription) {
+    // If user has a subscription, show confirmation modal (volver a contratar el mismo plan cancelado no es un cambio)
+    if (subscription && !(esCulqi && subscription.cancelAtPeriodEnd && isCurrentPlan(plan))) {
       setSelectedPlan(plan);
       setShowChangePlanModal(true);
       return;
@@ -176,8 +209,16 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
       setLoadingCheckout(planId);
       setShowChangePlanModal(false);
       
+      const plan = plans.find((p) => p.id === planId);
+
+      // Perú: los planes de pago se contratan con Culqi en un modal, nunca con Stripe
+      if (esPeru && plan && !esPlanGratis(plan)) {
+        setPedidoCulqi({ plan, intervalo: intervaloCulqi(billingInterval), modo: 'contratar' });
+        return;
+      }
+
       // Handle Free plan separately (no Stripe checkout needed)
-      if (planId === 'free') {
+      if (plan ? esPlanGratis(plan) : planId === 'free') {
         const result = await switchToFreePlan();
         setSubscription(result.subscription);
         // Refresh the global subscription context
@@ -211,6 +252,24 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
     } finally {
       setLoadingPortal(false);
     }
+  };
+
+  const abrirCambioTarjeta = () => {
+    if (!subscription) return;
+    setPedidoCulqi({ plan: subscription.plan, intervalo: subscription.billingInterval === 'YEAR' ? 'YEAR' : 'MONTH', modo: 'tarjeta' });
+  };
+
+  const alTerminarCulqi = async () => {
+    const pedido = pedidoCulqi;
+    setPedidoCulqi(null);
+    if (!pedido) return;
+    setMessage({
+      type: 'success',
+      text: pedido.modo === 'tarjeta' ? t('culqi.tarjetaActualizada') : t('culqi.contratado', { plan: pedido.plan.name }),
+    });
+    setTimeout(() => setMessage(null), 8000);
+    await refreshSubscription();
+    await loadData();
   };
 
   const handleCancelSubscription = async () => {
@@ -251,16 +310,16 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
 
   const getPlanIcon = (planName: string) => {
     const name = planName.toLowerCase();
-    if (name.includes('business') || name.includes('enterprise')) {
+    if (name.includes('business') || name.includes('enterprise') || name.includes('empresa')) {
       return <Building2 className="h-6 w-6" />;
     }
-    if (name.includes('pro')) {
+    if (name.includes('pro') || name.includes('negocio')) {
       return <Crown className="h-6 w-6" />;
     }
-    if (name.includes('starter')) {
+    if (name.includes('starter') || name.includes('emprendedor')) {
       return <Zap className="h-6 w-6" />;
     }
-    if (name.includes('free')) {
+    if (name.includes('free') || name.includes('gratis')) {
       return <Star className="h-6 w-6" />;
     }
     return <Zap className="h-6 w-6" />;
@@ -269,16 +328,16 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
   const getPlanColor = (planName: string, isPopular: boolean) => {
     //if (isPopular) return 'bg-primary';
     const name = planName.toLowerCase();
-    if (name.includes('business') || name.includes('enterprise')) {
+    if (name.includes('business') || name.includes('enterprise') || name.includes('empresa')) {
       return 'bg-gradient-to-br from-purple-500 to-primary-600';
     }
-    if (name.includes('pro')) {
+    if (name.includes('pro') || name.includes('negocio')) {
       return 'bg-gradient-to-br from-yellow-500 to-orange-600';
     }
-    if (name.includes('starter')) {
+    if (name.includes('starter') || name.includes('emprendedor')) {
       return 'bg-gradient-to-br from-primary-500 to-cyan-600';
     }
-    if (name.includes('free')) {
+    if (name.includes('free') || name.includes('gratis')) {
       return 'bg-gradient-to-br from-green-500 to-emerald-600';
     }
     return 'bg-gray-100 dark:bg-gray-700';
@@ -423,7 +482,14 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                 </div>
               </div>
               <div className="flex flex-wrap gap-2">
-                {subscription.cancelAtPeriodEnd ? (
+                {subscription.cancelAtPeriodEnd && esCulqi ? (
+                  // En Culqi la cancelación es irreversible: no hay «Reactivar», solo volver a contratar.
+                  <p className="text-xs text-gray-700 dark:text-gray-300 max-w-xs self-center">
+                    {t('culqi.noReactivable', {
+                      fecha: subscription.currentPeriodEnd ? new Date(subscription.currentPeriodEnd).toLocaleDateString() : '',
+                    })}
+                  </p>
+                ) : subscription.cancelAtPeriodEnd ? (
                   <Button
                     onClick={handleReactivate}
                     disabled={loadingReactivate}
@@ -445,17 +511,26 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                     {t('cancelSubscription')}
                   </Button>
                 )}
-                <Button
-                  variant="outline"
-                  onClick={handleManageBilling}
-                  disabled={loadingPortal}
-                  size="sm"
-                >
-                  {loadingPortal && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  <CreditCard className="h-4 w-4 mr-2" />
-                  {t('manageBilling')}
-                  <ExternalLink className="h-3 w-3 ml-2" />
-                </Button>
+                {esCulqi ? (
+                  !subscription.cancelAtPeriodEnd && (
+                    <Button variant="outline" onClick={abrirCambioTarjeta} size="sm">
+                      <CreditCard className="h-4 w-4 mr-2" />
+                      {t('culqi.cambiarTarjeta')}
+                    </Button>
+                  )
+                ) : !esPeru && (
+                  <Button
+                    variant="outline"
+                    onClick={handleManageBilling}
+                    disabled={loadingPortal}
+                    size="sm"
+                  >
+                    {loadingPortal && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    <CreditCard className="h-4 w-4 mr-2" />
+                    {t('manageBilling')}
+                    <ExternalLink className="h-3 w-3 ml-2" />
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -583,7 +658,8 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {plans.map((plan, index) => {
           const isCurrent = isCurrentPlan(plan);
-          const isPopular = index === 2; // Pro plan
+          const isPopular = esPeru ? !!plan.isPopular : index === 2; // Perú: lo marca el plan; US: el tercero (Pro)
+          const recontratar = isCurrent && esCulqi && !!subscription?.cancelAtPeriodEnd;
           const savings = calculateYearlySavings(plan);
           const price = billingInterval === 'monthly' ? plan.priceMonthly : plan.priceYearly;
             
@@ -642,6 +718,9 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                     {billingInterval === 'monthly' ? t('perMonth') : t('perYear')}
                   </span>
                 </div>
+                {plan.currency === 'PEN' && (
+                  <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">{t('culqi.igvIncluido')}</p>
+                )}
                 {billingInterval === 'yearly' && savings > 0 && (
                   <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded text-xs font-semibold">
                     <Zap className="h-3 w-3" />
@@ -661,13 +740,18 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
 
               <Button
                 onClick={() => handleSubscribe(plan.id)}
-                disabled={loadingCheckout === plan.id || isCurrent}
+                disabled={loadingCheckout === plan.id || (isCurrent && !recontratar)}
                 variant={isPopular ? 'primary' : 'outline'}
                 size="sm"
                 className="w-full"
               >
                 {loadingCheckout === plan.id ? (
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : recontratar ? (
+                  <>
+                    {t('culqi.volverAContratar')}
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </>
                 ) : isCurrent ? (
                   <>
                     <Check className="h-4 w-4 mr-2" />
@@ -716,7 +800,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
             </button>
             {expandedFaq === 1 && (
               <div className="px-4 pb-3 text-xs text-gray-700 dark:text-gray-300 leading-relaxed border-t border-gray-200 dark:border-gray-700 pt-3">
-                {t('faqA1')}
+                {esPeru ? t('culqi.faqA1') : t('faqA1')}
               </div>
             )}
           </div>
@@ -764,7 +848,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
             </button>
             {expandedFaq === 3 && (
               <div className="px-4 pb-3 text-xs text-gray-700 dark:text-gray-300 leading-relaxed border-t border-gray-200 dark:border-gray-700 pt-3">
-                {t('faqA3')}
+                {esPeru ? t('culqi.faqA3') : t('faqA3')}
               </div>
             )}
           </div>
@@ -788,7 +872,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
             </button>
             {expandedFaq === 4 && (
               <div className="px-4 pb-3 text-xs text-gray-700 dark:text-gray-300 leading-relaxed border-t border-gray-200 dark:border-gray-700 pt-3">
-                {t('faqA4')}
+                {esPeru ? t('culqi.faqA4') : t('faqA4')}
               </div>
             )}
           </div>
@@ -902,6 +986,24 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
         </div>
       )}
 
+      {/* Contratar / cambiar tarjeta con Culqi (Perú) */}
+      {pedidoCulqi && user?.email && (
+        <ContratarCulqiModal
+          plan={pedidoCulqi.plan}
+          intervalo={pedidoCulqi.intervalo}
+          modo={pedidoCulqi.modo}
+          email={user.email}
+          inicial={{
+            nombre: user.name?.trim().split(/\s+/)[0] ?? '',
+            apellido: user.name?.trim().split(/\s+/).slice(1).join(' ') ?? '',
+            telefono: empresa?.telefono ?? '',
+            direccion: empresa?.direccion ?? '',
+          }}
+          onListo={alTerminarCulqi}
+          onCerrar={() => setPedidoCulqi(null)}
+        />
+      )}
+
       {/* Test Mode Modal */}
       {showTestModeModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowTestModeModal(false)}>
@@ -944,7 +1046,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
               <AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" />
               <h3 className="text-lg font-bold">{t('confirmCancel')}</h3>
             </div>
-            <p className="text-sm text-gray-700 dark:text-gray-300 mb-6">{t('confirmCancelDesc')}</p>
+            <p className="text-sm text-gray-700 dark:text-gray-300 mb-6">{esCulqi ? t('culqi.confirmarCancelarDesc') : t('confirmCancelDesc')}</p>
             <div className="flex gap-3 justify-end">
               <Button
                 variant="outline"

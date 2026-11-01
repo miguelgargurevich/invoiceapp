@@ -27,6 +27,7 @@ export interface Subscription {
   stripeSubscriptionId: string | null;
   stripeCustomerId: string | null;
   proveedorPago?: 'stripe' | 'culqi';
+  billingInterval?: 'MONTH' | 'YEAR';
   status: 'TRIALING' | 'ACTIVE' | 'PAST_DUE' | 'CANCELED' | 'UNPAID' | 'INCOMPLETE' | 'INCOMPLETE_EXPIRED' | 'PAUSED';
   currentPeriodStart: string | null;
   currentPeriodEnd: string | null;
