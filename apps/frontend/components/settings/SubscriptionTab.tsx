@@ -636,7 +636,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
               <div className="mb-4">
                 <div className="flex items-baseline gap-1">
                   <span className="text-3xl font-bold text-gray-900 dark:text-white">
-                    {formatPrice(price)}
+                    {formatPrice(price, plan.currency)}
                   </span>
                   <span className="text-sm text-gray-600 dark:text-gray-400">
                     {billingInterval === 'monthly' ? t('perMonth') : t('perYear')}
@@ -868,7 +868,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
               <div className="p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-200 dark:border-primary-800">
                 <div className="flex items-baseline gap-1">
                   <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {formatPrice(billingInterval === 'monthly' ? selectedPlan.priceMonthly : selectedPlan.priceYearly)}
+                    {formatPrice(billingInterval === 'monthly' ? selectedPlan.priceMonthly : selectedPlan.priceYearly, selectedPlan.currency)}
                   </span>
                   <span className="text-sm text-gray-600 dark:text-gray-400">
                     {billingInterval === 'monthly' ? t('perMonth') : t('perYear')}

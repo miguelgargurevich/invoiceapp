@@ -1232,6 +1232,9 @@
       "website": "Sitio Web",
       "showOptionalFields": "Mostrar más detalles",
       "hideOptionalFields": "Ocultar campos opcionales",
+      "pais": "País",
+      "paisPeru": "Perú",
+      "paisUsa": "Estados Unidos",
       "taxId": "RUC o identificación fiscal",
       "taxIdPlaceholder": "20123456789",
       "taxIdHint": "Necesario para emitir comprobantes electrónicos en Perú. Puedes agregarlo después en Configuración.",
@@ -1257,6 +1260,9 @@
       "language": "Idioma",
       "select": "Moneda",
       "preview": "Vista previa del monto:"
+    },
+    "plan": {
+      "igvIncluido": "Precio incluye IGV"
     },
     "tax": {
       "title": "Configura tus impuestos",
@@ -1874,6 +1880,7 @@
       "monthly": "Mensual",
       "yearly": "Anual",
       "save": "Ahorra 20%",
+      "igvIncluido": "Precio incluye IGV",
       "popular": "Más Popular",
       "perMonth": "mes",
       "billedYearly": "facturado anualmente",

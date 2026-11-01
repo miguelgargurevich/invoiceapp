@@ -37,6 +37,7 @@ interface SetupData {
   email: string;
   password: string;
   // Company fields
+  pais: 'US' | 'PE';
   companyName: string;
   ruc: string;
   direccion: string;
@@ -58,6 +59,7 @@ interface EmpresaResponse {
   id: string;
   nombre: string;
   ruc?: string;
+  pais?: 'US' | 'PE';
   direccion?: string;
   telefono?: string;
   email?: string;
@@ -110,6 +112,7 @@ export default function SetupWizardPage({
     logo: null,
     currency: 'USD',
     locale: locale === 'es' ? 'es' : 'en', // parte del idioma de la página
+    pais: locale === 'es' ? 'PE' : 'US', // el idioma sugiere el país; el paso de empresa lo cambia
     taxRate: 0,
     taxName: 'Tax',
     taxEnabled: false,
@@ -162,6 +165,7 @@ export default function SetupWizardPage({
             website: response.web || '',
             logo: response.logoUrl || null,
             currency: response.currency || 'USD',
+            pais: response.pais === 'PE' || response.pais === 'US' ? response.pais : prev.pais,
             locale: response.locale || 'en',
             taxRate: response.taxRate || 0,
             taxName: response.taxName || 'Tax',
@@ -247,6 +251,7 @@ export default function SetupWizardPage({
           email: setupData.emailEmpresa,
           web: setupData.website,
           currency: setupData.currency,
+          pais: setupData.pais,
           locale: setupData.locale,
           taxRate: setupData.taxEnabled ? setupData.taxRate : 0,
           taxName: setupData.taxName,
@@ -278,19 +283,35 @@ export default function SetupWizardPage({
       }
 
       // STEP 3: Handle subscription
-      // Fetch plans to determine if selected plan is paid
+      // Fetch plans (del país de la empresa) to determine if selected plan is paid
       let isPaidPlan = false;
       try {
         const { getPlans } = await import('@/lib/subscriptions');
-        const plans = await getPlans();
+        const plans = await getPlans(setupData.pais);
         const selectedPlan = plans.find(p => p.id === setupData.selectedPlan);
         isPaidPlan = !!selectedPlan && selectedPlan.priceMonthly > 0;
       } catch (error) {
         console.error('[SETUP] Error fetching plans:', error);
       }
 
+      if (isPaidPlan && setupData.pais === 'PE') {
+        // Perú: el plan de pago se contrata con Culqi en Configuración › Suscripción (no hay checkout de Stripe).
+        // /initialize deja el plan gratis; si la suscripción ya existía no responde `pagoPendiente`,
+        // así que se redirige siempre que el plan elegido es de pago.
+        try {
+          await api.post('/subscriptions/initialize', { planId: setupData.selectedPlan });
+        } catch (error) {
+          console.error('[SETUP] Error initializing subscription:', error);
+        }
+        await refreshEmpresa();
+        document.cookie = `preferredLocale=${setupData.locale};path=/;max-age=31536000`;
+        const intervalo = setupData.billingInterval === 'monthly' ? 'MONTH' : 'YEAR';
+        router.push(`/${setupData.locale}/configuracion?tab=suscripcion&contratar=${setupData.selectedPlan}&intervalo=${intervalo}`);
+        return;
+      }
+
       if (isPaidPlan) {
-        // For paid plans: create Stripe checkout session now that we have a token
+        // Plan de pago en Estados Unidos: create Stripe checkout session now that we have a token
         try {
           console.log('[SETUP] Creating Stripe checkout session...');
           const response = await api.post<{ url: string }>('/subscriptions/create-checkout-session', {

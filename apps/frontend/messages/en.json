@@ -1229,6 +1229,9 @@
       "website": "Website",
       "showOptionalFields": "Show more details",
       "hideOptionalFields": "Hide optional fields",
+      "pais": "Country",
+      "paisPeru": "Peru",
+      "paisUsa": "United States",
       "taxId": "RUC or tax ID",
       "taxIdPlaceholder": "20123456789",
       "taxIdHint": "Required to issue electronic invoices in Peru. You can add it later in Settings.",
@@ -1254,6 +1257,9 @@
       "language": "Language",
       "select": "Currency",
       "preview": "Amount preview:"
+    },
+    "plan": {
+      "igvIncluido": "Price includes IGV"
     },
     "tax": {
       "title": "Configure your tax settings",
@@ -1871,6 +1877,7 @@
       "monthly": "Monthly",
       "yearly": "Yearly",
       "save": "Save 20%",
+      "igvIncluido": "Price includes IGV",
       "popular": "Most Popular",
       "perMonth": "mo",
       "billedYearly": "billed yearly",

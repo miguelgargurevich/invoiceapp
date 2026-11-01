@@ -26,6 +26,7 @@ interface SetupData {
   email: string;
   password: string;
   // Company fields
+  pais: 'US' | 'PE';
   companyName: string;
   ruc: string;
   direccion: string;
@@ -121,6 +122,35 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* País: decide moneda, impuestos y los planes que se ofrecen */}
+        <div>
+          <span id="setup-pais" className="block text-white/80 text-sm font-medium mb-2">
+            {t('company.pais')}
+          </span>
+          <div className="grid grid-cols-2 gap-3" role="group" aria-labelledby="setup-pais">
+            <button
+              type="button"
+              aria-pressed={data.pais === 'PE'}
+              onClick={() => onUpdate({ pais: 'PE', currency: 'PEN', taxName: 'IGV', taxRate: 18, taxEnabled: true })}
+              className={`px-4 py-3 rounded-xl border-2 text-sm font-semibold transition-all ${
+                data.pais === 'PE' ? 'border-white/40 bg-white/10 text-white' : 'border-white/10 bg-white/5 text-white/70 hover:border-white/20'
+              }`}
+            >
+              {t('company.paisPeru')}
+            </button>
+            <button
+              type="button"
+              aria-pressed={data.pais === 'US'}
+              onClick={() => onUpdate({ pais: 'US' })}
+              className={`px-4 py-3 rounded-xl border-2 text-sm font-semibold transition-all ${
+                data.pais === 'US' ? 'border-white/40 bg-white/10 text-white' : 'border-white/10 bg-white/5 text-white/70 hover:border-white/20'
+              }`}
+            >
+              {t('company.paisUsa')}
+            </button>
+          </div>
+        </div>
+
         {/* Company Name - Required */}
         <div>
           <label className="block text-white/80 text-sm font-medium mb-2">

@@ -13,9 +13,10 @@ import {
   Crown,
   Star
 } from 'lucide-react';
-import { getPlans, type Plan } from '@/lib/subscriptions';
+import { getPlans, esPlanGratis, formatPrice, type Plan } from '@/lib/subscriptions';
 
 interface SetupData {
+  pais?: 'US' | 'PE';
   companyName: string;
   direccion: string;
   telefono: string;
@@ -40,15 +41,16 @@ interface PlanStepProps {
 
 const getPlanIcon = (planName: string) => {
   const name = planName.toLowerCase();
-  if (name.includes('free') || name.includes('trial')) return <Sparkles className="w-6 h-6" />;
+  if (name.includes('free') || name.includes('trial') || name.includes('gratis')) return <Sparkles className="w-6 h-6" />;
   if (name.includes('starter') || name.includes('basic')) return <Zap className="w-6 h-6" />;
-  if (name.includes('pro') || name.includes('premium')) return <Crown className="w-6 h-6" />;
+  if (name.includes('pro') || name.includes('premium') || name.includes('negocio')) return <Crown className="w-6 h-6" />;
+  if (name.includes('emprendedor')) return <Zap className="w-6 h-6" />;
   return <Star className="w-6 h-6" />;
 };
 
 const getPlanColor = (planName: string) => {
   const name = planName.toLowerCase();
-  if (name.includes('free') || name.includes('trial')) return 'from-gray-500 to-gray-600';
+  if (name.includes('free') || name.includes('trial') || name.includes('gratis')) return 'from-gray-500 to-gray-600';
   if (name.includes('starter') || name.includes('basic')) return 'from-primary-400 to-primary-600';
   if (name.includes('pro') || name.includes('premium')) return 'from-primary-600 to-primary-800';
   return 'from-primary-500 to-primary-700';
@@ -71,15 +73,12 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
   useEffect(() => {
     const loadPlans = async () => {
       try {
-        const plansData = await getPlans();
+        const plansData = await getPlans(data.pais || 'US');
         setPlans(plansData);
-        
-        // Auto-select free/trial plan if none selected
+
+        // Auto-select free plan if none selected
         if (!selectedPlanId) {
-          const freePlan = plansData.find(p => 
-            p.name.toLowerCase().includes('free') || 
-            p.name.toLowerCase().includes('trial')
-          );
+          const freePlan = plansData.find(p => esPlanGratis(p));
           if (freePlan) {
             setSelectedPlanId(freePlan.id);
             onUpdate({ selectedPlan: freePlan.id });
@@ -166,8 +165,8 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {plans.map((plan, index) => {
           const isSelected = selectedPlanId === plan.id;
-          const isPopular = plan.name.toLowerCase().includes('pro'); // Mark PRO plan as popular
-          const isFree = plan.priceMonthly === 0;
+          const isPopular = plan.isPopular ?? plan.name.toLowerCase().includes('pro'); // Plan marcado como popular (o PRO en el catálogo viejo)
+          const isFree = esPlanGratis(plan);
           const price = billingInterval === 'monthly' ? plan.priceMonthly : plan.priceYearly;
           const savings = calculateYearlySavings(plan);
           
@@ -214,16 +213,19 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
               {/* Price */}
               <div className="mb-4">
                 <span className="text-3xl font-bold text-white">
-                  ${isFree ? '0' : price}
+                  {formatPrice(isFree ? 0 : price, plan.currency)}
                 </span>
                 <span className="text-white/60 ml-1 text-sm">
-                  {isFree 
+                  {isFree
                     ? (locale === 'es' ? 'para siempre' : 'forever')
                     : billingInterval === 'monthly'
                     ? (locale === 'es' ? '/mes' : '/month')
                     : (locale === 'es' ? '/año' : '/year')
                   }
                 </span>
+                {plan.currency === 'PEN' && (
+                  <p className="mt-1 text-xs text-white/60">{t('plan.igvIncluido')}</p>
+                )}
                 {billingInterval === 'yearly' && savings > 0 && !isFree && (
                   <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-300 rounded text-xs font-semibold">
                     <Zap className="w-3 h-3" />

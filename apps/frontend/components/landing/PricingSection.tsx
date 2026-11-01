@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { motion } from 'framer-motion';
 import { Check, Sparkles, Zap, Crown, Building2 } from 'lucide-react';
+import { formatPrice } from '@/lib/precios';
 
 interface Plan {
   id: string;
@@ -12,6 +13,9 @@ interface Plan {
   description: string | null;
   priceMonthly: number;
   priceYearly: number;
+  currency?: string;
+  pais?: 'US' | 'PE';
+  isPopular?: boolean;
   features: string[];
   maxInvoices: number | null;
   maxClients: number | null;
@@ -114,30 +118,129 @@ export function PricingSection() {
     },
   ];
 
+  // Planes de Perú (en soles, IGV incluido) para la página en español; si la API no responde, se ven estos.
+  const defaultPlansPe: Plan[] = [
+    {
+      id: 'pe-gratis',
+      name: 'Gratis',
+      description: 'Para empezar a emitir comprobantes electrónicos',
+      priceMonthly: 0,
+      priceYearly: 0,
+      currency: 'PEN',
+      pais: 'PE',
+      features: [
+        '10 comprobantes al mes',
+        '10 clientes',
+        'Factura, boleta y notas de crédito y débito',
+        'PDF y envío por correo',
+      ],
+      maxInvoices: 10,
+      maxClients: 10,
+      maxUsers: null,
+      isActive: true,
+      sortOrder: 0,
+    },
+    {
+      id: 'pe-emprendedor',
+      name: 'Emprendedor',
+      description: 'Para negocios que empiezan a crecer',
+      priceMonthly: 29,
+      priceYearly: 279,
+      currency: 'PEN',
+      pais: 'PE',
+      features: [
+        '100 comprobantes al mes',
+        '100 clientes',
+        'Factura, boleta y notas de crédito y débito',
+        'PDF y envío por correo',
+        'Reportes',
+      ],
+      maxInvoices: 100,
+      maxClients: 100,
+      maxUsers: null,
+      isActive: true,
+      sortOrder: 1,
+    },
+    {
+      id: 'pe-negocio',
+      name: 'Negocio',
+      description: 'Todo lo que tu negocio necesita para facturar',
+      priceMonthly: 59,
+      priceYearly: 569,
+      currency: 'PEN',
+      pais: 'PE',
+      isPopular: true,
+      features: [
+        '500 comprobantes al mes',
+        'Clientes ilimitados',
+        'Proformas',
+        'Firma digital de documentos',
+        'Detracción y percepción',
+        'Tu logo en los comprobantes',
+        'Reportes',
+      ],
+      maxInvoices: 500,
+      maxClients: null,
+      maxUsers: null,
+      isActive: true,
+      sortOrder: 2,
+    },
+    {
+      id: 'pe-empresa',
+      name: 'Empresa',
+      description: 'Sin límites, con API y soporte prioritario',
+      priceMonthly: 119,
+      priceYearly: 1149,
+      currency: 'PEN',
+      pais: 'PE',
+      features: [
+        'Comprobantes ilimitados',
+        'Clientes ilimitados',
+        'Proformas',
+        'Firma digital de documentos',
+        'Detracción y percepción',
+        'Tu logo en los comprobantes',
+        'Reportes avanzados',
+        'Multimoneda',
+        'Acceso por API',
+        'Soporte prioritario',
+      ],
+      maxInvoices: null,
+      maxClients: null,
+      maxUsers: null,
+      isActive: true,
+      sortOrder: 3,
+    },
+  ];
+
   useEffect(() => {
+    // El país sale del idioma: español = Perú (soles), inglés = Estados Unidos (dólares).
+    const esPeru = locale === 'es';
+    const porDefecto = esPeru ? defaultPlansPe : defaultPlans;
     async function fetchPlans() {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/subscriptions/plans`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/subscriptions/plans?pais=${esPeru ? 'PE' : 'US'}`);
         if (response.ok) {
           const data = await response.json();
           if (data && data.length > 0) {
             setPlans(data);
           } else {
-            setPlans(defaultPlans);
+            setPlans(porDefecto);
           }
         } else {
-          setPlans(defaultPlans);
+          setPlans(porDefecto);
         }
       } catch {
-        setPlans(defaultPlans);
+        setPlans(porDefecto);
       } finally {
         setLoading(false);
       }
     }
     fetchPlans();
-  }, []);
+    // defaultPlans y defaultPlansPe son constantes de cada render: solo cambian con el idioma.
+  }, [locale]);
 
-  const displayPlans = plans.length > 0 ? plans : defaultPlans;
+  const displayPlans = plans.length > 0 ? plans : (locale === 'es' ? defaultPlansPe : defaultPlans);
 
   const calculateYearlySavings = (plan: Plan) => {
     if (!plan.priceMonthly || !plan.priceYearly) return 0;
@@ -179,7 +282,8 @@ export function PricingSection() {
     const name = planName.toLowerCase();
     if (name.includes('free') || name.includes('gratis')) return 'free';
     if (name.includes('starter') || name.includes('básico') || name.includes('basic')) return 'starter';
-    if (name.includes('pro')) return 'pro';
+    if (name.includes('emprendedor')) return 'starter';
+    if (name.includes('pro') || name.includes('negocio')) return 'pro';
     if (name.includes('business') || name.includes('enterprise') || name.includes('empresa')) return 'business';
     return 'starter';
   };
@@ -261,7 +365,8 @@ export function PricingSection() {
               const planKey = getPlanKey(plan.name);
               const Icon = planIcons[planKey] || Sparkles;
               const colors = planColors[planKey] || planColors.starter;
-              const isPopular = planKey === 'pro';
+              const isPopular = plan.isPopular ?? planKey === 'pro';
+              const moneda = plan.currency || 'USD';
               const price = isYearly ? plan.priceYearly : plan.priceMonthly;
               const monthlyPrice = isYearly ? Math.round(plan.priceYearly / 12) : plan.priceMonthly;
               const savings = calculateYearlySavings(plan);
@@ -304,7 +409,7 @@ export function PricingSection() {
                   <div className="mb-6">
                     <div className="flex items-baseline gap-1">
                       <span className="text-4xl font-bold text-slate-900 dark:text-white">
-                        ${monthlyPrice}
+                        {formatPrice(monthlyPrice, moneda)}
                       </span>
                       <span className="text-slate-500 dark:text-slate-400">
                         /{t('pricing.perMonth')}
@@ -312,7 +417,7 @@ export function PricingSection() {
                     </div>
                     {isYearly && plan.priceYearly > 0 && (
                       <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                        ${price} {t('pricing.billedYearly')}
+                        {formatPrice(price, moneda)} {t('pricing.billedYearly')}
                       </p>
                     )}
                     {isYearly && savings > 0 && (
@@ -320,6 +425,11 @@ export function PricingSection() {
                         <Zap className="h-3 w-3" />
                         Save {savings}%
                       </div>
+                    )}
+                    {moneda === 'PEN' && (
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                        {t('pricing.igvIncluido')}
+                      </p>
                     )}
                   </div>
 

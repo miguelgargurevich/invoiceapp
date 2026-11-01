@@ -1,5 +1,7 @@
 import api from './api';
 
+export { formatPrice, esPlanGratis } from './precios';
+
 // Types
 export interface Plan {
   id: string;
@@ -9,6 +11,9 @@ export interface Plan {
   stripePriceIdYearly: string | null;
   priceMonthly: number;
   priceYearly: number;
+  currency: string;
+  pais: 'US' | 'PE';
+  isPopular?: boolean;
   features: string[];
   maxInvoices: number | null;
   maxClients: number | null;
@@ -21,6 +26,7 @@ export interface Subscription {
   id: string;
   stripeSubscriptionId: string | null;
   stripeCustomerId: string | null;
+  proveedorPago?: 'stripe' | 'culqi';
   status: 'TRIALING' | 'ACTIVE' | 'PAST_DUE' | 'CANCELED' | 'UNPAID' | 'INCOMPLETE' | 'INCOMPLETE_EXPIRED' | 'PAUSED';
   currentPeriodStart: string | null;
   currentPeriodEnd: string | null;
@@ -71,12 +77,12 @@ export interface UsageResponse {
 }
 
 // API Functions
-export async function getPlans(): Promise<Plan[]> {
+export async function getPlans(pais: 'US' | 'PE' = 'US'): Promise<Plan[]> {
   // Use direct fetch for this public endpoint to avoid auth issues
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
   const apiUrl = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
-  const response = await fetch(`${apiUrl}/subscriptions/plans`);
-  
+  const response = await fetch(`${apiUrl}/subscriptions/plans?pais=${pais}`);
+
   if (!response.ok) {
     throw new Error('Failed to fetch plans');
   }
@@ -124,13 +130,40 @@ export async function getUsage(): Promise<UsageResponse> {
   return api.get<UsageResponse>('/subscriptions/usage');
 }
 
-// Helper functions
-export function formatPrice(price: number, currency: string = 'USD'): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currency,
-  }).format(price);
+// Culqi (Perú): la contratación la usa Configuración › Suscripción (Tarea 5)
+export interface Facturacion {
+  nombre: string;
+  apellido: string;
+  telefono: string;
+  direccion: string;
+  ciudad: string;
 }
+
+export interface Autenticacion3DS {
+  eci?: string;
+  xid?: string;
+  cavv?: string;
+  protocolVersion?: string;
+  directoryServerTransactionId?: string;
+}
+
+export type RespuestaCulqi = { subscription?: Subscription; requiere3DS?: boolean; ok?: boolean };
+
+export async function suscribirCulqi(datos: {
+  planSlug: string;
+  intervalo: 'MONTH' | 'YEAR';
+  tokenId: string;
+  facturacion: Facturacion;
+  authentication3DS?: Autenticacion3DS;
+}): Promise<RespuestaCulqi> {
+  return api.post<RespuestaCulqi>('/subscriptions/culqi/suscribir', datos);
+}
+
+export async function cambiarTarjetaCulqi(datos: { tokenId: string; authentication3DS?: Autenticacion3DS }): Promise<RespuestaCulqi> {
+  return api.post<RespuestaCulqi>('/subscriptions/culqi/tarjeta', datos);
+}
+
+// Helper functions
 
 export function getStatusColor(status: Subscription['status']): string {
   switch (status) {
