@@ -475,6 +475,18 @@
   (50.00 + 50.01) aceptada; nota de crédito FC01-1 sobre F001-2 aceptada; regresión de empresa US: «Facturas» y formulario
   de clientes sin cambios.
 
+- 2026-11-01 (claude-code, Opus 5.5): revisión visual de la marca Facturo en Chrome (Tarea 4 del plan de marca) sobre la
+  app local, en modo claro y oscuro: login, registro, dashboard, configuración/suscripción, comprobantes, landing,
+  favicon y manifest. Corregido en `feat/marca-facturo` (commits a8e0a8b y 0820d82): el ícono del menú oscuro pasa a
+  ficha blanca (el ticket #0F6E56 sobre gray-900 casi no se veía), la pestaña Suscripción pasa de azul a verde, el
+  landing usa `LogoFacturo` en header y footer (antes un ícono genérico), la maqueta del hero ya no dice
+  invoiceapp.io, y `LogoFacturo` pone el ticket sobre ficha clara en modo oscuro. Verificado: frontend 35/35,
+  tsc ok y `next build` ok. Capturas en `docs/marca/revision-2026-11-01/`.
+  Gotcha: no correr `next build` en el mismo `apps/frontend` mientras corre `next dev` (comparten `.next` y se rompen
+  los estilos del dev server).
+  Pendiente: los correos y dominios `@invoiceapp.com`/`invoiceapp.io` (contacto, ayuda, redes del footer) esperan el
+  dominio nuevo de Facturo; nadie verificó la disponibilidad de la marca en INDECOPI ni del dominio. Sin push.
+
 ## Próximos pasos
 
 - [x] Spec aprobado.
