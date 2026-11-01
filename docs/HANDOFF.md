@@ -487,6 +487,18 @@
   Pendiente: los correos y dominios `@invoiceapp.com`/`invoiceapp.io` (contacto, ayuda, redes del footer) esperan el
   dominio nuevo de Facturo; nadie verificó la disponibilidad de la marca en INDECOPI ni del dominio. Sin push.
 
+- 2026-11-01 (claude-code, Opus 5.5): onboarding (/setup) en colores Facturo y flujo corregido, en `feat/marca-facturo`.
+  Colores (32d5a87): fondo y degradados morados/arcoíris pasan a primary; el rojo queda solo para errores y borrar.
+  Flujo (7e581a0), probado en Chrome con una cuenta nueva registro → asistente → dashboard: con sesión iniciada ya no
+  pide crear la cuenta otra vez; el asistente ahora SÍ crea/actualiza la empresa (PUT /empresas/mi-empresa con
+  setupCompleted: true; antes nunca la creaba y logo/suscripción fallaban); el layout del dashboard redirige a
+  /{locale}/setup cuando no hay empresa (el chequeo de 404 nunca coincidía); la vuelta de Stripe iba a un paso 7
+  inexistente; el idioma parte del de la página. Verificado: frontend 35/35, tsc y next build ok; en BD quedan
+  empresa, setup_completed=true y suscripción TRIALING free. Capturas 09–12 en `docs/marca/revision-2026-11-01/`.
+  Pendiente menor: la vista previa del paso de impuestos muestra «$» aunque se elija PEN; la empresa queda con RUC
+  provisional TEMP-… hasta que el usuario lo cambie (lo exige SUNAT). Los planes siguen saliendo de
+  `prisma/seed_plans.sql`, que no está en git (.gitignore ignora *.sql).
+
 ## Próximos pasos
 
 - [x] Spec aprobado.
