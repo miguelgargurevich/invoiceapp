@@ -12,6 +12,22 @@
 
 ## Última sesión
 
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t7-paginas`, rama `feat/sunatf-t7-paginas`):
+  Tarea 7 del plan del frontend SUNAT (páginas de comprobantes). Hecho, en `apps/frontend/app/[locale]/(dashboard)/comprobantes/`:
+  `page.tsx` (lista con filtros por tipo y estado), `nuevo/page.tsx` (alta; nota de crédito o débito desde `?tipo=&afecta=&motivo=`),
+  `[id]/page.tsx` (detalle: líneas, totales, historial y refresco automático mientras está en proceso) y `[id]/editar/page.tsx`
+  (manda al detalle si el comprobante ya no es borrador). Código copiado del plan: props, imports y claves i18n coincidieron con las
+  firmas reales; no hubo que corregir nada.
+  Pruebas: `npx tsc --noEmit` sin errores (exit 0); `npm test` 35/35 (sin pruebas nuevas: las páginas no tienen pruebas propias);
+  `npx next build` termina con 0 y lista `/[locale]/comprobantes`, `/nuevo`, `/[id]` y `/[id]/editar` (en es y en).
+  Mutaciones de tipo (un prop inventado en cada una de las cuatro páginas → TS2322; restaurada con cp + cmp; `tsc` vuelve a 0): 4 de 4 en rojo.
+  Gotchas: (a) `next lint` roto (ver gotcha c de la Tarea 4): se usó `tsc` y `next build`, que en este repo no hace lint. Los avisos de
+  caché de webpack que salen al build vienen de next-intl, no son errores. (b) El refresco del detalle (cada 5 s) se detiene al llegar a un
+  estado que no está en proceso (`PENDIENTE_ENVIO`, `ERROR_TEMPORAL` y `ANULACION_PENDIENTE` son los que sí lo están), al cumplir
+  24 refrescos (2 min: queda «Actualizar») o al salir de la página. `onCambio` lo reinicia. (c) En `nuevo` y `[id]/editar`, si la carga
+  inicial falla, sale el toast pero la pantalla se queda en el esqueleto (`inicial` sigue en `null`): mejorar con un estado de error.
+  (d) La pantalla no se probó en el navegador (Tarea 10).
+  Pendiente: push y OK de Miguel (sesión principal).
 - 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t5-componentes`, rama `feat/sunatf-t5-componentes`):
   Tarea 5 del plan del frontend SUNAT (componentes de estado, acciones, anulación, historial y alertas). Hecho, en
   `apps/frontend/components/sunat/`: `EstadoSunatBadge.tsx`, `HistorialEnvios.tsx`, `AlertasSunat.tsx`, `AnularModal.tsx` y
