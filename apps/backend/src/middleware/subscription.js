@@ -1,6 +1,8 @@
 const prisma = require('../utils/prisma');
 const { planGratisDe } = require('../planes/catalogo');
 const { pasarAGratis } = require('../planes/gratis');
+const stripePlanes = require('../planes/stripe');
+const { mensajeSeguro } = stripePlanes;
 
 const INCLUIR = { plan: true, empresa: { select: { pais: true } } };
 
@@ -53,9 +55,11 @@ async function crear(empresaId, pais, cliente) {
  * Devuelve null si no hay un plan que asignar (quien la use debe negar el acceso).
  * @param {string} empresaId
  * @param {object} [cliente] prisma o `tx` de una transacción
- * @param {{ahora?: () => Date}} [opciones] reloj (para pruebas y para la fecha de emisión)
+ * @param {{ahora?: () => Date, cancelarStripe?: (id: string) => Promise<unknown>}} [opciones] reloj (para pruebas y
+ *   para la fecha de emisión) y cancelador de Stripe; por defecto `planes/stripe.js` (resuelto al llamar, así
+ *   las pruebas también pueden sustituir `stripePlanes.cancelarStripe`)
  */
-async function getOrCreateSubscription(empresaId, cliente = prisma, { ahora = () => new Date() } = {}) {
+async function getOrCreateSubscription(empresaId, cliente = prisma, { ahora = () => new Date(), cancelarStripe = (id) => stripePlanes.cancelarStripe(id) } = {}) {
   let leida = await leer(empresaId, cliente);
   if (!leida) {
     const empresa = await cliente.empresa.findUnique({ where: { id: empresaId }, select: { pais: true } });
@@ -67,10 +71,17 @@ async function getOrCreateSubscription(empresaId, cliente = prisma, { ahora = ()
 
   if (sub.plan.pais !== pais) {
     // Ej.: una empresa de EE. UU. con plan de EE. UU. que pasó a Perú.
+    // Si cobraba por Stripe se cancela YA (la empresa ya no tiene ese plan). Si Stripe falla (red, id inexistente,
+    // clave apagada) se registra sin datos sensibles y se baja al plan gratis igual: nunca una empresa de PE con plan de EE. UU.
+    // El id de Stripe se borra en ambos casos para que los webhooks no vuelvan a tocar la fila gratis.
     if (sub.stripeSubscriptionId) {
-      console.warn(`[SUBSCRIPTION] La empresa ${empresaId} cambió de país con una suscripción de Stripe activa: revisa y cancélala`);
+      try {
+        await cancelarStripe(sub.stripeSubscriptionId);
+      } catch (error) {
+        console.error(`[SUBSCRIPTION] No se pudo cancelar en Stripe la suscripción de la empresa ${empresaId}: ${mensajeSeguro(error)}`);
+      }
     }
-    return pasarAGratis(cliente, sub, { pais, ahora });
+    return pasarAGratis(cliente, sub, { pais, ahora, limpiarStripe: true });
   }
 
   if (sub.proveedorPago === 'culqi') {

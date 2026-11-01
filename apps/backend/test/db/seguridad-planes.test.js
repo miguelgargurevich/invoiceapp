@@ -26,6 +26,11 @@ const FUTURO = new Date('2099-01-01T00:00:00Z');
 let ctx; let planes; let planUs; let servidor; let base;
 let usuarioActual;
 
+// El cambio de país cancela la suscripción de Stripe: aquí nunca se llama a Stripe real.
+const stripePlanes = require('../../src/planes/stripe');
+const cancelarStripeOriginal = stripePlanes.cancelarStripe;
+stripePlanes.cancelarStripe = async () => {};
+
 test.before(async () => {
   const sunat = { engine: engineFalso(), almacen: almacenFalso() };
   const auth = [async (req, _res, next) => {
@@ -53,7 +58,7 @@ test.beforeEach(async () => {
   ctx = await crearEmpresaPeru();
   usuarioActual = ctx;
 });
-test.after(async () => { servidor.close(); await prisma.$disconnect(); });
+test.after(async () => { stripePlanes.cancelarStripe = cancelarStripeOriginal; servidor.close(); await prisma.$disconnect(); });
 
 const suscribirA = (slug, extra = {}) => prisma.subscription.create({
   data: { empresaId: ctx.empresa.id, planId: planes[slug].id, status: 'ACTIVE', ...extra },
