@@ -30,7 +30,10 @@ export function LogoFacturo({ variante = 'completo', tamano = 32, oscuro = false
   if (variante === 'icono') return <IconoFacturo tamano={tamano} className={className} />;
   return (
     <span className={cn('inline-flex items-center gap-2', className)}>
-      <IconoFacturo tamano={tamano} />
+      {/* En fondo oscuro el ticket verde pierde contraste: va sobre una ficha clara */}
+      <span className={cn('inline-flex rounded-md', oscuro ? 'bg-white p-0.5' : 'dark:bg-white dark:p-0.5')}>
+        <IconoFacturo tamano={tamano} />
+      </span>
       <span
         className={cn('font-medium tracking-tight leading-none', oscuro ? 'text-[#F1EFE8]' : 'text-[#2C2C2A] dark:text-[#F1EFE8]')}
         style={{ fontSize: Math.round(tamano * 0.75) }}
