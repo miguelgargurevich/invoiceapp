@@ -26,6 +26,7 @@ import { Button, Card, LoadingSpinner } from '@/components/common';
 import { cn } from '@/lib/utils';
 import ContratarCulqiModal from '@/components/settings/ContratarCulqiModal';
 import { intervaloCulqi, leerContratarDeUrl, type IntervaloCulqi } from '@/lib/culqi';
+import { planMostrado } from '@/lib/planCobro';
 import {
   getPlans,
   getCurrentSubscription,
@@ -81,6 +82,8 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
   // La ayuda de modo de prueba habla de Stripe: no aplica a las empresas de Perú (Culqi).
   const isDeveloperMode = !esPeru && (process.env.NODE_ENV === 'development' || process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.includes('test'));
   const esCulqi = subscription?.proveedorPago === 'culqi';
+  // Plan que se muestra: con cobro fallido (Culqi, PAST_DUE) es el contratado; la API manda el gratis en `plan`.
+  const vigente = subscription ? planMostrado(subscription) : null;
 
   useEffect(() => {
     const success = searchParams.get('success');
@@ -256,7 +259,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
 
   const abrirCambioTarjeta = () => {
     if (!subscription) return;
-    setPedidoCulqi({ plan: subscription.plan, intervalo: subscription.billingInterval === 'YEAR' ? 'YEAR' : 'MONTH', modo: 'tarjeta' });
+    setPedidoCulqi({ plan: planMostrado(subscription).plan, intervalo: subscription.billingInterval === 'YEAR' ? 'YEAR' : 'MONTH', modo: 'tarjeta' });
   };
 
   const alTerminarCulqi = async () => {
@@ -344,7 +347,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
   };
 
   const isCurrentPlan = (plan: Plan) => {
-    return subscription?.plan?.id === plan.id;
+    return vigente?.plan.id === plan.id;
   };
 
   const calculateYearlySavings = (plan: Plan) => {
@@ -445,16 +448,16 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
               <div className="flex items-start gap-4">
                 <div className={cn(
                   'p-3 rounded-xl shadow-md',
-                  getPlanColor(subscription.plan?.name || '', false)
+                  getPlanColor(vigente?.plan.name || '', false)
                 )}>
                   <div className="text-white">
-                    {getPlanIcon(subscription.plan?.name || '')}
+                    {getPlanIcon(vigente?.plan.name || '')}
                   </div>
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                      {subscription.plan?.name || t('currentPlan')}
+                      {vigente?.plan.name || t('currentPlan')}
                     </h3>
                     <span
                       className={cn(
@@ -465,8 +468,19 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                       {t(`status.${subscription.status.toLowerCase()}`)}
                     </span>
                   </div>
+                  {vigente?.cobroFallido && (
+                    <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                      {formatPrice(
+                        subscription.billingInterval === 'YEAR' ? vigente.plan.priceYearly : vigente.plan.priceMonthly,
+                        vigente.plan.currency
+                      )}
+                      <span className="text-xs font-normal text-gray-600 dark:text-gray-400">
+                        {subscription.billingInterval === 'YEAR' ? t('perYear') : t('perMonth')}
+                      </span>
+                    </p>
+                  )}
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                    {subscription.plan?.description || ''}
+                    {vigente?.plan.description || ''}
                   </p>
                   {subscription.currentPeriodEnd && (
                     <p className="text-xs text-gray-700 dark:text-gray-300 flex items-center gap-1">
@@ -533,6 +547,20 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                 )}
               </div>
             </div>
+            {vigente?.cobroFallido && (
+              <div role="alert" className="mt-4 p-4 rounded-lg border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20 flex flex-col sm:flex-row sm:items-center gap-3">
+                <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 shrink-0" />
+                <p className="text-sm text-yellow-900 dark:text-yellow-300 flex-1">
+                  {t('cobroFallido', { plan: vigente.plan.name })}
+                </p>
+                {esCulqi && (
+                  <Button size="sm" onClick={abrirCambioTarjeta} className="bg-yellow-600 hover:bg-yellow-700">
+                    <CreditCard className="h-4 w-4 mr-2" />
+                    {t('cobroFallidoBoton')}
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
         )}
       </Card>
@@ -945,7 +973,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
             <div className="space-y-3 mb-6">
               <p className="text-sm text-gray-700 dark:text-gray-300">
                 {t('confirmChangePlanDesc', { 
-                  currentPlan: subscription?.plan?.name || 'Current',
+                  currentPlan: vigente?.plan.name || 'Current',
                   newPlan: selectedPlan.name 
                 })}
               </p>

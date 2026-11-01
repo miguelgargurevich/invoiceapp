@@ -1705,6 +1705,8 @@
     "faqA6": "¡Sí! Utilizamos cifrado y prácticas de seguridad estándar de la industria. Tus datos se almacenan de forma segura y nunca los compartimos con terceros.",
     "testMode": "Modo de Prueba",
     "testModeDesc": "Stripe está en modo de prueba. Usa la tarjeta de prueba 4242 4242 4242 4242 con cualquier fecha futura y CVC.",
+    "cobroFallido": "No pudimos cobrar tu plan {plan}. Mientras tanto tienes los límites del plan Gratis. Actualiza tu tarjeta para recuperarlo.",
+    "cobroFallidoBoton": "Actualizar tarjeta",
     "culqi": {
       "titulo": "Contratar plan {plan}",
       "subtitulo": "Pago seguro con tarjeta. Se renueva automáticamente.",

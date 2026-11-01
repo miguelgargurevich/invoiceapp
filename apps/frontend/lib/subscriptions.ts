@@ -36,6 +36,8 @@ export interface Subscription {
   trialStart: string | null;
   trialEnd: string | null;
   plan: Plan;
+  // Culqi en PAST_DUE: `plan` es el gratis efectivo y aquí va el plan que la empresa contrató.
+  planContratado?: Plan;
 }
 
 export interface SubscriptionResponse {

@@ -1702,6 +1702,8 @@
     "faqA6": "Yes! We use industry-standard encryption and security practices. Your data is stored securely and we never share it with third parties.",
     "testMode": "Test Mode",
     "testModeDesc": "Stripe is in test mode. Use test card 4242 4242 4242 4242 with any future expiry and CVC.",
+    "cobroFallido": "We couldn't charge your {plan} plan. In the meantime you have the Free plan's limits. Update your card to get it back.",
+    "cobroFallidoBoton": "Update card",
     "culqi": {
       "titulo": "Subscribe to {plan}",
       "subtitulo": "Secure card payment. Renews automatically.",
