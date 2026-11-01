@@ -229,7 +229,7 @@ export default function ClientsReportPage({
                   borderRadius: '8px',
                 }}
               />
-              <Bar dataKey="ventas" name={t('totalSales')} fill="#1D9E75" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="ventas" name={t('totalSales')} fill="#8A3D8D" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -151,7 +151,7 @@ export default function PaymentsReportPage({
       setPagosPorMes(pagosMensuales);
 
       // Payment methods pie chart
-      const colors = ['#1D9E75', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+      const colors = ['#8A3D8D', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
       const metodosArray = Object.entries(metodosCount).map(([name, value], index) => ({
         name: t(`paymentMethod.${name}`) || name,
         value,

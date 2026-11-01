@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Facturo">
-  <path d="M19 11a8 8 0 0 1 8-8H101a8 8 0 0 1 8 8V115L91 127L73 115L55 127L37 115L19 127Z" fill="#0F6E56"/>
+  <path d="M19 11a8 8 0 0 1 8-8H101a8 8 0 0 1 8 8V115L91 127L73 115L55 127L37 115L19 127Z" fill="#6B2C6E"/>
   <rect x="42" y="26" width="16" height="66" rx="4" fill="#FFFFFF"/>
   <rect x="42" y="26" width="46" height="16" rx="4" fill="#FFFFFF"/>
   <rect x="42" y="54" width="34" height="15" rx="4" fill="#FFFFFF"/>

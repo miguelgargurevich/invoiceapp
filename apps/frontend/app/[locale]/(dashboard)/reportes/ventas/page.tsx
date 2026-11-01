@@ -234,7 +234,7 @@ export default function SalesReportPage({
                     borderRadius: '8px',
                   }}
                 />
-                <Bar dataKey="ventas" name={t('invoiced')} fill="#1D9E75" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="ventas" name={t('invoiced')} fill="#8A3D8D" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="cobrado" name={t('collected')} fill="#22c55e" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>

@@ -4,7 +4,7 @@ import type { Metadata, Viewport } from 'next';
 import { URL_SITIO } from '@/lib/sitio';
 
 export const viewport: Viewport = {
-  themeColor: '#0F6E56',
+  themeColor: '#6B2C6E',
 };
 
 export const metadata: Metadata = {
