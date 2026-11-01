@@ -126,6 +126,21 @@
   la debe poner la Tarea 11. (4) `esAgentePercepcion` es `false` por defecto: probado el rechazo, NO el camino con emisor
   agente de percepción. (5) Las pruebas de BD comparten `limpiar()` (TRUNCATE) y corren con `--test-concurrency=1`; no
   lanzarlas en paralelo contra la misma base.
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunat-t9-mapper`, rama `feat/sunat-t9-mapper`):
+  Tarea 9 del plan (cliente del engine y mapper). Hecho: `src/sunat/engine/cliente.js` (`crearClienteEngine`, siete
+  llamadas, cabecera `x-engine-token`; 422 → `ErrorConstruccion`; red, 5xx y 401 → `ErrorEngineNoDisponible`),
+  `src/sunat/engine/mapper.js` (`armarEmisor`, `armarComprobante`, `armarBaja`, `armarResumen`, `nombreBase`),
+  pruebas `test/unit/sunat/engineCliente.test.js` (2) y `engineMapper.test.js` (5; una de ellas añadida al plan para la
+  línea exonerada) y `SUNAT_ENGINE_URL` / `SUNAT_ENGINE_TOKEN` en `.env.example`. Código del plan copiado sin cambios.
+  Suite `npm test`: 68 en verde (61 previas + 7). Contrato con el motor: las claves del JSON coinciden exactamente con
+  los cuatro fixtures de `apps/sunat-engine/tests/fixtures/` y con lo que leen `Mapper.php` y `Emisor.php`; no hizo falta
+  cambiar el mapper. Mutaciones: 5 de 5 en rojo (sin `x-engine-token`; 422 como `ErrorEngineNoDisponible`;
+  `porcentajeIgv` distinto de 0 en exonerada; sin leyenda 2006; fecha sin `-05:00`), cada una en su prueba.
+  Gotchas (para la validación de las tareas 10 y 11, el mapper NO valida): (1) `Factura.numero` es `Int?`: sin número
+  sale `"null"` como correlativo. (2) `DetalleFactura.valorUnitario` y `precioUnitarioIgv` son `Decimal?`; `aDecimal(null)`
+  devuelve `0` sin avisar, y un `netoPendiente` nulo da `0.00` en crédito. Rechazar esos casos antes de mapear.
+  (3) El motor responde 500 con `Error interno del motor: <mensaje>`; ese texto llega a `ErrorEngineNoDisponible` y no
+  debe mostrarse tal cual al usuario. (4) Sin probar contra el motor vivo: solo contrato estático y `fetchImpl` simulado.
 
 ## Próximos pasos
 
