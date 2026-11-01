@@ -110,7 +110,10 @@ router.put('/mi-empresa', authenticateToken, async (req, res) => {
     res.json(empresaResponse);
   } catch (error) {
     console.error('[EMPRESA] Error upserting empresa:', error);
-    res.status(500).json({ error: 'Error interno del servidor: ' + error.message });
+    if (error.code === 'P2002') {
+      return res.status(409).json({ error: 'Ese RUC ya está registrado en otra empresa' });
+    }
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 });
 

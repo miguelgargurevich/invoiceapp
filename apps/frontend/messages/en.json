@@ -1228,7 +1228,15 @@
       "emailPlaceholder": "contact@yourcompany.com",
       "website": "Website",
       "showOptionalFields": "Show more details",
-      "hideOptionalFields": "Hide optional fields"
+      "hideOptionalFields": "Hide optional fields",
+      "taxId": "RUC or tax ID",
+      "taxIdPlaceholder": "20123456789",
+      "taxIdHint": "Required to issue electronic invoices in Peru. You can add it later in Settings.",
+      "taxIdErrors": {
+        "rucInvalido": "That RUC isn't valid: check the 11 digits.",
+        "muyLargo": "20 characters max.",
+        "reservado": "Enter your real RUC or tax ID."
+      }
     },
     "logo": {
       "title": "Logo",
