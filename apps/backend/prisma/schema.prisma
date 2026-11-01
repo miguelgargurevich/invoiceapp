@@ -85,6 +85,7 @@ model Empresa {
   serieFactura    String    @default("F001") @map("serie_factura")
   serieProforma   String    @default("P001") @map("serie_proforma")
   setupCompleted  Boolean   @default(false) @map("setup_completed") // Whether user completed onboarding wizard
+  pais            String    @default("US") // "US" | "PE": "PE" activa la facturación electrónica SUNAT
   userId          String    @unique @map("user_id")
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
@@ -96,6 +97,8 @@ model Empresa {
   proformas       Proforma[]
   signatureRequests SignatureRequest[]
   subscription    Subscription?
+  emisorSunat     EmisorSunat?
+  procesosSunat   ProcesoSunat[]
   
   @@index([userId], map: "idx_empresa_user_id")
   @@map("empresas")
@@ -115,6 +118,7 @@ model Cliente {
   contacto        String?   // Persona de contacto
   notas           String?
   activo          Boolean   @default(true)
+  esAgenteRetencion Boolean @default(false) @map("es_agente_retencion")
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
   
@@ -160,7 +164,7 @@ model Factura {
   empresaId         String    @map("empresa_id")
   clienteId         String    @map("cliente_id")
   serie             String
-  numero            Int
+  numero            Int?      // null mientras es borrador SUNAT; se asigna al emitir
   fechaEmision      DateTime  @map("fecha_emision")
   fechaVencimiento  DateTime? @map("fecha_vencimiento")
   
@@ -195,6 +199,40 @@ model Factura {
   pdfUrl            String?   @map("pdf_url")
   xmlUrl            String?   @map("xml_url")
   
+  // Facturación electrónica SUNAT (solo empresas con pais = "PE")
+  tipoComprobante       String    @default("01") @map("tipo_comprobante")
+  tipoOperacion         String    @default("0101") @map("tipo_operacion")
+  estadoSunat           String?   @map("estado_sunat")
+  totalGravadas         Decimal   @default(0) @map("total_gravadas") @db.Decimal(12, 2)
+  totalExoneradas       Decimal   @default(0) @map("total_exoneradas") @db.Decimal(12, 2)
+  totalInafectas        Decimal   @default(0) @map("total_inafectas") @db.Decimal(12, 2)
+  totalExportacion      Decimal   @default(0) @map("total_exportacion") @db.Decimal(12, 2)
+  totalIcbper           Decimal   @default(0) @map("total_icbper") @db.Decimal(12, 2)
+  montoEnLetras         String?   @map("monto_en_letras")
+  detraccionCodigo      String?   @map("detraccion_codigo")
+  detraccionPorcentaje  Decimal?  @map("detraccion_porcentaje") @db.Decimal(5, 2)
+  detraccionMonto       Decimal?  @map("detraccion_monto") @db.Decimal(12, 2)
+  percepcionRegimen     String?   @map("percepcion_regimen")
+  percepcionPorcentaje  Decimal?  @map("percepcion_porcentaje") @db.Decimal(5, 2)
+  percepcionBase        Decimal?  @map("percepcion_base") @db.Decimal(12, 2)
+  percepcionMonto       Decimal?  @map("percepcion_monto") @db.Decimal(12, 2)
+  retencionPorcentaje   Decimal?  @map("retencion_porcentaje") @db.Decimal(5, 2)
+  retencionMonto        Decimal?  @map("retencion_monto") @db.Decimal(12, 2)
+  netoPendiente         Decimal?  @map("neto_pendiente") @db.Decimal(12, 2)
+  docRelacionadoId      String?   @map("doc_relacionado_id")
+  docRelacionadoTipo    String?   @map("doc_relacionado_tipo")
+  docRelacionadoSerie   String?   @map("doc_relacionado_serie")
+  docRelacionadoNumero  Int?      @map("doc_relacionado_numero")
+  motivoCodigo          String?   @map("motivo_codigo")
+  motivoDescripcion     String?   @map("motivo_descripcion")
+  xmlKey                String?   @map("xml_key")
+  cdrKey                String?   @map("cdr_key")
+  codigoRespuestaSunat  String?   @map("codigo_respuesta_sunat")
+  mensajeRespuestaSunat String?   @map("mensaje_respuesta_sunat") @db.Text
+  observacionesSunat    Json?     @map("observaciones_sunat")
+  intentosEnvio         Int       @default(0) @map("intentos_envio")
+  fechaEnvioSunat       DateTime? @map("fecha_envio_sunat")
+
   proformaOrigenId  String?   @map("proforma_origen_id")
   userId            String    @map("user_id")
   createdAt         DateTime  @default(now()) @map("created_at")
@@ -209,12 +247,16 @@ model Factura {
   jobPhotos         JobPhoto[]
   jobReceipts       JobReceipt[]
   signatureRequests SignatureRequest[]
+  cuotas            CuotaFactura[]
+  envios            EnvioSunat[]
+  procesoItems      ProcesoSunatItem[]
   
   @@unique([empresaId, serie, numero])
   @@index([empresaId], map: "idx_factura_empresa_id")
   @@index([clienteId], map: "idx_factura_cliente_id")
   @@index([fechaEmision(sort: Desc)], map: "idx_factura_fecha")
   @@index([estado], map: "idx_factura_estado")
+  @@index([estadoSunat], map: "idx_factura_estado_sunat")
   @@map("facturas")
 }
 
@@ -232,6 +274,14 @@ model DetalleFactura {
   igv             Decimal  @db.Decimal(10, 2)
   total           Decimal  @db.Decimal(10, 2)
   orden           Int      @default(0)
+  codigoUnidadSunat    String   @default("NIU") @map("codigo_unidad_sunat")
+  tipoAfectacionIgv    String   @default("10") @map("tipo_afectacion_igv")
+  precioIncluyeIgv     Boolean  @default(false) @map("precio_incluye_igv")
+  valorUnitario        Decimal? @map("valor_unitario") @db.Decimal(22, 10)
+  precioUnitarioIgv    Decimal? @map("precio_unitario_igv") @db.Decimal(22, 10)
+  icbper               Decimal  @default(0) @db.Decimal(10, 2)
+  cantidadBolsasIcbper Int      @default(0) @map("cantidad_bolsas_icbper")
+  codigoProductoSunat  String?  @map("codigo_producto_sunat")
   
   factura         Factura   @relation(fields: [facturaId], references: [id], onDelete: Cascade)
   producto        Producto? @relation(fields: [productoId], references: [id])
@@ -613,5 +663,108 @@ model UsageEvent {
   @@index([eventType])
   @@index([createdAt])
   @@map("usage_events")
+}
+
+// 🇵🇪 Emisor SUNAT (1:1 con la empresa). Los secretos van cifrados (src/sunat/seguridad/cifrado.js).
+model EmisorSunat {
+  id                      String    @id @default(uuid())
+  empresaId               String    @unique @map("empresa_id")
+  ubigeo                  String
+  departamento            String
+  provincia               String
+  distrito                String
+  urbanizacion            String?
+  direccionFiscal         String    @map("direccion_fiscal")
+  codigoEstablecimiento   String    @default("0000") @map("codigo_establecimiento")
+  ambiente                String    @default("BETA") // BETA | PRODUCCION
+  solUsuario              String?   @map("sol_usuario")
+  solClaveCifrada         String?   @map("sol_clave_cifrada") @db.Text
+  certificadoCifrado      String?   @map("certificado_cifrado") @db.Text
+  certificadoClaveCifrada String?   @map("certificado_clave_cifrada") @db.Text
+  certificadoVence        DateTime? @map("certificado_vence")
+  cuentaDetracciones      String?   @map("cuenta_detracciones")
+  esAgenteRetencion       Boolean   @default(false) @map("es_agente_retencion")
+  esAgentePercepcion      Boolean   @default(false) @map("es_agente_percepcion")
+  greClientId             String?   @map("gre_client_id") // subproyecto 3 (guías)
+  greSecretCifrado        String?   @map("gre_secret_cifrado") @db.Text
+  createdAt               DateTime  @default(now()) @map("created_at")
+  updatedAt               DateTime  @updatedAt @map("updated_at")
+
+  empresa                 Empresa   @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+
+  @@map("emisores_sunat")
+}
+
+model CuotaFactura {
+  id               String   @id @default(uuid())
+  facturaId        String   @map("factura_id")
+  numero           Int
+  monto            Decimal  @db.Decimal(12, 2)
+  fechaVencimiento DateTime @map("fecha_vencimiento")
+
+  factura          Factura  @relation(fields: [facturaId], references: [id], onDelete: Cascade)
+
+  @@unique([facturaId, numero])
+  @@map("cuotas_factura")
+}
+
+// Resumen diario (RC) y comunicación de baja (RA)
+model ProcesoSunat {
+  id               String    @id @default(uuid())
+  empresaId        String    @map("empresa_id")
+  tipo             String    // RC | RA
+  fechaGeneracion  DateTime  @map("fecha_generacion") @db.Date
+  fechaReferencia  DateTime  @map("fecha_referencia") @db.Date
+  correlativo      Int
+  ticket           String?
+  estado           String    @default("ENVIADO") // ENVIADO | ACEPTADO | RECHAZADO
+  xmlKey           String?   @map("xml_key")
+  cdrKey           String?   @map("cdr_key")
+  codigoRespuesta  String?   @map("codigo_respuesta")
+  mensajeRespuesta String?   @map("mensaje_respuesta") @db.Text
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  empresa          Empresa   @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  items            ProcesoSunatItem[]
+  envios           EnvioSunat[]
+
+  @@unique([empresaId, tipo, fechaGeneracion, correlativo])
+  @@index([estado])
+  @@map("procesos_sunat")
+}
+
+model ProcesoSunatItem {
+  id           String       @id @default(uuid())
+  procesoId    String       @map("proceso_id")
+  facturaId    String       @map("factura_id")
+  motivo       String?
+  estadoPrevio String       @map("estado_previo")
+
+  proceso      ProcesoSunat @relation(fields: [procesoId], references: [id], onDelete: Cascade)
+  factura      Factura      @relation(fields: [facturaId], references: [id])
+
+  @@index([facturaId])
+  @@map("proceso_sunat_items")
+}
+
+// Bitácora de cada intento contra SUNAT
+model EnvioSunat {
+  id         String        @id @default(uuid())
+  facturaId  String?       @map("factura_id")
+  procesoId  String?       @map("proceso_id")
+  operacion  String        // sendBill | getStatusCdr | getStatus
+  codigo     String?
+  mensaje    String?       @db.Text
+  exito      Boolean
+  duracionMs Int           @map("duracion_ms")
+  createdAt  DateTime      @default(now()) @map("created_at")
+
+  factura    Factura?      @relation(fields: [facturaId], references: [id], onDelete: Cascade)
+  proceso    ProcesoSunat? @relation(fields: [procesoId], references: [id], onDelete: Cascade)
+
+  @@index([facturaId])
+  @@index([procesoId])
+  @@map("envios_sunat")
 }
 
