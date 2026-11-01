@@ -15,6 +15,13 @@
 
 ## Última sesión
 
+- 2026-11-01 (Claude Code con Opus 5.5, orquestador): **Facturo publicado en Coolify** — https://facturo.gargurevich.dev (web) y https://api.facturo.gargurevich.dev (API).
+  - Coolify: proyecto «Facturo» → recurso Docker Compose «facturo» desde `miguelgargurevich/invoiceapp`, rama `main`, archivo `docker-compose.coolify.yml`. Se despliega solo con cada push a `main`.
+  - Verificado en producción: `/health` 200, `GET /api/subscriptions/plans?pais=PE` → 4 planes, `/` → `/es`, el landing pide los planes a `/api/...` (200), los 4 contenedores sanos y «[SUNAT] Módulo SUNAT iniciado» con almacén en `/data/sunat`.
+  - Gotchas: (a) en la pantalla Domains, Coolify marca «No internal port» y el campo Port no se guarda; igual enruta bien porque el compose declara `SERVICE_FQDN_BACKEND_4001` y `SERVICE_FQDN_FRONTEND_3000`. (b) «Show deployable compose» muestra en claro las contraseñas generadas: no compartir capturas de esa pantalla. (c) La base de producción empieza vacía: hay que registrarse de nuevo. (d) Correos, Stripe y Culqi apagados: se encienden poniendo `RESEND_API_KEY`, `STRIPE_SECRET_KEY`, `CULQI_SECRET_KEY` y `NEXT_PUBLIC_CULQI_PUBLIC_KEY` (esta exige reconstruir) en Environment Variables del recurso.
+  - Arreglo: `PricingSection` pedía `/subscriptions/plans` sin `/api` (404 y caía a los planes de respaldo); ahora usa `getPlans`.
+  - Pendiente: prueba real con el sandbox de Culqi (faltan llaves de prueba), certificado `.pfx` real, respaldo del volumen `backend-data` y de Postgres en Coolify, cerrar el PR #1 (su código ya está en `main`), `lang` del HTML en las páginas en inglés.
+
 - 2026-11-01 (Claude Code con Haiku 5.5, delegado por Opus en worktree `.claude/worktrees/prisma-un-cliente`, rama `fix/prisma-un-cliente` sobre `origin/main` 5d3ed92): **un solo `PrismaClient` en la app** (pedido textual de Miguel: «revisa si las demás aplicaciones tienen el mismo problema» de conexiones acumuladas; My Workspace llenó el límite de 100 del Postgres compartido y tumbó a Coolify).
   - `src/middleware/adminAuth.js`, `src/routes/admin.js`, `src/routes/signatures.js` y `src/routes/signaturesPublic.js` usan `require('../utils/prisma')` en vez de `new PrismaClient()`; se quitó el `require('@prisma/client')` que quedó sin uso (no había otros usos de `Prisma`). Consultas sin cambios; la única diferencia es el log del cliente compartido (solo errores, config de `utils/prisma.js`).
   - Prueba de guardia `test/unit/prisma-cliente-unico.test.js` (4 pruebas): lee el código de `src/**` y `app.js`, quita comentarios respetando cadenas, y falla si hay un `new PrismaClient(` fuera de `src/utils/prisma.js` o un `$disconnect(`. No instancia Prisma ni toca ninguna base.
