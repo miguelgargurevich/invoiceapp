@@ -12,6 +12,21 @@
 
 ## Última sesión
 
+- 2026-11-01 (Claude Code con Sonnet 5.5, delegado en worktree `.claude/worktrees/sunatf-t4-formulario`, rama `feat/sunatf-t4-formulario`):
+  Tarea 4 del plan del frontend SUNAT (formulario, cliente de API y hooks). Hecho: `apps/frontend/lib/sunat/formulario.ts`
+  (estado del formulario, `aPayload`, cuotas en céntimos enteros, visibilidad, series y clientes permitidos; solo `import type`),
+  `api.ts` (`sunatApi` y `guardarArchivo`) y `hooks.ts` (`useCatalogosSunat`, `useEmisorSunat`), más `formulario.test.ts` (21 pruebas).
+  Pruebas: `npm test` 35/35 (14 previas + 21); `npx tsc --noEmit` sin errores. Mutaciones (un archivo, restaurado con cp + cmp): 12 de 12 en rojo
+  (diferenciaCuotas con flotantes, repartirCuotas con flotantes, residuo en la primera cuota, detracción/percepción/cuotas en una nota,
+  detracción sin operación 1001, nota con operación 1001, exportación sin forzar 40, `sumarMeses` desbordado, serie sin normalizar,
+  `sumarMeses` sin guarda). Además se pasó la salida de `aPayload` de 8 casos por el `comprobanteSchema` y `calcularComprobante` reales del backend: todos válidos.
+  Desvíos del plan (2, ambos con prueba): (1) `aPayload` manda `serie` en `trim().toUpperCase()`: `validarSerie` acepta minúsculas
+  pero el backend exige `^[FB][A-Z0-9]{3}$`, así que `b001` habría dado 400; (2) `sumarMeses` devuelve `''` si la fecha no es AAAA-MM-DD
+  (antes `toISOString()` lanzaba `RangeError` al borrar el input de fecha de una cuota).
+  Gotchas: (a) `aPayload` con `Credito` y `cuotas: []` manda `cuotas: []` y el backend lo rechaza (`min(1)`): la Tarea 6 debe exigir cuotas antes de guardar;
+  (b) `aCentimos` trunca (no redondea) a 2 decimales, y `diferenciaCuotas` con un `neto` inválido devuelve `NaN.NaN`: el neto siempre debe venir del backend;
+  (c) `npx next lint --file …` falla en este repo por la config de ESLint (`Converting circular structure to JSON` en `.eslintrc.json`), no se pudo correr el lint.
+  Pendiente: push y OK de Miguel (sesión principal); `next build` no se corrió.
 - 2026-11-01 (Claude Code con Haiku 5.5, delegado en worktree `.claude/worktrees/sunatf-t1-catalogos`, rama `feat/sunatf-t1-catalogos`):
   Tarea 1 del plan del frontend (`docs/superpowers/plans/2026-11-01-sunat-frontend.md`): clientes con `esAgenteRetencion`
   (POST y PUT de `/api/clientes`, sin tocar el esquema de Prisma: la columna ya existía en la migración `sunat_nucleo`) y
