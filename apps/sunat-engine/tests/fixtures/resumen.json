@@ -1,0 +1,8 @@
+{
+  "correlativo": "__CORR__", "fecGeneracion": "__HOY__", "fecResumen": "__HOY__", "moneda": "PEN",
+  "detalles": [
+    { "tipoDoc": "03", "serieNro": "B001-1", "estado": "3", "clienteTipo": "1", "clienteNro": "12345678",
+      "total": "118.00", "gravadas": "100.00", "exoneradas": "0.00", "inafectas": "0.00", "exportacion": "0.00",
+      "igv": "18.00", "icbper": "0.00", "porcentajeIgv": "18", "docReferencia": null }
+  ]
+}

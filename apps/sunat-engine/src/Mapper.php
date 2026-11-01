@@ -33,7 +33,7 @@ final class Mapper
             ->setTipoDoc($c['tipoDoc'])
             ->setSerie($c['serie'])
             ->setCorrelativo((string) $c['correlativo'])
-            ->setFechaEmision(new \DateTime($c['fechaEmision']))
+            ->setFechaEmision(self::fecha($c['fechaEmision']))
             ->setTipoMoneda($c['moneda'])
             ->setCompany(Emisor::compania($e))
             ->setClient(self::cliente($c['cliente']))
@@ -98,8 +98,8 @@ final class Mapper
     public static function resumen(array $e, array $r): Summary
     {
         return (new Summary())
-            ->setFecGeneracion(new \DateTime($r['fecGeneracion']))
-            ->setFecResumen(new \DateTime($r['fecResumen']))
+            ->setFecGeneracion(self::fecha($r['fecGeneracion']))
+            ->setFecResumen(self::fecha($r['fecResumen']))
             ->setCorrelativo((string) $r['correlativo'])
             ->setMoneda($r['moneda'] ?? 'PEN')
             ->setCompany(Emisor::compania($e))
@@ -115,7 +115,8 @@ final class Mapper
                     ->setMtoOperExoneradas((float) $d['exoneradas'])
                     ->setMtoOperInafectas((float) $d['inafectas'])
                     ->setMtoOperExportacion((float) $d['exportacion'])
-                    ->setMtoIGV((float) $d['igv']);
+                    ->setMtoIGV((float) $d['igv'])
+                    ->setPorcentajeIgv((float) ($d['porcentajeIgv'] ?? 18));
                 if (!empty($d['docReferencia'])) {
                     $detalle->setDocReferencia((new Document())
                         ->setTipoDoc($d['docReferencia']['tipoDoc'])
@@ -129,8 +130,8 @@ final class Mapper
     {
         return (new Voided())
             ->setCorrelativo((string) $b['correlativo'])
-            ->setFecGeneracion(new \DateTime($b['fecGeneracion']))
-            ->setFecComunicacion(new \DateTime($b['fecComunicacion']))
+            ->setFecGeneracion(self::fecha($b['fecGeneracion']))
+            ->setFecComunicacion(self::fecha($b['fecComunicacion']))
             ->setCompany(Emisor::compania($e))
             ->setDetails(array_map(
                 fn (array $d) => (new VoidedDetail())
@@ -140,6 +141,16 @@ final class Mapper
                     ->setDesMotivoBaja($d['motivo']),
                 $b['detalles']
             ));
+    }
+
+    // SUNAT y Greenter comparan fechas en Lima. Una fecha sin hora («2026-11-01») se toma al mediodía de Lima:
+    // así cae el mismo día en cualquier zona del contenedor (UTC) y en Twig (America/Lima).
+    private static function fecha(string $valor): \DateTime
+    {
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $valor)) {
+            return new \DateTime($valor . 'T12:00:00', new \DateTimeZone('America/Lima'));
+        }
+        return new \DateTime($valor);
     }
 
     private static function linea(array $l): SaleDetail
@@ -180,7 +191,7 @@ final class Mapper
         }
         $doc->setFormaPago(new FormaPagoCredito((float) $f['monto'], $moneda));
         $doc->setCuotas(array_map(
-            fn (array $q) => (new Cuota())->setMonto((float) $q['monto'])->setFechaPago(new \DateTime($q['fechaPago'])),
+            fn (array $q) => (new Cuota())->setMonto((float) $q['monto'])->setFechaPago(self::fecha($q['fechaPago'])),
             $f['cuotas']
         ));
     }
