@@ -15,6 +15,14 @@
 
 ## Última sesión
 
+- 2026-11-01 (OpenCode con cadena gratis del gateway `chain:delegar-construccion`, worktree `.claude/worktrees/oc-recibos-aislamiento`, rama `fix/oc-recibos-aislamiento`, sobre `feat/marca-facturo`):
+  Refuerzo de seguridad (defensa en profundidad) en `POST /api/job-receipts`:
+  - Cambio en `apps/backend/src/routes/jobReceipts.js`: el `findFirst` que valida permiso ahora selecciona `empresaId` y se guarda en variable `documento`; se usan sus datos para la ruta de almacenamiento y se eliminan los dos `findUnique` sin filtro de usuario.
+  - Test nuevo `apps/backend/test/db/recibos-aislamiento.test.js` (4 pruebas): empresa A no puede crear recibo en factura de B (404), empresa B sí (201); con archivo PNG, A falla (404) y B sube (201, `fileUrl` contiene su `empresaId`).
+  - Suites: `npm test` 104/104 ✅, `TEST_DATABASE_URL=postgresql://postgres:test@localhost:5436/invoiceapp_test_oc npm run test:db` 51/51 ✅.
+  - Mutación: quitando el filtro `empresa.userId` del `findFirst` del POST, las dos pruebas de 404 fallan (rojo); restaurado con `cp` + `cmp` → verde.
+  - Commits por archivo, sin push. Firma con co-autor modelo gratis.
+
 - 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/marca-t3-nombre`, rama `feat/marca-t3-nombre`, sobre `feat/marca-facturo`):
   Tarea 3 del plan de la marca Facturo (nombre y logo nuevo en la app). Hecho, en `apps/frontend`: el ticket `IconoFacturo` reemplaza
   el PNG viejo en el menú (`Sidebar.tsx`, fallback), en login y en registro (escritorio: 40 px; móvil: 48 px); se borra
