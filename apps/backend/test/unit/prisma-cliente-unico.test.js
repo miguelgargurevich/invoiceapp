@@ -75,10 +75,20 @@ test('sinComentarios quita comentarios pero conserva URLs y código de la misma 
   assert.match(salida, /const b = 1;/);
 });
 
+// `new PrismaClient(` y también la forma en línea `new (require('@prisma/client').PrismaClient)(`, que es la que usaba el
+// app.js de My Workspace para sus crons.
+const CREA_CLIENTE = /\bnew\s+PrismaClient\s*\(|\.PrismaClient\s*\)\s*\(/;
+
+test('la guardia reconoce las dos formas de crear un cliente', () => {
+  assert.match('const p = new PrismaClient();', CREA_CLIENTE);
+  assert.match("const p = new (require('@prisma/client').PrismaClient)();", CREA_CLIENTE);
+  assert.doesNotMatch("const prisma = require('../utils/prisma');", CREA_CLIENTE);
+});
+
 test('ningún archivo de src/ ni app.js crea su propio PrismaClient (salvo utils/prisma.js)', () => {
   const culpables = archivosFuente()
     .filter((rel) => rel !== CLIENTE_COMPARTIDO)
-    .filter((rel) => /\bnew\s+PrismaClient\s*\(/.test(leerSinComentarios(rel)));
+    .filter((rel) => CREA_CLIENTE.test(leerSinComentarios(rel)));
   assert.deepEqual(culpables, [], `Crean un PrismaClient propio (usen require('../utils/prisma')): ${culpables.join(', ')}`);
 });
 
