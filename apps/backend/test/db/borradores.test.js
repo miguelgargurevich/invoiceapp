@@ -96,10 +96,17 @@ test('previsualizar no guarda nada', async () => {
 test('datosDesdeFactura reconstruye datos equivalentes', async () => {
   const f = await guardarBorrador({
     prisma, empresa: ctx.empresa, userId: ctx.user.id,
-    datos: datosFactura({ formaPago: { tipo: 'Credito', cuotas: [{ monto: 118, fechaVencimiento: '2026-12-15' }] } }),
+    datos: datosFactura({
+      fechaVencimiento: '2026-12-15T17:00:00.000Z',
+      formaPago: { tipo: 'Credito', cuotas: [{ monto: 118, fechaVencimiento: '2026-12-15' }] },
+    }),
   });
   const completa = await prisma.factura.findUnique({ where: { id: f.id }, include: INCLUDE_COMPROBANTE });
-  const r = await previsualizar({ prisma, empresa: ctx.empresa, datos: datosDesdeFactura(completa) });
+  const datos = datosDesdeFactura(completa);
+  assert.equal(datos.fechaVencimiento, '2026-12-15T17:00:00.000Z');
+  const sinVencimiento = await prisma.factura.findUnique({ where: { id: (await guardarBorrador({ prisma, empresa: ctx.empresa, userId: ctx.user.id, datos: datosFactura() })).id }, include: INCLUDE_COMPROBANTE });
+  assert.equal('fechaVencimiento' in datosDesdeFactura(sinVencimiento), false);
+  const r = await previsualizar({ prisma, empresa: ctx.empresa, datos });
   assert.equal(r.totales.total, '118.00');
   assert.equal(r.cuotas[0].fechaVencimiento, '2026-12-15');
 });
@@ -226,5 +233,42 @@ test('una serie desactivada no se puede usar', async () => {
   await assert.rejects(
     guardarBorrador({ prisma, empresa: ctx.empresa, userId: ctx.user.id, datos: datosFactura({ tipoComprobante: '03', serie: 'B001' }) }),
     /no está configurada/,
+  );
+});
+
+test('editar espera a una emisión en curso y luego rechaza: no pisa un comprobante ya emitido', async () => {
+  const f = await guardarBorrador({ prisma, empresa: ctx.empresa, userId: ctx.user.id, datos: datosFactura() });
+  let edicionTermino = false;
+  let edicion;
+  // Simula una emisión que tiene la fila bloqueada y la confirma como PENDIENTE_ENVIO.
+  await prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM facturas WHERE id = ${f.id} FOR UPDATE`;
+    edicion = guardarBorrador({
+      prisma, empresa: ctx.empresa, userId: ctx.user.id, facturaId: f.id,
+      datos: datosFactura({ lineas: [{ descripcion: 'Pisada', cantidad: 1, precio: 10, precioIncluyeIgv: false }] }),
+    }).then(
+      (v) => { edicionTermino = true; return v; },
+      (e) => { edicionTermino = true; throw e; },
+    );
+    edicion.catch(() => {});
+    await new Promise((resolver) => setTimeout(resolver, 400));
+    assert.equal(edicionTermino, false, 'la edición debía esperar el bloqueo de la fila');
+    await tx.factura.update({ where: { id: f.id }, data: { estadoSunat: 'PENDIENTE_ENVIO', numero: 1 } });
+  });
+  await assert.rejects(edicion, /Solo se puede editar un comprobante en borrador/);
+  const despues = await prisma.factura.findUnique({ where: { id: f.id }, include: { detalles: true } });
+  assert.equal(despues.estadoSunat, 'PENDIENTE_ENVIO');
+  assert.equal(despues.detalles[0].descripcion, 'Servicio');
+  assert.equal(despues.total.toFixed(2), '118.00');
+});
+
+test('editar un comprobante de otra empresa no lo encuentra aunque exista', async () => {
+  const f = await guardarBorrador({ prisma, empresa: ctx.empresa, userId: ctx.user.id, datos: datosFactura() });
+  await assert.rejects(
+    guardarBorrador({
+      prisma, empresa: otro.empresa, userId: otro.user.id, facturaId: f.id,
+      datos: { ...datosFactura(), clienteId: otro.cliente.id },
+    }),
+    /Comprobante no encontrado/,
   );
 });

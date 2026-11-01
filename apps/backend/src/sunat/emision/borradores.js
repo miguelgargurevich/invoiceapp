@@ -102,6 +102,7 @@ function datosDesdeFactura(f) {
   };
   if (f.tipoCambio) datos.tipoCambio = Number(f.tipoCambio);
   if (f.observaciones) datos.observaciones = f.observaciones;
+  if (f.fechaVencimiento) datos.fechaVencimiento = f.fechaVencimiento.toISOString();
   if (f.detraccionCodigo) datos.detraccion = { codigo: f.detraccionCodigo };
   if (f.percepcionRegimen) datos.percepcion = { regimen: f.percepcionRegimen };
   if (f.docRelacionadoId) {
@@ -237,10 +238,16 @@ async function guardarBorrador({ prisma, empresa, userId, datos, facturaId = nul
   const cuotas = cuotasFactura(calculo);
 
   if (facturaId) {
-    const actual = await prisma.factura.findFirst({ where: { id: facturaId, empresaId: empresa.id } });
-    if (!actual) throw new ErrorBorrador('Comprobante no encontrado');
-    if (actual.estadoSunat !== 'BORRADOR') throw new ErrorBorrador('Solo se puede editar un comprobante en borrador');
     return prisma.$transaction(async (tx) => {
+      // Se bloquea la fila antes de leer el estado: si una emisión está en curso, esta edición espera
+      // y al continuar ya ve que el comprobante dejó de ser borrador.
+      await tx.$queryRaw`
+        SELECT id FROM facturas
+        WHERE id = ${facturaId} AND empresa_id = ${empresa.id}
+        FOR UPDATE`;
+      const actual = await tx.factura.findFirst({ where: { id: facturaId, empresaId: empresa.id } });
+      if (!actual) throw new ErrorBorrador('Comprobante no encontrado');
+      if (actual.estadoSunat !== 'BORRADOR') throw new ErrorBorrador('Solo se puede editar un comprobante en borrador');
       await tx.detalleFactura.deleteMany({ where: { facturaId } });
       await tx.cuotaFactura.deleteMany({ where: { facturaId } });
       return tx.factura.update({
