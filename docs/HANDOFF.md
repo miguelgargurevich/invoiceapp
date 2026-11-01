@@ -105,6 +105,27 @@
   (5) El `.gitignore` raíz ignora `prisma/migrations/` (desde el commit inicial) y `*.sql`. La migración de esta tarea se
   añadió con `git add -f`, porque sin ella en git `migrate deploy` no la aplica. Decidir si se excepciona en `.gitignore`
   (`!prisma/migrations/`); no se tocó aquí porque ese archivo no estaba en «Permitidos».
+- 2026-11-01 (Claude Code con Sonnet 5.5, delegado en worktree `.claude/worktrees/sunat-t7-borradores`, rama `feat/sunat-t7-borradores`):
+  Tarea 7 del plan (borradores). Hecho: `src/sunat/emision/borradores.js` (`comprobanteSchema`, `INCLUDE_COMPROBANTE`,
+  `INCLUDE_RESPUESTA`, `entradaCalculo`, `datosDesdeFactura`, `previsualizar`, `guardarBorrador`) y
+  `test/db/borradores.test.js`: las 8 pruebas del plan + 7 añadidas (barrera Zod: `descuento: -10`, `bolsasIcbper: 1.5` y `-2`,
+  `precio: "abc"`, `cantidad` 0 o negativa; entrada inválida no guarda nada; sin `empresa` en la respuesta al guardar ni al
+  editar; cuotas reemplazadas al editar; separación entre empresas en cliente, serie, documento afectado y comprobante a
+  editar; nota solo sobre documento aceptado; serie inactiva). Código del plan copiado sin cambios (no hubo que corregir nada).
+  `npm run test:db`: 17 en verde (2 de esquema + 15); `npm test`: 61 en verde. Mutaciones: 18 de 18 en rojo (cliente,
+  serie, afectado y comprobante a editar sin `empresaId`; `empresa` en `INCLUDE_RESPUESTA`; editar un no borrador; sin chequeo
+  de percepción; no borrar cuotas ni detalles al editar; serie sin `activa`; sin chequeo de estado del afectado;
+  `ACEPTADO_CON_OBS` no aceptado; nota sin afectado; y 5 del esquema). Con solo las 8 del plan no se detectaban la separación
+  entre empresas, el estado del afectado, las cuotas ni el esquema, por eso las añadidas.
+  Gotchas (el plan lo hace así; NO se cambió, decidir antes de la Tarea 11):
+  (1) Carrera al editar: el estado `BORRADOR` se lee FUERA de la transacción y el `update` va por `id` sin condición de
+  estado; si una emisión (Tarea 11) pasa el comprobante a `PENDIENTE` entre ambos, la edición pisaría líneas y totales de
+  algo ya en camino a SUNAT. Arreglo posible: `updateMany` con `estadoSunat: 'BORRADOR'` dentro de la transacción y fallar
+  si afecta 0 filas. (2) `datosDesdeFactura` no reconstruye `fechaVencimiento` de la factura: si la Tarea 9 o la 11 re-guardan
+  desde ahí, se pierde. (3) Editar no cambia `userId` ni `fechaEmision` (solo se fijan al crear); la fecha real de emisión
+  la debe poner la Tarea 11. (4) `esAgentePercepcion` es `false` por defecto: probado el rechazo, NO el camino con emisor
+  agente de percepción. (5) Las pruebas de BD comparten `limpiar()` (TRUNCATE) y corren con `--test-concurrency=1`; no
+  lanzarlas en paralelo contra la misma base.
 
 ## Próximos pasos
 
