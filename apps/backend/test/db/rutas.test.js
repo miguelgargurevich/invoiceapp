@@ -82,7 +82,11 @@ test('crear, editar, previsualizar y emitir un comprobante', async () => {
   assert.equal((await pedir('DELETE', `/api/comprobantes/${creado.json.id}`)).status, 409);
 
   const xml = await pedir('GET', `/api/comprobantes/${creado.json.id}/xml`);
-  assert.equal(xml.status, 302);
+  assert.equal(xml.status, 200);
+  assert.match(xml.headers.get('content-type'), /application\/xml/);
+  assert.match(xml.headers.get('content-disposition'), /attachment; filename="20000000001-01-F001-1\.xml"/);
+  assert.match(xml.texto, /<xml>F001-1<\/xml>/);
+  assert.equal((await pedir('GET', `/api/comprobantes/${creado.json.id}/cdr`)).status, 404);
   const pdf = await pedir('GET', `/api/comprobantes/${creado.json.id}/pdf`);
   assert.equal(pdf.headers.get('content-type'), 'application/pdf');
 });

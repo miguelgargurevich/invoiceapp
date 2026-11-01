@@ -287,6 +287,8 @@
   también las cuotas) y `porcentajeIgv` en el resumen (SUNAT rechazaba el RC con 2992). E2E `scripts/sunat-beta-e2e.js`
   8/8 en beta; guía `docs/sunat/DESPLIEGUE.md`.
 
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t2-archivos`, rama `feat/sunatf-t2-archivos`): Tarea 2 del plan del frontend SUNAT (XML y CDR servidos por el backend, almacén local para desarrollo). Hecho: `src/sunat/almacenLocal.js` (`crearAlmacenLocal(dir)`: rechaza claves que salen de la carpeta con «Clave de archivo inválida»); `src/sunat/index.js` exporta `crearAlmacen(env)` (con `SUNAT_ALMACEN_DIR` usa disco; con `NODE_ENV=production` lanza error; sin él, R2 privado) y `iniciarSunat` lo usa; `src/routes/comprobantes.js` ya NO redirige (302) el XML/CDR: los lee del almacén y los envía con `Content-Disposition: attachment; filename="<RUC>-<TT>-<SERIE>-<NUM>.xml|.cdr.zip"`; `.env.example` con `SUNAT_ALMACEN_DIR=`. Pruebas: `test/unit/sunat/almacenLocal.test.js` (3) y `test/db/rutas.test.js` ajustado al nuevo XML (200, nombre, CDR 404 antes de emitir). Verificado: `npm test` 95/95 y `npm run test:db` 44/44 contra `invoiceapp_test_t2`. Mutaciones (todas en rojo y restauradas con `cmp`): quitar el chequeo de `../`; permitir `SUNAT_ALMACEN_DIR` en producción; volver al 302; Content-Disposition sin el nombre SUNAT. Gotchas: el CDR con `cdrKey` real (200) no tiene prueba en esta suite (la de rutas solo cubre el 404 previo a emitir); `almacenLocal.js` se escribió antes de correr la prueba roja, así que en rojo solo falló `crearAlmacen`. El `prisma:error` del log de la prueba «series y alertas» es esperado (prueba de serie duplicada). Commit en la rama; sin push.
+
 ## Próximos pasos
 
 - [x] Spec aprobado.
