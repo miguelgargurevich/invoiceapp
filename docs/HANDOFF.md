@@ -25,6 +25,20 @@
   (la página de la Tarea 7 la pasa como `empresa?.ruc`, plan línea 3013) y `onCambio` para refrescar el comprobante tras emitir o anular.
   (3) `AlertasSunat` se queda en `null` si la llamada falla: un error de red no se muestra.
   Pendiente: push y OK de Miguel (sesión principal); `next build` no se corrió.
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t6-form`, rama `feat/sunatf-t6-form`):
+  Tarea 6 del plan del frontend SUNAT (formulario del comprobante). Hecho: `components/sunat/PanelTotales.tsx`, `LineasEditor.tsx`,
+  `CuotasEditor.tsx` y `ComprobanteForm.tsx`, copiados del plan. Ajuste obligatorio: con forma de pago Crédito, «Guardar y emitir»
+  queda deshabilitado si no hay cuotas, si no hay vista previa o si `diferenciaCuotas(f.cuotas, vista.netoPendiente) !== '0.00'`
+  (se importa `diferenciaCuotas` de `@/lib/sunat/formulario`). «Guardar borrador» sigue habilitado.
+  Pruebas: `npx tsc --noEmit` sin errores (exit 0); `npm test` 35/35 (sin pruebas nuevas: estos componentes no tienen pruebas propias).
+  Claves `t('…')` literales de los cuatro archivos (58) comprobadas en `messages/es.json` y `en.json`: todas presentes.
+  Mutaciones (un archivo cada una, copia en scratchpad, restaurado con `cp` + `cmp`, `tsc` vuelve a 0): prop inventado en
+  `<PanelTotales>` dentro de `ComprobanteForm` → TS2322; prop inventado en `<Button>` de `CuotasEditor` → TS2322.
+  Gotchas: (a) `npx next lint` sigue roto (ver gotcha c de la sesión de la Tarea 4), se usó `tsc`. (b) «Guardar borrador» con
+  crédito y sin cuotas da 400: el esquema de borradores (`apps/backend/src/sunat/emision/borradores.js`) tiene `cuotas.min(1)`.
+  Con el botón habilitado, el error sale en la lista del formulario. Decidir si también se deshabilita. (c) `next build` no se corrió;
+  la pantalla no se probó en el navegador.
+  Pendiente: push y OK de Miguel (sesión principal).
 - 2026-11-01 (Claude Code con Sonnet 5.5, delegado en worktree `.claude/worktrees/sunatf-t4-formulario`, rama `feat/sunatf-t4-formulario`):
   Tarea 4 del plan del frontend SUNAT (formulario, cliente de API y hooks). Hecho: `apps/frontend/lib/sunat/formulario.ts`
   (estado del formulario, `aPayload`, cuotas en céntimos enteros, visibilidad, series y clientes permitidos; solo `import type`),
