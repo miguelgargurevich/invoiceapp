@@ -2,6 +2,9 @@ import createNextIntlPlugin from 'next-intl/plugin';
 
 const withNextIntl = createNextIntlPlugin('./i18n.ts');
 
+// El almacenamiento local del backend sirve /uploads en la misma URL que la API.
+const api = new URL(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   eslint: {
@@ -14,11 +17,11 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
-      // Archivos del backend en local (STORAGE_PROVIDER=local, sirve /uploads en el puerto 4000)
+      // Archivos del backend (STORAGE_PROVIDER=local): mismo host y puerto que NEXT_PUBLIC_API_URL
       {
-        protocol: 'http',
-        hostname: 'localhost',
-        port: '4000',
+        protocol: api.protocol.replace(':', ''),
+        hostname: api.hostname,
+        port: api.port,
         pathname: '/uploads/**',
       },
     ],
