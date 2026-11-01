@@ -9,11 +9,13 @@ const { crearNotificador } = require('./notificador');
 const { descifrar, obtenerLlave } = require('./seguridad/cifrado');
 const { sendEmail } = require('../services/emailService');
 
-// Almacén de XML/CDR. Con SUNAT_ALMACEN_DIR (solo desarrollo) va a disco; en producción se niega.
+// Almacén de XML/CDR. Con SUNAT_ALMACEN_DIR va a disco. En producción solo si se declara que esa carpeta es un
+// volumen persistente (SUNAT_ALMACEN_PERSISTENTE=si, p. ej. un volumen de Coolify con respaldo); si no, se niega.
+// Antes de emitir en el ambiente PRODUCCION de SUNAT conviene pasar a R2_PRIVATE_BUCKET.
 function crearAlmacen(env = process.env) {
   if (env.SUNAT_ALMACEN_DIR) {
-    if (env.NODE_ENV === 'production') {
-      throw new Error('SUNAT_ALMACEN_DIR no se permite en producción: usa R2_PRIVATE_BUCKET');
+    if (env.NODE_ENV === 'production' && env.SUNAT_ALMACEN_PERSISTENTE !== 'si') {
+      throw new Error('SUNAT_ALMACEN_DIR en producción exige un volumen persistente (SUNAT_ALMACEN_PERSISTENTE=si) o usa R2_PRIVATE_BUCKET');
     }
     console.log('[SUNAT] Almacén local en', env.SUNAT_ALMACEN_DIR);
     return crearAlmacenLocal(env.SUNAT_ALMACEN_DIR);
