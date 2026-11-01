@@ -1,0 +1,10 @@
+{
+  "tipoDoc": "07", "serie": "FC01", "correlativo": "1", "fechaEmision": "__HOY__T10:00:00-05:00",
+  "tipoOperacion": "0101", "moneda": "PEN",
+  "cliente": { "tipoDoc": "6", "numDoc": "20131312955", "razonSocial": "SUNAT", "direccion": null },
+  "totales": { "gravadas": "100.00", "exoneradas": "0.00", "inafectas": "0.00", "exportacion": "0.00", "igv": "18.00", "icbper": "0.00", "totalImpuestos": "18.00", "valorVenta": "100.00", "subTotal": "118.00", "total": "118.00" },
+  "lineas": [{ "codigo": "P001", "unidad": "NIU", "cantidad": "2", "descripcion": "Servicio de prueba", "valorUnitario": "50.0000000000", "precioUnitario": "59.0000000000", "valorBruto": "100.00", "descuento": "0.00", "valorVenta": "100.00", "baseIgv": "100.00", "porcentajeIgv": "18", "igv": "18.00", "afectacion": "10", "totalImpuestos": "18.00", "icbper": "0.00", "bolsas": 0, "factorIcbper": "0.00" }],
+  "leyendas": [{ "codigo": "1000", "valor": "SON: CIENTO DIECIOCHO CON 00/100 SOLES" }],
+  "formaPago": null, "detraccion": null, "percepcion": null, "retencion": null,
+  "documentoAfectado": { "tipoDoc": "01", "numero": "F001-1", "motivoCodigo": "01", "motivoDescripcion": "Anulación de la operación" }
+}

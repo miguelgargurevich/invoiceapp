@@ -1,0 +1,6 @@
+{
+  "ruc": "20000000001", "razonSocial": "EMPRESA BETA SAC", "nombreComercial": "EMPRESA BETA",
+  "direccion": { "ubigeo": "150101", "departamento": "LIMA", "provincia": "LIMA", "distrito": "LIMA", "urbanizacion": "-", "direccion": "AV. PRUEBA 123", "codLocal": "0000" },
+  "ambiente": "BETA", "solUsuario": "MODDATOS", "solClave": "moddatos",
+  "certificadoPfxBase64": "__PFX__", "certificadoClave": "clave123"
+}

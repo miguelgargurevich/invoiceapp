@@ -1,0 +1,11 @@
+{
+  "tipoDoc": "01", "serie": "F001", "correlativo": "2", "fechaEmision": "__HOY__T10:00:00-05:00",
+  "tipoOperacion": "1001", "moneda": "PEN",
+  "cliente": { "tipoDoc": "6", "numDoc": "20131312955", "razonSocial": "SUNAT", "direccion": null },
+  "totales": { "gravadas": "1000.00", "exoneradas": "0.00", "inafectas": "0.00", "exportacion": "0.00", "igv": "180.00", "icbper": "0.00", "totalImpuestos": "180.00", "valorVenta": "1000.00", "subTotal": "1180.00", "total": "1180.00" },
+  "lineas": [{ "codigo": null, "unidad": "ZZ", "cantidad": "1", "descripcion": "Servicio sujeto a detracción", "valorUnitario": "1000.0000000000", "precioUnitario": "1180.0000000000", "valorBruto": "1000.00", "descuento": "0.00", "valorVenta": "1000.00", "baseIgv": "1000.00", "porcentajeIgv": "18", "igv": "180.00", "afectacion": "10", "totalImpuestos": "180.00", "icbper": "0.00", "bolsas": 0, "factorIcbper": "0.00" }],
+  "leyendas": [{ "codigo": "1000", "valor": "SON: MIL CIENTO OCHENTA CON 00/100 SOLES" }, { "codigo": "2006", "valor": "Operación sujeta al Sistema de Pago de Obligaciones Tributarias" }],
+  "formaPago": { "tipo": "Credito", "monto": "1038.00", "cuotas": [{ "monto": "1038.00", "fechaPago": "2030-12-31" }] },
+  "detraccion": { "codigo": "037", "porcentaje": "12", "monto": "142.00", "cuentaBanco": "00-000-000001", "medioPago": "001" },
+  "percepcion": null, "retencion": null, "documentoAfectado": null
+}
