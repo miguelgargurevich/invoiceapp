@@ -8,7 +8,10 @@
 - Facturación electrónica SUNAT (Perú): núcleo de emisión CONSTRUIDO en la rama local `feat/sunat-diseno` (sin push):
   backend `src/sunat/**` + API `/api/comprobantes` y `/api/sunat` + motor `apps/sunat-engine` (PHP/Greenter).
   E2E contra SUNAT beta: 8/8 aceptados (factura contado, factura crédito+detracción, boleta, NC, ND, baja RA, anulación RC).
-  Suites: `npm test` 92/92, `npm run test:db` 44/44. Falta: frontend, despliegue y verificar parámetros contra la norma.
+  Suites: `npm test` 92/92, `npm run test:db` 44/44.
+- Frontend SUNAT para empresas `PE` CONSTRUIDO en la rama local `feat/sunat-frontend` (sin push): sección `/comprobantes`,
+  pestaña Configuración › SUNAT, menú, alertas y clientes peruanos. Probado en el navegador contra SUNAT beta (ver «Última sesión»).
+  Suites: backend 104/104 y 47/47; frontend 35/35, `tsc` y `next build` en verde. Falta: despliegue y verificar parámetros contra la norma.
 
 ## Última sesión
 
@@ -421,6 +424,16 @@
   ignora *.sql): sin él el registro no crea suscripción; el `.env` local de backend aún dice STORAGE_PROVIDER=r2
   (cámbialo a local para no subir a R2 en desarrollo); quedan menciones a Supabase en dos docs históricos
   (DIGITAL_SIGNATURE_IMPLEMENTATION.md y PROMPT_SISTEMA_FACTURACION.md).
+- 2026-11-01 (claude-code, Opus 5.5, orquestador, sesión aparte): ejecución del plan del frontend delegando por riesgo
+  (Haiku: 1, 2, 3, 5, 6, 7, 9; Sonnet: 4 y 8), cada tarea revisada e integrada con cherry-pick en `feat/sunat-frontend`.
+  Ajustes fuera del plan: «Guardar y emitir» bloqueado si el crédito no tiene cuotas que sumen el neto; serie en mayúsculas en
+  el payload; `?tab=sunat` abre la pestaña. Tarea 10 (verificación real, local): backend en :4002 contra la BD de pruebas
+  `invoiceapp_e2e` (5436) con `SUNAT_ALMACEN_DIR`, motor del docker-compose (8089, token `dev`) apuntando a SUNAT beta, frontend
+  `next dev` en :3001. En el navegador: activar SUNAT (MODDATOS + `.pfx` autofirmado) → menú «Comprobantes»; series F001/B001/FC01;
+  clientes RUC 20131312955 y DNI 12345678; factura F001-1 con vista previa (100 grav. + 50 exon. + IGV 18 = 168) → Aceptado sin
+  recargar → PDF/XML/CDR → anulada (RA) → Anulado; boleta B001-1 aceptada; factura a crédito F001-2 con «Repartir en 2 cuotas»
+  (50.00 + 50.01) aceptada; nota de crédito FC01-1 sobre F001-2 aceptada; regresión de empresa US: «Facturas» y formulario
+  de clientes sin cambios.
 
 ## Próximos pasos
 
@@ -433,7 +446,13 @@
 - [ ] Probar la firma con un `.pfx` real de una entidad certificadora peruana (solo se probó con autofirmados).
 - [x] Diseño y plan del frontend para empresas `PE`: `docs/superpowers/specs/2026-11-01-sunat-frontend-design.md` y
   `docs/superpowers/plans/2026-11-01-sunat-frontend.md` (rama `feat/sunat-frontend`, 10 tareas).
-- [ ] Ejecutar el plan del frontend (delegado por riesgo; 1, 2 y 3 en paralelo).
+- [x] Ejecutar el plan del frontend (10 tareas; verificado en navegador contra SUNAT beta).
+- [ ] Frontend: la tarjeta «Create Invoice» del dashboard lleva a `/facturas/nueva` también para empresas `PE` (debería ir a `/comprobantes/nuevo`).
+- [ ] Frontend: una nota de crédito o débito ofrece a su vez «Nota de crédito/débito» (las acciones no distinguen notas).
+- [ ] Frontend: en `nuevo?afecta=` y `[id]/editar`, si la carga falla, la pantalla queda en el esqueleto (falta estado de error).
+- [ ] Decidir: «Guardar borrador» con crédito y sin cuotas da 400 (el backend exige ≥ 1 cuota); hoy se muestra el error.
+- [ ] El redondeo con IGV incluido se vio en vivo: precio 100 con IGV → total 100.01 (ver la decisión pendiente de céntimos).
+- [ ] `next lint` está roto en el repo (`.eslintrc.json`: estructura circular); se verificó con `tsc` y `next build`.
 - [ ] Despliegue según `docs/sunat/DESPLIEGUE.md` (con OK de Miguel; `prisma migrate status` contra producción primero).
 - [ ] Diseñar subproyectos 3 (guía de remisión), 4 (retención/percepción) y 5 (SaaS/PSE).
 
