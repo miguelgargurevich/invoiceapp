@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { PrismaClient } = require('@prisma/client');
 const { sendSignatureConfirmationEmail } = require('../services/emailService');
 const { uploadFile } = require('../utils/storage');
 
 console.log('🔐 signaturesPublic.js loaded - version 2');
 
-const prisma = new PrismaClient();
+// Cliente compartido (un solo pool para toda la app; ver utils/prisma.js).
+const prisma = require('../utils/prisma');
 
 // GET /api/signatures/public/validate/:token - Validate token and get document (PUBLIC)
 router.get('/validate/:token', async (req, res) => {

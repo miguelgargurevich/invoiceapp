@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { PrismaClient } = require('@prisma/client');
 const crypto = require('crypto');
 const { sendSignatureRequestEmail, sendSignatureConfirmationEmail } = require('../services/emailService');
 const { getOrCreateSubscription } = require('../middleware/subscription');
 const { uploadFile } = require('../utils/storage');
 
-const prisma = new PrismaClient();
+// Cliente compartido (un solo pool para toda la app; ver utils/prisma.js).
+const prisma = require('../utils/prisma');
 
 // POST /api/signatures/request - Create signature request
 router.post('/request', async (req, res) => {

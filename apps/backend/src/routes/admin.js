@@ -1,9 +1,9 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
 const { requireAdmin, requireSuperAdmin } = require('../middleware/adminAuth');
 
 const router = express.Router();
-const prisma = new PrismaClient();
+// Cliente compartido (un solo pool para toda la app; ver utils/prisma.js).
+const prisma = require('../utils/prisma');
 
 // ==========================================
 // ADMIN STATISTICS

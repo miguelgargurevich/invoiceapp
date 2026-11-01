@@ -1,6 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
-
-const prisma = new PrismaClient();
+// Cliente compartido (un solo pool para toda la app; ver utils/prisma.js).
+const prisma = require('../utils/prisma');
 
 /**
  * Middleware to check if user has admin privileges (ADMIN or SUPER_ADMIN role)
