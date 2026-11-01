@@ -36,6 +36,8 @@ backups/
 *.sql
 *.dump
 *.backup
+# Excepciones: SQL del proyecto que sí se versiona (planes de suscripción)
+!apps/backend/prisma/seed_plans.sql
 
 # Prisma
 .prisma/

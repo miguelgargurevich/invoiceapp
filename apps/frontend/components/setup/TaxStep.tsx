@@ -25,6 +25,15 @@ interface TaxStepProps {
   onPrev: () => void;
 }
 
+// Vista previa con la moneda elegida en el paso anterior (antes siempre mostraba «$»).
+function formatearPrevia(monto: number, moneda: string, idioma: string) {
+  try {
+    return new Intl.NumberFormat(idioma === 'es' ? 'es-PE' : 'en-US', { style: 'currency', currency: moneda }).format(monto);
+  } catch {
+    return `${moneda} ${monto.toFixed(2)}`;
+  }
+}
+
 const TAX_PRESETS = [
   { name: 'No Tax', rate: 0 },
   { name: 'VAT 7%', rate: 7 },
@@ -170,17 +179,17 @@ export default function TaxStep({ data, onUpdate, onNext, onPrev }: TaxStepProps
         <div className="space-y-1">
           <div className="flex justify-between text-white/70">
             <span>Subtotal</span>
-            <span>$1,000.00</span>
+            <span>{formatearPrevia(1000, data.currency, data.locale)}</span>
           </div>
           {data.taxEnabled && (
             <div className="flex justify-between text-white/70">
               <span>{data.taxName} ({data.taxRate}%)</span>
-              <span>${((1000 * data.taxRate) / 100).toFixed(2)}</span>
+              <span>{formatearPrevia((1000 * data.taxRate) / 100, data.currency, data.locale)}</span>
             </div>
           )}
           <div className="flex justify-between text-white font-bold text-lg pt-2 border-t border-white/10">
             <span>Total</span>
-            <span>${(1000 + (data.taxEnabled ? (1000 * data.taxRate) / 100 : 0)).toFixed(2)}</span>
+            <span>{formatearPrevia(1000 + (data.taxEnabled ? (1000 * data.taxRate) / 100 : 0), data.currency, data.locale)}</span>
           </div>
         </div>
       </div>

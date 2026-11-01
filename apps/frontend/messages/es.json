@@ -1231,7 +1231,15 @@
       "emailPlaceholder": "contacto@tuempresa.com",
       "website": "Sitio Web",
       "showOptionalFields": "Mostrar más detalles",
-      "hideOptionalFields": "Ocultar campos opcionales"
+      "hideOptionalFields": "Ocultar campos opcionales",
+      "taxId": "RUC o identificación fiscal",
+      "taxIdPlaceholder": "20123456789",
+      "taxIdHint": "Necesario para emitir comprobantes electrónicos en Perú. Puedes agregarlo después en Configuración.",
+      "taxIdErrors": {
+        "rucInvalido": "Ese RUC no es válido: revisa los 11 dígitos.",
+        "muyLargo": "Máximo 20 caracteres.",
+        "reservado": "Escribe tu RUC o identificación fiscal real."
+      }
     },
     "logo": {
       "title": "Logo",

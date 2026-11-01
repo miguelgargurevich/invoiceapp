@@ -503,9 +503,12 @@
   /{locale}/setup cuando no hay empresa (el chequeo de 404 nunca coincidía); la vuelta de Stripe iba a un paso 7
   inexistente; el idioma parte del de la página. Verificado: frontend 35/35, tsc y next build ok; en BD quedan
   empresa, setup_completed=true y suscripción TRIALING free. Capturas 09–12 en `docs/marca/revision-2026-11-01/`.
-  Pendiente menor: la vista previa del paso de impuestos muestra «$» aunque se elija PEN; la empresa queda con RUC
-  provisional TEMP-… hasta que el usuario lo cambie (lo exige SUNAT). Los planes siguen saliendo de
-  `prisma/seed_plans.sql`, que no está en git (.gitignore ignora *.sql).
+  Resuelto después (7c5c8ac, 4da80c5): la vista previa de impuestos usa la moneda elegida, y `prisma/seed_plans.sql`
+  ya está en git (excepción en .gitignore; el README dice cómo cargarlo). Y (8cd7c58) el paso de empresa pide
+  «RUC o identificación fiscal» (opcional): solo dígitos se valida como RUC (módulo 11, `lib/sunat/ruc.ts`); con
+  letras se acepta como ID de otro país; PUT /empresas/mi-empresa da 409 si el RUC es de otra empresa. Probado en
+  Chrome (RUC inválido bloqueado; RUC válido guardado). Si se deja vacío sigue quedando TEMP-…
+  Gotcha: `next dev` no recarga los `messages/*.json` cambiados por un checkout; reiniciar y borrar `.next`.
 
 ## Próximos pasos
 

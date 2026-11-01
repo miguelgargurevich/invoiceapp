@@ -38,6 +38,7 @@ interface SetupData {
   password: string;
   // Company fields
   companyName: string;
+  ruc: string;
   direccion: string;
   telefono: string;
   emailEmpresa: string;
@@ -100,6 +101,7 @@ export default function SetupWizardPage({
     email: '',
     password: '',
     companyName: '',
+    ruc: '',
     direccion: '',
     telefono: '',
     emailEmpresa: '',
@@ -152,6 +154,8 @@ export default function SetupWizardPage({
           setSetupData(prev => ({
             ...prev,
             companyName: response.nombre || '',
+            // Un RUC provisional (TEMP-…) no se muestra: el usuario debe poner el real.
+            ruc: response.ruc && !response.ruc.startsWith('TEMP-') ? response.ruc : '',
             direccion: response.direccion || '',
             telefono: response.telefono || '',
             emailEmpresa: response.email || '',
@@ -236,7 +240,8 @@ export default function SetupWizardPage({
       try {
         await api.put('/empresas/mi-empresa', {
           nombre: setupData.companyName,
-          ...(rucExistente ? { ruc: rucExistente } : {}),
+          // El RUC escrito en el asistente manda; si no hay, se conserva el existente (o el backend pone uno TEMP-…).
+          ...(setupData.ruc.trim() ? { ruc: setupData.ruc.trim() } : rucExistente ? { ruc: rucExistente } : {}),
           direccion: setupData.direccion,
           telefono: setupData.telefono,
           email: setupData.emailEmpresa,
@@ -249,7 +254,8 @@ export default function SetupWizardPage({
         });
       } catch (error: any) {
         console.error('[SETUP] Error saving company:', error);
-        alert(setupData.locale === 'es'
+        // 409 = el RUC ya existe en otra empresa: se muestra el mensaje del backend.
+        alert(error?.status === 409 ? error.message : setupData.locale === 'es'
           ? 'No se pudo guardar tu empresa. Intenta de nuevo.'
           : 'Could not save your company. Please try again.');
         setIsSaving(false);

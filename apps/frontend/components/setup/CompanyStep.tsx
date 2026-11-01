@@ -18,6 +18,7 @@ import {
   X
 } from 'lucide-react';
 import api from '@/lib/api';
+import { validarIdentificacionFiscal } from '@/lib/sunat/ruc';
 
 interface SetupData {
   // Auth fields
@@ -26,6 +27,7 @@ interface SetupData {
   password: string;
   // Company fields
   companyName: string;
+  ruc: string;
   direccion: string;
   telefono: string;
   emailEmpresa: string;
@@ -52,9 +54,11 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const errorRuc = validarIdentificacionFiscal(data.ruc);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (data.companyName.trim()) {
+    if (data.companyName.trim() && !errorRuc) {
       onNext();
     }
   };
@@ -130,6 +134,29 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
             className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
             required
           />
+        </div>
+
+        {/* RUC o identificación fiscal: opcional; si son solo dígitos se valida como RUC peruano */}
+        <div>
+          <label htmlFor="setup-ruc" className="block text-white/80 text-sm font-medium mb-2">
+            {t('company.taxId')} <span className="text-white/40 text-xs ml-1">({tCommon('optional')})</span>
+          </label>
+          <input
+            id="setup-ruc"
+            type="text"
+            inputMode="text"
+            autoComplete="off"
+            maxLength={20}
+            value={data.ruc}
+            onChange={(e) => onUpdate({ ruc: e.target.value.toUpperCase() })}
+            placeholder={t('company.taxIdPlaceholder')}
+            aria-invalid={Boolean(errorRuc)}
+            aria-describedby="setup-ruc-ayuda"
+            className={`w-full bg-white/10 border rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:border-transparent transition-all ${errorRuc ? 'border-red-400 focus:ring-red-400' : 'border-white/20 focus:ring-primary-500'}`}
+          />
+          <p id="setup-ruc-ayuda" className={`mt-1 text-xs ${errorRuc ? 'text-red-400' : 'text-white/50'}`}>
+            {errorRuc ? t(`company.taxIdErrors.${errorRuc}`) : t('company.taxIdHint')}
+          </p>
         </div>
 
         {/* Logo Upload Section */}
