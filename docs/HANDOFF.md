@@ -12,6 +12,16 @@
 
 ## Última sesión
 
+- 2026-11-01 (Claude Code con Haiku 5.5, delegado en worktree `.claude/worktrees/sunatf-t1-catalogos`, rama `feat/sunatf-t1-catalogos`):
+  Tarea 1 del plan del frontend (`docs/superpowers/plans/2026-11-01-sunat-frontend.md`): clientes con `esAgenteRetencion`
+  (POST y PUT de `/api/clientes`, sin tocar el esquema de Prisma: la columna ya existía en la migración `sunat_nucleo`) y
+  `GET /api/sunat/catalogos` (solo Perú) con afectaciones, tipos de operación, unidades, motivos de NC/ND, detracciones y
+  percepciones, servidos desde `src/sunat/catalogos` para que el frontend no tenga copia. Pruebas nuevas:
+  `test/db/sunat-catalogos-clientes.test.js` (3). Suites: `npm test` 92/92; `npm run test:db` 47/47 (44 previas + 3).
+  Mutaciones (una por cambio, todas en rojo y restauradas con `cp` + `cmp`): quitar `esAgenteRetencion` del esquema;
+  PUT sin el campo guarda `false`; quitar `soloPeru` de `/catalogos`; detracción 037 al 10 %.
+  Gotchas: el `apps/backend/node_modules` del worktree es propio; el catálogo de detracciones y percepciones sigue
+  pendiente de verificar contra la norma (ver `src/sunat/catalogos/index.js`).
 - 2026-11-01 (claude-code): revisión de InvoiceApp como base para SUNAT, diseño del núcleo de emisión
   (`docs/superpowers/specs/2026-11-01-sunat-nucleo-emision-design.md`) y plan de implementación
   (`docs/superpowers/plans/2026-11-01-sunat-nucleo-emision.md`).
