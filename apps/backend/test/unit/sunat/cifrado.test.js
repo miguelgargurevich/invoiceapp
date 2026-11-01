@@ -1,5 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
 const { cifrar, descifrar, obtenerLlave } = require('../../../src/sunat/seguridad/cifrado');
 
 const LLAVE = Buffer.alloc(32, 7);
@@ -104,4 +105,56 @@ test('los mensajes de error no filtran la llave ni el texto plano', () => {
       }
     }
   }
+});
+
+// --- Llave derivada de SUNAT_MASTER_SECRET (Coolify genera textos, no 32 bytes en base64) ---
+const SECRETO = 'a'.repeat(32) + 'secreto-de-prueba-largo';
+
+test('SUNAT_MASTER_SECRET deriva una llave de 32 bytes, estable entre llamadas', () => {
+  const una = obtenerLlave({ SUNAT_MASTER_SECRET: SECRETO });
+  const otra = obtenerLlave({ SUNAT_MASTER_SECRET: SECRETO });
+  assert.equal(una.length, 32);
+  assert.deepEqual(una, otra);
+  assert.deepEqual(una, crypto.scryptSync(SECRETO, 'facturo-sunat-v1', 32));
+});
+
+test('secretos distintos derivan llaves distintas', () => {
+  const una = obtenerLlave({ SUNAT_MASTER_SECRET: SECRETO });
+  const otra = obtenerLlave({ SUNAT_MASTER_SECRET: `${SECRETO}x` });
+  assert.notDeepEqual(una, otra);
+});
+
+test('cifra y descifra con la llave derivada', () => {
+  const llave = obtenerLlave({ SUNAT_MASTER_SECRET: SECRETO });
+  const cifrado = cifrar('clave-sol', llave);
+  assert.equal(descifrar(cifrado, llave).toString('utf8'), 'clave-sol');
+  // Un arranque nuevo (otra llamada) descifra lo cifrado antes.
+  assert.equal(descifrar(cifrado, obtenerLlave({ SUNAT_MASTER_SECRET: SECRETO })).toString('utf8'), 'clave-sol');
+});
+
+test('un SUNAT_MASTER_SECRET de menos de 32 caracteres falla sin filtrarlo', () => {
+  const corto = 'corto-pero-secreto-123456789012'; // 31 caracteres
+  assert.equal(corto.length, 31);
+  assert.throws(() => obtenerLlave({ SUNAT_MASTER_SECRET: corto }), (error) => {
+    assert.match(error.message, /SUNAT_MASTER_SECRET/);
+    assert.match(error.message, /32/);
+    assert.ok(!`${error.message}\n${error.stack}`.includes(corto));
+    return true;
+  });
+  assert.equal(obtenerLlave({ SUNAT_MASTER_SECRET: 'b'.repeat(32) }).length, 32);
+});
+
+test('sin SUNAT_MASTER_KEY ni SUNAT_MASTER_SECRET falla con un mensaje claro', () => {
+  assert.throws(() => obtenerLlave({}), /SUNAT_MASTER_KEY/);
+  assert.throws(() => obtenerLlave({ SUNAT_MASTER_SECRET: '' }), /SUNAT_MASTER_SECRET/);
+});
+
+test('SUNAT_MASTER_KEY tiene prioridad sobre SUNAT_MASTER_SECRET', () => {
+  const env = { SUNAT_MASTER_KEY: LLAVE.toString('base64'), SUNAT_MASTER_SECRET: SECRETO };
+  assert.deepEqual(obtenerLlave(env), LLAVE);
+});
+
+test('si SUNAT_MASTER_KEY existe e es inválida, falla aunque haya SUNAT_MASTER_SECRET', () => {
+  const env = { SUNAT_MASTER_KEY: Buffer.alloc(16).toString('base64'), SUNAT_MASTER_SECRET: SECRETO };
+  assert.throws(() => obtenerLlave(env), /32 bytes/);
 });
