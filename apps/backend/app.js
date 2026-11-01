@@ -274,7 +274,8 @@ app.use('/api/comprobantes', limiter, crearRouterComprobantes({ prisma: prismaSu
 app.use('/api/sunat', limiter, crearRouterSunat({ prisma: prismaSunat, obtenerSunat }));
 
 // Servir archivos estáticos (uploads)
-app.use('/uploads', express.static('uploads'));
+// Misma carpeta que escribe el proveedor local de utils/storage.js (LOCAL_UPLOADS_DIR, por defecto ./uploads)
+app.use('/uploads', express.static(process.env.LOCAL_UPLOADS_DIR || 'uploads'));
 
 // Manejo de errores 404
 app.use((req, res) => {
