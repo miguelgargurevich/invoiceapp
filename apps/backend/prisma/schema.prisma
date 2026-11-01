@@ -478,7 +478,9 @@ model SignatureRequest {
   id              String                   @id @default(uuid())
   token           String                   @unique // Secure single-use token
   documentType    DocumentType             @map("document_type") // 'INVOICE' or 'PROFORMA'
-  documentId      String                   @map("document_id") // ID of invoice or proforma
+  documentId      String                   @map("document_id") // ID de la factura o proforma (sin relación: ver facturaId/proformaId)
+  facturaId       String?                  @map("factura_id") // Se llena si documentType = INVOICE
+  proformaId      String?                  @map("proforma_id") // Se llena si documentType = PROFORMA
   signerEmail     String                   @map("signer_email")
   signerName      String?                  @map("signer_name")
   status          SignatureRequestStatus   @default(PENDING) // PENDING, ACCEPTED, EXPIRED, CANCELLED
@@ -495,12 +497,14 @@ model SignatureRequest {
   
   // Relations
   empresa         Empresa   @relation(fields: [empresaId], references: [id], onDelete: Cascade)
-  factura         Factura?  @relation(fields: [documentId], references: [id], map: "fk_signature_request_factura")
-  proforma        Proforma? @relation(fields: [documentId], references: [id], map: "fk_signature_request_proforma")
+  factura         Factura?  @relation(fields: [facturaId], references: [id], onDelete: Cascade, map: "fk_signature_request_factura_id")
+  proforma        Proforma? @relation(fields: [proformaId], references: [id], onDelete: Cascade, map: "fk_signature_request_proforma_id")
   signature       Signature?
-  
+
   @@index([token])
   @@index([documentId])
+  @@index([facturaId], map: "idx_signature_request_factura_id")
+  @@index([proformaId], map: "idx_signature_request_proforma_id")
   @@index([status])
   @@index([expiresAt])
   @@map("signature_requests")

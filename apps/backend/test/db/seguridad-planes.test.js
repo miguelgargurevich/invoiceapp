@@ -198,7 +198,7 @@ test('Culqi cancelada pero vigente conserva el plan pagado hasta el fin del per√
   assert.equal((await suscripcion()).plan.slug, 'pe-negocio');
   assert.deepEqual(await middlewareFeature('hasProposals'), { pasa: true });
   assert.ok((await detraccion()).id);
-  // Pasa la compuerta del plan (despu√©s, crear la solicitud de una factura choca con la doble FK de documentId: ajeno a este cambio).
+  // Pasa la compuerta del plan (la solicitud se crea ligada a facturaId; ver firmas-documento.test.js).
   assert.notEqual((await pedirFirma()).status, 403);
 });
 

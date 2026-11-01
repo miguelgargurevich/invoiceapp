@@ -85,6 +85,9 @@ router.post('/request', async (req, res) => {
         token,
         documentType,
         documentId,
+        // Relación con el documento: una columna por tipo (documentId queda como referencia sin FK).
+        facturaId: documentType === 'INVOICE' ? documentId : null,
+        proformaId: documentType === 'PROFORMA' ? documentId : null,
         signerEmail,
         signerName: signerName || null,
         status: 'PENDING',
