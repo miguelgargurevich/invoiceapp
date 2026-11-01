@@ -1,4 +1,4 @@
-# 🧾 InvoiceApp - Professional Invoice & Proposal Management System
+# 🧾 Facturo - Professional Invoice & Proposal Management System
 
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js)](https://nextjs.org/)
 [![Express.js](https://img.shields.io/badge/Express.js-4-green?logo=express)](https://expressjs.com/)
@@ -14,9 +14,9 @@
 
 ---
 
-## 🎯 Why Choose InvoiceApp?
+## 🎯 Why Choose Facturo?
 
-InvoiceApp is built specifically for contractors and service providers who need more than basic invoicing:
+Facturo is built specifically for contractors and service providers who need more than basic invoicing:
 
 - ✅ **No more spreadsheets** - Professional invoicing without Excel headaches
 - ✅ **Get paid faster** - Digital signatures and email delivery reduce payment delays

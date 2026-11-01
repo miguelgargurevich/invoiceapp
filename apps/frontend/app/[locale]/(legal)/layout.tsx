@@ -38,7 +38,7 @@ export default function LegalLayout({
         <div className="max-w-4xl mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-sm text-gray-500 dark:text-gray-400">
-              © {new Date().getFullYear()} InvoiceApp. {t('allRightsReserved')}
+              © {new Date().getFullYear()} Facturo. {t('allRightsReserved')}
             </div>
             <nav className="flex flex-wrap justify-center gap-6 text-sm">
               <Link 

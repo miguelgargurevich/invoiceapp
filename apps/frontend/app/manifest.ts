@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Facturo',
     short_name: 'Facturo',
-    description: 'Comprehensive invoice and proposal management system for contractors and businesses',
+    description: 'Facturo: comprehensive invoice and proposal management system for contractors and businesses',
     start_url: '/',
     display: 'standalone',
     background_color: '#FFFFFF',

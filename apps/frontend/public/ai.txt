@@ -1,7 +1,7 @@
-# InvoiceApp - AI-Readable Information
+# Facturo - AI-Readable Information
 
 ## Application Overview
-InvoiceApp is a professional invoice and proposal management system designed for contractors, construction businesses, and service providers.
+Facturo is a professional invoice and proposal management system designed for contractors, construction businesses, and service providers.
 
 ## Primary Functions
 1. Invoice Management

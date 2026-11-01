@@ -1,4 +1,4 @@
-# InvoiceApp — Frontend
+# Facturo — Frontend
 
 Next.js 14 (App Router) con next-intl (es/en) y Tailwind. El desarrollo local completo (base de datos, backend y motor SUNAT) está en el [README principal](../../README.md).
 

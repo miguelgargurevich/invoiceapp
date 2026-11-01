@@ -13,7 +13,7 @@ import {
   ArrowLeft, FileText, Users, Zap, Shield, CheckCircle2,
   Sparkles, Hand
 } from 'lucide-react';
-import Image from 'next/image';
+import { IconoFacturo } from '@/components/marca/LogoFacturo';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button, LoadingSpinner } from '@/components/common';
@@ -124,17 +124,11 @@ export default function LoginPage({
           <div>
             <Link href={`/${locale}`} className="inline-flex items-center gap-3 group">
               <div className="w-14 h-14 bg-white rounded-2xl shadow-lg flex items-center justify-center p-2 group-hover:scale-105 transition-transform">
-                <Image
-                  src="/invoiceapp-logo.png"
-                  alt="InvoiceApp Logo"
-                  width={48}
-                  height={48}
-                  className="w-full h-full object-contain"
-                />
+                <IconoFacturo tamano={40} />
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-white">
-                  InvoiceApp
+                  Facturo
                 </h1>
                 <p className="text-primary-200 text-sm">
                   {t('tagline')}
@@ -202,7 +196,7 @@ export default function LoginPage({
 
           {/* Footer */}
           <div className="text-primary-200 text-sm">
-            © {new Date().getFullYear()} InvoiceApp. {t('allRightsReserved')}
+            © {new Date().getFullYear()} Facturo. {t('allRightsReserved')}
           </div>
         </div>
       </div>
@@ -254,17 +248,11 @@ export default function LoginPage({
             {/* Mobile branding */}
             <div className="lg:hidden text-center mb-8">
               <Link href={`/${locale}`} className="inline-flex flex-col items-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl shadow-lg shadow-primary-500/25 flex items-center justify-center p-2.5 mb-3">
-                  <Image
-                    src="/invoiceapp-logo.png"
-                    alt="InvoiceApp Logo"
-                    width={56}
-                    height={56}
-                    className="w-full h-full object-contain"
-                  />
+                <div className="w-16 h-16 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg flex items-center justify-center p-2.5 mb-3">
+                  <IconoFacturo tamano={48} />
                 </div>
                 <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  InvoiceApp
+                  Facturo
                 </h1>
               </Link>
               <p className="text-slate-500 dark:text-slate-400 mt-1">

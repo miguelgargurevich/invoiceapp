@@ -13,7 +13,7 @@ import {
   CheckCircle, ArrowLeft, FileText, Users, Zap, Shield,
   Sparkles, CheckCircle2, Gift
 } from 'lucide-react';
-import Image from 'next/image';
+import { IconoFacturo } from '@/components/marca/LogoFacturo';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button, LoadingSpinner } from '@/components/common';
@@ -134,17 +134,11 @@ export default function RegisterPage({
           <div>
             <Link href={`/${locale}`} className="inline-flex items-center gap-3 group">
               <div className="w-14 h-14 bg-white rounded-2xl shadow-lg flex items-center justify-center p-2 group-hover:scale-105 transition-transform">
-                <Image
-                  src="/invoiceapp-logo.png"
-                  alt="InvoiceApp Logo"
-                  width={48}
-                  height={48}
-                  className="w-full h-full object-contain"
-                />
+                <IconoFacturo tamano={40} />
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-white">
-                  InvoiceApp
+                  Facturo
                 </h1>
                 <p className="text-emerald-200 text-sm">
                   {t('tagline')}
@@ -212,15 +206,15 @@ export default function RegisterPage({
             </div>
             <p className="text-white/90 text-sm">
               {locale === 'es' 
-                ? 'Únete a más de 10,000 profesionales que confían en InvoiceApp'
-                : 'Join 10,000+ professionals who trust InvoiceApp'
+                ? 'Únete a más de 10,000 profesionales que confían en Facturo'
+                : 'Join 10,000+ professionals who trust Facturo'
               }
             </p>
           </div>
 
           {/* Footer */}
           <div className="text-emerald-200 text-sm">
-            © {new Date().getFullYear()} InvoiceApp. {t('allRightsReserved')}
+            © {new Date().getFullYear()} Facturo. {t('allRightsReserved')}
           </div>
         </div>
       </div>
@@ -272,17 +266,11 @@ export default function RegisterPage({
             {/* Mobile branding */}
             <div className="lg:hidden text-center mb-6">
               <Link href={`/${locale}`} className="inline-flex flex-col items-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg shadow-emerald-500/25 flex items-center justify-center p-2.5 mb-3">
-                  <Image
-                    src="/invoiceapp-logo.png"
-                    alt="InvoiceApp Logo"
-                    width={56}
-                    height={56}
-                    className="w-full h-full object-contain"
-                  />
+                <div className="w-16 h-16 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg flex items-center justify-center p-2.5 mb-3">
+                  <IconoFacturo tamano={48} />
                 </div>
                 <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  InvoiceApp
+                  Facturo
                 </h1>
               </Link>
             </div>

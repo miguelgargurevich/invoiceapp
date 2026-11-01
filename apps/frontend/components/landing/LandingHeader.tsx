@@ -58,7 +58,7 @@ export function LandingHeader() {
                 <div className="absolute -inset-1 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl blur opacity-25 group-hover:opacity-40 transition-opacity" />
               </div>
               <span className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-300 bg-clip-text text-transparent">
-                InvoiceApp
+                Facturo
               </span>
             </Link>
 

@@ -15,6 +15,26 @@
 
 ## Última sesión
 
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/marca-t3-nombre`, rama `feat/marca-t3-nombre`, sobre `feat/marca-facturo`):
+  Tarea 3 del plan de la marca Facturo (nombre y logo nuevo en la app). Hecho, en `apps/frontend`: el ticket `IconoFacturo` reemplaza
+  el PNG viejo en el menú (`Sidebar.tsx`, fallback), en login y en registro (escritorio: 40 px; móvil: 48 px); se borra
+  `public/invoiceapp-logo.png` (sin referencias). Metadatos de `app/layout.tsx` a «Facturo» con `icons` (favicon.ico, favicon.svg,
+  apple-touch-icon) y `applicationName`; `export const viewport` nuevo con `themeColor` `#0F6E56` (no existía). `description` del
+  manifest con el nombre. Textos «InvoiceApp» / «Invoice App» → «Facturo» en `messages/es.json` y `en.json`, login, registro,
+  legales (pie), landing (cabecera y pie), `lib/seo-schemas.ts`, `public/ai.txt`, `README.md` (raíz y frontend), `FEATURES.md`,
+  y `emailService.js` (remitente por defecto y textos de plantillas). `RESEND_FROM_NAME` en `.env.example`.
+  Pruebas (antes de commitear): `npx tsc --noEmit` exit 0; frontend `npm test` 35/35, 0 fallos; backend `npm test` 104/104, 0 fallos;
+  `npx next build` exit 0, sin avisos en el log. Sin pruebas nuevas (textos y logo): mutación no aplica; en su lugar, `git grep`
+  de `invoice ?app` en `apps` y raíz (ver lista de conservados abajo).
+  Conservados a propósito (no son texto visible del nombre): correos `@invoiceapp.com` / `@invoiceapp.io` (contacto, ayuda, FAQ,
+  precios, `seo-schemas`, `ai.txt`); dominios `app.invoiceapp.io` (texto de la portada) y `invoiceapp.gargurevich.com` (`FRONTEND_URL`);
+  handles `@invoiceapp` (Twitter, GitHub, LinkedIn, `creator`); base `invoiceapp` y `invoiceapp_test`; `invoiceapp/sunat-engine`; `README.md:427`
+  (nombre de la carpeta del repo en el árbol). Fuera de «Permitidos» y sin tocar: comentario en `apps/backend/src/sunat/index.js:25`.
+  Gotchas: (a) el `description` del manifest no decía «InvoiceApp» literalmente; se le puso el nombre igual. (b) En registro, el
+  contenedor móvil del logo era `emerald→teal`, no `primary-*`; se cambió al mismo fondo blanco que en login porque el ticket verde
+  no se veía. (c) El ticket `#0F6E56` sobre el menú `bg-gray-900` tiene contraste ~2.9:1 (calculado): revisar en Chrome (Tarea 4).
+  (d) El logo de la landing no se cambió: el plan no lo pide, la cabecera solo tiene texto.
+
 - 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/marca-t1-piezas`, rama `feat/marca-t1-piezas`): Tarea 1 del plan de la marca Facturo (piezas gráficas). Hecho: SVG en `apps/frontend/public/marca/` (`facturo-icono.svg`, `favicon.svg`, `facturo-logotipo.svg`, `facturo-logotipo-oscuro.svg`) copiados tal cual del plan; componente `components/marca/LogoFacturo.tsx` (`IconoFacturo`, `LogoFacturo`, con `'use client'`); `scripts/marca/exportar.mjs` genera `icon-192.png`, `icon-512.png`, `apple-touch-icon.png` y `app/favicon.ico` (16, 32 y 48 px); `app/manifest.ts` con nombre Facturo, `theme_color` `#0F6E56` e íconos nuevos. Verificado: `file` da 192×192, 512×512, 180×180 y «MS Windows icon resource - 3 icons»; `npx tsc --noEmit` exit 0; `npm test` 35/35. Gotchas: `@resvg/resvg-js` se instala solo en `mktemp -d` y se pasa con `RESVG_DIR`; sin esa variable el script ahora termina con un mensaje claro (antes salía un stack trace de Node); el logotipo SVG usa texto y no trazos (fuente Geist/Inter del sistema); no se añadió test de componente porque `npm test` solo corre `lib/**` y el archivo no estaba en «Permitidos»; la `description` del manifest sigue diciendo InvoiceApp. Commit en la rama; sin push.
 - 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/marca-t2-color`, rama `feat/marca-t2-color`, sobre `feat/marca-facturo`):
   Tarea 2 del plan de marca Facturo («la interfaz pasa al verde»). Hecho, en `apps/frontend`:

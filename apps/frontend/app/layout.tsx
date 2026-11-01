@@ -1,13 +1,17 @@
 import { ReactNode } from 'react';
 import './globals.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { URL_SITIO } from '@/lib/sitio';
+
+export const viewport: Viewport = {
+  themeColor: '#0F6E56',
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(URL_SITIO),
   title: {
-    default: 'InvoiceApp - Professional Invoice & Proposal Management System',
-    template: '%s | InvoiceApp'
+    default: 'Facturo - Professional Invoice & Proposal Management System',
+    template: '%s | Facturo'
   },
   description: 'Comprehensive invoice and proposal management system for contractors and businesses. Create professional invoices, track payments, manage clients, and streamline your billing process.',
   keywords: [
@@ -27,9 +31,17 @@ export const metadata: Metadata = {
     'construction invoicing',
     'professional billing'
   ],
-  authors: [{ name: 'InvoiceApp Team' }],
-  creator: 'InvoiceApp',
-  publisher: 'InvoiceApp',
+  applicationName: 'Facturo',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/marca/favicon.svg', type: 'image/svg+xml' },
+    ],
+    apple: '/marca/apple-touch-icon.png',
+  },
+  authors: [{ name: 'Facturo Team' }],
+  creator: 'Facturo',
+  publisher: 'Facturo',
   formatDetection: {
     email: false,
     address: false,
@@ -40,21 +52,21 @@ export const metadata: Metadata = {
     locale: 'en_US',
     alternateLocale: ['es_ES'],
     url: URL_SITIO,
-    title: 'InvoiceApp - Professional Invoice & Proposal Management System',
+    title: 'Facturo - Professional Invoice & Proposal Management System',
     description: 'Comprehensive invoice and proposal management system for contractors and businesses. Create professional invoices, track payments, manage clients, and streamline your billing process.',
-    siteName: 'InvoiceApp',
+    siteName: 'Facturo',
     images: [
       {
         url: '/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'InvoiceApp - Professional Invoicing Solution',
+        alt: 'Facturo - Professional Invoicing Solution',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'InvoiceApp - Professional Invoice & Proposal Management',
+    title: 'Facturo - Professional Invoice & Proposal Management',
     description: 'Create professional invoices, track payments, and manage your business billing efficiently.',
     images: ['/og-image.png'],
     creator: '@invoiceapp',
@@ -92,7 +104,7 @@ export default function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'SoftwareApplication',
-              name: 'InvoiceApp',
+              name: 'Facturo',
               applicationCategory: 'BusinessApplication',
               offers: {
                 '@type': 'Offer',

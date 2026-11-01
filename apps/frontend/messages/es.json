@@ -1391,11 +1391,11 @@
       "lastUpdated": "Última Actualización",
       "acceptance": {
         "title": "1. Aceptación de los Términos",
-        "content": "Al acceder o utilizar InvoiceApp (el \"Servicio\"), usted acepta estar sujeto a estos Términos de Servicio (\"Términos\"). Si no está de acuerdo con alguna parte de los términos, no podrá acceder al Servicio."
+        "content": "Al acceder o utilizar Facturo (el \"Servicio\"), usted acepta estar sujeto a estos Términos de Servicio (\"Términos\"). Si no está de acuerdo con alguna parte de los términos, no podrá acceder al Servicio."
       },
       "description": {
         "title": "2. Descripción del Servicio",
-        "content": "InvoiceApp es una plataforma de gestión de facturación y cobros basada en la nube que permite a los usuarios crear, enviar y gestionar facturas, propuestas y relaciones con clientes. El Servicio incluye aplicaciones web, aplicaciones móviles y servicios relacionados."
+        "content": "Facturo es una plataforma de gestión de facturación y cobros basada en la nube que permite a los usuarios crear, enviar y gestionar facturas, propuestas y relaciones con clientes. El Servicio incluye aplicaciones web, aplicaciones móviles y servicios relacionados."
       },
       "accounts": {
         "title": "3. Cuentas de Usuario",
@@ -1407,7 +1407,7 @@
       },
       "intellectualProperty": {
         "title": "5. Propiedad Intelectual",
-        "content": "El Servicio y su contenido original, características y funcionalidad son propiedad de InvoiceApp y están protegidos por leyes internacionales de derechos de autor, marcas comerciales, patentes, secretos comerciales y otras leyes de propiedad intelectual."
+        "content": "El Servicio y su contenido original, características y funcionalidad son propiedad de Facturo y están protegidos por leyes internacionales de derechos de autor, marcas comerciales, patentes, secretos comerciales y otras leyes de propiedad intelectual."
       },
       "userContent": {
         "title": "6. Contenido del Usuario",
@@ -1427,7 +1427,7 @@
       },
       "limitation": {
         "title": "10. Limitación de Responsabilidad",
-        "content": "En ningún caso InvoiceApp, sus directores, empleados, socios, agentes, proveedores o afiliados serán responsables de daños indirectos, incidentales, especiales, consecuentes o punitivos, incluida la pérdida de ganancias, datos o buena voluntad."
+        "content": "En ningún caso Facturo, sus directores, empleados, socios, agentes, proveedores o afiliados serán responsables de daños indirectos, incidentales, especiales, consecuentes o punitivos, incluida la pérdida de ganancias, datos o buena voluntad."
       },
       "governing": {
         "title": "11. Ley Aplicable",
@@ -1447,7 +1447,7 @@
       "lastUpdated": "Última Actualización",
       "introduction": {
         "title": "1. Introducción",
-        "content": "InvoiceApp (\"nosotros\", \"nuestro\" o \"nos\") está comprometido a proteger su privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos, divulgamos y protegemos su información cuando utiliza nuestro Servicio."
+        "content": "Facturo (\"nosotros\", \"nuestro\" o \"nos\") está comprometido a proteger su privacidad. Esta Política de Privacidad explica cómo recopilamos, usamos, divulgamos y protegemos su información cuando utiliza nuestro Servicio."
       },
       "informationCollected": {
         "title": "2. Información que Recopilamos",
@@ -1507,7 +1507,7 @@
       "lastUpdated": "Última Actualización",
       "overview": {
         "title": "1. Descripción General",
-        "content": "En InvoiceApp, queremos que esté completamente satisfecho con nuestro Servicio. Esta Política de Reembolso describe las circunstancias bajo las cuales puede ser elegible para un reembolso."
+        "content": "En Facturo, queremos que esté completamente satisfecho con nuestro Servicio. Esta Política de Reembolso describe las circunstancias bajo las cuales puede ser elegible para un reembolso."
       },
       "eligibility": {
         "title": "2. Elegibilidad para Reembolso",
@@ -1767,7 +1767,7 @@
       },
       "socialProof": {
         "count": "10,000+",
-        "text": "profesionales ya confían en InvoiceApp"
+        "text": "profesionales ya confían en Facturo"
       },
       "preview": {
         "invoices": "Total Facturas",
@@ -1835,7 +1835,7 @@
       "badge": "Proceso Simple",
       "title": "De la Propuesta al Pago en 5 Pasos",
       "subtitle": "Rastrea tu flujo de trabajo completo desde la creación de propuestas hasta recibir el pago. El timeline visual te mantiene informado en cada etapa.",
-      "socialProof": "Más de 10,000 profesionales ya confían en InvoiceApp",
+      "socialProof": "Más de 10,000 profesionales ya confían en Facturo",
       "steps": {
         "0": {
           "title": "Crear Propuesta",
@@ -1891,10 +1891,10 @@
     "testimonials": {
       "badge": "Clientes Felices",
       "title": "Confían en Nosotros Miles de Profesionales",
-      "subtitle": "Mira lo que nuestros clientes dicen sobre InvoiceApp.",
+      "subtitle": "Mira lo que nuestros clientes dicen sobre Facturo.",
       "items": {
         "1": {
-          "quote": "InvoiceApp ha transformado cómo manejo mi negocio de construcción. Crear facturas profesionales ahora toma segundos, y a mis clientes les encanta el diseño limpio.",
+          "quote": "Facturo ha transformado cómo manejo mi negocio de construcción. Crear facturas profesionales ahora toma segundos, y a mis clientes les encanta el diseño limpio.",
           "name": "María González",
           "role": "Contratista de Construcción"
         },
@@ -1939,7 +1939,7 @@
       "contactSupport": "Contacta nuestro equipo de soporte",
       "items": {
         "1": {
-          "question": "¿InvoiceApp es realmente gratis para empezar?",
+          "question": "¿Facturo es realmente gratis para empezar?",
           "answer": "¡Sí! Nuestro plan Gratis te permite crear hasta 5 facturas al mes con 3 clientes sin costo. No se requiere tarjeta de crédito para registrarte. Puedes actualizar en cualquier momento a medida que tu negocio crece."
         },
         "2": {
@@ -1959,8 +1959,8 @@
           "answer": "La seguridad es nuestra máxima prioridad. Todos los datos están encriptados en tránsito y en reposo. Usamos prácticas de seguridad estándar de la industria y respaldos regulares."
         },
         "6": {
-          "question": "¿Puedo usar InvoiceApp en móvil?",
-          "answer": "¡Sí! InvoiceApp es totalmente responsivo y funciona genial en teléfonos y tablets. Crea, envía y gestiona facturas desde cualquier lugar."
+          "question": "¿Puedo usar Facturo en móvil?",
+          "answer": "¡Sí! Facturo es totalmente responsivo y funciona genial en teléfonos y tablets. Crea, envía y gestiona facturas desde cualquier lugar."
         },
         "7": {
           "question": "¿Qué métodos de pago aceptan?",
@@ -1975,7 +1975,7 @@
     "cta": {
       "badge": "¿Listo para empezar?",
       "title": "Empieza a Crear Facturas Profesionales Hoy",
-      "subtitle": "Únete a miles de profesionales que confían en InvoiceApp para gestionar su facturación. Comienza en minutos.",
+      "subtitle": "Únete a miles de profesionales que confían en Facturo para gestionar su facturación. Comienza en minutos.",
       "primaryButton": "Prueba Gratis",
       "secondaryButton": "Ver Precios",
       "noCard": "Sin tarjeta de crédito • Plan gratuito disponible • Cancela cuando quieras"

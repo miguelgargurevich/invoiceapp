@@ -1,8 +1,8 @@
-# InvoiceApp - Professional Invoice & Proposal Management System
+# Facturo - Professional Invoice & Proposal Management System
 
 ## Overview
 
-InvoiceApp is a comprehensive, web-based invoice and proposal management system designed specifically for contractors, construction businesses, and service providers. Built with modern web technologies, it streamlines the billing process, tracks payments, manages clients, and provides powerful tools for business operations.
+Facturo is a comprehensive, web-based invoice and proposal management system designed specifically for contractors, construction businesses, and service providers. Built with modern web technologies, it streamlines the billing process, tracks payments, manages clients, and provides powerful tools for business operations.
 
 ## Key Features
 
@@ -120,7 +120,7 @@ InvoiceApp is a comprehensive, web-based invoice and proposal management system 
 
 ## API Integration
 
-InvoiceApp provides RESTful APIs for:
+Facturo provides RESTful APIs for:
 - Invoice creation and management
 - Proposal generation
 - Client management

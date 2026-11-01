@@ -4,7 +4,7 @@ const { Resend } = require('resend');
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
-const fromName = process.env.RESEND_FROM_NAME || 'Invoice App';
+const fromName = process.env.RESEND_FROM_NAME || 'Facturo';
 
 /**
  * Get translations based on locale
@@ -22,7 +22,7 @@ function getTranslations(locale = 'en') {
       dueDate: 'Fecha de Vencimiento',
       validUntil: 'Válido hasta',
       total: 'Total',
-      automaticEmail: 'Este correo ha sido enviado automáticamente desde Invoice App.',
+      automaticEmail: 'Este correo ha sido enviado automáticamente desde Facturo.',
       forQuestions: 'Para cualquier consulta',
       proformaValidity: '⚠️ Esta proforma/cotización es válida hasta el',
       noFiscalValue: 'Este documento no tiene valor fiscal.',
@@ -36,7 +36,7 @@ function getTranslations(locale = 'en') {
       dueDate: 'Due Date',
       validUntil: 'Valid until',
       total: 'Total',
-      automaticEmail: 'This email has been sent automatically from Invoice App.',
+      automaticEmail: 'This email has been sent automatically from Facturo.',
       forQuestions: 'For any questions',
       proformaValidity: '⚠️ This proposal/quote is valid until',
       noFiscalValue: 'This document has no fiscal value.',
@@ -130,7 +130,7 @@ async function sendInvoiceEmail({ to, subject, message, factura, empresa, pdfBuf
     <body>
       <div class="container">
         <div class="header">
-          <h1>${empresa?.nombre || 'Invoice App'}</h1>
+          <h1>${empresa?.nombre || 'Facturo'}</h1>
           ${empresa?.ruc ? `<p style="margin: 5px 0 0 0; color: #666;">RUC: ${empresa.ruc}</p>` : ''}
         </div>
         
@@ -228,7 +228,7 @@ async function sendProformaEmail({ to, subject, message, proforma, empresa, pdfB
     <body>
       <div class="container">
         <div class="header">
-          <h1>${empresa?.nombre || 'Invoice App'}</h1>
+          <h1>${empresa?.nombre || 'Facturo'}</h1>
           ${empresa?.ruc ? `<p style="margin: 5px 0 0 0; color: #0369a1;">RUC: ${empresa.ruc}</p>` : ''}
         </div>
         
@@ -850,7 +850,7 @@ async function sendInvoiceCreationEmail({ factura, empresa, locale = 'en' }) {
     <body>
       <div class="container">
         <div class="header">
-          <h1>${empresa?.nombre || 'Invoice App'}</h1>
+          <h1>${empresa?.nombre || 'Facturo'}</h1>
           ${empresa?.ruc ? `<p style="margin: 5px 0 0 0;">${locale === 'es' ? 'RUC' : 'Tax ID'}: ${empresa.ruc}</p>` : ''}
         </div>
         
@@ -958,7 +958,7 @@ async function sendPaymentConfirmationEmail({ pago, factura, empresa, locale = '
     <body>
       <div class="container">
         <div class="header">
-          <h1>${empresa?.nombre || 'Invoice App'}</h1>
+          <h1>${empresa?.nombre || 'Facturo'}</h1>
           ${empresa?.ruc ? `<p style="margin: 5px 0 0 0;">${locale === 'es' ? 'RUC' : 'Tax ID'}: ${empresa.ruc}</p>` : ''}
         </div>
         

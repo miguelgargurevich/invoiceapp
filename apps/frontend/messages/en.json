@@ -1388,11 +1388,11 @@
       "lastUpdated": "Last Updated",
       "acceptance": {
         "title": "1. Acceptance of Terms",
-        "content": "By accessing or using InvoiceApp (the \"Service\"), you agree to be bound by these Terms of Service (\"Terms\"). If you disagree with any part of the terms, you may not access the Service."
+        "content": "By accessing or using Facturo (the \"Service\"), you agree to be bound by these Terms of Service (\"Terms\"). If you disagree with any part of the terms, you may not access the Service."
       },
       "description": {
         "title": "2. Description of Service",
-        "content": "InvoiceApp is a cloud-based invoicing and billing management platform that allows users to create, send, and manage invoices, proposals, and client relationships. The Service includes web applications, mobile applications, and related services."
+        "content": "Facturo is a cloud-based invoicing and billing management platform that allows users to create, send, and manage invoices, proposals, and client relationships. The Service includes web applications, mobile applications, and related services."
       },
       "accounts": {
         "title": "3. User Accounts",
@@ -1404,7 +1404,7 @@
       },
       "intellectualProperty": {
         "title": "5. Intellectual Property",
-        "content": "The Service and its original content, features, and functionality are owned by InvoiceApp and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws."
+        "content": "The Service and its original content, features, and functionality are owned by Facturo and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws."
       },
       "userContent": {
         "title": "6. User Content",
@@ -1424,7 +1424,7 @@
       },
       "limitation": {
         "title": "10. Limitation of Liability",
-        "content": "In no event shall InvoiceApp, its directors, employees, partners, agents, suppliers, or affiliates be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of profits, data, or goodwill."
+        "content": "In no event shall Facturo, its directors, employees, partners, agents, suppliers, or affiliates be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of profits, data, or goodwill."
       },
       "governing": {
         "title": "11. Governing Law",
@@ -1444,7 +1444,7 @@
       "lastUpdated": "Last Updated",
       "introduction": {
         "title": "1. Introduction",
-        "content": "InvoiceApp (\"we\", \"our\", or \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our Service."
+        "content": "Facturo (\"we\", \"our\", or \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our Service."
       },
       "informationCollected": {
         "title": "2. Information We Collect",
@@ -1504,7 +1504,7 @@
       "lastUpdated": "Last Updated",
       "overview": {
         "title": "1. Overview",
-        "content": "At InvoiceApp, we want you to be completely satisfied with our Service. This Refund Policy outlines the circumstances under which you may be eligible for a refund."
+        "content": "At Facturo, we want you to be completely satisfied with our Service. This Refund Policy outlines the circumstances under which you may be eligible for a refund."
       },
       "eligibility": {
         "title": "2. Refund Eligibility",
@@ -1764,7 +1764,7 @@
       },
       "socialProof": {
         "count": "10,000+",
-        "text": "professionals already trust InvoiceApp"
+        "text": "professionals already trust Facturo"
       },
       "preview": {
         "invoices": "Total Invoices",
@@ -1832,7 +1832,7 @@
       "badge": "Simple Process",
       "title": "From Proposal to Payment in 5 Steps",
       "subtitle": "Track your entire workflow from proposal creation to getting paid. Visual timeline keeps you informed at every stage.",
-      "socialProof": "10,000+ professionals already trust InvoiceApp",
+      "socialProof": "10,000+ professionals already trust Facturo",
       "steps": {
         "0": {
           "title": "Create Proposal",
@@ -1888,10 +1888,10 @@
     "testimonials": {
       "badge": "Customer Love",
       "title": "Trusted by Thousands of Professionals",
-      "subtitle": "See what our customers have to say about InvoiceApp.",
+      "subtitle": "See what our customers have to say about Facturo.",
       "items": {
         "1": {
-          "quote": "InvoiceApp has transformed how I manage my construction business. Creating professional invoices takes seconds now, and my clients love the clean look.",
+          "quote": "Facturo has transformed how I manage my construction business. Creating professional invoices takes seconds now, and my clients love the clean look.",
           "name": "María González",
           "role": "Construction Contractor"
         },
@@ -1936,7 +1936,7 @@
       "contactSupport": "Contact our support team",
       "items": {
         "1": {
-          "question": "Is InvoiceApp really free to start?",
+          "question": "Is Facturo really free to start?",
           "answer": "Yes! Our Free plan lets you create up to 5 invoices per month with 3 clients at no cost. No credit card required to sign up. You can upgrade anytime as your business grows."
         },
         "2": {
@@ -1956,8 +1956,8 @@
           "answer": "Security is our top priority. All data is encrypted in transit and at rest. We use industry-standard security practices and regular backups."
         },
         "6": {
-          "question": "Can I use InvoiceApp on mobile?",
-          "answer": "Yes! InvoiceApp is fully responsive and works great on phones and tablets. Create, send, and manage invoices from anywhere."
+          "question": "Can I use Facturo on mobile?",
+          "answer": "Yes! Facturo is fully responsive and works great on phones and tablets. Create, send, and manage invoices from anywhere."
         },
         "7": {
           "question": "What payment methods do you accept?",
@@ -1972,7 +1972,7 @@
     "cta": {
       "badge": "Ready to get started?",
       "title": "Start Creating Professional Invoices Today",
-      "subtitle": "Join thousands of professionals who trust InvoiceApp to manage their billing. Get started in minutes.",
+      "subtitle": "Join thousands of professionals who trust Facturo to manage their billing. Get started in minutes.",
       "primaryButton": "Start Free Trial",
       "secondaryButton": "View Pricing",
       "noCard": "No credit card required • Free plan available • Cancel anytime"

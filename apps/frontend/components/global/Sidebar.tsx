@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { IconoFacturo } from '@/components/marca/LogoFacturo';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -76,16 +77,10 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
       );
     }
 
-    // Fallback: Logo de la app
+    // Fallback: logo de Facturo
     return (
-      <div className="w-8 h-8 bg-white rounded-lg overflow-hidden flex items-center justify-center p-0.5">
-        <Image
-          src="/invoiceapp-logo.png"
-          alt="InvoiceApp Logo"
-          width={32}
-          height={32}
-          className="w-full h-full object-contain"
-        />
+      <div className="w-8 h-8 flex items-center justify-center">
+        <IconoFacturo tamano={32} />
       </div>
     );
   };
