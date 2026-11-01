@@ -14,15 +14,12 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [
+      // Archivos del backend en local (STORAGE_PROVIDER=local, sirve /uploads en el puerto 4000)
       {
-        protocol: 'https',
-        hostname: '*.supabase.co',
-        pathname: '/storage/v1/object/public/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'cqvcauymipatkmckekrv.supabase.co',
-        pathname: '/**',
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '4000',
+        pathname: '/uploads/**',
       },
     ],
   },
