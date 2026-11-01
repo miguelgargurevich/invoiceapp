@@ -42,6 +42,7 @@ export interface Empresa {
   taxRate?: number | string;
   serieFactura: string;
   serieProforma: string;
+  pais?: string; // 'US' | 'PE': 'PE' activa la facturación electrónica SUNAT
   userId: string;
   createdAt: string;
   updatedAt: string;

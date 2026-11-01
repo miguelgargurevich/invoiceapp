@@ -22,6 +22,17 @@
   PUT sin el campo guarda `false`; quitar `soloPeru` de `/catalogos`; detracción 037 al 10 %.
   Gotchas: el `apps/backend/node_modules` del worktree es propio; el catálogo de detracciones y percepciones sigue
   pendiente de verificar contra la norma (ver `src/sunat/catalogos/index.js`).
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t3-base`, rama `feat/sunatf-t3-base`):
+  Tarea 3 del plan del frontend SUNAT (base: cliente de API, tipos, estados, formato, errores e i18n). Hecho:
+  `apps/frontend/lib/api.ts` con `ApiError` (extiende `Error`, conserva `message`, lleva `status` y `body`), `getBlob` y 204 → `undefined`;
+  `lib/sunat/{tipos,estados,formato,errores}.ts` con sus pruebas `*.test.ts`; `Empresa.pais?` en `AuthContext`;
+  namespace `sunat` y `navigation.vouchers` en `messages/es.json` y `en.json` (182 claves cada uno, mismas claves).
+  Scripts `test` (`node --test "lib/**/*.test.ts"`) y `allowImportingTsExtensions` en tsconfig. Pruebas: `npm test` 14/14;
+  `npx tsc --noEmit` sin errores. Mutaciones (un archivo a la vez, restauradas con cp + cmp): 7 de 7 en rojo.
+  Gotchas: (1) la prueba de `fechaCorta` fija `process.env.TZ = 'UTC'`, porque en una Mac en Lima quitar `timeZone` pasaba en verde;
+  (2) Node 26 avisa `MODULE_TYPELESS_PACKAGE_JSON` al correr los `.test.ts` (funciona; quitarlo exigiría `"type"` en el package.json del frontend, no se tocó);
+  (3) el `.test.ts` del plan tenía un `total` que `filasDesdeVista` no declara: `tsc` lo marcó y se quitó del literal de prueba.
+  Pendiente: push y OK de Miguel (sesión principal); `next build` no se corrió.
 - 2026-11-01 (claude-code): revisión de InvoiceApp como base para SUNAT, diseño del núcleo de emisión
   (`docs/superpowers/specs/2026-11-01-sunat-nucleo-emision-design.md`) y plan de implementación
   (`docs/superpowers/plans/2026-11-01-sunat-nucleo-emision.md`).
