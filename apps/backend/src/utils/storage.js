@@ -130,6 +130,7 @@ function extractStorageKeyFromUrl(url) {
 
 module.exports = {
   getStorageProvider,
+  getR2Client,
   uploadFile,
   deleteFile,
   getPublicUrl,
