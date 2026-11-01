@@ -63,7 +63,7 @@ export default function TaxStep({ data, onUpdate, onNext, onPrev }: TaxStepProps
     <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl mb-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-500 to-primary-700 rounded-2xl mb-4">
           <Percent className="w-8 h-8 text-white" />
         </div>
         <h2 className="text-2xl font-bold text-white mb-2">{t('tax.title')}</h2>
@@ -80,7 +80,7 @@ export default function TaxStep({ data, onUpdate, onNext, onPrev }: TaxStepProps
           whileTap={{ scale: 0.95 }}
           onClick={toggleTax}
           className={`relative w-14 h-8 rounded-full transition-colors ${
-            data.taxEnabled ? 'bg-red-500' : 'bg-white/20'
+            data.taxEnabled ? 'bg-primary-500' : 'bg-white/20'
           }`}
         >
           <motion.div
@@ -118,7 +118,7 @@ export default function TaxStep({ data, onUpdate, onNext, onPrev }: TaxStepProps
                     className={`
                       p-3 rounded-xl border text-sm transition-all
                       ${isSelected
-                        ? 'bg-red-500/20 border-red-500 text-white'
+                        ? 'bg-primary-500/20 border-primary-400 text-white'
                         : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'}
                     `}
                   >
@@ -140,7 +140,7 @@ export default function TaxStep({ data, onUpdate, onNext, onPrev }: TaxStepProps
                 value={data.taxName}
                 onChange={(e) => onUpdate({ taxName: e.target.value })}
                 placeholder="VAT, IGV, IVA..."
-                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all"
               />
             </div>
             <div>
@@ -155,7 +155,7 @@ export default function TaxStep({ data, onUpdate, onNext, onPrev }: TaxStepProps
                   step="0.01"
                   value={data.taxRate}
                   onChange={(e) => onUpdate({ taxRate: parseFloat(e.target.value) || 0 })}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 pr-10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 pr-10 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all"
                 />
                 <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50">%</span>
               </div>
@@ -203,7 +203,7 @@ export default function TaxStep({ data, onUpdate, onNext, onPrev }: TaxStepProps
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onNext}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold shadow-lg shadow-red-500/30 hover:shadow-red-500/50 transition-all"
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-primary-700 text-white font-semibold shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 transition-all"
         >
           {t('buttons.continue')}
           <ChevronRight className="w-5 h-5" />

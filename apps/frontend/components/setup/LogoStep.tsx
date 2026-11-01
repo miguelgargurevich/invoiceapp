@@ -89,7 +89,7 @@ export default function LogoStep({ data, onUpdate, onNext, onPrev }: LogoStepPro
     <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl mb-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-500 to-primary-700 rounded-2xl mb-4">
           <ImageIcon className="w-8 h-8 text-white" />
         </div>
         <h2 className="text-2xl font-bold text-white mb-2">{t('logo.title')}</h2>
@@ -113,7 +113,7 @@ export default function LogoStep({ data, onUpdate, onNext, onPrev }: LogoStepPro
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <p className="text-center text-green-400 mt-4 flex items-center justify-center gap-2">
+            <p className="text-center text-primary-300 mt-4 flex items-center justify-center gap-2">
               <Sparkles className="w-4 h-4" />
               {t('logo.uploaded')}
             </p>
@@ -130,15 +130,15 @@ export default function LogoStep({ data, onUpdate, onNext, onPrev }: LogoStepPro
               flex flex-col items-center justify-center gap-4 cursor-pointer
               transition-all duration-300
               ${dragActive 
-                ? 'border-green-500 bg-green-500/10' 
+                ? 'border-primary-400 bg-primary-500/10' 
                 : 'border-white/30 hover:border-white/50 hover:bg-white/5'}
             `}
           >
             {isUploading ? (
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-green-500" />
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary-400" />
             ) : (
               <>
-                <Upload className={`w-10 h-10 ${dragActive ? 'text-green-400' : 'text-white/40'}`} />
+                <Upload className={`w-10 h-10 ${dragActive ? 'text-primary-300' : 'text-white/40'}`} />
                 <div className="text-center">
                   <p className="text-white/80">{t('logo.dropzone')}</p>
                   <p className="text-white/40 text-sm mt-1">{t('logo.formats')}</p>
@@ -179,7 +179,7 @@ export default function LogoStep({ data, onUpdate, onNext, onPrev }: LogoStepPro
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onNext}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold shadow-lg shadow-green-500/30 hover:shadow-green-500/50 transition-all"
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-primary-700 text-white font-semibold shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 transition-all"
         >
           {data.logo ? t('buttons.continue') : t('buttons.skip')}
           <ChevronRight className="w-5 h-5" />

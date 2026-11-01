@@ -59,7 +59,7 @@ export default function CurrencyStep({ data, onUpdate, onNext, onPrev }: Currenc
     <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl mb-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-500 to-primary-700 rounded-2xl mb-4">
           <DollarSign className="w-8 h-8 text-white" />
         </div>
         <h2 className="text-2xl font-bold text-white mb-2">{t('currency.title')}</h2>
@@ -82,14 +82,14 @@ export default function CurrencyStep({ data, onUpdate, onNext, onPrev }: Currenc
               className={`
                 relative flex items-center gap-3 p-4 rounded-xl border transition-all
                 ${data.locale === locale.code
-                  ? 'bg-yellow-500/20 border-yellow-500 text-white'
+                  ? 'bg-primary-500/20 border-primary-400 text-white'
                   : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'}
               `}
             >
               <span className="text-2xl">{locale.flag}</span>
               <span className="font-medium">{locale.name}</span>
               {data.locale === locale.code && (
-                <Check className="w-5 h-5 text-yellow-400 absolute right-3" />
+                <Check className="w-5 h-5 text-primary-300 absolute right-3" />
               )}
             </motion.button>
           ))}
@@ -112,7 +112,7 @@ export default function CurrencyStep({ data, onUpdate, onNext, onPrev }: Currenc
               className={`
                 relative flex flex-col items-start p-4 rounded-xl border transition-all
                 ${data.currency === currency.code
-                  ? 'bg-yellow-500/20 border-yellow-500 text-white'
+                  ? 'bg-primary-500/20 border-primary-400 text-white'
                   : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'}
               `}
             >
@@ -122,7 +122,7 @@ export default function CurrencyStep({ data, onUpdate, onNext, onPrev }: Currenc
               </div>
               <span className="text-xs text-white/50">{currency.name}</span>
               {data.currency === currency.code && (
-                <Check className="w-4 h-4 text-yellow-400 absolute top-3 right-3" />
+                <Check className="w-4 h-4 text-primary-300 absolute top-3 right-3" />
               )}
             </motion.button>
           ))}
@@ -158,7 +158,7 @@ export default function CurrencyStep({ data, onUpdate, onNext, onPrev }: Currenc
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onNext}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold shadow-lg shadow-yellow-500/30 hover:shadow-yellow-500/50 transition-all"
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-primary-700 text-white font-semibold shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 transition-all"
         >
           {t('buttons.continue')}
           <ChevronRight className="w-5 h-5" />

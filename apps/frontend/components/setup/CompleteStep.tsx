@@ -44,31 +44,31 @@ export default function CompleteStep({ data, onComplete, onPrev, isSaving }: Com
       icon: Building2, 
       label: t('complete.company'), 
       value: data.companyName,
-      color: 'from-primary-500 to-cyan-500'
+      color: 'from-primary-500 to-primary-700'
     },
     { 
       icon: ImageIcon, 
       label: t('complete.logo'), 
       value: data.logo ? t('complete.logoUploaded') : t('complete.logoSkipped'),
-      color: 'from-green-500 to-emerald-500'
+      color: 'from-primary-500 to-primary-700'
     },
     { 
       icon: DollarSign, 
       label: t('complete.currency'), 
       value: `${data.currency} (${data.locale === 'en' ? 'English' : 'Español'})`,
-      color: 'from-yellow-500 to-orange-500'
+      color: 'from-primary-500 to-primary-700'
     },
     { 
       icon: Percent, 
       label: t('complete.tax'), 
       value: data.taxEnabled ? `${data.taxName} ${data.taxRate}%` : t('complete.noTax'),
-      color: 'from-red-500 to-pink-500'
+      color: 'from-primary-500 to-primary-700'
     },
     { 
       icon: CreditCard, 
       label: t('complete.plan'), 
       value: data.selectedPlan === 'free' ? t('complete.freePlan') : data.selectedPlan === 'pro' ? t('complete.proPlan') : t('complete.premiumPlan'),
-      color: 'from-purple-500 to-primary-500'
+      color: 'from-primary-500 to-primary-700'
     },
   ];
 
@@ -80,7 +80,7 @@ export default function CompleteStep({ data, onComplete, onPrev, isSaving }: Com
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', duration: 0.5 }}
-          className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-primary-500 to-purple-500 rounded-2xl mb-4"
+          className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-primary-500 to-primary-700 rounded-2xl mb-4"
         >
           <Rocket className="w-10 h-10 text-white" />
         </motion.div>
@@ -124,7 +124,7 @@ export default function CompleteStep({ data, onComplete, onPrev, isSaving }: Com
               <p className="text-white/60 text-sm">{item.label}</p>
               <p className="text-white font-medium truncate">{item.value}</p>
             </div>
-            <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+            <Check className="w-5 h-5 text-primary-300 flex-shrink-0" />
           </motion.div>
         ))}
       </motion.div>
@@ -152,7 +152,7 @@ export default function CompleteStep({ data, onComplete, onPrev, isSaving }: Com
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.9 }}
-        className="bg-gradient-to-r from-primary-500/10 to-purple-500/10 rounded-xl p-4 mb-8 border border-primary-500/20"
+        className="bg-gradient-to-r from-primary-500/10 to-primary-700/10 rounded-xl p-4 mb-8 border border-primary-500/20"
       >
         <div className="flex items-center gap-2 mb-2">
           <Sparkles className="w-5 h-5 text-primary-400" />
@@ -189,7 +189,7 @@ export default function CompleteStep({ data, onComplete, onPrev, isSaving }: Com
           whileTap={{ scale: 0.98 }}
           onClick={onComplete}
           disabled={isSaving}
-          className="flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-primary-500 to-purple-500 text-white font-bold shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 transition-all disabled:opacity-50"
+          className="flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-primary-500 to-primary-700 text-white font-bold shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 transition-all disabled:opacity-50"
         >
           {isSaving ? (
             <>

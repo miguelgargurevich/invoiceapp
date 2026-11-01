@@ -15,8 +15,8 @@ export default function WelcomeStep({ onNext }: WelcomeStepProps) {
 
   const features = [
     { icon: Clock, text: t('welcome.feature1'), color: 'text-primary-400' },
-    { icon: Shield, text: t('welcome.feature2'), color: 'text-green-400' },
-    { icon: Zap, text: t('welcome.feature3'), color: 'text-yellow-400' },
+    { icon: Shield, text: t('welcome.feature2'), color: 'text-primary-300' },
+    { icon: Zap, text: t('welcome.feature3'), color: 'text-primary-300' },
   ];
 
   return (
@@ -29,8 +29,8 @@ export default function WelcomeStep({ onNext }: WelcomeStepProps) {
         className="mb-8"
       >
         <div className="relative inline-block">
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-2xl opacity-50" />
-          <div className="relative bg-gradient-to-r from-purple-500 to-pink-500 rounded-full p-6">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-primary-700 rounded-full blur-2xl opacity-50" />
+          <div className="relative bg-gradient-to-r from-primary-500 to-primary-700 rounded-full p-6">
             <Sparkles className="w-16 h-16 text-white" />
           </div>
         </div>
@@ -95,7 +95,7 @@ export default function WelcomeStep({ onNext }: WelcomeStepProps) {
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onNext}
-          className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all"
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-primary-500 to-primary-700 text-white font-semibold px-8 py-4 rounded-xl shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 transition-all"
         >
           {t('welcome.getStarted')}
           <ChevronRight className="w-5 h-5" />

@@ -69,13 +69,13 @@ interface EmpresaResponse {
 }
 
 const STEPS = [
-  { id: 'welcome', icon: Sparkles, color: 'from-purple-500 to-pink-500' },
-  { id: 'auth', icon: UserPlus, color: 'from-green-500 to-emerald-500' },
-  { id: 'company', icon: Building2, color: 'from-primary-500 to-cyan-500' },
-  { id: 'currency', icon: DollarSign, color: 'from-yellow-500 to-orange-500' },
-  { id: 'tax', icon: Percent, color: 'from-red-500 to-pink-500' },
-  { id: 'plan', icon: Check, color: 'from-green-500 to-emerald-500' },
-  { id: 'complete', icon: Rocket, color: 'from-primary-500 to-purple-500' },
+  { id: 'welcome', icon: Sparkles, color: 'from-primary-500 to-primary-700' },
+  { id: 'auth', icon: UserPlus, color: 'from-primary-500 to-primary-700' },
+  { id: 'company', icon: Building2, color: 'from-primary-500 to-primary-700' },
+  { id: 'currency', icon: DollarSign, color: 'from-primary-500 to-primary-700' },
+  { id: 'tax', icon: Percent, color: 'from-primary-500 to-primary-700' },
+  { id: 'plan', icon: Check, color: 'from-primary-500 to-primary-700' },
+  { id: 'complete', icon: Rocket, color: 'from-primary-500 to-primary-700' },
 ];
 
 export default function SetupWizardPage({
@@ -309,14 +309,14 @@ export default function SetupWizardPage({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-primary-900 to-slate-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-400"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-primary-900 to-slate-900 flex flex-col">
       {/* Progress Header */}
       <div className="w-full py-6 px-4">
         <div className="max-w-3xl mx-auto">
@@ -338,7 +338,7 @@ export default function SetupWizardPage({
                     className={`
                       relative flex items-center justify-center w-10 h-10 rounded-full
                       ${isActive ? `bg-gradient-to-r ${step.color}` : ''}
-                      ${isCompleted ? 'bg-green-500' : ''}
+                      ${isCompleted ? 'bg-primary-500' : ''}
                       ${!isActive && !isCompleted ? 'bg-white/10' : ''}
                       transition-all duration-300
                     `}
@@ -353,7 +353,7 @@ export default function SetupWizardPage({
                   {index < STEPS.length - 1 && (
                     <div 
                       className={`w-8 h-0.5 mx-1 transition-colors duration-300 ${
-                        index < currentStep ? 'bg-green-500' : 'bg-white/20'
+                        index < currentStep ? 'bg-primary-500' : 'bg-white/20'
                       }`}
                     />
                   )}

@@ -75,7 +75,7 @@ export default function AuthStep({ data, onUpdate, onNext, onPrev }: AuthStepPro
     <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl mb-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-500 to-primary-700 rounded-2xl mb-4">
           <UserPlus className="w-8 h-8 text-white" />
         </div>
         <h2 className="text-2xl font-bold text-white mb-2">{t('auth.title')}</h2>
@@ -103,7 +103,7 @@ export default function AuthStep({ data, onUpdate, onNext, onPrev }: AuthStepPro
               value={data.name}
               onChange={(e) => onUpdate({ name: e.target.value })}
               placeholder={t('auth.namePlaceholder')}
-              className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+              className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all"
               required
             />
           </div>
@@ -121,7 +121,7 @@ export default function AuthStep({ data, onUpdate, onNext, onPrev }: AuthStepPro
               value={data.email}
               onChange={(e) => onUpdate({ email: e.target.value })}
               placeholder={t('auth.emailPlaceholder')}
-              className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+              className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all"
               required
             />
           </div>
@@ -139,7 +139,7 @@ export default function AuthStep({ data, onUpdate, onNext, onPrev }: AuthStepPro
               value={data.password}
               onChange={(e) => onUpdate({ password: e.target.value })}
               placeholder={t('auth.passwordPlaceholder')}
-              className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-12 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+              className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-12 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all"
               required
             />
             <button
@@ -165,7 +165,7 @@ export default function AuthStep({ data, onUpdate, onNext, onPrev }: AuthStepPro
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder={t('auth.confirmPasswordPlaceholder')}
-              className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-12 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+              className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-12 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all"
               required
             />
             <button
@@ -196,7 +196,7 @@ export default function AuthStep({ data, onUpdate, onNext, onPrev }: AuthStepPro
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             disabled={!data.email || !data.password || !confirmPassword}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold shadow-lg shadow-green-500/30 hover:shadow-green-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-primary-700 text-white font-semibold shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {t('buttons.continue')}
             <ChevronRight className="w-5 h-5" />

@@ -49,9 +49,9 @@ const getPlanIcon = (planName: string) => {
 const getPlanColor = (planName: string) => {
   const name = planName.toLowerCase();
   if (name.includes('free') || name.includes('trial')) return 'from-gray-500 to-gray-600';
-  if (name.includes('starter') || name.includes('basic')) return 'from-primary-500 to-cyan-500';
-  if (name.includes('pro') || name.includes('premium')) return 'from-purple-500 to-pink-500';
-  return 'from-green-500 to-emerald-500';
+  if (name.includes('starter') || name.includes('basic')) return 'from-primary-400 to-primary-600';
+  if (name.includes('pro') || name.includes('premium')) return 'from-primary-600 to-primary-800';
+  return 'from-primary-500 to-primary-700';
 };
 
 export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepProps) {
@@ -120,7 +120,7 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
     <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl mb-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-500 to-primary-700 rounded-2xl mb-4">
           <Crown className="w-8 h-8 text-white" />
         </div>
         <h2 className="text-2xl font-bold text-white mb-2">
@@ -156,7 +156,7 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
           {locale === 'es' ? 'Anual' : 'Yearly'}
         </span>
         {billingInterval === 'yearly' && (
-          <span className="px-2 py-1 text-xs font-semibold text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/30 rounded-full">
+          <span className="px-2 py-1 text-xs font-semibold text-primary-700 dark:text-primary-300 bg-primary-100 dark:bg-primary-900/30 rounded-full">
             {locale === 'es' ? 'Ahorra hasta 20%' : 'Save up to 20%'}
           </span>
         )}
@@ -184,11 +184,11 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
                   ? 'border-white/40 bg-white/10 shadow-lg shadow-white/20' 
                   : 'border-white/10 bg-white/5 hover:border-white/20'
                 }
-                ${isPopular && 'ring-2 ring-purple-500/50'}
+                ${isPopular && 'ring-2 ring-primary-400/50'}
               `}
             >
               {isPopular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full text-xs font-semibold text-white flex items-center gap-1">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-primary-500 to-primary-700 rounded-full text-xs font-semibold text-white flex items-center gap-1">
                   <Star className="w-3 h-3 fill-current" />
                   {locale === 'es' ? 'Popular' : 'Popular'}
                 </div>
@@ -225,7 +225,7 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
                   }
                 </span>
                 {billingInterval === 'yearly' && savings > 0 && !isFree && (
-                  <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded text-xs font-semibold">
+                  <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-300 rounded text-xs font-semibold">
                     <Zap className="w-3 h-3" />
                     {locale === 'es' ? `Ahorra ${savings}%` : `Save ${savings}%`}
                   </div>
@@ -236,7 +236,7 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
               <ul className="space-y-2 mb-6">
                 {plan.features?.map((feature, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-white/80">
-                    <Check className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-primary-300 mt-0.5 flex-shrink-0" />
                     <span>{feature}</span>
                   </li>
                 ))}
@@ -273,7 +273,7 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
           whileTap={{ scale: 0.98 }}
           onClick={handleContinue}
           disabled={!selectedPlanId}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-primary-700 text-white font-semibold shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <>
             {locale === 'es' ? 'Continuar' : 'Continue'}
