@@ -7,7 +7,7 @@ import { AppLayout } from '@/components/global/AppLayout';
 import { LoadingPage } from '@/components/common';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import api from '@/lib/api';
+import api, { ApiError } from '@/lib/api';
 
 interface EmpresaResponse {
   setupCompleted?: boolean;
@@ -30,22 +30,18 @@ export default function DashboardLayout({
       return;
     }
 
-    // Check if user has completed setup
+    // Sin empresa (cuenta creada en /register) o con el asistente a medias: al asistente, en el idioma actual.
     const checkSetupStatus = async () => {
-      if (user && empresa) {
-        try {
-          const response = await api.get<EmpresaResponse>('/empresas/mi-empresa');
-          if (response && response.setupCompleted === false) {
-            // User hasn't completed setup, redirect to wizard in English (default)
-            router.push('/en/setup');
-            return;
-          }
-        } catch (error) {
-          // If no empresa exists, redirect to setup in English (default)
-          if ((error as Error)?.message?.includes('404')) {
-            router.push('/en/setup');
-            return;
-          }
+      try {
+        const response = await api.get<EmpresaResponse>('/empresas/mi-empresa');
+        if (response && response.setupCompleted === false) {
+          router.push(`/${locale}/setup`);
+          return;
+        }
+      } catch (error) {
+        if (error instanceof ApiError && error.status === 404) {
+          router.push(`/${locale}/setup`);
+          return;
         }
       }
       setCheckingSetup(false);

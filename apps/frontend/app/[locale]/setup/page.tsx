@@ -56,6 +56,7 @@ interface SetupData {
 interface EmpresaResponse {
   id: string;
   nombre: string;
+  ruc?: string;
   direccion?: string;
   telefono?: string;
   email?: string;
@@ -89,6 +90,9 @@ export default function SetupWizardPage({
   const [currentUser, setCurrentUser] = useState(user);
   
   const [currentStep, setCurrentStep] = useState(0);
+  // RUC de una empresa ya existente: no se pisa con uno provisional al guardar.
+  const [rucExistente, setRucExistente] = useState<string | null>(null);
+  const PASO_CUENTA = STEPS.findIndex((s) => s.id === 'auth');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [setupData, setSetupData] = useState<SetupData>({
@@ -103,7 +107,7 @@ export default function SetupWizardPage({
     logoFile: null,
     logo: null,
     currency: 'USD',
-    locale: 'en',
+    locale: locale === 'es' ? 'es' : 'en', // parte del idioma de la página
     taxRate: 0,
     taxName: 'Tax',
     taxEnabled: false,
@@ -124,7 +128,7 @@ export default function SetupWizardPage({
           // User returned from successful payment
           // Update the plan in state and move to complete step
           setSetupData(prev => ({ ...prev, selectedPlan: planId }));
-          setCurrentStep(7); // Go to CompleteStep
+          setCurrentStep(STEPS.length - 1); // CompleteStep
           // Clean URL
           window.history.replaceState({}, '', `/${locale}/setup`);
         }
@@ -144,12 +148,13 @@ export default function SetupWizardPage({
         
         // Pre-fill with existing data if any
         if (response) {
+          setRucExistente(response.ruc || null);
           setSetupData(prev => ({
             ...prev,
             companyName: response.nombre || '',
             direccion: response.direccion || '',
             telefono: response.telefono || '',
-            email: response.email || '',
+            emailEmpresa: response.email || '',
             website: response.web || '',
             logo: response.logoUrl || null,
             currency: response.currency || 'USD',
@@ -179,17 +184,25 @@ export default function SetupWizardPage({
     setSetupData(prev => ({ ...prev, ...data }));
   }, []);
 
+  // Con sesión iniciada (p. ej. tras /register) el paso «Crear cuenta» no aplica: se salta en ambos sentidos.
+  const saltarCuenta = (paso: number, sentido: 1 | -1) =>
+    currentUser && paso === PASO_CUENTA ? paso + sentido : paso;
+
   const nextStep = () => {
     if (currentStep < STEPS.length - 1) {
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep(prev => saltarCuenta(prev + 1, 1));
     }
   };
 
   const prevStep = () => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep(prev => saltarCuenta(prev - 1, -1));
     }
   };
+
+  useEffect(() => {
+    if (currentUser && currentStep === PASO_CUENTA) setCurrentStep(PASO_CUENTA + 1);
+  }, [currentUser, currentStep, PASO_CUENTA]);
 
   const completeSetup = async () => {
     setIsSaving(true);
@@ -200,22 +213,10 @@ export default function SetupWizardPage({
       if (!currentUser) {
         try {
           console.log('[SETUP] Creating account with empresa data...');
-          const empresaDataForSignUp = {
-            nombre: setupData.companyName,
-            ruc: `TEMP-${Date.now()}`,
-            direccion: setupData.direccion,
-            telefono: setupData.telefono,
-            email: setupData.emailEmpresa,
-            web: setupData.website,
-            currency: setupData.currency,
-            locale: setupData.locale,
-            taxRate: setupData.taxEnabled ? setupData.taxRate : 0,
-            taxName: setupData.taxName,
-          };
 
-          // Register with empresa data - this creates both user and empresa
+          // La empresa se crea después, con PUT /empresas/mi-empresa (STEP 1b)
           await signUp(setupData.email, setupData.password, setupData.name);
-          console.log('[SETUP] Account and empresa created successfully');
+          console.log('[SETUP] Account created');
 
           // Ensure local state has a user right after signup
           setCurrentUser({ email: setupData.email } as any);
@@ -228,6 +229,31 @@ export default function SetupWizardPage({
           setIsSaving(false);
           return;
         }
+      }
+
+      // STEP 1b: Crear o actualizar la empresa con los datos del asistente y marcar el setup como completo.
+      // Sin esto, una cuenta creada en /register (o aquí mismo) quedaba sin empresa y el resto fallaba.
+      try {
+        await api.put('/empresas/mi-empresa', {
+          nombre: setupData.companyName,
+          ...(rucExistente ? { ruc: rucExistente } : {}),
+          direccion: setupData.direccion,
+          telefono: setupData.telefono,
+          email: setupData.emailEmpresa,
+          web: setupData.website,
+          currency: setupData.currency,
+          locale: setupData.locale,
+          taxRate: setupData.taxEnabled ? setupData.taxRate : 0,
+          taxName: setupData.taxName,
+          setupCompleted: true,
+        });
+      } catch (error: any) {
+        console.error('[SETUP] Error saving company:', error);
+        alert(setupData.locale === 'es'
+          ? 'No se pudo guardar tu empresa. Intenta de nuevo.'
+          : 'Could not save your company. Please try again.');
+        setIsSaving(false);
+        return;
       }
 
       // STEP 2: Upload logo if exists
