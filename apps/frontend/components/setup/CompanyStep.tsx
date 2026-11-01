@@ -108,7 +108,7 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
     <div className="bg-white/5 backdrop-blur-xl rounded-2xl p-8 border border-white/10">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl mb-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-500 to-cyan-500 rounded-2xl mb-4">
           <Building2 className="w-8 h-8 text-white" />
         </div>
         <h2 className="text-2xl font-bold text-white mb-2">{t('company.title')}</h2>
@@ -127,7 +127,7 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
             value={data.companyName}
             onChange={(e) => onUpdate({ companyName: e.target.value })}
             placeholder={t('company.namePlaceholder')}
-            className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
             required
           />
         </div>
@@ -172,7 +172,7 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
               className={`
                 relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all
                 ${dragActive 
-                  ? 'border-blue-400 bg-blue-500/10' 
+                  ? 'border-primary-400 bg-primary-500/10' 
                   : 'border-white/20 bg-white/5 hover:border-white/40 hover:bg-white/10'
                 }
               `}
@@ -187,7 +187,7 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
               
               {isUploading ? (
                 <div className="flex flex-col items-center gap-3">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-400" />
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-400" />
                   <p className="text-white/60">{t('logo.uploading')}</p>
                 </div>
               ) : (
@@ -245,7 +245,7 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
                 onChange={(e) => onUpdate({ direccion: e.target.value })}
                 placeholder={t('company.addressPlaceholder')}
                 rows={2}
-                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all resize-none"
               />
             </div>
 
@@ -262,7 +262,7 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
                   value={data.telefono}
                   onChange={(e) => onUpdate({ telefono: e.target.value })}
                   placeholder={t('company.phonePlaceholder')}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                 />
               </div>
 
@@ -278,7 +278,7 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
                   value={data.email}
                   onChange={(e) => onUpdate({ email: e.target.value })}
                   placeholder={t('company.emailPlaceholder')}
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
                 />
               </div>
             </div>
@@ -294,7 +294,7 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
                 value={data.website}
                 onChange={(e) => onUpdate({ website: e.target.value })}
                 placeholder="https://yourcompany.com"
-                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
               />
             </div>
           </motion.div>
@@ -317,7 +317,7 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
             type="submit"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 dark:from-blue-600 dark:to-cyan-600 text-white font-semibold shadow-lg shadow-blue-500/30 dark:shadow-blue-600/30 hover:shadow-blue-500/50 dark:hover:shadow-blue-600/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-cyan-500 dark:from-primary-600 dark:to-cyan-600 text-white font-semibold shadow-lg shadow-primary-500/30 dark:shadow-primary-600/30 hover:shadow-primary-500/50 dark:hover:shadow-primary-600/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!data.companyName.trim()}
           >
             {t('buttons.continue')}

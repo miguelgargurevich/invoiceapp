@@ -18,14 +18,14 @@ export function HowItWorksSection() {
     { 
       icon: FileText, 
       color: 'blue',
-      gradient: 'from-blue-500 to-blue-700',
-      shadow: 'shadow-blue-500/30'
+      gradient: 'from-primary-500 to-primary-700',
+      shadow: 'shadow-primary-500/30'
     },
     { 
       icon: Send, 
       color: 'indigo',
-      gradient: 'from-indigo-500 to-indigo-700',
-      shadow: 'shadow-indigo-500/30'
+      gradient: 'from-primary-500 to-primary-700',
+      shadow: 'shadow-primary-500/30'
     },
     { 
       icon: PenTool, 
@@ -75,7 +75,7 @@ export function HowItWorksSection() {
         {/* Steps Timeline */}
         <div className="relative">
           {/* Connection Line */}
-          <div className="hidden lg:block absolute top-12 left-[10%] right-[10%] h-0.5 bg-gradient-to-r from-blue-500 via-violet-500 to-emerald-500 -translate-y-1/2" />
+          <div className="hidden lg:block absolute top-12 left-[10%] right-[10%] h-0.5 bg-gradient-to-r from-primary-500 via-violet-500 to-emerald-500 -translate-y-1/2" />
           
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-4">
             {steps.map((step, index) => {

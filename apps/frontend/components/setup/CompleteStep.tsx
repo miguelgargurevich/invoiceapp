@@ -44,7 +44,7 @@ export default function CompleteStep({ data, onComplete, onPrev, isSaving }: Com
       icon: Building2, 
       label: t('complete.company'), 
       value: data.companyName,
-      color: 'from-blue-500 to-cyan-500'
+      color: 'from-primary-500 to-cyan-500'
     },
     { 
       icon: ImageIcon, 
@@ -68,7 +68,7 @@ export default function CompleteStep({ data, onComplete, onPrev, isSaving }: Com
       icon: CreditCard, 
       label: t('complete.plan'), 
       value: data.selectedPlan === 'free' ? t('complete.freePlan') : data.selectedPlan === 'pro' ? t('complete.proPlan') : t('complete.premiumPlan'),
-      color: 'from-purple-500 to-indigo-500'
+      color: 'from-purple-500 to-primary-500'
     },
   ];
 
@@ -80,7 +80,7 @@ export default function CompleteStep({ data, onComplete, onPrev, isSaving }: Com
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: 'spring', duration: 0.5 }}
-          className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-2xl mb-4"
+          className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-primary-500 to-purple-500 rounded-2xl mb-4"
         >
           <Rocket className="w-10 h-10 text-white" />
         </motion.div>
@@ -152,10 +152,10 @@ export default function CompleteStep({ data, onComplete, onPrev, isSaving }: Com
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.9 }}
-        className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-xl p-4 mb-8 border border-indigo-500/20"
+        className="bg-gradient-to-r from-primary-500/10 to-purple-500/10 rounded-xl p-4 mb-8 border border-primary-500/20"
       >
         <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="w-5 h-5 text-indigo-400" />
+          <Sparkles className="w-5 h-5 text-primary-400" />
           <span className="text-white font-medium">{t('complete.whatsNext')}</span>
         </div>
         <ul className="text-white/70 text-sm space-y-1 ml-7">
@@ -189,7 +189,7 @@ export default function CompleteStep({ data, onComplete, onPrev, isSaving }: Com
           whileTap={{ scale: 0.98 }}
           onClick={onComplete}
           disabled={isSaving}
-          className="flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all disabled:opacity-50"
+          className="flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-primary-500 to-purple-500 text-white font-bold shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 transition-all disabled:opacity-50"
         >
           {isSaving ? (
             <>

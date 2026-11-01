@@ -66,9 +66,9 @@ export default function ReportesPage({
 
   const colorClasses: Record<string, { bg: string; icon: string; hover: string }> = {
     blue: {
-      bg: 'bg-blue-50 dark:bg-blue-900/20',
-      icon: 'text-blue-600 dark:text-blue-400',
-      hover: 'hover:border-blue-300 dark:hover:border-blue-600',
+      bg: 'bg-primary-50 dark:bg-primary-900/20',
+      icon: 'text-primary-600 dark:text-primary-400',
+      hover: 'hover:border-primary-300 dark:hover:border-primary-600',
     },
     green: {
       bg: 'bg-green-50 dark:bg-green-900/20',

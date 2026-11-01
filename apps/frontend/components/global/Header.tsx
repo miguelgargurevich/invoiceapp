@@ -170,7 +170,7 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
               onClick={() => setShowUserMenu(!showUserMenu)}
               className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
             >
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+              <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
                 {user?.user_metadata?.name
                   ? getInitials(user.user_metadata.name)
                   : user?.email?.charAt(0).toUpperCase()}
@@ -194,7 +194,7 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
                       {user?.email}
                     </p>
                     {empresa && (
-                      <p className="text-xs text-blue-500 mt-1 truncate">
+                      <p className="text-xs text-primary-500 mt-1 truncate">
                         {empresa.nombre}
                       </p>
                     )}

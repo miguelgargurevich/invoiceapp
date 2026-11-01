@@ -47,7 +47,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               'bg-white dark:bg-gray-800',
               'text-gray-900 dark:text-gray-100',
               'placeholder-gray-400 dark:placeholder-gray-500',
-              'focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+              'focus:ring-2 focus:ring-primary-500 focus:border-transparent',
               'disabled:opacity-50 disabled:cursor-not-allowed',
               'transition-colors',
               icon && iconPosition === 'left' && 'pl-10',

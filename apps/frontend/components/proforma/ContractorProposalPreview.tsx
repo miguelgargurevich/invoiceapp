@@ -246,7 +246,7 @@ const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalP
         {proforma.condiciones && (
           <div className="mb-4">
             <p className="font-semibold text-sm mb-1">TERMS AND CONDITIONS</p>
-            <div className="border border-black p-2 bg-blue-50">
+            <div className="border border-black p-2 bg-primary-50">
               <div className="whitespace-pre-wrap text-xs">
                 {proforma.condiciones}
               </div>

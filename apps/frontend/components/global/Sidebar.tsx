@@ -171,7 +171,7 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
                     className={cn(
                       'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
                       'hover:bg-gray-800',
-                      isActive && 'bg-blue-600 hover:bg-blue-700',
+                      isActive && 'bg-primary-600 hover:bg-primary-700',
                       'md:justify-center md:px-2' // SIEMPRE centrado en desktop
                     )}
                   >

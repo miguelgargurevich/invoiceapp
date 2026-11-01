@@ -270,13 +270,13 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
     //if (isPopular) return 'bg-primary';
     const name = planName.toLowerCase();
     if (name.includes('business') || name.includes('enterprise')) {
-      return 'bg-gradient-to-br from-purple-500 to-indigo-600';
+      return 'bg-gradient-to-br from-purple-500 to-primary-600';
     }
     if (name.includes('pro')) {
       return 'bg-gradient-to-br from-yellow-500 to-orange-600';
     }
     if (name.includes('starter')) {
-      return 'bg-gradient-to-br from-blue-500 to-cyan-600';
+      return 'bg-gradient-to-br from-primary-500 to-cyan-600';
     }
     if (name.includes('free')) {
       return 'bg-gradient-to-br from-green-500 to-emerald-600';
@@ -325,7 +325,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
       {/* Header */}
       <Card className="shadow-sm">
         <div className="flex items-center gap-3 pb-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-md">
+          <div className="p-3 bg-gradient-to-br from-purple-500 to-primary-600 rounded-xl shadow-md">
             <CreditCard className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
@@ -556,7 +556,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
             className={cn(
               'px-6 py-2 rounded-lg text-sm font-semibold transition-all',
               billingInterval === 'monthly'
-                ? 'bg-blue-600 dark:bg-primary text-white shadow-sm'
+                ? 'bg-primary-600 dark:bg-primary text-white shadow-sm'
                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
             )}
           >
@@ -567,7 +567,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
             className={cn(
               'px-6 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2',
               billingInterval === 'yearly'
-                ? 'bg-blue-600 dark:bg-primary text-white shadow-sm'
+                ? 'bg-primary-600 dark:bg-primary text-white shadow-sm'
                 : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
             )}
           >
@@ -704,8 +704,8 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
               className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 dark:bg-blue-900/40 rounded-lg">
-                  <CreditCard className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <div className="p-2 bg-primary-100 dark:bg-primary-900/40 rounded-lg">
+                  <CreditCard className="h-4 w-4 text-primary-600 dark:text-primary-400" />
                 </div>
                 <h4 className="font-semibold text-sm text-left">{t('faqQ1')}</h4>
               </div>
@@ -800,8 +800,8 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
               className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-indigo-100 dark:bg-indigo-900/40 rounded-lg">
-                  <Star className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                <div className="p-2 bg-primary-100 dark:bg-primary-900/40 rounded-lg">
+                  <Star className="h-4 w-4 text-primary-600 dark:text-primary-400" />
                 </div>
                 <h4 className="font-semibold text-sm text-left">{t('faqQ5')}</h4>
               </div>
@@ -891,7 +891,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                 onClick={() => proceedWithSubscription(selectedPlan.id)}
                 disabled={loadingCheckout === selectedPlan.id}
                 size="sm"
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-primary-600 hover:bg-primary-700"
               >
                 {loadingCheckout === selectedPlan.id && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 {t('confirmChangePlanButton')}

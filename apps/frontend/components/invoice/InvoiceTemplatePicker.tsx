@@ -84,7 +84,7 @@ Our workers are fully covered by Workman's Compensation Insurance.`,
     name: 'Agency',
     description: 'Full-service marketing, creative, digital',
     icon: Building2,
-    color: 'from-blue-500 to-cyan-500',
+    color: 'from-primary-500 to-cyan-500',
     defaultWorkDescription: 
 `Services provided this billing period:
 • Strategic planning and consultation
@@ -245,7 +245,7 @@ export function InvoiceTemplatePicker({ isOpen, onClose, onSelect, selectedTempl
                             <li key={index} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                               <span className={`px-2 py-0.5 rounded text-xs font-medium ${
                                 item.isLabor 
-                                  ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' 
+                                  ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400' 
                                   : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
                               }`}>
                                 {item.isLabor ? 'Labor' : 'Material'}

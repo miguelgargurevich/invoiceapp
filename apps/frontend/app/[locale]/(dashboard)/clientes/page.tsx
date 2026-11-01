@@ -241,8 +241,8 @@ export default function ClientesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-xl">
-            <Users className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+          <div className="p-3 bg-primary-100 dark:bg-primary-900/30 rounded-xl">
+            <Users className="w-6 h-6 text-primary-600 dark:text-primary-400" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">

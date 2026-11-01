@@ -171,7 +171,7 @@ export default function ProductosPage({
           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
             isService 
               ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
-              : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' 
+              : 'bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200' 
           }`}>
             {isService ? t('typeService') : t('typeProduct')}
           </span>

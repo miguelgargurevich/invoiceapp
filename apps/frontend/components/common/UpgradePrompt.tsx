@@ -29,20 +29,20 @@ export function UpgradePrompt({
 
   if (variant === 'banner') {
     return (
-      <div className={`bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg p-4 text-white ${className}`}>
+      <div className={`bg-gradient-to-r from-primary-500 to-purple-600 rounded-lg p-4 text-white ${className}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Sparkles className="w-5 h-5" />
             <div>
               <p className="font-medium">{t('upgradeRequired')}</p>
-              <p className="text-sm text-indigo-100">{t('featureNotAvailable', { feature })}</p>
+              <p className="text-sm text-primary-100">{t('featureNotAvailable', { feature })}</p>
             </div>
           </div>
           <Button 
             onClick={handleUpgrade}
             variant="secondary"
             size="sm"
-            className="bg-white text-indigo-600 hover:bg-indigo-50"
+            className="bg-white text-primary-600 hover:bg-primary-50"
           >
             {t('upgrade')}
             <ArrowRight className="w-4 h-4 ml-2" />
@@ -55,8 +55,8 @@ export function UpgradePrompt({
   if (variant === 'modal') {
     return (
       <div className={`text-center p-6 ${className}`}>
-        <div className="w-16 h-16 mx-auto mb-4 bg-indigo-100 dark:bg-indigo-900 rounded-full flex items-center justify-center">
-          <Lock className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
+        <div className="w-16 h-16 mx-auto mb-4 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+          <Lock className="w-8 h-8 text-primary-600 dark:text-primary-400" />
         </div>
         <h3 className="text-xl font-semibold mb-2">{t('upgradeRequired')}</h3>
         <p className="text-gray-600 dark:text-gray-400 mb-6">
@@ -119,7 +119,7 @@ export function UpgradeModal({
     pro: {
       name: 'Pro',
       price: '$29',
-      color: 'from-blue-500 to-indigo-600',
+      color: 'from-primary-500 to-primary-600',
       features: ['Proposals', 'Digital Signatures', 'Custom Branding', 'Job Tracking']
     },
     business: {
@@ -282,7 +282,7 @@ export function UsageLimitModal({ isOpen, onClose, resource, used, limit }: Usag
         <div className="space-y-3">
           <Button 
             onClick={handleUpgrade} 
-            className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90 text-white font-semibold py-3"
+            className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:opacity-90 text-white font-semibold py-3"
           >
             <Sparkles className="w-5 h-5 mr-2" />
             {t('upgradeForMore')}
@@ -324,7 +324,7 @@ export function FeatureGate({ feature, children, fallback }: FeatureGateProps) {
 // Pro Badge for buttons
 export function ProBadge({ className = '' }: { className?: string }) {
   return (
-    <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-gradient-to-r from-blue-500 to-indigo-600 text-white ${className}`}>
+    <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-gradient-to-r from-primary-500 to-primary-600 text-white ${className}`}>
       PRO
     </span>
   );

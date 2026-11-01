@@ -87,7 +87,7 @@ Our workers are fully covered by Workman's Compensation Insurance.`,
     name: 'Agency',
     description: 'Full-service marketing, creative, digital',
     icon: Building2,
-    color: 'from-blue-500 to-cyan-500',
+    color: 'from-primary-500 to-cyan-500',
     defaultTerms: 
 `1. Client retains ownership of all final approved work upon full payment.
 2. Agency retains right to use work in portfolio with client permission.
@@ -275,7 +275,7 @@ export function TemplatePicker({ isOpen, onClose, onSelect, selectedTemplate }: 
                         <ul className="space-y-2">
                           {previewTemplate.suggestedSections.map((section, index) => (
                             <li key={index} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                              <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                              <span className="px-2 py-0.5 rounded text-xs font-medium bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400">
                                 {section}
                               </span>
                             </li>

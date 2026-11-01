@@ -71,11 +71,11 @@ interface EmpresaResponse {
 const STEPS = [
   { id: 'welcome', icon: Sparkles, color: 'from-purple-500 to-pink-500' },
   { id: 'auth', icon: UserPlus, color: 'from-green-500 to-emerald-500' },
-  { id: 'company', icon: Building2, color: 'from-blue-500 to-cyan-500' },
+  { id: 'company', icon: Building2, color: 'from-primary-500 to-cyan-500' },
   { id: 'currency', icon: DollarSign, color: 'from-yellow-500 to-orange-500' },
   { id: 'tax', icon: Percent, color: 'from-red-500 to-pink-500' },
   { id: 'plan', icon: Check, color: 'from-green-500 to-emerald-500' },
-  { id: 'complete', icon: Rocket, color: 'from-indigo-500 to-purple-500' },
+  { id: 'complete', icon: Rocket, color: 'from-primary-500 to-purple-500' },
 ];
 
 export default function SetupWizardPage({

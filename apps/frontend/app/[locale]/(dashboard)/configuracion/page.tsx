@@ -401,7 +401,7 @@ export default function ConfiguracionPage({
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-4">
-        <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+        <div className="p-3 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-lg">
           <Settings className="w-7 h-7 text-white" />
         </div>
         <div>
@@ -436,13 +436,13 @@ export default function ConfiguracionPage({
                   className={cn(
                     'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200',
                     activeTab === tab.id
-                      ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 text-blue-700 dark:text-blue-400 shadow-sm font-semibold'
+                      ? 'bg-gradient-to-r from-primary-50 to-primary-50 dark:from-primary-900/20 dark:to-primary-900/20 text-primary-700 dark:text-primary-400 shadow-sm font-semibold'
                       : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 font-medium'
                   )}
                 >
                   <tab.icon className={cn(
                     "w-5 h-5",
-                    activeTab === tab.id ? "text-blue-600 dark:text-blue-400" : ""
+                    activeTab === tab.id ? "text-primary-600 dark:text-primary-400" : ""
                   )} />
                   <span>{tab.label}</span>
                 </button>
@@ -455,13 +455,13 @@ export default function ConfiguracionPage({
                   className={cn(
                     'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200',
                     activeTab === 'suscripcion'
-                      ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 text-blue-700 dark:text-blue-400 shadow-sm font-semibold'
+                      ? 'bg-gradient-to-r from-primary-50 to-primary-50 dark:from-primary-900/20 dark:to-primary-900/20 text-primary-700 dark:text-primary-400 shadow-sm font-semibold'
                       : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 font-medium'
                   )}
                 >
                   <CreditCard className={cn(
                     "w-5 h-5",
-                    activeTab === 'suscripcion' ? "text-blue-600 dark:text-blue-400" : ""
+                    activeTab === 'suscripcion' ? "text-primary-600 dark:text-primary-400" : ""
                   )} />
                   <span>{tSub('title')}</span>
                 </button>
@@ -476,7 +476,7 @@ export default function ConfiguracionPage({
           {activeTab === 'empresa' && (
             <Card className="shadow-sm">
               <div className="flex items-center gap-3 pb-6 border-b border-gray-200 dark:border-gray-700">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-md">
+                <div className="p-3 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-md">
                   <Building2 className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -489,7 +489,7 @@ export default function ConfiguracionPage({
                 {/* Basic Information */}
                 <div>
                   <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                    <div className="w-1 h-5 bg-blue-500 rounded-full"></div>
+                    <div className="w-1 h-5 bg-primary-500 rounded-full"></div>
                     {t('basicInformation') || 'Basic Information'}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -497,13 +497,13 @@ export default function ConfiguracionPage({
                       label={t('ruc')}
                       value={empresaForm.ruc}
                       onChange={(e) => setEmpresaForm({ ...empresaForm, ruc: e.target.value })}
-                      className="focus:ring-blue-500"
+                      className="focus:ring-primary-500"
                     />
                     <Input
                       label={t('businessName')}
                       value={empresaForm.razonSocial}
                       onChange={(e) => setEmpresaForm({ ...empresaForm, razonSocial: e.target.value })}
-                      className="focus:ring-blue-500"
+                      className="focus:ring-primary-500"
                     />
                   </div>
                 </div>
@@ -512,13 +512,13 @@ export default function ConfiguracionPage({
                   label={t('tradeName')}
                   value={empresaForm.nombreComercial}
                   onChange={(e) => setEmpresaForm({ ...empresaForm, nombreComercial: e.target.value })}
-                  className="focus:ring-blue-500"
+                  className="focus:ring-primary-500"
                 />
 
                 {/* Contact Information */}
                 <div>
                   <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                    <div className="w-1 h-5 bg-blue-500 rounded-full"></div>
+                    <div className="w-1 h-5 bg-primary-500 rounded-full"></div>
                     {t('contactInformation') || 'Contact Information'}
                   </h3>
                   <div className="space-y-4">
@@ -526,7 +526,7 @@ export default function ConfiguracionPage({
                       label={t('address')}
                       value={empresaForm.direccion}
                       onChange={(e) => setEmpresaForm({ ...empresaForm, direccion: e.target.value })}
-                      className="focus:ring-blue-500"
+                      className="focus:ring-primary-500"
                     />
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -534,7 +534,7 @@ export default function ConfiguracionPage({
                         label={t('phone')}
                         value={empresaForm.telefono}
                         onChange={(e) => setEmpresaForm({ ...empresaForm, telefono: e.target.value })}
-                        className="focus:ring-blue-500"
+                        className="focus:ring-primary-500"
                       />
                       <Input
                         label={t('email')}
@@ -542,7 +542,7 @@ export default function ConfiguracionPage({
                         inputMode="email"
                         value={empresaForm.email}
                         onChange={(e) => setEmpresaForm({ ...empresaForm, email: e.target.value })}
-                        className="focus:ring-blue-500"
+                        className="focus:ring-primary-500"
                       />
                     </div>
 
@@ -551,7 +551,7 @@ export default function ConfiguracionPage({
                       value={empresaForm.web}
                       onChange={(e) => setEmpresaForm({ ...empresaForm, web: e.target.value })}
                       placeholder="https://www.ejemplo.com"
-                      className="focus:ring-blue-500"
+                      className="focus:ring-primary-500"
                     />
                   </div>
                 </div>
@@ -704,7 +704,7 @@ export default function ConfiguracionPage({
                   <button
                     onClick={handleSaveEmpresa}
                     disabled={saving}
-                    className="h-11 px-6 bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-600 dark:to-indigo-700 text-white text-base font-semibold rounded-lg hover:from-blue-600 hover:to-indigo-700 dark:hover:from-blue-700 dark:hover:to-indigo-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
+                    className="h-11 px-6 bg-gradient-to-r from-primary-500 to-primary-600 dark:from-primary-600 dark:to-primary-700 text-white text-base font-semibold rounded-lg hover:from-primary-600 hover:to-primary-700 dark:hover:from-primary-700 dark:hover:to-primary-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
                   >
                     {saving ? (
                       <>

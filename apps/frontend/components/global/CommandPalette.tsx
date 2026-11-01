@@ -171,7 +171,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
                         key={item.id}
                         value={item.label}
                         onSelect={() => handleSelect(item.id)}
-                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer aria-selected:bg-blue-50 dark:aria-selected:bg-blue-900/20 aria-selected:text-blue-600 dark:aria-selected:text-blue-400"
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer aria-selected:bg-primary-50 dark:aria-selected:bg-primary-900/20 aria-selected:text-primary-600 dark:aria-selected:text-primary-400"
                       >
                         <item.icon className="w-5 h-5" />
                         <span>{item.label}</span>

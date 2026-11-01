@@ -28,13 +28,13 @@ export function HeroSection() {
   const timelineSteps = [
     { 
       icon: FileText, 
-      gradient: 'from-blue-500 to-blue-600',
-      bg: 'bg-blue-500'
+      gradient: 'from-primary-500 to-primary-600',
+      bg: 'bg-primary-500'
     },
     { 
       icon: Send, 
-      gradient: 'from-indigo-500 to-indigo-600',
-      bg: 'bg-indigo-500'
+      gradient: 'from-primary-500 to-primary-600',
+      bg: 'bg-primary-500'
     },
     { 
       icon: PenTool, 

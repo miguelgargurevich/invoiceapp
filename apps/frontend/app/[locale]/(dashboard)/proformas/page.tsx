@@ -465,8 +465,8 @@ export default function ProformasPage({
                 {filteredProformas.length}
               </div>
             </div>
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div className="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
+              <FileText className="w-5 h-5 text-primary-600 dark:text-primary-400" />
             </div>
           </div>
         </Card>
@@ -515,7 +515,7 @@ export default function ProformasPage({
                 placeholder={t('searchPlaceholder')}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               />
             </div>
             <Button 

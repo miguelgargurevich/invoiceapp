@@ -105,7 +105,7 @@ export default function LoginPage({
       {/* Left side - Enhanced Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-600 via-primary-700 to-purple-800" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900" />
         
         {/* Animated Background Elements */}
         <div className="absolute inset-0">

@@ -87,8 +87,8 @@ export default function AyudaPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="!p-5 hover:shadow-lg transition-shadow cursor-pointer group">
           <div className="flex items-start gap-4">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg group-hover:scale-110 transition-transform">
-              <Book className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <div className="p-3 bg-primary-100 dark:bg-primary-900/30 rounded-lg group-hover:scale-110 transition-transform">
+              <Book className="w-6 h-6 text-primary-600 dark:text-primary-400" />
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 dark:text-gray-100">
@@ -211,8 +211,8 @@ export default function AyudaPage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="flex flex-col items-center text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <div className="p-4 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-4">
-                <Mail className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              <div className="p-4 bg-primary-100 dark:bg-primary-900/30 rounded-full mb-4">
+                <Mail className="w-6 h-6 text-primary-600 dark:text-primary-400" />
               </div>
               <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 {t('email')}

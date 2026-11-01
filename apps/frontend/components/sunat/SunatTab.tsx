@@ -21,7 +21,7 @@ export function SunatTab({ ruc, esPeru, onGuardado }: Props) {
     return (
       <Card>
         <div className="flex items-start gap-4">
-          <Landmark className="w-8 h-8 text-blue-600 dark:text-blue-400 shrink-0" />
+          <Landmark className="w-8 h-8 text-primary-600 dark:text-primary-400 shrink-0" />
           <div className="space-y-3">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{t('activarTitulo')}</h3>
             <p className="text-sm text-gray-600 dark:text-gray-300">{t('activarDescripcion')}</p>

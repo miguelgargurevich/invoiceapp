@@ -689,7 +689,7 @@ export default function ProformaDetailPage({
           </button>
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <Receipt className="w-5 h-5 text-blue-600" />
+              <Receipt className="w-5 h-5 text-primary-600" />
               <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{tJobSummary('proposal')}</span>
             </div>
             <div className="flex items-center gap-3">
@@ -1761,7 +1761,7 @@ export default function ProformaDetailPage({
           </button>
 
           {/* Total */}
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-blue-900/20 dark:to-indigo-900/10 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+          <div className="bg-gradient-to-br from-primary-50 to-primary-50/50 dark:from-primary-900/20 dark:to-primary-900/10 rounded-xl p-4 border border-primary-200 dark:border-primary-800">
             <div className="flex items-center justify-between text-lg font-semibold">
               <span className="text-gray-700 dark:text-gray-300">{t('total')}</span>
               <span className="text-gray-900 dark:text-gray-100">

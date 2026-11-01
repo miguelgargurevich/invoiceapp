@@ -77,9 +77,9 @@ export function FeaturesSection() {
       glow: 'group-hover:shadow-orange-500/25',
     },
     blue: {
-      bg: 'bg-blue-100 dark:bg-blue-900/30',
-      icon: 'text-blue-600 dark:text-blue-400',
-      glow: 'group-hover:shadow-blue-500/25',
+      bg: 'bg-primary-100 dark:bg-primary-900/30',
+      icon: 'text-primary-600 dark:text-primary-400',
+      glow: 'group-hover:shadow-primary-500/25',
     },
     red: {
       bg: 'bg-red-100 dark:bg-red-900/30',
@@ -92,9 +92,9 @@ export function FeaturesSection() {
       glow: 'group-hover:shadow-pink-500/25',
     },
     indigo: {
-      bg: 'bg-indigo-100 dark:bg-indigo-900/30',
-      icon: 'text-indigo-600 dark:text-indigo-400',
-      glow: 'group-hover:shadow-indigo-500/25',
+      bg: 'bg-primary-100 dark:bg-primary-900/30',
+      icon: 'text-primary-600 dark:text-primary-400',
+      glow: 'group-hover:shadow-primary-500/25',
     },
     teal: {
       bg: 'bg-teal-100 dark:bg-teal-900/30',

@@ -49,7 +49,7 @@ const getPlanIcon = (planName: string) => {
 const getPlanColor = (planName: string) => {
   const name = planName.toLowerCase();
   if (name.includes('free') || name.includes('trial')) return 'from-gray-500 to-gray-600';
-  if (name.includes('starter') || name.includes('basic')) return 'from-blue-500 to-cyan-500';
+  if (name.includes('starter') || name.includes('basic')) return 'from-primary-500 to-cyan-500';
   if (name.includes('pro') || name.includes('premium')) return 'from-purple-500 to-pink-500';
   return 'from-green-500 to-emerald-500';
 };

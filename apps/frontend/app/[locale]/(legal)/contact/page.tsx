@@ -18,8 +18,8 @@ export default function ContactPage() {
       {/* Company Information Card */}
       <div className="not-prose bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 mb-8">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-            <Building2 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
+            <Building2 className="w-6 h-6 text-primary-600 dark:text-primary-400" />
           </div>
           <div>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -56,19 +56,19 @@ export default function ContactPage() {
               <div className="space-y-1">
                 <p className="text-gray-600 dark:text-gray-300">
                   <span className="text-gray-500 dark:text-gray-400">{t('email.general')}:</span>{' '}
-                  <a href="mailto:hello@invoiceapp.com" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  <a href="mailto:hello@invoiceapp.com" className="text-primary-600 dark:text-primary-400 hover:underline">
                     hello@invoiceapp.com
                   </a>
                 </p>
                 <p className="text-gray-600 dark:text-gray-300">
                   <span className="text-gray-500 dark:text-gray-400">{t('email.support')}:</span>{' '}
-                  <a href="mailto:support@invoiceapp.com" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  <a href="mailto:support@invoiceapp.com" className="text-primary-600 dark:text-primary-400 hover:underline">
                     support@invoiceapp.com
                   </a>
                 </p>
                 <p className="text-gray-600 dark:text-gray-300">
                   <span className="text-gray-500 dark:text-gray-400">{t('email.billing')}:</span>{' '}
-                  <a href="mailto:billing@invoiceapp.com" className="text-blue-600 dark:text-blue-400 hover:underline">
+                  <a href="mailto:billing@invoiceapp.com" className="text-primary-600 dark:text-primary-400 hover:underline">
                     billing@invoiceapp.com
                   </a>
                 </p>
@@ -109,28 +109,28 @@ export default function ContactPage() {
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <h3 className="font-medium text-gray-900 dark:text-white mb-2">{t('departments.support.title')}</h3>
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{t('departments.support.description')}</p>
-            <a href="mailto:support@invoiceapp.com" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+            <a href="mailto:support@invoiceapp.com" className="text-sm text-primary-600 dark:text-primary-400 hover:underline">
               support@invoiceapp.com
             </a>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <h3 className="font-medium text-gray-900 dark:text-white mb-2">{t('departments.billing.title')}</h3>
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{t('departments.billing.description')}</p>
-            <a href="mailto:billing@invoiceapp.com" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+            <a href="mailto:billing@invoiceapp.com" className="text-sm text-primary-600 dark:text-primary-400 hover:underline">
               billing@invoiceapp.com
             </a>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <h3 className="font-medium text-gray-900 dark:text-white mb-2">{t('departments.sales.title')}</h3>
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{t('departments.sales.description')}</p>
-            <a href="mailto:sales@invoiceapp.com" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+            <a href="mailto:sales@invoiceapp.com" className="text-sm text-primary-600 dark:text-primary-400 hover:underline">
               sales@invoiceapp.com
             </a>
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
             <h3 className="font-medium text-gray-900 dark:text-white mb-2">{t('departments.legal.title')}</h3>
             <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{t('departments.legal.description')}</p>
-            <a href="mailto:legal@invoiceapp.com" className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+            <a href="mailto:legal@invoiceapp.com" className="text-sm text-primary-600 dark:text-primary-400 hover:underline">
               legal@invoiceapp.com
             </a>
           </div>

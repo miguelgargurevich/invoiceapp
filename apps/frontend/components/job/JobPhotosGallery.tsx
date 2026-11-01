@@ -217,7 +217,7 @@ export default function JobPhotosGallery({
         {!readOnly && (
           <div className="flex justify-between items-center">
             <div className="text-base font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-              <Image className="w-4 h-4 text-blue-600" />
+              <Image className="w-4 h-4 text-primary-600" />
               {photos.length} {photos.length === 1 ? t('photo') : t('photos')}
             </div>
             <div>
@@ -254,8 +254,8 @@ export default function JobPhotosGallery({
             {photosByDate.map((group) => (
               <div key={group.date} className="space-y-3">
                 {/* Date Header */}
-                <div className="flex items-center gap-3 pb-2 border-b-2 border-blue-200 dark:border-blue-800">
-                  <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <div className="flex items-center gap-3 pb-2 border-b-2 border-primary-200 dark:border-primary-800">
+                  <Calendar className="w-5 h-5 text-primary-600 dark:text-primary-400" />
                   <div>
                     <h4 className="font-semibold text-gray-900 dark:text-gray-100">
                       {group.displayDate}
@@ -273,7 +273,7 @@ export default function JobPhotosGallery({
                     return (
                       <div
                         key={photo.id}
-                        className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-600 transition-all"
+                        className="relative group aspect-square rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 hover:border-primary-400 dark:hover:border-primary-600 transition-all"
                       >
                         <img
                           src={photo.url}
@@ -359,7 +359,7 @@ export default function JobPhotosGallery({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                 {clientInfo && (
                   <div className="flex items-center gap-2">
-                    <User className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <User className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                     <span className="font-semibold text-gray-900 dark:text-gray-100">{clientInfo.razonSocial}</span>
                     {clientInfo.numeroDocumento && (
                       <span className="text-gray-600 dark:text-gray-400">• {clientInfo.numeroDocumento}</span>
@@ -368,7 +368,7 @@ export default function JobPhotosGallery({
                 )}
                 {invoiceInfo && (
                   <div className="flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    <FileText className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                     <span className="font-semibold text-gray-900 dark:text-gray-100">
                       {invoiceInfo.serie}-{invoiceInfo.numero}
                     </span>
@@ -408,7 +408,7 @@ export default function JobPhotosGallery({
               <div className="mt-6 text-center max-w-2xl">
                 {/* Photo Date */}
                 <div className="flex items-center justify-center gap-2 mb-2">
-                  <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <Calendar className="w-4 h-4 text-primary-600 dark:text-primary-400" />
                   <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {new Date(photos[currentPhotoIndex].fecha).toLocaleDateString(undefined, {
                       weekday: 'long',

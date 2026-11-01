@@ -16,6 +16,25 @@
 ## Última sesión
 
 - 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/marca-t1-piezas`, rama `feat/marca-t1-piezas`): Tarea 1 del plan de la marca Facturo (piezas gráficas). Hecho: SVG en `apps/frontend/public/marca/` (`facturo-icono.svg`, `favicon.svg`, `facturo-logotipo.svg`, `facturo-logotipo-oscuro.svg`) copiados tal cual del plan; componente `components/marca/LogoFacturo.tsx` (`IconoFacturo`, `LogoFacturo`, con `'use client'`); `scripts/marca/exportar.mjs` genera `icon-192.png`, `icon-512.png`, `apple-touch-icon.png` y `app/favicon.ico` (16, 32 y 48 px); `app/manifest.ts` con nombre Facturo, `theme_color` `#0F6E56` e íconos nuevos. Verificado: `file` da 192×192, 512×512, 180×180 y «MS Windows icon resource - 3 icons»; `npx tsc --noEmit` exit 0; `npm test` 35/35. Gotchas: `@resvg/resvg-js` se instala solo en `mktemp -d` y se pasa con `RESVG_DIR`; sin esa variable el script ahora termina con un mensaje claro (antes salía un stack trace de Node); el logotipo SVG usa texto y no trazos (fuente Geist/Inter del sistema); no se añadió test de componente porque `npm test` solo corre `lib/**` y el archivo no estaba en «Permitidos»; la `description` del manifest sigue diciendo InvoiceApp. Commit en la rama; sin push.
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/marca-t2-color`, rama `feat/marca-t2-color`, sobre `feat/marca-facturo`):
+  Tarea 2 del plan de marca Facturo («la interfaz pasa al verde»). Hecho, en `apps/frontend`:
+  la rampa `primary` de `tailwind.config.ts` pasa a verde (`#E1F5EE`…`#04342C`, exacta al plan); las variables `--primary-*` de
+  `app/globals.css` (foco y selección) siguen la misma rampa; reemplazo automático de `blue|indigo|sky-N` → `primary-N` en `app/**/*.tsx`
+  y `components/**/*.tsx` (387 ocurrencias por script; el «unos 188» del plan eran líneas, no ocurrencias; el diff final toca 48 archivos); degradados de login y registro;
+  hex de los gráficos de `reportes/clientes|ventas|pagos` (`#3b82f6` → `#1D9E75`).
+  Se devolvió azul/índigo solo donde es información o estado (30 líneas): aviso «Info Message» de proforma; caja de información del
+  proveedor Google en configuración; caja de datos del documento en firma (`sign/[token]`); tarjeta «en proceso» de comprobantes;
+  saldo pendiente y estado «emitida» de facturas; estado «pendiente» de proformas; banner «Estado actual» y puntos de la línea de tiempo
+  (`ActivityTimeline`); variante `info` de `Toast`, `Modal` y `ConfirmDialog`; caja de cliente/factura de la galería de trabajos;
+  plan actual, precio y medidor de uso (`SubscriptionTab`). Quedan en verde, por categoría o decoración: etiquetas de tipo
+  (producto/servicio, orden de trabajo, plantillas), totales, métricas (`Card` variante `blue`), nombre de empresa en el menú.
+  Pruebas: `npx tsc --noEmit` exit 0; `npm test` 35/35, 0 fallos; `npx next build` exit 0 (compila; 63 páginas). Sin pruebas nuevas
+  (cambio de estilos). Mutación: no aplica; en su lugar, `git grep` de `(blue|indigo|sky)-[0-9]+` en `app` y `components` deja solo
+  `Badge.tsx` (2 líneas) y las 30 líneas de información.
+  Gotchas: (a) `reportes/pagos` usa una paleta de gráfico donde `#1D9E75` queda cerca de `#22c55e`: revisar en Chrome (Tarea 4).
+  (b) `manifest.ts` mantiene `theme_color: '#3b82f6'`: es de la Tarea 1, no se tocó. (c) `next build` imprime avisos de caché de webpack
+  sobre `next-intl/dist/.../extractor/format/index.js`: no los revisé contra la base anterior; no impiden el build.
+
 - 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t7-paginas`, rama `feat/sunatf-t7-paginas`):
   Tarea 7 del plan del frontend SUNAT (páginas de comprobantes). Hecho, en `apps/frontend/app/[locale]/(dashboard)/comprobantes/`:
   `page.tsx` (lista con filtros por tipo y estado), `nuevo/page.tsx` (alta; nota de crédito o débito desde `?tipo=&afecta=&motivo=`),

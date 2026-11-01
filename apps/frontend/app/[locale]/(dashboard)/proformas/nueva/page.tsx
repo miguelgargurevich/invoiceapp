@@ -777,8 +777,8 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
         {/* Basic Information */}
         <div className="space-y-4">
           <div className="flex items-center gap-3 pb-3 border-b border-gray-200 dark:border-gray-700">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
+              <svg className="w-5 h-5 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
@@ -800,7 +800,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
               required
               disabled={loading}
               placeholder={t('namePlaceholder') || 'Client name'}
-              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-all placeholder:text-gray-400"
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-600 focus:border-transparent transition-all placeholder:text-gray-400"
             />
           </div>
 
@@ -817,7 +817,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
                 required
                 disabled={loading}
                 placeholder={t('phonePlaceholder') || '(555) 123-4567'}
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-all placeholder:text-gray-400"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-600 focus:border-transparent transition-all placeholder:text-gray-400"
               />
             </div>
             
@@ -831,7 +831,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 disabled={loading}
                 placeholder={t('emailPlaceholder') || 'email@example.com'}
-                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-all placeholder:text-gray-400"
+                className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-600 focus:border-transparent transition-all placeholder:text-gray-400"
               />
             </div>
           </div>
@@ -847,7 +847,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
               onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
               disabled={loading}
               placeholder={t('addressPlaceholder') || 'Street address'}
-              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-all placeholder:text-gray-400"
+              className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-600 focus:border-transparent transition-all placeholder:text-gray-400"
             />
           </div>
 
@@ -896,7 +896,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
                     value={formData.tipoDocumento}
                     onChange={(e) => setFormData({ ...formData, tipoDocumento: e.target.value })}
                     disabled={loading}
-                    className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-600 focus:border-transparent transition-all"
                   >
                     <option value="OTHER">Other / None</option>
                     <option value="SSN">SSN</option>
@@ -918,7 +918,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
                     onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
                     disabled={loading}
                     placeholder={t('optional') || 'Optional'}
-                    className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-all placeholder:text-gray-400"
+                    className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-600 focus:border-transparent transition-all placeholder:text-gray-400"
                   />
                 </div>
               </div>

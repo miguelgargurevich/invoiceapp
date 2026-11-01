@@ -212,7 +212,7 @@ export function WorkLogTimeline({ documentType, documentId }: WorkLogTimelinePro
             {workLogs.map((log) => (
               <div
                 key={log.id}
-                className="border-l-4 border-blue-500 pl-4 py-3 bg-white dark:bg-gray-800 rounded-r-lg hover:shadow-md transition-shadow"
+                className="border-l-4 border-primary-500 pl-4 py-3 bg-white dark:bg-gray-800 rounded-r-lg hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
@@ -237,7 +237,7 @@ export function WorkLogTimeline({ documentType, documentId }: WorkLogTimelinePro
                   <div className="flex gap-1">
                     <button
                       onClick={() => handleEdit(log)}
-                      className="p-1 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded"
+                      className="p-1 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded"
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>

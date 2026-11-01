@@ -61,7 +61,7 @@ export function MetricCard({
   color = 'blue',
 }: MetricCardProps) {
   const colorClasses = {
-    blue: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+    blue: 'bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400',
     green: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
     red: 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400',
     yellow: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400',

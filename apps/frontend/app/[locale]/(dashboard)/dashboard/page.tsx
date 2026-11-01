@@ -292,7 +292,7 @@ export default function DashboardPage({
               <Skeleton className="h-4 w-24" />
             </div>
           </div>
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500/20 to-blue-600/20 p-8">
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-500/20 to-primary-600/20 p-8">
             <div className="flex flex-col items-center justify-center space-y-4">
               <Skeleton className="h-20 w-20 rounded-2xl" />
               <Skeleton className="h-8 w-40" />
@@ -410,16 +410,16 @@ export default function DashboardPage({
         {/* Create Invoice Button */}
         <button
           onClick={() => router.push(`/${locale}/facturas/nueva`)}
-          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 p-8 shadow-xl hover:shadow-2xl transition-all duration-300 active:scale-[0.98]"
+          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 dark:from-primary-600 dark:to-primary-700 p-8 shadow-xl hover:shadow-2xl transition-all duration-300 active:scale-[0.98]"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 dark:from-blue-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-400/20 dark:from-primary-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="relative flex flex-col items-center justify-center text-white space-y-4">
             <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm group-hover:bg-white/30 transition-colors">
               <Receipt className="w-12 h-12" />
             </div>
             <div className="text-center">
               <h3 className="text-2xl font-bold mb-1">Create Invoice</h3>
-              <p className="text-blue-100 text-sm">New customer invoice</p>
+              <p className="text-primary-100 text-sm">New customer invoice</p>
             </div>
             <div className="flex items-center gap-2 text-sm font-medium opacity-90 group-hover:opacity-100">
               <span>Start now</span>

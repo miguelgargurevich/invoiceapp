@@ -14,7 +14,7 @@ export default function WelcomeStep({ onNext }: WelcomeStepProps) {
   const router = useRouter();
 
   const features = [
-    { icon: Clock, text: t('welcome.feature1'), color: 'text-blue-400' },
+    { icon: Clock, text: t('welcome.feature1'), color: 'text-primary-400' },
     { icon: Shield, text: t('welcome.feature2'), color: 'text-green-400' },
     { icon: Zap, text: t('welcome.feature3'), color: 'text-yellow-400' },
   ];

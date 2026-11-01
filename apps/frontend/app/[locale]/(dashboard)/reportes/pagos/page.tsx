@@ -151,7 +151,7 @@ export default function PaymentsReportPage({
       setPagosPorMes(pagosMensuales);
 
       // Payment methods pie chart
-      const colors = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
+      const colors = ['#1D9E75', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'];
       const metodosArray = Object.entries(metodosCount).map(([name, value], index) => ({
         name: t(`paymentMethod.${name}`) || name,
         value,
@@ -257,8 +257,8 @@ export default function PaymentsReportPage({
         </Card>
         <Card className="!p-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <CreditCard className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div className="p-2 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
+              <CreditCard className="w-5 h-5 text-primary-600 dark:text-primary-400" />
             </div>
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">{t('paymentsCount')}</p>
