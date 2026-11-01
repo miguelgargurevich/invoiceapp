@@ -6,6 +6,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { motion } from 'framer-motion';
 import { Check, Sparkles, Zap, Crown, Building2 } from 'lucide-react';
 import { formatPrice } from '@/lib/precios';
+import { getPlans } from '@/lib/subscriptions';
 import { equivalenteMensual, porcentajeAhorro } from '@/lib/landing';
 
 interface Plan {
@@ -220,17 +221,9 @@ export function PricingSection() {
     const porDefecto = esPeru ? defaultPlansPe : defaultPlans;
     async function fetchPlans() {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'}/subscriptions/plans?pais=${esPeru ? 'PE' : 'US'}`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data && data.length > 0) {
-            setPlans(data);
-          } else {
-            setPlans(porDefecto);
-          }
-        } else {
-          setPlans(porDefecto);
-        }
+        // getPlans arma la URL con /api igual que el resto de la app (antes pedía /subscriptions/plans y daba 404).
+        const data = await getPlans(esPeru ? 'PE' : 'US');
+        setPlans(data.length > 0 ? data : porDefecto);
       } catch {
         setPlans(porDefecto);
       } finally {
