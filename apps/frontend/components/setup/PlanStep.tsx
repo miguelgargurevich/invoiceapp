@@ -76,8 +76,8 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
         const plansData = await getPlans(data.pais || 'US');
         setPlans(plansData);
 
-        // Auto-select free plan if none selected
-        if (!selectedPlanId) {
+        // Elige el plan gratis si no hay plan o el elegido no es de este país (p. ej. 'free' en Perú)
+        if (!selectedPlanId || !plansData.some(p => p.id === selectedPlanId)) {
           const freePlan = plansData.find(p => esPlanGratis(p));
           if (freePlan) {
             setSelectedPlanId(freePlan.id);

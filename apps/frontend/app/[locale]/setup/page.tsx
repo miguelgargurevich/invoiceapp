@@ -110,12 +110,11 @@ export default function SetupWizardPage({
     website: '',
     logoFile: null,
     logo: null,
-    currency: 'USD',
     locale: locale === 'es' ? 'es' : 'en', // parte del idioma de la página
-    pais: locale === 'es' ? 'PE' : 'US', // el idioma sugiere el país; el paso de empresa lo cambia
-    taxRate: 0,
-    taxName: 'Tax',
-    taxEnabled: false,
+    // El idioma sugiere el país (el paso de empresa lo cambia) y el país, la moneda y el impuesto.
+    ...(locale === 'es'
+      ? { pais: 'PE' as const, currency: 'PEN', taxRate: 18, taxName: 'IGV', taxEnabled: true }
+      : { pais: 'US' as const, currency: 'USD', taxRate: 0, taxName: 'Tax', taxEnabled: false }),
     selectedPlan: 'free',
     billingInterval: 'yearly',
   });
