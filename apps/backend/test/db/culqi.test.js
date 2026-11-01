@@ -82,6 +82,23 @@ test('si Culqi pide 3DS no crea la suscripción y guarda el cliente para el rein
   assert.equal(culqi2.llamadas.find((l) => l.nombre === 'crearTarjeta').args[0].authentication_3DS.eci, '05');
 });
 
+test('dos pagos simultáneos de la misma empresa: el segundo se rechaza y Culqi recibe una sola suscripción', async () => {
+  let soltar;
+  // Solo la primera tarjeta queda esperando a que la soltemos; las siguientes responden al instante.
+  const culqi = culqiFalso({
+    crearTarjeta: () => (soltar ? { id: 'crd_test_2' } : new Promise((r) => { soltar = () => r({ id: 'crd_test_1' }); })),
+  });
+  const s = servicio(culqi);
+  const primero = suscribir(s);
+  for (let i = 0; !soltar && i < 300; i += 1) await new Promise((r) => setTimeout(r, 10)); // el primero ya espera a Culqi
+  assert.ok(soltar, 'el primer pago no llegó a crear la tarjeta');
+  await assert.rejects(suscribir(s), /pago en curso/);
+  soltar();
+  await primero;
+  assert.equal(culqi.llamadas.filter((l) => l.nombre === 'crearSuscripcion').length, 1);
+  await suscribir(s, { intervalo: 'YEAR' }); // terminado el primero, se puede volver a pagar
+});
+
 test('una tarjeta rechazada deja el plan como estaba', async () => {
   const culqi = culqiFalso({ crearTarjeta: new ErrorCulqi({ status: 402, tipo: 'card_error', mensajeUsuario: 'Fondos insuficientes' }) });
   await assert.rejects(suscribir(servicio(culqi)), ErrorCulqi);

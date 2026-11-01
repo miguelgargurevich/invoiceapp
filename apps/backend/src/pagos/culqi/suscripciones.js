@@ -23,6 +23,10 @@ function idSuscripcion(data) {
 }
 
 function crearServicioCulqi({ prisma, culqi, ahora = () => new Date() }) {
+  // Un pago a la vez por empresa: un doble clic no debe crear dos suscripciones (dos cobros) en Culqi.
+  // Vale para una sola instancia del backend; con varias, hará falta un candado en la BD.
+  const enCurso = new Set();
+
   async function asegurarCliente(sub, { empresa, email, facturacion }) {
     if (sub.culqiCustomerId) return sub.culqiCustomerId;
     let cliente;
@@ -54,7 +58,13 @@ function crearServicioCulqi({ prisma, culqi, ahora = () => new Date() }) {
     });
   }
 
-  async function suscribir({ empresa, email, planSlug, intervalo, tokenId, facturacion, authentication3DS }) {
+  async function suscribir(datos) {
+    if (enCurso.has(datos.empresa.id)) throw new ErrorContratacion('Ya hay un pago en curso. Espera unos segundos.');
+    enCurso.add(datos.empresa.id);
+    try { return await contratar(datos); } finally { enCurso.delete(datos.empresa.id); }
+  }
+
+  async function contratar({ empresa, email, planSlug, intervalo, tokenId, facturacion, authentication3DS }) {
     const plan = await prisma.plan.findUnique({ where: { slug: planSlug } });
     const culqiPlanId = intervalo === 'YEAR' ? plan?.culqiPlanIdAnual : plan?.culqiPlanIdMensual;
     if (!plan || plan.pais !== 'PE' || !plan.isActive || Number(plan.priceMonthly) === 0 || !culqiPlanId) {
