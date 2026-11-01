@@ -15,6 +15,14 @@
 
 ## Última sesión
 
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/oferta-t3`, rama `feat/oferta-t3` sobre `feat/oferta-peru`): **Tarea 3 de la oferta para Perú** (cupo de comprobantes al emitir y regímenes por plan; plan `docs/superpowers/plans/2026-11-01-oferta-peru.md`). Hecho:
+  - `src/planes/cupo.js`: `verificarCupo(tx, empresaId, fecha)` dentro de la transacción de `emitir`, con `SELECT … FOR UPDATE OF s` sobre la suscripción; cuenta facturas, boletas, NC y ND con `estadoSunat` no nulo y distinto de `BORRADOR` en el mes calendario de Lima (`inicioMesLima`). `verificarRegimenes(prisma, empresaId, datos)` bloquea detracción y percepción en planes sin `hasRegimenesSunat` (403). La retención no se bloquea.
+  - Suscripción Culqi cancelada con `currentPeriodEnd` vencido → límite de `pe-gratis`. Sin suscripción o plan de EE. UU. → sin tope.
+  - `ErrorPlan` (`sunat/errores.js`) → 402 `LIMIT_REACHED` (o 403 `FEATURE_NOT_AVAILABLE`) con `upgradeRequired: true` en `sunat/http.js`.
+  - `routes/comprobantes.js`: crear el borrador ya no cobra cupo (`limites` por defecto es no-op). `test/db/rutas.test.js` no cambió: ya inyecta su propio `limites`.
+  - Verificado: `npm test` 104/104; `TEST_DATABASE_URL=…invoiceapp_test_ofe3 npm run test:db` 66/66 (58 de la Tarea 1 + 8 de `cupo.test.js`).
+  - Mutaciones (todas en rojo): (A) quitar `FOR UPDATE OF s` → «emisiones simultáneas» falla 3 de 3 veces; (B) contar también `BORRADOR` → «los borradores no gastan cupo» y «simultáneas» fallan; (C) `OFFSET_LIMA_MS = 0` → «inicioMesLima» falla. Archivo restaurado con `cp` + `cmp`.
+  - Gotchas: la detracción exige `tipoOperacion: '1001'` y monto mayor a S/ 700 (la prueba de regímenes lo usa así). Los comprobantes ya no pasan por `checkLimit('invoice')`, así que el contador `invoicesUsed` ya no lo mueve `/api/comprobantes` (sí siguen usándolo las rutas heredadas `facturas.js` y `proformas.js`). Sin push.
 - 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/oferta-t1`, rama `feat/oferta-t1` sobre `feat/oferta-peru`): **Tarea 1 de la oferta para Perú** (esquema, planes de Perú y visibilidad por país; plan `docs/superpowers/plans/2026-11-01-oferta-peru.md`):
   - Esquema: `Plan.pais` (default `US`), `culqiPlanIdMensual/Anual`, `hasRegimenesSunat`; `Subscription.proveedorPago` (default `stripe`), `culqiCustomerId/CardId/SubscriptionId` (único); modelo `EventoCulqi`. Migración `20261101010000_oferta_peru` (con `git add -f`) y semilla `prisma/seed_plans_pe.sql` (4 planes en PEN: pe-gratis, pe-emprendedor, pe-negocio, pe-empresa).
   - `src/planes/catalogo.js`: `planGratisDe(prisma, pais)`, `planPublico(plan)`. `GET /api/subscriptions/plans?pais=PE|US` filtra por país.

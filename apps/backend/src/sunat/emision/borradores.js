@@ -3,6 +3,7 @@ const { calcularComprobante } = require('../calculo/calcular');
 const { codigoUnidad, MOTIVOS_NOTA_CREDITO, MOTIVOS_NOTA_DEBITO } = require('../catalogos');
 const { fechaLima } = require('../fechas');
 const { ErrorBorrador } = require('../errores');
+const { verificarRegimenes } = require('../../planes/cupo');
 
 const ESTADOS_ACEPTADOS = ['ACEPTADO', 'ACEPTADO_CON_OBS'];
 
@@ -214,6 +215,7 @@ function cuotasFactura(calculo) {
 
 async function guardarBorrador({ prisma, empresa, userId, datos, facturaId = null }) {
   const d = comprobanteSchema.parse(datos);
+  await verificarRegimenes(prisma, empresa.id, d);
   const { cliente } = await cargarContexto(prisma, empresa, d);
 
   const serie = await prisma.configuracionSeries.findFirst({

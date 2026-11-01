@@ -1,4 +1,5 @@
 const { calcularComprobante } = require('../calculo/calcular');
+const { verificarCupo } = require('../../planes/cupo');
 const { INCLUDE_COMPROBANTE, entradaCalculo, datosDesdeFactura } = require('./borradores');
 const { validarParaEmision } = require('./validacion');
 const { ESTADO, clasificarRespuesta } = require('./estados');
@@ -29,6 +30,7 @@ function crearServicioEmision({ prisma, engine, almacen, descifrar, cola, ahora 
 
       const emisor = f.empresa.emisorSunat;
       const fecha = ahora();
+      await verificarCupo(tx, empresaId, fecha);
       const errores = validarParaEmision(f, emisor, fecha);
       if (errores.length) throw new ErrorValidacion(errores);
 

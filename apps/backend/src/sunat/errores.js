@@ -27,6 +27,12 @@ class ErrorConstruccion extends Error {
   constructor(mensaje, detalle) { super(mensaje); this.name = 'ErrorConstruccion'; this.detalle = detalle; }
 }
 
+class ErrorPlan extends Error {
+  constructor(mensaje, { status = 402, codigo = 'LIMIT_REACHED' } = {}) {
+    super(mensaje); this.name = 'ErrorPlan'; this.status = status; this.codigo = codigo;
+  }
+}
+
 module.exports = {
   ErrorValidacion,
   ErrorEstado,
@@ -34,4 +40,5 @@ module.exports = {
   ErrorBorrador,
   ErrorEngineNoDisponible,
   ErrorConstruccion,
+  ErrorPlan,
 };

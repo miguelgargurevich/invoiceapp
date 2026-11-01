@@ -1,7 +1,7 @@
 const { z } = require('zod');
 const { ErrorCalculo } = require('./calculo/calcular');
 const {
-  ErrorValidacion, ErrorEstado, ErrorFueraDePlazo, ErrorBorrador, ErrorEngineNoDisponible, ErrorConstruccion,
+  ErrorValidacion, ErrorEstado, ErrorFueraDePlazo, ErrorBorrador, ErrorEngineNoDisponible, ErrorConstruccion, ErrorPlan,
 } = require('./errores');
 
 function responderError(res, error) {
@@ -13,6 +13,9 @@ function responderError(res, error) {
   if (error instanceof ErrorFueraDePlazo) return res.status(409).json({ error: error.message, accion: 'EMITIR_NOTA_CREDITO' });
   if (error instanceof ErrorEngineNoDisponible) {
     return res.status(503).json({ error: 'El motor SUNAT no está disponible: intenta en unos minutos' });
+  }
+  if (error instanceof ErrorPlan) {
+    return res.status(error.status).json({ error: error.message, code: error.codigo, upgradeRequired: true });
   }
   console.error('[SUNAT]', error);
   return res.status(500).json({ error: 'Error interno del servidor' });

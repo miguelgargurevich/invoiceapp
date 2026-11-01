@@ -1,6 +1,5 @@
 const express = require('express');
 const { authenticateToken, getEmpresaFromUser } = require('../middleware/auth');
-const { checkLimit, incrementUsage } = require('../middleware/subscription');
 const {
   guardarBorrador, previsualizar, datosDesdeFactura, INCLUDE_COMPROBANTE, INCLUDE_RESPUESTA,
 } = require('../sunat/emision/borradores');
@@ -13,7 +12,8 @@ function crearRouterComprobantes({
   prisma,
   obtenerSunat,
   auth = [authenticateToken, getEmpresaFromUser],
-  limites = { verificar: checkLimit('invoice'), incrementar: incrementUsage },
+  // El cupo del plan se cobra al EMITIR (planes/cupo.js), no al crear el borrador.
+  limites = { verificar: (_req, _res, next) => next(), incrementar: async () => {} },
 }) {
   const router = express.Router();
   router.use(...auth, soloPeru);
