@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import SignatureCanvas from '@/components/signature/SignatureCanvas';
 import SubscriptionTab from '@/components/settings/SubscriptionTab';
+import { SunatTab } from '@/components/sunat/SunatTab';
 import {
   Building2,
   User,
@@ -26,9 +27,10 @@ import {
   ImageIcon,
   Settings,
   CreditCard,
+  Landmark,
 } from 'lucide-react';
 
-type Tab = 'empresa' | 'usuario' | 'apariencia' | 'facturacion' | 'notificaciones' | 'suscripcion';
+type Tab = 'empresa' | 'usuario' | 'apariencia' | 'facturacion' | 'notificaciones' | 'sunat' | 'suscripcion';
 
 export default function ConfiguracionPage({
   params: { locale },
@@ -37,6 +39,7 @@ export default function ConfiguracionPage({
 }) {
   const t = useTranslations('settings');
   const tSub = useTranslations('subscription');
+  const tSunat = useTranslations('sunat.emisor');
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -391,6 +394,7 @@ export default function ConfiguracionPage({
     { id: 'apariencia' as Tab, label: t('appearance'), icon: Palette },
     { id: 'facturacion' as Tab, label: t('invoicing'), icon: FileText },
     { id: 'notificaciones' as Tab, label: t('notifications'), icon: Bell },
+    { id: 'sunat' as Tab, label: tSunat('pestana'), icon: Landmark },
   ];
 
   return (
@@ -1157,6 +1161,10 @@ export default function ConfiguracionPage({
                 </button>
               </div>
             </Card>
+          )}
+
+          {activeTab === 'sunat' && (
+            <SunatTab ruc={empresa?.ruc ?? ''} esPeru={empresa?.pais === 'PE'} onGuardado={refreshEmpresa} />
           )}
 
           {/* Subscription Settings */}

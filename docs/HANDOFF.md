@@ -39,6 +39,20 @@
   Con el botón habilitado, el error sale en la lista del formulario. Decidir si también se deshabilita. (c) `next build` no se corrió;
   la pantalla no se probó en el navegador.
   Pendiente: push y OK de Miguel (sesión principal).
+- 2026-11-01 (Claude Code con Sonnet 5.5, delegado en worktree `.claude/worktrees/sunatf-t8-emisor`, rama `feat/sunatf-t8-emisor`):
+  Tarea 8 del plan del frontend SUNAT (configuración del emisor y series). Hecho: `components/sunat/EmisorForm.tsx` (datos fiscales,
+  ambiente BETA/PRODUCCIÓN con RUC exacto para pasar a producción, clave SOL y certificado `.pfx`), `SeriesManager.tsx` (lista y alta de series
+  con `validarSerie`) y `SunatTab.tsx` (invitación a activar si la empresa no es de Perú), más los tres cambios en `configuracion/page.tsx`
+  (+9/−1 líneas): import de `SunatTab` y de `Landmark`, `'sunat'` en `Tab`, `tSunat`, el botón de la pestaña y su panel.
+  Código copiado del plan sin desvíos: tipos y props coincidieron con las firmas reales.
+  Seguridad: `solClave` y `claveCertificado` solo aparecen en su `useState`, en el payload y en su `<Input type="password" autoComplete="new-password">`;
+  ni `console`, ni `localStorage`/`sessionStorage`, ni URL. Se limpian (junto con archivo y confirmación) tras guardar bien; el `.pfx` se lee con FileReader solo dentro de `guardar`.
+  Pruebas: `npx tsc --noEmit` sin errores; `npm test` 35/35. Estos componentes no tienen pruebas propias: 4 mutaciones de tipo
+  (prop inventado en `SeriesManager` y en `Button`, `onGuardado` obligatorio omitido, tipo `'99'` fuera de `TipoComprobante`) rompen `tsc`; al restaurar con cp + cmp vuelve a compilar.
+  Gotchas: (a) `next lint` roto en el repo (se usó `tsc`); (b) `configuracion/page.tsx` (línea ~61) valida `?tab=` contra una lista fija sin `'sunat'`:
+  un enlace `?tab=sunat` NO abre la pestaña (se respetó «solo tres cambios»; la Tarea 9 o una corrección aparte debe añadirlo si hace falta);
+  (c) si el guardado falla, la clave queda en el formulario para reintentar (solo en memoria); (d) no se verificó en navegador ni con `next build`.
+  Pendiente: push y OK de Miguel (sesión principal); verificación real en navegador (Tarea 10).
 - 2026-11-01 (Claude Code con Sonnet 5.5, delegado en worktree `.claude/worktrees/sunatf-t4-formulario`, rama `feat/sunatf-t4-formulario`):
   Tarea 4 del plan del frontend SUNAT (formulario, cliente de API y hooks). Hecho: `apps/frontend/lib/sunat/formulario.ts`
   (estado del formulario, `aPayload`, cuotas en céntimos enteros, visibilidad, series y clientes permitidos; solo `import type`),
