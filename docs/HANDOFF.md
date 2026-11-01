@@ -26,6 +26,11 @@
   - Verificado: `npm test` 65/65 (61 previas + 4); `npx tsc --noEmit` exit 0; `npx next build` exit 0 sin avisos; `next start` en 3200: `/es/landing` → `lang="es"`, `/en/landing` → `lang="en"`, 404 de `/es/…` con `<html lang="es">`, títulos y JSON-LD por idioma iguales. Mutación de `planMostrado` (quitar la condición `PAST_DUE`) → 2 pruebas en rojo; restaurado con `cp` + `cmp`.
   - NO verificado: el aviso en el navegador (solo lógica y build); un cobro fallido real con Culqi; que el backend acepte el cambio de tarjeta en `PAST_DUE`.
   - Gotchas: (a) un 404 bajo `/en/…` sale con `lang="es"` (igual que antes); lo corrige un `app/[locale]/not-found.tsx` sin `<html>`, no hecho. (b) `Subscription.planContratado` solo lo manda el backend para Culqi; con Stripe no aparece el aviso.
+- 2026-11-01 (Claude Code con Haiku 5.5, delegado en worktree `.claude/worktrees/fix-firmas`, rama `feat/fix-firmas` sobre `main` 2552ec5): **firma digital de documentos** (pedido de Miguel: «corrige lo que falta, delégalo»). Crear una solicitud de firma respondía siempre 500.
+  - Causa: `SignatureRequest.documentId` tenía dos relaciones (a `facturas` y a `proformas`) y Postgres exige que el id exista en ambas tablas; ningún INSERT pasaba.
+  - Hecho: `facturaId` / `proformaId` propios, opcionales, con FK e índices; `documentId` y `documentType` se conservan sin relación. Migración `20261101020000_firmas_documento` (rellena desde `document_id`; se probó dentro de una transacción con `ROLLBACK`). `routes/signatures.js` llena la columna del tipo.
+  - Pruebas: `test/db/firmas-documento.test.js` (3). Mutaciones en rojo: sin `facturaId`, sin `proformaId`, y la doble FK puesta de nuevo en la base (todas con el 500 del fallo original). `npm test` 122/122; `npm run test:db` 97/97.
+  - Pendiente: la creación responde 200, no 201 (la prueba fija 200). Sin push: sube solo con OK de Miguel.
 
 - 2026-11-01 (Claude Code con Sonnet 5.5, delegado en worktree `.claude/worktrees/seg-planes`, rama `feat/seg-planes` sobre `main` 8235ffb): **seguridad de planes** (pedido de Miguel: «Sí, corrígelas», las dos fallas de la revisión de seguridad: una empresa peruana obtenía funciones de pago sin pagar).
   - Hecho: `getOrCreateSubscription(empresaId, cliente = prisma, { ahora })` (`middleware/subscription.js`) devuelve SIEMPRE la suscripción vigente y corrige la base al leer: sin fila la crea (PE → `pe-gratis`); plan de otro país que la empresa → plan gratis del país (limpia Culqi/trial/período; si había `stripeSubscriptionId` solo hace `console.warn`); Culqi con `cancelAtPeriodEnd` y período vencido → `pe-gratis`; Culqi en `PAST_DUE` → no toca la base pero devuelve `{ ...sub, plan: pe-gratis, planContratado }`. `planes/gratis.js` (`pasarAGratis(cliente, sub, opciones)`) lo comparten esa función y `pagos/culqi/suscripciones.js`.
@@ -639,6 +644,7 @@
 
 ## Gotchas
 
+- `signature_requests`: no uses `documentId` como FK (no la tiene). Para ligar el documento usa `facturaId` / `proformaId`. Producción aplica el esquema con `prisma db push`, que NO ejecuta el SQL de la migración: el relleno de `factura_id` / `proforma_id` no corre allí; revisa las filas existentes antes de desplegar.
 - `Factura` hoy se puede editar estando «emitida» y «anular» solo cambia el estado: con SUNAT eso deja de valer para empresas `PE`.
 - Los montos se calculan con flotantes (`subtotal * taxRate`): pasar a `decimal.js` antes de emitir a SUNAT.
 - `STORAGE_PROVIDER` en Coolify: si sigue en `supabase`, el backend falla al subir archivos. Debe ser `r2` (producción) o `local` (desarrollo).
