@@ -193,6 +193,22 @@
   vulnerabilidades preexistentes, sin tocar. (2) `startAfter` numérico > 0 se pasa como texto; 0 equivale a inmediato.
   (3) `crearCola` no tiene pruebas unitarias: su comportamiento real contra Postgres (schema `pgboss`, `work`, `stop`)
   queda sin probar hasta la base de datos de pruebas. Usar conexión directa, no el pooler en modo transacción.
+- 2026-11-01 (Claude Code con Sonnet 5.5, worktree `.claude/worktrees/sunat-t12-anulacion`, rama `feat/sunat-t12-anulacion`):
+  Tarea 12 del plan (anulación por baja RA y resumen diario RC). Hecho: `src/sunat/emision/anulacion.js`
+  (`crearServicioAnulacion` → `solicitarAnulacion`, `procesarTicket`) y `test/db/anulacion.test.js` (6 pruebas: las 4 del
+  plan + separación entre empresas + concurrencia). Código del plan copiado tal cual, salvo un añadido: `solicitarAnulacion`
+  abre la transacción con `SELECT id FROM facturas WHERE id AND empresa_id FOR UPDATE` (igual que `emitir`) antes de leer y
+  chequear el estado; sin eso, dos solicitudes simultáneas pasaban ambas el chequeo de «aceptado» y creaban dos procesos
+  (RA 1 y RA 2) para el mismo comprobante. Prueba de concurrencia: engine falso con 200 ms de espera en `enviarBaja` y
+  `Promise.allSettled` → una cumple, otra falla con `ErrorEstado`, un solo `ProcesoSunat` y una sola llamada al engine.
+  Mutaciones (archivo copiado al scratchpad, restaurado con `cp` + `cmp`): serie B por RA, aceptar fuera de plazo,
+  no restaurar el estado previo al rechazar, quitar el filtro `empresaId`, no marcar `estado: 'anulada'`, aceptar
+  comprobantes no aceptados, quitar el `FOR UPDATE` (3 corridas) → todas en rojo.
+  Gotchas: (1) `solicitarAnulacion` llama al engine dentro de la transacción (timeout 60 s): si SUNAT recibe la baja y
+  luego falla la BD, el ticket queda huérfano en SUNAT y la factura sigue «aceptada» (se puede reintentar; SUNAT
+  rechazaría el duplicado). (2) `procesarTicket` no bloquea el proceso: dos ejecuciones simultáneas duplicarían la fila
+  de `EnvioSunat`, pero el resultado final sobre la factura es idempotente. (3) Un RC con varias boletas por proceso no
+  está soportado: cada anulación es su propio proceso (decisión del plan).
 
 ## Próximos pasos
 
