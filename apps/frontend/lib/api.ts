@@ -2,6 +2,19 @@
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 const API_URL = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
 
+// Error de la API: conserva el código HTTP y el cuerpo (p. ej. `errores[]` y `accion` de SUNAT).
+export class ApiError extends Error {
+  status: number;
+  body: any;
+
+  constructor(message: string, status: number, body: any) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.body = body;
+  }
+}
+
 class ApiClient {
   private token: string | null = null;
 
@@ -25,6 +38,25 @@ class ApiClient {
     return headers;
   }
 
+  private async fallar(response: Response): Promise<never> {
+    let body: any = null;
+    let errorMessage = 'Error en la petición';
+    try {
+      body = await response.json();
+      errorMessage = body.error || body.message || errorMessage;
+    } catch (e) {
+      // If response is not JSON, use status text
+      errorMessage = response.statusText || errorMessage;
+    }
+    throw new ApiError(errorMessage, response.status, body);
+  }
+
+  private async leer<T>(response: Response): Promise<T> {
+    if (!response.ok) return this.fallar(response);
+    if (response.status === 204) return undefined as T;
+    return response.json();
+  }
+
   async get<T>(endpoint: string, params?: Record<string, string>): Promise<T> {
     const url = new URL(`${API_URL}${endpoint}`);
     if (params) {
@@ -37,20 +69,7 @@ class ApiClient {
       method: 'GET',
       headers: this.getHeaders(),
     });
-
-    if (!response.ok) {
-      let errorMessage = 'Error en la petición';
-      try {
-        const error = await response.json();
-        errorMessage = error.error || error.message || errorMessage;
-      } catch (e) {
-        // If response is not JSON, use status text
-        errorMessage = response.statusText || errorMessage;
-      }
-      throw new Error(errorMessage);
-    }
-
-    return response.json();
+    return this.leer<T>(response);
   }
 
   async post<T>(endpoint: string, data?: unknown): Promise<T> {
@@ -59,20 +78,7 @@ class ApiClient {
       headers: this.getHeaders(),
       body: data ? JSON.stringify(data) : undefined,
     });
-
-    if (!response.ok) {
-      let errorMessage = 'Error en la petición';
-      try {
-        const error = await response.json();
-        errorMessage = error.error || error.message || errorMessage;
-      } catch (e) {
-        // If response is not JSON, use status text
-        errorMessage = response.statusText || errorMessage;
-      }
-      throw new Error(errorMessage);
-    }
-
-    return response.json();
+    return this.leer<T>(response);
   }
 
   async put<T>(endpoint: string, data?: unknown): Promise<T> {
@@ -81,20 +87,7 @@ class ApiClient {
       headers: this.getHeaders(),
       body: data ? JSON.stringify(data) : undefined,
     });
-
-    if (!response.ok) {
-      let errorMessage = 'Error en la petición';
-      try {
-        const error = await response.json();
-        errorMessage = error.error || error.message || errorMessage;
-      } catch (e) {
-        // If response is not JSON, use status text
-        errorMessage = response.statusText || errorMessage;
-      }
-      throw new Error(errorMessage);
-    }
-
-    return response.json();
+    return this.leer<T>(response);
   }
 
   async delete<T>(endpoint: string): Promise<T> {
@@ -102,20 +95,7 @@ class ApiClient {
       method: 'DELETE',
       headers: this.getHeaders(),
     });
-
-    if (!response.ok) {
-      let errorMessage = 'Error en la petición';
-      try {
-        const error = await response.json();
-        errorMessage = error.error || error.message || errorMessage;
-      } catch (e) {
-        // If response is not JSON, use status text
-        errorMessage = response.statusText || errorMessage;
-      }
-      throw new Error(errorMessage);
-    }
-
-    return response.json();
+    return this.leer<T>(response);
   }
 
   async patch<T>(endpoint: string, data?: unknown): Promise<T> {
@@ -124,20 +104,7 @@ class ApiClient {
       headers: this.getHeaders(),
       body: data ? JSON.stringify(data) : undefined,
     });
-
-    if (!response.ok) {
-      let errorMessage = 'Error en la petición';
-      try {
-        const error = await response.json();
-        errorMessage = error.error || error.message || errorMessage;
-      } catch (e) {
-        // If response is not JSON, use status text
-        errorMessage = response.statusText || errorMessage;
-      }
-      throw new Error(errorMessage);
-    }
-
-    return response.json();
+    return this.leer<T>(response);
   }
 
   async upload<T>(endpoint: string, formData: FormData): Promise<T> {
@@ -151,20 +118,19 @@ class ApiClient {
       headers,
       body: formData,
     });
+    return this.leer<T>(response);
+  }
 
-    if (!response.ok) {
-      let errorMessage = 'Error en la petición';
-      try {
-        const error = await response.json();
-        errorMessage = error.error || error.message || errorMessage;
-      } catch (e) {
-        // If response is not JSON, use status text
-        errorMessage = response.statusText || errorMessage;
-      }
-      throw new Error(errorMessage);
+  // Descarga binaria (PDF, XML, CDR) con el token.
+  async getBlob(endpoint: string): Promise<Blob> {
+    const headers: HeadersInit = {};
+    if (this.token) {
+      headers['Authorization'] = `Bearer ${this.token}`;
     }
 
-    return response.json();
+    const response = await fetch(`${API_URL}${endpoint}`, { method: 'GET', headers });
+    if (!response.ok) return this.fallar(response);
+    return response.blob();
   }
 }
 

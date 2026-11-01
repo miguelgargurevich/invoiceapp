@@ -32,6 +32,7 @@ import {
   Bar,
 } from 'recharts';
 import { useAuth } from '@/contexts/AuthContext';
+import { AlertasSunat } from '@/components/sunat/AlertasSunat';
 import { MetricCard, Card, Badge, SkeletonMetricCard, Skeleton } from '@/components/common';
 import { cn } from '@/lib/utils';
 import { useCurrency } from '@/lib/hooks/useCurrency';
@@ -355,6 +356,7 @@ export default function DashboardPage({
 
   return (
     <div className="space-y-6">
+      {empresa?.pais === 'PE' && <AlertasSunat locale={locale} />}
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">

@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next';
+import { URL_SITIO } from '@/lib/sitio';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://invoiceapp.vercel.app';
+  const baseUrl = URL_SITIO;
   const currentDate = new Date();
 
   return [

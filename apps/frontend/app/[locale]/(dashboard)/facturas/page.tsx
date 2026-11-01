@@ -98,6 +98,9 @@ export default function FacturasPage({
   const tSub = useTranslations('subscriptionFeatures');
   const router = useRouter();
   const { empresa } = useAuth();
+  useEffect(() => {
+    if (empresa?.pais === 'PE') router.replace(`/${locale}/comprobantes`);
+  }, [empresa?.pais, locale, router]);
   const { formatCurrency } = useCurrency();
   const { subscription, usage, plan, loading: subscriptionLoading } = useSubscription();
   

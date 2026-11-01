@@ -48,6 +48,11 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
   // Check if user is admin based on role
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'SUPER_ADMIN';
 
+  // Empresas de Perú: «Comprobantes» (SUNAT) reemplaza a «Facturas».
+  const items = empresa?.pais === 'PE'
+    ? menuItems.map((item) => (item.href === '/facturas' ? { href: '/comprobantes', icon: Receipt, labelKey: 'vouchers' } : item))
+    : menuItems;
+
   // Extraer la parte de la ruta sin el locale
   const currentPath = '/' + pathname.split('/').slice(2).join('/');
 
@@ -155,7 +160,7 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
         {/* Navegación */}
         <nav className="flex-1 overflow-y-auto py-4">
           <ul className="space-y-1 px-2">
-            {menuItems.map((item) => {
+            {items.map((item) => {
               const isActive = currentPath === item.href || currentPath.startsWith(item.href + '/');
               
               return (

@@ -1,15 +1,24 @@
+const fs = require('fs');
+const path = require('path');
 const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
-const { createClient } = require('@supabase/supabase-js');
 
+// Dos proveedores:
+// - r2: Cloudflare R2 (producción). Requiere R2_* y R2_PUBLIC_URL.
+// - local: disco del backend (desarrollo). Escribe en LOCAL_UPLOADS_DIR (por defecto ./uploads)
+//   y lo sirve app.js en /uploads.
 let r2Client = null;
-let supabaseClient = null;
 
 function getStorageProvider() {
-  return (process.env.STORAGE_PROVIDER || 'supabase').toLowerCase();
+  return (process.env.STORAGE_PROVIDER || 'local').toLowerCase();
 }
 
-function isR2Provider() {
-  return getStorageProvider() === 'r2';
+// Un valor desconocido (p. ej. un STORAGE_PROVIDER heredado) falla en vez de caer en silencio al disco.
+function proveedorActivo() {
+  const proveedor = getStorageProvider();
+  if (proveedor !== 'r2' && proveedor !== 'local') {
+    throw new Error(`STORAGE_PROVIDER desconocido: "${proveedor}". Usa "r2" o "local".`);
+  }
+  return proveedor;
 }
 
 function getR2Client() {
@@ -36,27 +45,48 @@ function getR2Client() {
   return r2Client;
 }
 
-function getSupabaseClient() {
-  if (!supabaseClient) {
-    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY;
+function getLocalUploadsDir() {
+  return path.resolve(process.cwd(), process.env.LOCAL_UPLOADS_DIR || 'uploads');
+}
 
-    if (!supabaseUrl || !supabaseServiceKey) {
-      throw new Error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required for Supabase storage');
-    }
+function getBackendPublicBase() {
+  const base = process.env.PUBLIC_BACKEND_URL || `http://localhost:${process.env.PORT || 4000}`;
+  return base.replace(/\/$/, '');
+}
 
-    supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
+// Ruta en disco de una clave; rechaza cualquier clave que salga de la carpeta de uploads.
+function rutaLocal(key) {
+  if (!key || typeof key !== 'string') {
+    throw new Error('Clave de almacenamiento vacía');
   }
 
-  return supabaseClient;
+  const base = getLocalUploadsDir();
+  const ruta = path.resolve(base, key);
+  if (!ruta.startsWith(base + path.sep)) {
+    throw new Error(`Clave de almacenamiento fuera de la carpeta de uploads: "${key}"`);
+  }
+
+  return ruta;
+}
+
+function codificarClave(key) {
+  return key.split('/').map(encodeURIComponent).join('/');
+}
+
+function decodificarClave(texto) {
+  try {
+    return decodeURIComponent(texto);
+  } catch {
+    return null;
+  }
 }
 
 function getBucketName() {
-  return isR2Provider() ? process.env.R2_BUCKET : 'logos';
+  return process.env.R2_BUCKET;
 }
 
 function getPublicUrl(key) {
-  if (isR2Provider()) {
+  if (proveedorActivo() === 'r2') {
     const publicBase = process.env.R2_PUBLIC_URL;
     if (!publicBase) {
       throw new Error('R2_PUBLIC_URL is required to build public file URLs');
@@ -65,14 +95,14 @@ function getPublicUrl(key) {
     return `${publicBase.replace(/\/$/, '')}/${key}`;
   }
 
-  const { data } = getSupabaseClient().storage.from(getBucketName()).getPublicUrl(key);
-  return data.publicUrl;
+  rutaLocal(key); // valida la clave antes de construir una URL con ella
+  return `${getBackendPublicBase()}/uploads/${codificarClave(key)}`;
 }
 
 async function uploadFile(key, body, options = {}) {
-  const { contentType = 'application/octet-stream', upsert = true } = options;
+  const { contentType = 'application/octet-stream' } = options;
 
-  if (isR2Provider()) {
+  if (proveedorActivo() === 'r2') {
     await getR2Client().send(new PutObjectCommand({
       Bucket: getBucketName(),
       Key: key,
@@ -83,20 +113,15 @@ async function uploadFile(key, body, options = {}) {
     return { publicUrl: getPublicUrl(key) };
   }
 
-  const { error } = await getSupabaseClient()
-    .storage
-    .from(getBucketName())
-    .upload(key, body, { contentType, upsert });
-
-  if (error) {
-    throw new Error(error.message || 'Supabase upload failed');
-  }
+  const ruta = rutaLocal(key);
+  await fs.promises.mkdir(path.dirname(ruta), { recursive: true });
+  await fs.promises.writeFile(ruta, body);
 
   return { publicUrl: getPublicUrl(key) };
 }
 
 async function deleteFile(key) {
-  if (isR2Provider()) {
+  if (proveedorActivo() === 'r2') {
     await getR2Client().send(new DeleteObjectCommand({
       Bucket: getBucketName(),
       Key: key,
@@ -104,25 +129,22 @@ async function deleteFile(key) {
     return;
   }
 
-  const { error } = await getSupabaseClient().storage.from(getBucketName()).remove([key]);
-  if (error) {
-    throw new Error(error.message || 'Supabase delete failed');
-  }
+  // force: borrar un archivo que ya no está no es un error (igual que en R2).
+  await fs.promises.rm(rutaLocal(key), { force: true });
 }
 
 function extractStorageKeyFromUrl(url) {
-  if (!url) return null;
+  if (!url || typeof url !== 'string') return null;
 
-  if (isR2Provider()) {
-    const publicBase = (process.env.R2_PUBLIC_URL || '').replace(/\/$/, '');
-    if (publicBase && url.startsWith(`${publicBase}/`)) {
-      return url.slice(publicBase.length + 1);
-    }
+  const r2Base = (process.env.R2_PUBLIC_URL || '').replace(/\/$/, '');
+  if (r2Base && url.startsWith(`${r2Base}/`)) {
+    return url.slice(r2Base.length + 1);
   }
 
-  const supabaseMatch = url.match(/\/storage\/v1\/object\/public\/[^/]+\/(.+)$/);
-  if (supabaseMatch) {
-    return supabaseMatch[1];
+  const localBases = [`${getBackendPublicBase()}/uploads/`, '/uploads/'];
+  const base = localBases.find((b) => url.startsWith(b));
+  if (base) {
+    return decodificarClave(url.slice(base.length));
   }
 
   return null;

@@ -1,9 +1,11 @@
+import { URL_SITIO } from '@/lib/sitio';
+
 export const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'InvoiceApp',
-  url: 'https://invoiceapp.vercel.app',
-  logo: 'https://invoiceapp.vercel.app/logo.png',
+  url: URL_SITIO,
+  logo: `${URL_SITIO}/logo.png`,
   description: 'Professional invoice and proposal management system for contractors and businesses',
   sameAs: [
     'https://twitter.com/invoiceapp',
@@ -22,7 +24,7 @@ export const webApplicationSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
   name: 'InvoiceApp',
-  url: 'https://invoiceapp.vercel.app',
+  url: URL_SITIO,
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Web Browser',
   offers: {
@@ -49,7 +51,7 @@ export const webApplicationSchema = {
     'Dark Mode Support',
     'Secure Data Storage'
   ],
-  screenshot: 'https://invoiceapp.vercel.app/screenshot.png',
+  screenshot: `${URL_SITIO}/screenshot.png`,
   softwareVersion: '1.0.0',
   datePublished: '2025-01-01',
   author: {
@@ -137,19 +139,19 @@ export const breadcrumbSchema = {
       '@type': 'ListItem',
       position: 1,
       name: 'Home',
-      item: 'https://invoiceapp.vercel.app'
+      item: URL_SITIO
     },
     {
       '@type': 'ListItem',
       position: 2,
       name: 'Features',
-      item: 'https://invoiceapp.vercel.app/features'
+      item: `${URL_SITIO}/features`
     },
     {
       '@type': 'ListItem',
       position: 3,
       name: 'Documentation',
-      item: 'https://invoiceapp.vercel.app/docs'
+      item: `${URL_SITIO}/docs`
     }
   ]
 };

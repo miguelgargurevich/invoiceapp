@@ -38,7 +38,7 @@ export default function LoginPage({
 }) {
   const t = useTranslations('auth');
   const router = useRouter();
-  const { signIn, signInWithGoogle, user, empresa, loading: authLoading } = useAuth();
+  const { signIn, user, empresa, loading: authLoading } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -90,20 +90,6 @@ export default function LoginPage({
   const switchLocale = () => {
     const newLocale = locale === 'es' ? 'en' : 'es';
     router.push(`/${newLocale}/login`);
-  };
-
-  const handleGoogleSignIn = async () => {
-    try {
-      setError('');
-      setIsLoading(true);
-      await signInWithGoogle();
-      // Redirect is handled by Supabase callback
-    } catch (err: unknown) {
-      const error = err as Error;
-      setError(error.message || t('googleSignInError'));
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   if (authLoading) {

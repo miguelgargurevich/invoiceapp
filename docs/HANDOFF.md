@@ -8,10 +8,121 @@
 - Facturación electrónica SUNAT (Perú): núcleo de emisión CONSTRUIDO en la rama local `feat/sunat-diseno` (sin push):
   backend `src/sunat/**` + API `/api/comprobantes` y `/api/sunat` + motor `apps/sunat-engine` (PHP/Greenter).
   E2E contra SUNAT beta: 8/8 aceptados (factura contado, factura crédito+detracción, boleta, NC, ND, baja RA, anulación RC).
-  Suites: `npm test` 92/92, `npm run test:db` 44/44. Falta: frontend, despliegue y verificar parámetros contra la norma.
+  Suites: `npm test` 92/92, `npm run test:db` 44/44.
+- Frontend SUNAT para empresas `PE` CONSTRUIDO en la rama local `feat/sunat-frontend` (sin push): sección `/comprobantes`,
+  pestaña Configuración › SUNAT, menú, alertas y clientes peruanos. Probado en el navegador contra SUNAT beta (ver «Última sesión»).
+  Suites: backend 104/104 y 47/47; frontend 35/35, `tsc` y `next build` en verde. Falta: despliegue y verificar parámetros contra la norma.
 
 ## Última sesión
 
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t7-paginas`, rama `feat/sunatf-t7-paginas`):
+  Tarea 7 del plan del frontend SUNAT (páginas de comprobantes). Hecho, en `apps/frontend/app/[locale]/(dashboard)/comprobantes/`:
+  `page.tsx` (lista con filtros por tipo y estado), `nuevo/page.tsx` (alta; nota de crédito o débito desde `?tipo=&afecta=&motivo=`),
+  `[id]/page.tsx` (detalle: líneas, totales, historial y refresco automático mientras está en proceso) y `[id]/editar/page.tsx`
+  (manda al detalle si el comprobante ya no es borrador). Código copiado del plan: props, imports y claves i18n coincidieron con las
+  firmas reales; no hubo que corregir nada.
+  Pruebas: `npx tsc --noEmit` sin errores (exit 0); `npm test` 35/35 (sin pruebas nuevas: las páginas no tienen pruebas propias);
+  `npx next build` termina con 0 y lista `/[locale]/comprobantes`, `/nuevo`, `/[id]` y `/[id]/editar` (en es y en).
+  Mutaciones de tipo (un prop inventado en cada una de las cuatro páginas → TS2322; restaurada con cp + cmp; `tsc` vuelve a 0): 4 de 4 en rojo.
+  Gotchas: (a) `next lint` roto (ver gotcha c de la Tarea 4): se usó `tsc` y `next build`, que en este repo no hace lint. Los avisos de
+  caché de webpack que salen al build vienen de next-intl, no son errores. (b) El refresco del detalle (cada 5 s) se detiene al llegar a un
+  estado que no está en proceso (`PENDIENTE_ENVIO`, `ERROR_TEMPORAL` y `ANULACION_PENDIENTE` son los que sí lo están), al cumplir
+  24 refrescos (2 min: queda «Actualizar») o al salir de la página. `onCambio` lo reinicia. (c) En `nuevo` y `[id]/editar`, si la carga
+  inicial falla, sale el toast pero la pantalla se queda en el esqueleto (`inicial` sigue en `null`): mejorar con un estado de error.
+  (d) La pantalla no se probó en el navegador (Tarea 10).
+  Pendiente: push y OK de Miguel (sesión principal).
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t9-integracion`, rama `feat/sunatf-t9-integracion`):
+  Tarea 9 del plan del frontend SUNAT (integración: menú, redirección, dashboard y clientes peruanos). Hecho:
+  `components/global/Sidebar.tsx` cambia «Facturas» por «Comprobantes» (`/comprobantes`) cuando `empresa.pais === 'PE'`;
+  `facturas/page.tsx` redirige con `router.replace` a `/comprobantes` si el emisor es peruano; `dashboard/page.tsx` muestra
+  `<AlertasSunat locale={locale} />` solo para PE; `clientes/nuevo` y `clientes/[id]` usan los tipos de documento SUNAT
+  (RUC, DNI, CE, PASAPORTE, OTHER) para PE, con la casilla «Agente de retención» (`esAgenteRetencion`); las opciones de EE. UU.
+  quedan igual. `configuracion/page.tsx`: `?tab=sunat` se acepta en la lista de pestañas permitidas (único cambio).
+  Pruebas: `npx tsc --noEmit` sin errores y `npm test` 35/35. Mutaciones (un archivo cada una, restaurado con `cp` + `cmp`,
+  `tsc` 0 tras restaurar): prop inventado en `AlertasSunat`, en el `<input>` de la casilla (nuevo y detalle), propiedad
+  inventada `paisInventado` en Sidebar y facturas, y `TabInventada` en configuración: 6 de 6 en rojo.
+  Gotchas: `next lint` no se usó (roto en el repo, ver Tarea 4). No hay pruebas de UI para esta tarea: lo verificado es
+  tipado y las mutaciones, no el render en el navegador (eso es la Tarea 10). El `tipoDocumento` inicial de «nuevo» depende
+  de que `empresa` esté cargada al montar; el layout del dashboard espera a `loading` del AuthContext, que pasa a `false`
+  después de `loadEmpresa()`. Commit en la rama; sin push.
+
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t5-componentes`, rama `feat/sunatf-t5-componentes`):
+  Tarea 5 del plan del frontend SUNAT (componentes de estado, acciones, anulación, historial y alertas). Hecho, en
+  `apps/frontend/components/sunat/`: `EstadoSunatBadge.tsx`, `HistorialEnvios.tsx`, `AlertasSunat.tsx`, `AnularModal.tsx` y
+  `AccionesComprobante.tsx`. El código del plan se copió tal cual: ninguna prop ni ícono hubo que corregirlo (cada prop se
+  comprobó contra `components/common/*` y cada ícono contra lucide-react 0.562.0; las claves i18n existen en `es.json` y `en.json`).
+  Pruebas: `npm test` 35/35 (sin pruebas nuevas: el plan no las pide para estos componentes); `npx tsc --noEmit` sin errores.
+  `next lint` no se corrió (roto en el repo, ver gotcha c de la Tarea 4). Mutaciones (un archivo, restaurado con cp + cmp, `tsc` 0 tras restaurar):
+  3 de 3 en rojo con TS2322: `variant="inexistente"` en Badge, `variant="success"` en ConfirmDialog y `iconColor="rojo"` en Modal.
+  Gotchas: (1) `AnularModal` navega a `/comprobantes/nuevo?tipo=07&afecta=…&motivo=01` y `AccionesComprobante` a `/comprobantes/:id/editar`
+  y `/comprobantes/nuevo?tipo=0x&afecta=…`: esas rutas las crea la Tarea 7. (2) `AccionesComprobante` exige la prop `ruc`
+  (la página de la Tarea 7 la pasa como `empresa?.ruc`, plan línea 3013) y `onCambio` para refrescar el comprobante tras emitir o anular.
+  (3) `AlertasSunat` se queda en `null` si la llamada falla: un error de red no se muestra.
+  Pendiente: push y OK de Miguel (sesión principal); `next build` no se corrió.
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t6-form`, rama `feat/sunatf-t6-form`):
+  Tarea 6 del plan del frontend SUNAT (formulario del comprobante). Hecho: `components/sunat/PanelTotales.tsx`, `LineasEditor.tsx`,
+  `CuotasEditor.tsx` y `ComprobanteForm.tsx`, copiados del plan. Ajuste obligatorio: con forma de pago Crédito, «Guardar y emitir»
+  queda deshabilitado si no hay cuotas, si no hay vista previa o si `diferenciaCuotas(f.cuotas, vista.netoPendiente) !== '0.00'`
+  (se importa `diferenciaCuotas` de `@/lib/sunat/formulario`). «Guardar borrador» sigue habilitado.
+  Pruebas: `npx tsc --noEmit` sin errores (exit 0); `npm test` 35/35 (sin pruebas nuevas: estos componentes no tienen pruebas propias).
+  Claves `t('…')` literales de los cuatro archivos (58) comprobadas en `messages/es.json` y `en.json`: todas presentes.
+  Mutaciones (un archivo cada una, copia en scratchpad, restaurado con `cp` + `cmp`, `tsc` vuelve a 0): prop inventado en
+  `<PanelTotales>` dentro de `ComprobanteForm` → TS2322; prop inventado en `<Button>` de `CuotasEditor` → TS2322.
+  Gotchas: (a) `npx next lint` sigue roto (ver gotcha c de la sesión de la Tarea 4), se usó `tsc`. (b) «Guardar borrador» con
+  crédito y sin cuotas da 400: el esquema de borradores (`apps/backend/src/sunat/emision/borradores.js`) tiene `cuotas.min(1)`.
+  Con el botón habilitado, el error sale en la lista del formulario. Decidir si también se deshabilita. (c) `next build` no se corrió;
+  la pantalla no se probó en el navegador.
+  Pendiente: push y OK de Miguel (sesión principal).
+- 2026-11-01 (Claude Code con Sonnet 5.5, delegado en worktree `.claude/worktrees/sunatf-t8-emisor`, rama `feat/sunatf-t8-emisor`):
+  Tarea 8 del plan del frontend SUNAT (configuración del emisor y series). Hecho: `components/sunat/EmisorForm.tsx` (datos fiscales,
+  ambiente BETA/PRODUCCIÓN con RUC exacto para pasar a producción, clave SOL y certificado `.pfx`), `SeriesManager.tsx` (lista y alta de series
+  con `validarSerie`) y `SunatTab.tsx` (invitación a activar si la empresa no es de Perú), más los tres cambios en `configuracion/page.tsx`
+  (+9/−1 líneas): import de `SunatTab` y de `Landmark`, `'sunat'` en `Tab`, `tSunat`, el botón de la pestaña y su panel.
+  Código copiado del plan sin desvíos: tipos y props coincidieron con las firmas reales.
+  Seguridad: `solClave` y `claveCertificado` solo aparecen en su `useState`, en el payload y en su `<Input type="password" autoComplete="new-password">`;
+  ni `console`, ni `localStorage`/`sessionStorage`, ni URL. Se limpian (junto con archivo y confirmación) tras guardar bien; el `.pfx` se lee con FileReader solo dentro de `guardar`.
+  Pruebas: `npx tsc --noEmit` sin errores; `npm test` 35/35. Estos componentes no tienen pruebas propias: 4 mutaciones de tipo
+  (prop inventado en `SeriesManager` y en `Button`, `onGuardado` obligatorio omitido, tipo `'99'` fuera de `TipoComprobante`) rompen `tsc`; al restaurar con cp + cmp vuelve a compilar.
+  Gotchas: (a) `next lint` roto en el repo (se usó `tsc`); (b) `configuracion/page.tsx` (línea ~61) valida `?tab=` contra una lista fija sin `'sunat'`:
+  un enlace `?tab=sunat` NO abre la pestaña (se respetó «solo tres cambios»; la Tarea 9 o una corrección aparte debe añadirlo si hace falta);
+  (c) si el guardado falla, la clave queda en el formulario para reintentar (solo en memoria); (d) no se verificó en navegador ni con `next build`.
+  Pendiente: push y OK de Miguel (sesión principal); verificación real en navegador (Tarea 10).
+- 2026-11-01 (Claude Code con Sonnet 5.5, delegado en worktree `.claude/worktrees/sunatf-t4-formulario`, rama `feat/sunatf-t4-formulario`):
+  Tarea 4 del plan del frontend SUNAT (formulario, cliente de API y hooks). Hecho: `apps/frontend/lib/sunat/formulario.ts`
+  (estado del formulario, `aPayload`, cuotas en céntimos enteros, visibilidad, series y clientes permitidos; solo `import type`),
+  `api.ts` (`sunatApi` y `guardarArchivo`) y `hooks.ts` (`useCatalogosSunat`, `useEmisorSunat`), más `formulario.test.ts` (21 pruebas).
+  Pruebas: `npm test` 35/35 (14 previas + 21); `npx tsc --noEmit` sin errores. Mutaciones (un archivo, restaurado con cp + cmp): 12 de 12 en rojo
+  (diferenciaCuotas con flotantes, repartirCuotas con flotantes, residuo en la primera cuota, detracción/percepción/cuotas en una nota,
+  detracción sin operación 1001, nota con operación 1001, exportación sin forzar 40, `sumarMeses` desbordado, serie sin normalizar,
+  `sumarMeses` sin guarda). Además se pasó la salida de `aPayload` de 8 casos por el `comprobanteSchema` y `calcularComprobante` reales del backend: todos válidos.
+  Desvíos del plan (2, ambos con prueba): (1) `aPayload` manda `serie` en `trim().toUpperCase()`: `validarSerie` acepta minúsculas
+  pero el backend exige `^[FB][A-Z0-9]{3}$`, así que `b001` habría dado 400; (2) `sumarMeses` devuelve `''` si la fecha no es AAAA-MM-DD
+  (antes `toISOString()` lanzaba `RangeError` al borrar el input de fecha de una cuota).
+  Gotchas: (a) `aPayload` con `Credito` y `cuotas: []` manda `cuotas: []` y el backend lo rechaza (`min(1)`): la Tarea 6 debe exigir cuotas antes de guardar;
+  (b) `aCentimos` trunca (no redondea) a 2 decimales, y `diferenciaCuotas` con un `neto` inválido devuelve `NaN.NaN`: el neto siempre debe venir del backend;
+  (c) `npx next lint --file …` falla en este repo por la config de ESLint (`Converting circular structure to JSON` en `.eslintrc.json`), no se pudo correr el lint.
+  Pendiente: push y OK de Miguel (sesión principal); `next build` no se corrió.
+- 2026-11-01 (Claude Code con Haiku 5.5, delegado en worktree `.claude/worktrees/sunatf-t1-catalogos`, rama `feat/sunatf-t1-catalogos`):
+  Tarea 1 del plan del frontend (`docs/superpowers/plans/2026-11-01-sunat-frontend.md`): clientes con `esAgenteRetencion`
+  (POST y PUT de `/api/clientes`, sin tocar el esquema de Prisma: la columna ya existía en la migración `sunat_nucleo`) y
+  `GET /api/sunat/catalogos` (solo Perú) con afectaciones, tipos de operación, unidades, motivos de NC/ND, detracciones y
+  percepciones, servidos desde `src/sunat/catalogos` para que el frontend no tenga copia. Pruebas nuevas:
+  `test/db/sunat-catalogos-clientes.test.js` (3). Suites: `npm test` 92/92; `npm run test:db` 47/47 (44 previas + 3).
+  Mutaciones (una por cambio, todas en rojo y restauradas con `cp` + `cmp`): quitar `esAgenteRetencion` del esquema;
+  PUT sin el campo guarda `false`; quitar `soloPeru` de `/catalogos`; detracción 037 al 10 %.
+  Gotchas: el `apps/backend/node_modules` del worktree es propio; el catálogo de detracciones y percepciones sigue
+  pendiente de verificar contra la norma (ver `src/sunat/catalogos/index.js`).
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t3-base`, rama `feat/sunatf-t3-base`):
+  Tarea 3 del plan del frontend SUNAT (base: cliente de API, tipos, estados, formato, errores e i18n). Hecho:
+  `apps/frontend/lib/api.ts` con `ApiError` (extiende `Error`, conserva `message`, lleva `status` y `body`), `getBlob` y 204 → `undefined`;
+  `lib/sunat/{tipos,estados,formato,errores}.ts` con sus pruebas `*.test.ts`; `Empresa.pais?` en `AuthContext`;
+  namespace `sunat` y `navigation.vouchers` en `messages/es.json` y `en.json` (182 claves cada uno, mismas claves).
+  Scripts `test` (`node --test "lib/**/*.test.ts"`) y `allowImportingTsExtensions` en tsconfig. Pruebas: `npm test` 14/14;
+  `npx tsc --noEmit` sin errores. Mutaciones (un archivo a la vez, restauradas con cp + cmp): 7 de 7 en rojo.
+  Gotchas: (1) la prueba de `fechaCorta` fija `process.env.TZ = 'UTC'`, porque en una Mac en Lima quitar `timeZone` pasaba en verde;
+  (2) Node 26 avisa `MODULE_TYPELESS_PACKAGE_JSON` al correr los `.test.ts` (funciona; quitarlo exigiría `"type"` en el package.json del frontend, no se tocó);
+  (3) el `.test.ts` del plan tenía un `total` que `filasDesdeVista` no declara: `tsc` lo marcó y se quitó del literal de prueba.
+  Pendiente: push y OK de Miguel (sesión principal); `next build` no se corrió.
 - 2026-11-01 (claude-code): revisión de InvoiceApp como base para SUNAT, diseño del núcleo de emisión
   (`docs/superpowers/specs/2026-11-01-sunat-nucleo-emision-design.md`) y plan de implementación
   (`docs/superpowers/plans/2026-11-01-sunat-nucleo-emision.md`).
@@ -276,6 +387,53 @@
   en pg-boss; fechas sin hora al mediodía de Lima en el motor (Greenter escribe en hora de Lima: salían un día antes,
   también las cuotas) y `porcentajeIgv` en el resumen (SUNAT rechazaba el RC con 2992). E2E `scripts/sunat-beta-e2e.js`
   8/8 en beta; guía `docs/sunat/DESPLIEGUE.md`.
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sin-vercel-supabase`, rama `chore/sin-vercel-supabase`):
+  quitar Vercel y Supabase, y dejar el proyecto corriendo en local. Hecho: (1) almacenamiento en `utils/storage.js` con
+  dos proveedores, `r2` y `local` (por defecto). `local` escribe en `LOCAL_UPLOADS_DIR` (por defecto `apps/backend/uploads/`)
+  y devuelve `PUBLIC_BACKEND_URL/uploads/<key>`, que sirve `app.js`; rechaza claves con `../`; se borró
+  `@supabase/supabase-js` del backend; pruebas en `test/unit/storage.test.js` (9). (2) Frontend sin Google ni Supabase:
+  sale `signInWithGoogle` de `AuthContext`, el botón de Google del registro y `lib/supabase.ts`; se desinstalan
+  `@supabase/ssr` y `@supabase/supabase-js` (`--legacy-peer-deps`). (3) Sin Vercel: se borra `vercel.json`; la URL del sitio
+  sale de `NEXT_PUBLIC_SITE_URL` (`apps/frontend/lib/sitio.ts`); CORS sin `*.vercel.app`. (4) `docker-compose.yml`
+  (Postgres 16 en 5435, motor SUNAT en 8089) y README con «Desarrollo local».
+  Verificado: `npm test` 101/101 (92 previas + 9), `npm run test:db` 44/44, `tsc --noEmit` sin errores, `next build` exit 0,
+  `docker compose config` OK, CORS probado contra el backend en marcha (5 orígenes permitidos, 2 `*.vercel.app` bloqueados).
+  Mutaciones del proveedor local (quitar el chequeo `../`, default `supabase`, `extractStorageKeyFromUrl` local roto): 3 de 3 en rojo.
+  Commits: `fdbc23f` (almacenamiento), `d97c959` (login sin Google y frontend sin Supabase), `5cc4893` (Vercel, local, docs).
+  Gotchas: (a) con `STORAGE_PROVIDER=supabase` (o cualquier valor distinto de `r2`/`local`) el backend ahora FALLA al subir,
+  en vez de caer al disco: en Coolify cambiar a `r2` antes de desplegar. (b) En producción sin `r2` los archivos van al disco
+  del contenedor y se pierden al redesplegar. (c) `NEXT_PUBLIC_SITE_URL` debe estar definida antes de `next build`; si no,
+  metadatos y sitemap apuntan a `localhost:3000`. (d) `robots.txt` ya no tiene la línea `Sitemap:` (el formato exige URL
+  absoluta): añadirla en producción. (e) Si el frontend de producción estaba en Vercel, su dominio ya no está en CORS: añadirlo
+  a `FRONTEND_URL` o `CORS_ORIGINS`. `ALLOWED_ORIGINS` sigue aceptado como alias. (f) Fuera de «Permitidos» siguen menciones a
+  Supabase/Vercel en `docs/PROMPT_SISTEMA_FACTURACION.md`, `docs/DIGITAL_SIGNATURE_IMPLEMENTATION.md` y
+  `docs/RESEND_EMAIL_SETUP.md`: pendiente de limpiar. (g) `configuracion/page.tsx` conserva `signedInWithGoogle` y
+  `googleAccountManaged`; ya no tienen efecto (el provider de Supabase no existe). (h) `docker compose` fija `name: invoiceapp`,
+  así el volumen es `invoiceapp_invoiceapp-pg` en cualquier carpeta. (i) `@types/node` y `undici-types` pasaron a `dev` en el
+  lock del frontend (npm lo recalcula al quitar Supabase). (j) Al cargar `app.js` para la prueba de CORS, dotenv leyó el
+  `.env` local (sin imprimirlo): los datos de prueba se pasaron por variables de entorno.
+
+- 2026-11-01 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/sunatf-t2-archivos`, rama `feat/sunatf-t2-archivos`): Tarea 2 del plan del frontend SUNAT (XML y CDR servidos por el backend, almacén local para desarrollo). Hecho: `src/sunat/almacenLocal.js` (`crearAlmacenLocal(dir)`: rechaza claves que salen de la carpeta con «Clave de archivo inválida»); `src/sunat/index.js` exporta `crearAlmacen(env)` (con `SUNAT_ALMACEN_DIR` usa disco; con `NODE_ENV=production` lanza error; sin él, R2 privado) y `iniciarSunat` lo usa; `src/routes/comprobantes.js` ya NO redirige (302) el XML/CDR: los lee del almacén y los envía con `Content-Disposition: attachment; filename="<RUC>-<TT>-<SERIE>-<NUM>.xml|.cdr.zip"`; `.env.example` con `SUNAT_ALMACEN_DIR=`. Pruebas: `test/unit/sunat/almacenLocal.test.js` (3) y `test/db/rutas.test.js` ajustado al nuevo XML (200, nombre, CDR 404 antes de emitir). Verificado: `npm test` 95/95 y `npm run test:db` 44/44 contra `invoiceapp_test_t2`. Mutaciones (todas en rojo y restauradas con `cmp`): quitar el chequeo de `../`; permitir `SUNAT_ALMACEN_DIR` en producción; volver al 302; Content-Disposition sin el nombre SUNAT. Gotchas: el CDR con `cdrKey` real (200) no tiene prueba en esta suite (la de rutas solo cubre el 404 previo a emitir); `almacenLocal.js` se escribió antes de correr la prueba roja, así que en rojo solo falló `crearAlmacen`. El `prisma:error` del log de la prueba «series y alertas» es esperado (prueba de serie duplicada). Commit en la rama; sin push.
+
+- 2026-11-01 (claude-code, Opus 5.5): integrada la limpieza «sin Vercel ni Supabase» (Haiku, rama chore/sin-vercel-supabase)
+  en feat/sunat-frontend + fix de next.config (imágenes de /uploads con host/puerto de NEXT_PUBLIC_API_URL). Verificado:
+  backend 104/104, BD 47/47, frontend 35/35, tsc ok. App levantada en local: `docker compose up -d` (Postgres 5435 +
+  motor SUNAT 8089), backend en :4001 (el :4000 lo usa el proyecto house) con STORAGE_PROVIDER=local, frontend en :3000.
+  Probado en navegador: registro, login, empresa, subida de logo a disco (/uploads, 200 image/png vía next/image) y dashboard.
+  Gotchas: el frontend instala solo con `npm ci --legacy-peer-deps`; `prisma/seed_plans.sql` no está en git (.gitignore
+  ignora *.sql): sin él el registro no crea suscripción; el `.env` local de backend aún dice STORAGE_PROVIDER=r2
+  (cámbialo a local para no subir a R2 en desarrollo); quedan menciones a Supabase en dos docs históricos
+  (DIGITAL_SIGNATURE_IMPLEMENTATION.md y PROMPT_SISTEMA_FACTURACION.md).
+- 2026-11-01 (claude-code, Opus 5.5, orquestador, sesión aparte): ejecución del plan del frontend delegando por riesgo
+  (Haiku: 1, 2, 3, 5, 6, 7, 9; Sonnet: 4 y 8), cada tarea revisada e integrada con cherry-pick en `feat/sunat-frontend`.
+  Ajustes fuera del plan: «Guardar y emitir» bloqueado si el crédito no tiene cuotas que sumen el neto; serie en mayúsculas en
+  el payload; `?tab=sunat` abre la pestaña. Tarea 10 (verificación real, local): backend en :4002 contra la BD de pruebas
+  `invoiceapp_e2e` (5436) con `SUNAT_ALMACEN_DIR`, motor del docker-compose (8089, token `dev`) apuntando a SUNAT beta, frontend
+  `next dev` en :3001. En el navegador: activar SUNAT (MODDATOS + `.pfx` autofirmado) → menú «Comprobantes»; series F001/B001/FC01;
+  clientes RUC 20131312955 y DNI 12345678; factura F001-1 con vista previa (100 grav. + 50 exon. + IGV 18 = 168) → Aceptado sin
+  recargar → PDF/XML/CDR → anulada (RA) → Anulado; boleta B001-1 aceptada; factura a crédito F001-2 con «Repartir en 2 cuotas»
+  (50.00 + 50.01) aceptada; nota de crédito FC01-1 sobre F001-2 aceptada; regresión de empresa US: «Facturas» y formulario
+  de clientes sin cambios.
 
 ## Próximos pasos
 
@@ -286,7 +444,15 @@
 - [ ] Decidir `.gitignore`: ignora `prisma/migrations/` y `*.sql` desde el commit inicial (la migración SUNAT entró con `git add -f`).
 - [ ] Verificar contra la norma vigente: porcentajes de detracción/percepción, umbrales (700) y plazos (3 y 7 días) de `catalogos/parametros.js`.
 - [ ] Probar la firma con un `.pfx` real de una entidad certificadora peruana (solo se probó con autofirmados).
-- [ ] Plan del frontend para empresas `PE` (formulario de comprobante, emisor/certificado, estados, anular, PDF).
+- [x] Diseño y plan del frontend para empresas `PE`: `docs/superpowers/specs/2026-11-01-sunat-frontend-design.md` y
+  `docs/superpowers/plans/2026-11-01-sunat-frontend.md` (rama `feat/sunat-frontend`, 10 tareas).
+- [x] Ejecutar el plan del frontend (10 tareas; verificado en navegador contra SUNAT beta).
+- [ ] Frontend: la tarjeta «Create Invoice» del dashboard lleva a `/facturas/nueva` también para empresas `PE` (debería ir a `/comprobantes/nuevo`).
+- [ ] Frontend: una nota de crédito o débito ofrece a su vez «Nota de crédito/débito» (las acciones no distinguen notas).
+- [ ] Frontend: en `nuevo?afecta=` y `[id]/editar`, si la carga falla, la pantalla queda en el esqueleto (falta estado de error).
+- [ ] Decidir: «Guardar borrador» con crédito y sin cuotas da 400 (el backend exige ≥ 1 cuota); hoy se muestra el error.
+- [ ] El redondeo con IGV incluido se vio en vivo: precio 100 con IGV → total 100.01 (ver la decisión pendiente de céntimos).
+- [ ] `next lint` está roto en el repo (`.eslintrc.json`: estructura circular); se verificó con `tsc` y `next build`.
 - [ ] Despliegue según `docs/sunat/DESPLIEGUE.md` (con OK de Miguel; `prisma migrate status` contra producción primero).
 - [ ] Diseñar subproyectos 3 (guía de remisión), 4 (retención/percepción) y 5 (SaaS/PSE).
 
@@ -296,8 +462,11 @@
 - 2026-11-01: cola con pg-boss sobre el Postgres existente (sin Redis).
 - 2026-11-01: se reutiliza `ConfiguracionSeries` (tipos 01/03/07/08) y `Cliente.tipoDocumento` no se migra (se lee con `codigoDocIdentidad`).
 - 2026-11-01: se extiende `Factura` con `Empresa.pais` (`US` | `PE`) en vez de una tabla paralela; `estadoSunat` separado de `estado` (cobranza).
+- 2026-11-01: almacenamiento por defecto `local` (disco del backend); `r2` en producción. Un `STORAGE_PROVIDER` desconocido falla en vez de caer al disco. CORS sin patrones: solo localhost, `FRONTEND_URL` y `CORS_ORIGINS`.
 
 ## Gotchas
 
 - `Factura` hoy se puede editar estando «emitida» y «anular» solo cambia el estado: con SUNAT eso deja de valer para empresas `PE`.
 - Los montos se calculan con flotantes (`subtotal * taxRate`): pasar a `decimal.js` antes de emitir a SUNAT.
+- `STORAGE_PROVIDER` en Coolify: si sigue en `supabase`, el backend falla al subir archivos. Debe ser `r2` (producción) o `local` (desarrollo).
+- Quedan menciones de Supabase/Vercel fuera de «Permitidos» (`docs/PROMPT_SISTEMA_FACTURACION.md`, `docs/DIGITAL_SIGNATURE_IMPLEMENTATION.md`, `docs/RESEND_EMAIL_SETUP.md`).

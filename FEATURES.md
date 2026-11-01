@@ -82,7 +82,7 @@ InvoiceApp is a comprehensive, web-based invoice and proposal management system 
 - **Styling**: Tailwind CSS
 - **Backend**: Node.js, Express
 - **Database**: PostgreSQL with Prisma ORM
-- **Storage**: Supabase Storage
+- **Storage**: Cloudflare R2 en producción, disco local en desarrollo
 - **PDF Generation**: html2canvas, jsPDF
 - **Authentication**: JWT-based authentication
 - **Internationalization**: next-intl
@@ -116,7 +116,7 @@ InvoiceApp is a comprehensive, web-based invoice and proposal management system 
 - **Data Encryption**: Secure data transmission
 - **User Permissions**: Role-based access control
 - **Audit Trail**: Track all changes and actions
-- **Secure File Storage**: Encrypted file storage with Supabase
+- **Secure File Storage**: Private file storage (Cloudflare R2 in production, local disk in development)
 
 ## API Integration
 
@@ -170,7 +170,7 @@ InvoiceApp provides RESTful APIs for:
 
 ## Contact
 
-- Website: https://invoiceapp.vercel.app
+- Website: la URL del despliegue (NEXT_PUBLIC_SITE_URL)
 - Email: support@invoiceapp.com
 - Documentation: https://docs.invoiceapp.com
 

@@ -20,7 +20,7 @@ async function main() {
   // await prisma.cliente.deleteMany();
   // await prisma.empresa.deleteMany();
 
-  // Usuario de prueba (esto debe venir de Supabase Auth)
+  // Usuario de prueba: el id tiene que existir como UserProfile (regístrate en /register o POST /api/auth/register)
   const userId = '63d8dead-c546-49ff-90f2-826c7a5cb3f1';
 
   // Crear empresa de prueba
@@ -538,7 +538,7 @@ async function main() {
   console.log('   5. P001-5 - Propuesta vencida (vencida)');
   console.log('\n👤 Para probar el sistema:');
   console.log(`   - RUC Empresa: ${empresa.ruc}`);
-  console.log(`   - Debes crear un usuario en Supabase Auth y vincularlo con este userId: ${userId}`);
+  console.log(`   - Regístrate en /register (o POST /api/auth/register) y pon el id de ese perfil en lugar de: ${userId}`);
 }
 
 main()

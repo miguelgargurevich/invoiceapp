@@ -42,6 +42,7 @@ export interface Empresa {
   taxRate?: number | string;
   serieFactura: string;
   serieProforma: string;
+  pais?: string; // 'US' | 'PE': 'PE' activa la facturación electrónica SUNAT
   userId: string;
   createdAt: string;
   updatedAt: string;
@@ -53,7 +54,6 @@ interface AuthContextType {
   loading: boolean;
   empresa: Empresa | null;
   signIn: (email: string, password: string) => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshEmpresa: () => Promise<void>;
@@ -177,10 +177,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await loadEmpresa();
   };
 
-  const signInWithGoogle = async () => {
-    throw new Error('Google login no está disponible en auth local');
-  };
-
   const signUp = async (email: string, password: string, name: string, empresaData?: any) => {
     const response: any = await apiClient.post('/auth/register', { email, password, name, empresaData });
     const token = response?.session?.access_token;
@@ -235,7 +231,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         empresa,
         signIn,
-        signInWithGoogle,
         signUp,
         signOut,
         refreshEmpresa,

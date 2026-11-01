@@ -5,6 +5,32 @@ const { responderError, soloPeru } = require('../sunat/http');
 const { cifrar } = require('../sunat/seguridad/cifrado');
 const { parametro } = require('../sunat/catalogos/parametros');
 const { diasDesdeEmision } = require('../sunat/emision/plazos');
+const {
+  UNIDADES, MOTIVOS_NOTA_CREDITO, MOTIVOS_NOTA_DEBITO, DETRACCION_CODIGOS, PERCEPCION_REGIMENES,
+} = require('../sunat/catalogos');
+
+const aLista = (mapa) => Object.entries(mapa).map(([codigo, descripcion]) => ({ codigo, descripcion }));
+const conPorcentaje = (mapa) => Object.entries(mapa).map(([codigo, d]) => ({ codigo, descripcion: d.descripcion, porcentaje: d.porcentaje }));
+
+// Catálogos que muestra la interfaz: salen de src/sunat/catalogos para que el frontend no tenga una copia.
+const CATALOGOS_INTERFAZ = Object.freeze({
+  afectaciones: [
+    { codigo: '10', descripcion: 'Gravado' },
+    { codigo: '20', descripcion: 'Exonerado' },
+    { codigo: '30', descripcion: 'Inafecto' },
+    { codigo: '40', descripcion: 'Exportación' },
+  ],
+  tiposOperacion: [
+    { codigo: '0101', descripcion: 'Venta interna' },
+    { codigo: '0200', descripcion: 'Exportación' },
+    { codigo: '1001', descripcion: 'Operación sujeta a detracción' },
+  ],
+  unidades: aLista(UNIDADES),
+  motivosNotaCredito: aLista(MOTIVOS_NOTA_CREDITO),
+  motivosNotaDebito: aLista(MOTIVOS_NOTA_DEBITO),
+  detracciones: conPorcentaje(DETRACCION_CODIGOS),
+  percepciones: conPorcentaje(PERCEPCION_REGIMENES),
+});
 
 const emisorSchema = z.object({
   ubigeo: z.string().regex(/^\d{6}$/, 'El ubigeo tiene 6 dígitos'),
@@ -129,6 +155,8 @@ function crearRouterSunat({ prisma, obtenerSunat, auth = [authenticateToken, get
       throw error;
     }
   }));
+
+  router.get('/catalogos', soloPeru, (req, res) => res.json(CATALOGOS_INTERFAZ));
 
   router.get('/alertas', soloPeru, manejar(async (req, res) => {
     const ahora = new Date();

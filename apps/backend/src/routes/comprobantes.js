@@ -101,13 +101,23 @@ function crearRouterComprobantes({
     return res.status(201).json(nuevo);
   }));
 
-  for (const [ruta, campo] of [['xml', 'xmlKey'], ['cdr', 'cdrKey']]) {
+  // El backend lee el archivo y lo envía: el fetch autenticado del navegador no sigue bien una
+  // redirección a otro dominio, y así no se expone ninguna URL del bucket privado.
+  const ARCHIVOS = {
+    xml: { campo: 'xmlKey', tipo: 'application/xml', extension: 'xml' },
+    cdr: { campo: 'cdrKey', tipo: 'application/zip', extension: 'cdr.zip' },
+  };
+  for (const [ruta, archivo] of Object.entries(ARCHIVOS)) {
     router.get(`/:id/${ruta}`, manejar(async (req, res) => {
-      const f = await buscar(req);
-      if (!f?.[campo]) return res.status(404).json({ error: 'Archivo no disponible' });
+      const f = await buscar(req, INCLUDE_COMPROBANTE);
+      if (!f?.[archivo.campo]) return res.status(404).json({ error: 'Archivo no disponible' });
       const sunat = await servicios(res);
       if (!sunat) return undefined;
-      return res.redirect(302, await sunat.almacen.urlFirmada(f[campo]));
+      const contenido = await sunat.almacen.leer(f[archivo.campo]);
+      return res
+        .type(archivo.tipo)
+        .set('Content-Disposition', `attachment; filename="${nombreBase(f.empresa, f)}.${archivo.extension}"`)
+        .send(contenido);
     }));
   }
 

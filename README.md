@@ -4,13 +4,11 @@
 [![Express.js](https://img.shields.io/badge/Express.js-4-green?logo=express)](https://expressjs.com/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma)](https://www.prisma.io/)
-[![Supabase](https://img.shields.io/badge/Supabase-Auth-3ECF8E?logo=supabase)](https://supabase.com/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 > **A comprehensive, production-ready invoicing and billing system for contractors, freelancers, and small businesses.** Create professional invoices, manage proposals, track payments, collect digital signatures, and streamline your entire billing workflow.
 
-🌐 **Live Demo**: [https://invoiceapp.vercel.app](https://invoiceapp.vercel.app)  
 📚 **Documentation**: [View Full Features](./FEATURES.md)  
 🤖 **AI-Friendly**: Optimized for ChatGPT, Claude, and other AI assistants
 
@@ -100,7 +98,7 @@ Work from any device
 - [Next.js 14](https://nextjs.org/) - React framework with App Router
 - [TypeScript](https://www.typescriptlang.org/) - Type-safe development
 - [Tailwind CSS](https://tailwindcss.com/) - Utility-first styling
-- [next-intl](https://next-intl-docs.vercel.app/) - Internationalization
+- [next-intl](https://next-intl.dev/) - Internationalization
 
 **Backend**
 - [Node.js](https://nodejs.org/) - JavaScript runtime
@@ -109,9 +107,9 @@ Work from any device
 - [PostgreSQL](https://www.postgresql.org/) - Relational database
 
 **Services**
-- [Supabase](https://supabase.com/) - Authentication & file storage
+- [Cloudflare R2](https://www.cloudflare.com/developer-platform/r2/) - File storage in production (local disk in development)
 - [Resend](https://resend.com/) - Email delivery
-- [Vercel](https://vercel.com/) - Hosting & deployment
+- [Docker](https://www.docker.com/) - Local PostgreSQL and SUNAT engine
 
 **Key Libraries**
 - html2canvas + jsPDF - PDF generation
@@ -355,10 +353,9 @@ Work from any device
 
 ### 🔐 Security & Authentication
 
-**Supabase Authentication**
-- Secure email/password login
-- Google OAuth integration (optional)
-- Password recovery via email
+**Local Authentication**
+- Secure email/password login (JWT issued by the backend)
+- Passwords hashed with bcrypt
 
 **API Security**
 - JWT-based authentication
@@ -368,7 +365,7 @@ Work from any device
 **Data Protection**
 - Row-level security in database
 - User data isolation (multi-tenant)
-- Secure file uploads to Supabase Storage
+- Secure file uploads (Cloudflare R2 in production, local disk in development)
 
 **Session Management**
 - Automatic session refresh
@@ -416,14 +413,13 @@ Work from any device
 - **Framework**: Express.js
 - **Database**: PostgreSQL
 - **ORM**: Prisma
-- **Authentication**: Supabase Auth
-- **File Storage**: Supabase Storage
+- **Authentication**: JWT (local, bcrypt password hashes)
+- **File Storage**: Cloudflare R2 (production) or local disk (development)
 - **Email**: Resend
 
 ### Infrastructure
-- **Database Hosting**: Supabase
-- **Backend Hosting**: Render
-- **Frontend Hosting**: Vercel
+- **Database**: PostgreSQL 16 (Docker in development)
+- **Production deployment**: Coolify (separate from this repository)
 
 ## 📁 Project Structure
 
@@ -450,68 +446,55 @@ InvoiceApp/
 │       │   └── utils/        # Prisma client, helpers
 │       └── prisma/           # Database schema & migrations
 │
-├── docs/                     # Documentation
-└── supabase/                 # Supabase migrations
+└── docs/                     # Documentation
 ```
 
-## 🚀 Getting Started
+## 🚀 Desarrollo local
 
 ### Prerequisites
 
 - Node.js 18+
 - npm or yarn
-- PostgreSQL database (Supabase recommended)
+- Docker (PostgreSQL y motor SUNAT en desarrollo)
 
-### Installation
+### Pasos
 
-1. **Clone the repository**
+1. **Clone the repository and install dependencies**
 ```bash
 git clone https://github.com/yourusername/invoiceapp.git
 cd invoiceapp
-```
-
-2. **Install dependencies**
-```bash
 npm install
 ```
 
-3. **Configure environment variables**
-
-Create `.env` files based on the examples:
-
-**Backend** (`apps/backend/.env`):
-```env
-DATABASE_URL="postgresql://..."
-DIRECT_URL="postgresql://..."
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-RESEND_API_KEY=your-resend-api-key
-FRONTEND_URL=http://localhost:3000
+2. **Start PostgreSQL and the SUNAT engine**
+```bash
+docker compose up -d
 ```
+PostgreSQL listens on `localhost:5435` (user `postgres`, password `postgres`, database `invoiceapp`). The SUNAT engine listens on `localhost:8089`.
 
-**Frontend** (`apps/frontend/.env.local`):
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
-NEXT_PUBLIC_API_URL=http://localhost:4000/api
+3. **Create the environment files**
+```bash
+cp apps/backend/.env.example apps/backend/.env
+cp apps/frontend/.env.example apps/frontend/.env.local
 ```
+Change `JWT_SECRET` in `apps/backend/.env`. With `STORAGE_PROVIDER=local` (the default), uploaded files are written to `apps/backend/uploads/`.
 
-4. **Set up the database**
+4. **Create the database tables**
 ```bash
 cd apps/backend
-npx prisma migrate deploy
-npx prisma generate
+npx prisma db push
+cd ../..
 ```
 
 5. **Start the development servers**
 ```bash
-# From root directory - starts both frontend and backend
+# From the root directory: starts frontend and backend
 npm run dev
 ```
 
 This will start:
-- **Backend**: http://localhost:4000
 - **Frontend**: http://localhost:3000
+- **Backend**: http://localhost:4000
 
 ### Individual Commands
 
@@ -551,16 +534,15 @@ node prisma/seed.js
 
 ## 🔐 Authentication
 
-The system uses **Supabase Auth** for user authentication.
+Authentication is local: the backend issues its own JWT. There is no external identity provider.
 
 ### Supported Methods
-- Email/Password authentication
-- Google OAuth (optional)
+- Email/Password authentication (`POST /api/auth/login`)
 
 ### User Setup
-1. Users register through the app or are created via Supabase Admin
-2. Each user is linked to a company (Empresa)
-3. JWT tokens are used for API authentication
+1. Users register at `/register` or with `POST /api/auth/register`
+2. Each user is linked to a company (Empresa), created in the setup wizard
+3. JWT tokens are sent as `Authorization: Bearer <token>`
 
 ## 📦 Available Scripts
 
@@ -654,14 +636,14 @@ npx prisma generate
 Check environment variables in `apps/backend/.env`
 
 ### Error: Invalid token
-Ensure Supabase environment variables are correctly set in both frontend and backend.
+Ensure `JWT_SECRET` in `apps/backend/.env` is the same value the token was issued with.
 
 ## 📄 API Documentation
 
 ### Authentication
-All API endpoints (except `/health` and `/api/auth/*`) require authentication via Bearer token:
+All API endpoints (except `/health` and `/api/auth/*`) require authentication via Bearer token (the JWT returned by `POST /api/auth/login`):
 ```
-Authorization: Bearer <supabase_access_token>
+Authorization: Bearer <jwt>
 ```
 
 ### Response Format
@@ -679,19 +661,12 @@ Authorization: Bearer <supabase_access_token>
 }
 ```
 
-## 🚀 Deployment
+## 🚀 Producción
 
-### Frontend (Vercel)
-1. Connect repository to Vercel
-2. Set environment variables
-3. Deploy automatically on push
-
-### Backend (Render)
-1. Create Web Service on Render
-2. Set root directory to `apps/backend`
-3. Build command: `npm install && npx prisma generate`
-4. Start command: `npm start`
-5. Set environment variables
+The production deployment is separate from this repository and runs on Coolify. Before deploying:
+- Set `STORAGE_PROVIDER=r2` with the `R2_*` variables (`local` stores files on the server disk).
+- Set `NEXT_PUBLIC_SITE_URL` on the frontend (metadata, sitemap) and `FRONTEND_URL` or `CORS_ORIGINS` on the backend.
+- For SUNAT, follow `docs/sunat/DESPLIEGUE.md`.
 
 ## 📄 License
 
@@ -704,4 +679,4 @@ Made with ❤️ by **Gargurevich Dev**
 Tel: 966918363  
 Email: contacto@gargurevich.com
 
-Built with Next.js, Express, Prisma, and Supabase
+Built with Next.js, Express, and Prisma

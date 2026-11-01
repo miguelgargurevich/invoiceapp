@@ -15,7 +15,8 @@ const clienteSchema = z.object({
   email: z.string().email().optional().nullable().or(z.literal('')).or(z.literal(null)),
   telefono: z.string().min(1, 'Phone is required'),
   contacto: z.string().optional().nullable(),
-  notas: z.string().optional().nullable()
+  notas: z.string().optional().nullable(),
+  esAgenteRetencion: z.boolean().optional()
 });
 
 // GET /api/clientes - Listar clientes
@@ -137,7 +138,8 @@ router.post('/', authenticateToken, getEmpresaFromUser, checkLimit('client'), as
       email: req.body.email && req.body.email.trim() !== '' ? req.body.email : null,
       telefono: req.body.telefono || null,
       contacto: req.body.contacto || null,
-      notas: req.body.notas || null
+      notas: req.body.notas || null,
+      esAgenteRetencion: req.body.esAgenteRetencion === true
     };
 
     console.log('[CLIENTES] Mapped data:', JSON.stringify(mappedData, null, 2));
@@ -187,7 +189,8 @@ router.put('/:id', authenticateToken, getEmpresaFromUser, async (req, res) => {
       email: req.body.email || null,
       telefono: req.body.telefono,
       contacto: req.body.contacto,
-      notas: req.body.notas
+      notas: req.body.notas,
+      esAgenteRetencion: typeof req.body.esAgenteRetencion === 'boolean' ? req.body.esAgenteRetencion : undefined
     };
 
     const validatedData = clienteSchema.partial().parse(mappedData);
