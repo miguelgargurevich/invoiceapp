@@ -486,6 +486,11 @@ npx prisma db push
 cd ../..
 ```
 
+   Then load the subscription plans (without them, sign-up creates no subscription):
+```bash
+docker exec -i invoiceapp-postgres-1 psql -U postgres -d invoiceapp < apps/backend/prisma/seed_plans.sql
+```
+
 5. **Start the development servers**
 ```bash
 # From the root directory: starts frontend and backend
