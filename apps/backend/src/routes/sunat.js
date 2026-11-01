@@ -2,6 +2,7 @@ const express = require('express');
 const { z } = require('zod');
 const { authenticateToken, getEmpresaFromUser } = require('../middleware/auth');
 const { responderError, soloPeru } = require('../sunat/http');
+const { getOrCreateSubscription } = require('../middleware/subscription');
 const { cifrar } = require('../sunat/seguridad/cifrado');
 const { parametro } = require('../sunat/catalogos/parametros');
 const { diasDesdeEmision } = require('../sunat/emision/plazos');
@@ -129,6 +130,9 @@ function crearRouterSunat({ prisma, obtenerSunat, auth = [authenticateToken, get
       prisma.emisorSunat.upsert({ where: { empresaId: req.empresa.id }, create: { empresaId: req.empresa.id, ...datos }, update: datos }),
       prisma.empresa.update({ where: { id: req.empresa.id }, data: { pais: 'PE' } }),
     ]);
+    // La empresa ya es PE: su suscripción pasa al plan del país nuevo (no conserva uno de EE. UU.).
+    // Si esto fallara, cada lectura posterior de la suscripción la corrige igual.
+    await getOrCreateSubscription(req.empresa.id, prisma);
     return res.json(vistaEmisor(emisor));
   }));
 

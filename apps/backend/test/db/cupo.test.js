@@ -59,10 +59,10 @@ test('los borradores no gastan cupo', async () => {
   assert.equal((await servicio().emitir(b.id, ctx.empresa.id)).estadoSunat, 'PENDIENTE_ENVIO');
 });
 
-test('plan ilimitado y empresa sin suscripción no tienen tope', async () => {
-  await emitidas(12);
-  assert.equal((await servicio().emitir((await borrador()).id, ctx.empresa.id)).estadoSunat, 'PENDIENTE_ENVIO');
+// La premisa anterior («sin suscripción no hay tope») era la falla: ahora sin suscripción rige pe-gratis (ver seguridad-planes.test.js).
+test('un plan ilimitado no tiene tope', async () => {
   await suscribirA('pe-empresa');
+  await emitidas(12);
   assert.equal((await servicio().emitir((await borrador()).id, ctx.empresa.id)).estadoSunat, 'PENDIENTE_ENVIO');
 });
 

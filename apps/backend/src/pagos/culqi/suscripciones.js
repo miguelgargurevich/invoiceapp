@@ -1,5 +1,5 @@
 // Contratar, cancelar y sincronizar suscripciones de Culqi (planes de Perú).
-const { planGratisDe } = require('../../planes/catalogo');
+const { pasarAGratis: pasarAGratisPlan } = require('../../planes/gratis');
 
 class ErrorContratacion extends Error {
   constructor(mensaje) { super(mensaje); this.name = 'ErrorContratacion'; }
@@ -125,14 +125,8 @@ function crearServicioCulqi({ prisma, culqi, ahora = () => new Date() }) {
   }
 
   async function pasarAGratis(sub) {
-    const gratis = await planGratisDe(prisma, 'PE');
-    await prisma.subscription.update({
-      where: { id: sub.id },
-      data: {
-        planId: gratis.id, status: 'ACTIVE', billingInterval: 'MONTH', culqiSubscriptionId: null, culqiCardId: null,
-        cancelAtPeriodEnd: false, canceledAt: ahora(), currentPeriodStart: ahora(), currentPeriodEnd: null,
-      },
-    });
+    const actualizada = await pasarAGratisPlan(prisma, sub, { pais: 'PE', ahora, canceladaEn: ahora() });
+    if (!actualizada) throw new ErrorContratacion('No hay un plan gratis de Perú configurado');
   }
 
   async function procesarEvento(eventoId) {

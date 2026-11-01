@@ -1,73 +1,88 @@
 const prisma = require('../utils/prisma');
 const { planGratisDe } = require('../planes/catalogo');
+const { pasarAGratis } = require('../planes/gratis');
 
-/**
- * Get or create subscription for empresa
- * Creates a trial subscription if none exists
- */
-async function getOrCreateSubscription(empresaId) {
-  let subscription = await prisma.subscription.findUnique({
-    where: { empresaId },
-    include: { plan: true }
-  });
+const INCLUIR = { plan: true, empresa: { select: { pais: true } } };
 
-  if (!subscription) {
-    const empresa = await prisma.empresa.findUnique({ where: { id: empresaId }, select: { pais: true } });
-    const pais = empresa?.pais || 'US';
+// Lee la fila y el país de la empresa (sin dejar `empresa` pegado a la suscripción que sale de aquí).
+async function leer(empresaId, cliente) {
+  const fila = await cliente.subscription.findUnique({ where: { empresaId }, include: INCLUIR });
+  if (!fila) return null;
+  const { empresa, ...sub } = fila;
+  return { sub, pais: empresa?.pais || 'US' };
+}
 
-    if (pais === 'PE') {
-      // Perú: sin prueba gratuita; arranca en el plan gratis.
-      const gratis = await planGratisDe(prisma, 'PE');
-      if (!gratis) return null;
-      subscription = await prisma.subscription.create({
-        data: { empresaId, planId: gratis.id, status: 'ACTIVE', billingInterval: 'MONTH', currentPeriodStart: new Date() },
-        include: { plan: true }
-      });
-      console.log(`[SUBSCRIPTION] Created pe-gratis subscription for empresa ${empresaId}`);
-      return subscription;
-    }
-
-    // Find starter plan (EE. UU.)
-    const starterPlan = await prisma.plan.findFirst({
-      where: { 
-        pais: 'US',
-        OR: [
-          { slug: 'starter' },
-          { isActive: true }
-        ]
-      },
+// Crea la suscripción inicial de la empresa según su país. Devuelve false si no hay plan para sembrarla.
+async function crear(empresaId, pais, cliente) {
+  let data;
+  if (pais === 'PE') {
+    // Perú: sin prueba gratuita; arranca en el plan gratis.
+    const gratis = await planGratisDe(cliente, 'PE');
+    if (!gratis) return false;
+    data = { empresaId, planId: gratis.id, status: 'ACTIVE', billingInterval: 'MONTH', currentPeriodStart: new Date() };
+  } else {
+    // EE. UU.: prueba gratuita en el plan inicial.
+    const starterPlan = await cliente.plan.findFirst({
+      where: { pais: 'US', OR: [{ slug: 'starter' }, { isActive: true }] },
       orderBy: { displayOrder: 'asc' }
     });
-
-    if (!starterPlan) {
-      return null;
-    }
-
+    if (!starterPlan) return false;
     const now = new Date();
     const trialEnd = new Date(now);
     trialEnd.setDate(trialEnd.getDate() + (starterPlan.trialDays || 14));
+    data = {
+      empresaId, planId: starterPlan.id, status: 'TRIALING', billingInterval: 'MONTH',
+      trialStart: now, trialEnd, currentPeriodStart: now, currentPeriodEnd: trialEnd,
+      invoicesUsed: 0, proposalsUsed: 0, storageUsedMb: 0
+    };
+  }
+  // skipDuplicates (ON CONFLICT DO NOTHING): dos lecturas a la vez no rompen la transacción en curso.
+  await cliente.subscription.createMany({ data: [data], skipDuplicates: true });
+  console.log(`[SUBSCRIPTION] Created ${pais === 'PE' ? 'pe-gratis' : 'trial'} subscription for empresa ${empresaId}`);
+  return true;
+}
 
-    subscription = await prisma.subscription.create({
-      data: {
-        empresaId,
-        planId: starterPlan.id,
-        status: 'TRIALING',
-        billingInterval: 'MONTH',
-        trialStart: now,
-        trialEnd: trialEnd,
-        currentPeriodStart: now,
-        currentPeriodEnd: trialEnd,
-        invoicesUsed: 0,
-        proposalsUsed: 0,
-        storageUsedMb: 0
-      },
-      include: { plan: true }
-    });
+/**
+ * Suscripción VIGENTE de la empresa: la única que deben mirar los permisos y los límites.
+ * Corrige la base al leer:
+ *  - sin fila: la crea con el plan del país de la empresa (PE → pe-gratis);
+ *  - plan de otro país que la empresa: la pasa al plan gratis del país de la empresa;
+ *  - Culqi cancelada con el período vencido: la baja a pe-gratis;
+ *  - Culqi en PAST_DUE: no toca la base (Culqi reintenta el cobro) pero devuelve el plan efectivo pe-gratis
+ *    (`plan`) y el contratado en `planContratado`.
+ * Devuelve null si no hay un plan que asignar (quien la use debe negar el acceso).
+ * @param {string} empresaId
+ * @param {object} [cliente] prisma o `tx` de una transacción
+ * @param {{ahora?: () => Date}} [opciones] reloj (para pruebas y para la fecha de emisión)
+ */
+async function getOrCreateSubscription(empresaId, cliente = prisma, { ahora = () => new Date() } = {}) {
+  let leida = await leer(empresaId, cliente);
+  if (!leida) {
+    const empresa = await cliente.empresa.findUnique({ where: { id: empresaId }, select: { pais: true } });
+    if (!(await crear(empresaId, empresa?.pais || 'US', cliente))) return null;
+    leida = await leer(empresaId, cliente);
+    if (!leida) return null;
+  }
+  const { sub, pais } = leida;
 
-    console.log(`[SUBSCRIPTION] Created trial subscription for empresa ${empresaId}`);
+  if (sub.plan.pais !== pais) {
+    // Ej.: una empresa de EE. UU. con plan de EE. UU. que pasó a Perú.
+    if (sub.stripeSubscriptionId) {
+      console.warn(`[SUBSCRIPTION] La empresa ${empresaId} cambió de país con una suscripción de Stripe activa: revisa y cancélala`);
+    }
+    return pasarAGratis(cliente, sub, { pais, ahora });
   }
 
-  return subscription;
+  if (sub.proveedorPago === 'culqi') {
+    const vencida = sub.cancelAtPeriodEnd && sub.currentPeriodEnd && new Date(sub.currentPeriodEnd) < ahora();
+    if (vencida) return pasarAGratis(cliente, sub, { pais: 'PE', ahora, canceladaEn: ahora() });
+    if (sub.status === 'PAST_DUE') {
+      const gratis = await planGratisDe(cliente, 'PE');
+      if (!gratis) return null;
+      return { ...sub, plan: gratis, planContratado: sub.plan };
+    }
+  }
+  return sub;
 }
 
 /**

@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const { authenticateToken } = require('../middleware/auth');
 const prisma = require('../utils/prisma');
+const { getOrCreateSubscription } = require('../middleware/subscription');
 const { uploadFile, deleteFile, getStorageProvider } = require('../utils/storage');
 
 // Configuración de multer para upload temporal
@@ -97,6 +98,8 @@ router.put('/mi-empresa', authenticateToken, async (req, res) => {
         data: empresaData
       });
       console.log('[EMPRESA] Updated successfully:', resultEmpresa.id);
+      // Cambio de país: la suscripción pasa al plan gratis del país nuevo.
+      if (resultEmpresa.pais !== existingEmpresa.pais) await getOrCreateSubscription(resultEmpresa.id);
     } else {
       // Create new empresa
       console.log('[EMPRESA] Creating new empresa for user:', req.user.id);

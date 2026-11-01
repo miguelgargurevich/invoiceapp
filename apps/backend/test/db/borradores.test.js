@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { prisma, limpiar, crearEmpresaPeru, crearAceptado } = require('./ayuda');
+const { sembrarPlanesPe } = require('./planes-ayuda');
 const {
   guardarBorrador, previsualizar, datosDesdeFactura, comprobanteSchema, INCLUDE_COMPROBANTE, INCLUDE_RESPUESTA,
 } = require('../../src/sunat/emision/borradores');
@@ -80,6 +81,13 @@ test('una nota de crédito copia la referencia del documento aceptado', async ()
 });
 
 test('percepción exige que el emisor sea agente de percepción', async () => {
+  // Con un plan que incluye regímenes: sin plan peruano vigente la percepción se niega antes (falla cerrado).
+  const planes = await sembrarPlanesPe();
+  await prisma.subscription.upsert({
+    where: { empresaId: ctx.empresa.id },
+    create: { empresaId: ctx.empresa.id, planId: planes['pe-negocio'].id, status: 'ACTIVE' },
+    update: { planId: planes['pe-negocio'].id, status: 'ACTIVE' },
+  });
   await assert.rejects(
     guardarBorrador({ prisma, empresa: ctx.empresa, userId: ctx.user.id, datos: datosFactura({ percepcion: { regimen: '51' } }) }),
     /agente de percepción/,

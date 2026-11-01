@@ -53,6 +53,15 @@ router.post('/request', async (req, res) => {
       });
     }
     
+    // Igual que checkFeature: la suscripción debe estar ACTIVE o TRIALING y el plan incluir la función.
+    if (!['ACTIVE', 'TRIALING'].includes(subscription.status)) {
+      return res.status(403).json({
+        error: 'Subscription is not active',
+        code: 'SUBSCRIPTION_INACTIVE',
+        status: subscription.status
+      });
+    }
+
     if (!subscription.plan.hasDigitalSignatures) {
       return res.status(403).json({
         error: 'Digital signatures are not available in your current plan',

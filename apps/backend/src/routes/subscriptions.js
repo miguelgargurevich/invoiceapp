@@ -3,6 +3,7 @@ const router = express.Router();
 const { authenticateToken, getEmpresaFromUser } = require('../middleware/auth');
 const prisma = require('../utils/prisma');
 const { planGratisDe } = require('../planes/catalogo');
+const { getOrCreateSubscription } = require('../middleware/subscription');
 
 // Initialize Stripe with your secret key
 // Remember to switch to your live secret key in production
@@ -31,17 +32,12 @@ router.get('/plans', async (req, res) => {
 // ==========================================
 router.get('/current', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
-    let subscription = await prisma.subscription.findUnique({
-      where: { empresaId: req.empresa.id },
-      include: {
-        plan: true
-      }
-    });
+    // Suscripción vigente (la crea si falta y corrige plan de otro país, Culqi vencida o en mora).
+    const subscription = await getOrCreateSubscription(req.empresa.id);
 
-    // If no subscription exists, return error (don't auto-create anymore)
     if (!subscription) {
-      console.log('[SUBSCRIPTIONS] No subscription found for empresa:', req.empresa.id);
-      return res.status(404).json({ 
+      console.log('[SUBSCRIPTIONS] No plan available for empresa:', req.empresa.id);
+      return res.status(404).json({
         error: 'Empresa no encontrada para este usuario',
         message: 'Please complete the setup wizard to initialize your subscription'
       });
@@ -459,67 +455,10 @@ router.post('/switch-to-free', authenticateToken, getEmpresaFromUser, async (req
 // ==========================================
 router.get('/usage', authenticateToken, getEmpresaFromUser, async (req, res) => {
   try {
-    let subscription = await prisma.subscription.findUnique({
-      where: { empresaId: req.empresa.id },
-      include: {
-        plan: {
-          select: {
-            maxInvoicesPerMonth: true,
-            maxClients: true,
-            maxProposalsPerMonth: true,
-            maxStorageMb: true
-          }
-        }
-      }
-    });
-
-    // If no subscription exists, create a free trial (same logic as /current)
+    // Suscripción vigente: la crea con el plan del país de la empresa si falta (nunca un plan de otro país).
+    const subscription = await getOrCreateSubscription(req.empresa.id);
     if (!subscription) {
-      const starterPlan = await prisma.plan.findFirst({
-        where: { 
-          OR: [
-            { slug: 'starter' },
-            { isActive: true }
-          ]
-        },
-        orderBy: { displayOrder: 'asc' }
-      });
-
-      if (!starterPlan) {
-        return res.status(404).json({ error: 'No plans available' });
-      }
-
-      const now = new Date();
-      const trialEnd = new Date(now);
-      trialEnd.setDate(trialEnd.getDate() + (starterPlan.trialDays || 14));
-
-      subscription = await prisma.subscription.create({
-        data: {
-          empresaId: req.empresa.id,
-          planId: starterPlan.id,
-          status: 'TRIALING',
-          billingInterval: 'MONTH',
-          trialStart: now,
-          trialEnd: trialEnd,
-          currentPeriodStart: now,
-          currentPeriodEnd: trialEnd,
-          invoicesUsed: 0,
-          proposalsUsed: 0,
-          storageUsedMb: 0
-        },
-        include: {
-          plan: {
-            select: {
-              maxInvoicesPerMonth: true,
-              maxClients: true,
-              maxProposalsPerMonth: true,
-              maxStorageMb: true
-            }
-          }
-        }
-      });
-
-      console.log(`[SUBSCRIPTIONS] Created trial subscription for usage - empresa ${req.empresa.id}`);
+      return res.status(404).json({ error: 'No plans available' });
     }
 
     // Get actual counts from the database
