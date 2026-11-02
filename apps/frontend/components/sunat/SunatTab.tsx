@@ -16,6 +16,12 @@ interface Props {
 export function SunatTab({ ruc, esPeru, onGuardado }: Props) {
   const t = useTranslations('sunat.emisor');
   const [activando, setActivando] = useState(false);
+  // Al guardar el emisor por primera vez el backend crea las series estándar: se vuelve a montar la lista para verlas.
+  const [versionSeries, setVersionSeries] = useState(0);
+  const alGuardar = async () => {
+    await onGuardado();
+    setVersionSeries((v) => v + 1);
+  };
 
   if (!esPeru && !activando) {
     return (
@@ -35,8 +41,8 @@ export function SunatTab({ ruc, esPeru, onGuardado }: Props) {
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{t('titulo')}</h2>
-      <EmisorForm ruc={ruc} onGuardado={onGuardado} />
-      {esPeru && <SeriesManager />}
+      <EmisorForm ruc={ruc} onGuardado={alGuardar} />
+      {esPeru && <SeriesManager key={versionSeries} />}
     </div>
   );
 }
