@@ -1782,6 +1782,7 @@
     "featureNotAvailable": "La función {feature} no está disponible en tu plan actual",
     "featureNotAvailableDesc": "Actualiza tu plan para desbloquear {feature} y muchas más funciones poderosas.",
     "currentPlan": "Plan actual",
+    "disponibleDesde": "Disponible desde el plan {plan}",
     "viewPlans": "Ver Planes",
     "upgrade": "Actualizar",
     "limitReached": "Has alcanzado el límite de {resource}",

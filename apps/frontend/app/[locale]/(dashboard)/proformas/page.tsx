@@ -16,7 +16,7 @@ import {
   SkeletonMetricCard,
   type Column,
 } from '@/components/common';
-import { UpgradeModal, UsageLimitModal, ProBadge } from '@/components/common/UpgradePrompt';
+import { UpgradeModal, UsageLimitModal, PlanBadge } from '@/components/common/UpgradePrompt';
 
 import { formatDate } from '@/lib/utils';
 import { useCurrency, getProposalStatusInfo, type ProposalDocument } from '@/lib/hooks';
@@ -415,7 +415,7 @@ export default function ProformasPage({
         >
           <FileBarChart className="w-5 h-5 mr-2" />
           {t('create')}
-          {!hasProposalsFeature && <ProBadge className="ml-2" />}
+          {!hasProposalsFeature && <PlanBadge funcion="proformas" className="ml-2" />}
         </Button>
       </div>
 
@@ -425,7 +425,7 @@ export default function ProformasPage({
         onClose={() => setShowUpgradeModal(false)}
         feature={tSub('proposalsFeature')}
         featureDescription={tSub('proposalsFeatureDesc')}
-        requiredPlan="pro"
+        funcion="proformas"
       />
 
       {/* Limit Modal when proposal limit reached */}
