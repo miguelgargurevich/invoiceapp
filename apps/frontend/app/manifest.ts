@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Facturo',
     short_name: 'Facturo',
-    description: 'Facturo: comprehensive invoice and proposal management system for contractors and businesses',
+    description: 'Facturo: facturación electrónica SUNAT para emprendedores y pymes del Perú',
     start_url: '/',
     display: 'standalone',
     background_color: '#FFFFFF',
@@ -15,7 +15,7 @@ export default function manifest(): MetadataRoute.Manifest {
       { src: '/marca/favicon.svg', sizes: 'any', type: 'image/svg+xml' },
     ],
     categories: ['business', 'finance', 'productivity'],
-    lang: 'en',
+    lang: 'es',
     dir: 'ltr',
   };
 }

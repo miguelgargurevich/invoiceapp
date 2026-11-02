@@ -2,11 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { usePreferences } from '@/contexts/PreferencesContext';
 import { Button, Card, Input, Textarea, LoadingSpinner } from '@/components/common';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
@@ -22,7 +21,6 @@ import {
   Shield,
   Save,
   Upload,
-  Globe,
   X,
   ImageIcon,
   Settings,
@@ -41,11 +39,9 @@ export default function ConfiguracionPage({
   const tSub = useTranslations('subscription');
   const tSunat = useTranslations('sunat.emisor');
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const { user, empresa, refreshEmpresa } = useAuth();
   const { theme, setTheme, fontSize, setFontSize } = useTheme();
-  const { updatePreferences } = usePreferences();
 
   const [activeTab, setActiveTab] = useState<Tab>('empresa');
   const [saving, setSaving] = useState(false);
@@ -330,23 +326,6 @@ export default function ConfiguracionPage({
       console.error('Error saving user:', error);
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleChangeLanguage = async (newLocale: string) => {
-    try {
-      // Guardar preferencia en BD, localStorage y cookie
-      await updatePreferences({ locale: newLocale as 'es' | 'en' });
-      
-      // Pequeña espera para asegurar que la cookie se haya guardado
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Redirigir a la nueva ruta con el idioma
-      const newPath = pathname.replace(`/${locale}`, `/${newLocale}`);
-      router.push(newPath);
-      router.refresh(); // Forzar refresh para que el middleware lea la nueva cookie
-    } catch (error) {
-      console.error('[CONFIG] Error changing language:', error);
     }
   };
 
@@ -919,38 +898,6 @@ export default function ConfiguracionPage({
                   </div>
                 </div>
 
-                {/* Language */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                    {t('language')}
-                  </label>
-                  <div className="flex gap-4">
-                    <button
-                      onClick={() => handleChangeLanguage('es')}
-                      className={cn(
-                        'flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all',
-                        locale === 'es'
-                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                          : 'border-gray-200 dark:border-gray-700'
-                      )}
-                    >
-                      <Globe className="w-4 h-4" />
-                      <span>Español</span>
-                    </button>
-                    <button
-                      onClick={() => handleChangeLanguage('en')}
-                      className={cn(
-                        'flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all',
-                        locale === 'en'
-                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                          : 'border-gray-200 dark:border-gray-700'
-                      )}
-                    >
-                      <Globe className="w-4 h-4" />
-                      <span>English</span>
-                    </button>
-                  </div>
-                </div>
               </div>
             </Card>
           )}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import {
   FileText,
@@ -17,43 +17,8 @@ import {
 
 export function HowItWorksSection() {
   const t = useTranslations('landing');
-  const locale = useLocale();
 
-  // Colores y degradados por paso (los mismos en ambos idiomas).
-  // Timeline steps matching proposal flow: Created → Sent → Signed → Invoiced → Paid
-  const stepsEn = [
-    {
-      icon: FileText,
-      color: 'blue',
-      gradient: 'from-primary-500 to-primary-700',
-      shadow: 'shadow-primary-500/30'
-    },
-    {
-      icon: Send,
-      color: 'indigo',
-      gradient: 'from-primary-500 to-primary-700',
-      shadow: 'shadow-primary-500/30'
-    },
-    {
-      icon: PenTool,
-      color: 'violet',
-      gradient: 'from-violet-500 to-violet-700',
-      shadow: 'shadow-violet-500/30'
-    },
-    {
-      icon: FileText,
-      color: 'amber',
-      gradient: 'from-amber-500 to-amber-700',
-      shadow: 'shadow-amber-500/30'
-    },
-    {
-      icon: DollarSign,
-      color: 'emerald',
-      gradient: 'from-emerald-500 to-emerald-700',
-      shadow: 'shadow-emerald-500/30'
-    },
-  ];
-
+  // Crear cuenta, conectar certificado, emitir, respuesta de SUNAT, cobrar.
   // Español (Perú): crear cuenta, conectar certificado, emitir, respuesta de SUNAT, cobrar.
   const stepsEs = [
     { icon: UserPlus, color: 'blue', gradient: 'from-primary-500 to-primary-700', shadow: 'shadow-primary-500/30' },
@@ -63,7 +28,7 @@ export function HowItWorksSection() {
     { icon: Wallet, color: 'emerald', gradient: 'from-emerald-500 to-emerald-700', shadow: 'shadow-emerald-500/30' },
   ];
 
-  const steps = locale === 'es' ? stepsEs : stepsEn;
+  const steps = stepsEs;
 
   return (
     <section className="py-20 md:py-32 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950 relative overflow-hidden">

@@ -141,7 +141,7 @@ export default function CompanyStep({ data, onUpdate, onNext, onPrev }: CompanyS
             <button
               type="button"
               aria-pressed={data.pais === 'US'}
-              onClick={() => onUpdate({ pais: 'US', currency: 'USD', taxName: 'Tax', taxRate: 0, taxEnabled: false })}
+              onClick={() => onUpdate({ pais: 'US', currency: 'USD', taxName: 'Impuesto', taxRate: 0, taxEnabled: false })}
               className={`px-4 py-3 rounded-xl border-2 text-sm font-semibold transition-all ${
                 data.pais === 'US' ? 'border-white/40 bg-white/10 text-white' : 'border-white/10 bg-white/5 text-white/70 hover:border-white/20'
               }`}

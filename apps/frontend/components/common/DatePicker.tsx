@@ -3,7 +3,7 @@
 import { forwardRef, useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { format } from 'date-fns';
-import { es, enUS } from 'date-fns/locale';
+import { es } from 'date-fns/locale';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
@@ -17,7 +17,6 @@ interface DatePickerProps {
   disabled?: boolean;
   minDate?: Date;
   maxDate?: Date;
-  locale?: 'es' | 'en';
   className?: string;
 }
 
@@ -32,7 +31,6 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       disabled = false,
       minDate,
       maxDate,
-      locale = 'en',
       className,
     },
     ref
@@ -68,7 +66,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     }, [isOpen]);
 
     const actualPlaceholder = placeholder || t('selectDate');
-    const dateLocale = locale === 'es' ? es : enUS;
+    const dateLocale = es;
 
     const daysInMonth = new Date(
       currentMonth.getFullYear(),
@@ -133,10 +131,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       );
     };
 
-    const dayNames =
-      locale === 'es'
-        ? ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
-        : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
     return (
       <div ref={ref} className={cn('relative', className)}>
@@ -276,7 +271,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                   }}
                   className="flex-1 text-sm text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 py-1 rounded"
                 >
-                  {locale === 'es' ? 'Hoy' : 'Today'}
+                  Hoy
                 </button>
                 <button
                   type="button"
@@ -286,7 +281,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                   }}
                   className="flex-1 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 py-1 rounded"
                 >
-                  {locale === 'es' ? 'Limpiar' : 'Clear'}
+                  Limpiar
                 </button>
               </div>
             </div>

@@ -140,13 +140,11 @@ export default function ProductsReportPage({
               label={t('fromDate')}
               value={dateRange.from}
               onChange={(date) => setDateRange({ ...dateRange, from: date || new Date() })}
-              locale={locale as 'es' | 'en'}
             />
             <DatePicker
               label={t('toDate')}
               value={dateRange.to}
               onChange={(date) => setDateRange({ ...dateRange, to: date || new Date() })}
-              locale={locale as 'es' | 'en'}
             />
           </div>
           <Button onClick={loadReportData} disabled={loading} className="w-full sm:w-auto">

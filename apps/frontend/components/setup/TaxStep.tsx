@@ -26,9 +26,9 @@ interface TaxStepProps {
 }
 
 // Vista previa con la moneda elegida en el paso anterior (antes siempre mostraba «$»).
-function formatearPrevia(monto: number, moneda: string, idioma: string) {
+function formatearPrevia(monto: number, moneda: string) {
   try {
-    return new Intl.NumberFormat(idioma === 'es' ? 'es-PE' : 'en-US', { style: 'currency', currency: moneda }).format(monto);
+    return new Intl.NumberFormat('es-PE', { style: 'currency', currency: moneda }).format(monto);
   } catch {
     return `${moneda} ${monto.toFixed(2)}`;
   }
@@ -58,7 +58,7 @@ export default function TaxStep({ data, onUpdate, onNext, onPrev }: TaxStepProps
 
   const handlePresetSelect = (preset: typeof TAX_PRESETS[0]) => {
     if (preset.rate === 0) {
-      onUpdate({ taxEnabled: false, taxRate: 0, taxName: 'Tax' });
+      onUpdate({ taxEnabled: false, taxRate: 0, taxName: 'Impuesto' });
     } else {
       onUpdate({ 
         taxEnabled: true, 
@@ -148,7 +148,7 @@ export default function TaxStep({ data, onUpdate, onNext, onPrev }: TaxStepProps
                 type="text"
                 value={data.taxName}
                 onChange={(e) => onUpdate({ taxName: e.target.value })}
-                placeholder="VAT, IGV, IVA..."
+                placeholder="IGV, IVA, impuesto..."
                 className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all"
               />
             </div>
@@ -179,17 +179,17 @@ export default function TaxStep({ data, onUpdate, onNext, onPrev }: TaxStepProps
         <div className="space-y-1">
           <div className="flex justify-between text-white/70">
             <span>Subtotal</span>
-            <span>{formatearPrevia(1000, data.currency, data.locale)}</span>
+            <span>{formatearPrevia(1000, data.currency)}</span>
           </div>
           {data.taxEnabled && (
             <div className="flex justify-between text-white/70">
               <span>{data.taxName} ({data.taxRate}%)</span>
-              <span>{formatearPrevia((1000 * data.taxRate) / 100, data.currency, data.locale)}</span>
+              <span>{formatearPrevia((1000 * data.taxRate) / 100, data.currency)}</span>
             </div>
           )}
           <div className="flex justify-between text-white font-bold text-lg pt-2 border-t border-white/10">
             <span>Total</span>
-            <span>{formatearPrevia(1000 + (data.taxEnabled ? (1000 * data.taxRate) / 100 : 0), data.currency, data.locale)}</span>
+            <span>{formatearPrevia(1000 + (data.taxEnabled ? (1000 * data.taxRate) / 100 : 0), data.currency)}</span>
           </div>
         </div>
       </div>

@@ -16,7 +16,7 @@ export function formatCurrency(amount: number | string | null | undefined, curre
   return `${symbol} ${(isNaN(numericAmount) ? 0 : numericAmount).toFixed(2)}`;
 }
 
-export function formatDate(date: string | Date | null | undefined, locale: string = 'en-US'): string {
+export function formatDate(date: string | Date | null | undefined, locale: string = 'es-PE'): string {
   if (!date) return '-';
   const d = typeof date === 'string' ? new Date(date) : date;
   if (isNaN(d.getTime())) return '-';
@@ -27,7 +27,7 @@ export function formatDate(date: string | Date | null | undefined, locale: strin
   });
 }
 
-export function formatDateTime(date: string | Date | null | undefined, locale: string = 'en-US'): string {
+export function formatDateTime(date: string | Date | null | undefined, locale: string = 'es-PE'): string {
   if (!date) return '-';
   const d = typeof date === 'string' ? new Date(date) : date;
   if (isNaN(d.getTime())) return '-';

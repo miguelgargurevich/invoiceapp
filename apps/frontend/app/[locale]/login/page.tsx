@@ -9,9 +9,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { 
-  Eye, EyeOff, Mail, Lock, Globe, Moon, Sun, 
+  Eye, EyeOff, Mail, Lock, Moon, Sun,
   ArrowLeft, FileText, Users, Zap, Shield, CheckCircle2,
-  Sparkles, Hand
+  Sparkles, Hand, Coffee
 } from 'lucide-react';
 import { IconoFacturo } from '@/components/marca/LogoFacturo';
 import { useAuth } from '@/contexts/AuthContext';
@@ -25,10 +25,10 @@ type LoginForm = {
 };
 
 const features = [
-  { icon: FileText, text: 'Professional Invoices', textEs: 'Facturas Profesionales' },
-  { icon: Users, text: 'Client Management', textEs: 'Gestión de Clientes' },
-  { icon: Zap, text: 'Fast & Easy', textEs: 'Rápido y Fácil' },
-  { icon: Shield, text: 'Secure & Reliable', textEs: 'Seguro y Confiable' },
+  { icon: FileText, text: 'Facturas Profesionales' },
+  { icon: Users, text: 'Gestión de Clientes' },
+  { icon: Zap, text: 'Rápido y Fácil' },
+  { icon: Shield, text: 'Seguro y Confiable' },
 ];
 
 export default function LoginPage({
@@ -87,11 +87,6 @@ export default function LoginPage({
     }
   };
 
-  const switchLocale = () => {
-    const newLocale = locale === 'es' ? 'en' : 'es';
-    router.push(`/${newLocale}/login`);
-  };
-
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
@@ -141,13 +136,10 @@ export default function LoginPage({
           <div className="space-y-8">
             <div>
               <h2 className="text-2xl font-semibold text-white mb-2">
-                {locale === 'es' ? 'Facturación simplificada' : 'Simplified Invoicing'}
+                Facturación simplificada
               </h2>
               <p className="text-primary-200">
-                {locale === 'es' 
-                  ? 'Todo lo que necesitas para gestionar tu negocio en un solo lugar.'
-                  : 'Everything you need to manage your business in one place.'
-                }
+                Todo lo que necesitas para gestionar tu negocio en un solo lugar.
               </p>
             </div>
 
@@ -164,7 +156,7 @@ export default function LoginPage({
                     <feature.icon className="w-5 h-5 text-white" />
                   </div>
                   <span className="text-white font-medium text-sm">
-                    {locale === 'es' ? feature.textEs : feature.text}
+                    {feature.text}
                   </span>
                 </motion.div>
               ))}
@@ -188,7 +180,7 @@ export default function LoginPage({
                 </div>
                 <div>
                   <p className="text-white font-medium text-sm">María González</p>
-                  <p className="text-primary-200 text-xs">{locale === 'es' ? 'Contratista de Construcción' : 'Construction Contractor'}</p>
+                  <p className="text-primary-200 text-xs">Contratista de Construcción</p>
                 </div>
               </footer>
             </blockquote>
@@ -210,29 +202,21 @@ export default function LoginPage({
             className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            {locale === 'es' ? 'Volver al inicio' : 'Back to home'}
+            Volver al inicio
           </Link>
-          
+
           <div className="flex items-center gap-2">
             <button
               onClick={toggleTheme}
               className="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+              title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+              aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
             >
               {theme === 'dark' ? (
                 <Sun className="w-5 h-5 text-slate-500 dark:text-slate-400" />
               ) : (
                 <Moon className="w-5 h-5 text-slate-500" />
               )}
-            </button>
-            <button
-              onClick={switchLocale}
-              className="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1.5"
-            >
-              <Globe className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-              <span className="text-sm font-medium text-slate-600 dark:text-slate-400 uppercase">
-                {locale === 'es' ? 'EN' : 'ES'}
-              </span>
             </button>
           </div>
         </div>
@@ -410,20 +394,21 @@ export default function LoginPage({
             {/* Legal Links */}
             <div className="mt-6 flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-slate-400 dark:text-slate-500">
               <Link href={`/${locale}/terms`} className="hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                {locale === 'es' ? 'Términos' : 'Terms'}
+                Términos
               </Link>
               <Link href={`/${locale}/privacy`} className="hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                {locale === 'es' ? 'Privacidad' : 'Privacy'}
+                Privacidad
               </Link>
               <Link href={`/${locale}/contact`} className="hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                {locale === 'es' ? 'Contacto' : 'Contact'}
+                Contacto
               </Link>
             </div>
 
             {/* Footer credit */}
             <div className="mt-4 text-center">
-              <p className="text-xs text-slate-400 dark:text-slate-500">
-                ☕ Powered by — <span className="font-medium">Gargurevich Dev</span>
+              <p className="inline-flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+                <Coffee className="w-3.5 h-3.5" aria-hidden="true" />
+                Desarrollado por <span className="font-medium">Gargurevich Dev</span>
               </p>
             </div>
           </motion.div>

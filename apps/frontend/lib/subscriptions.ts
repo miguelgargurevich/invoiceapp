@@ -87,7 +87,7 @@ export async function getPlans(pais: 'US' | 'PE' = 'US'): Promise<Plan[]> {
   const response = await fetch(`${apiUrl}/subscriptions/plans?pais=${pais}`);
 
   if (!response.ok) {
-    throw new Error('Failed to fetch plans');
+    throw new Error('No se pudieron cargar los planes');
   }
   
   return response.json();
@@ -97,7 +97,7 @@ export async function getCurrentSubscription(): Promise<SubscriptionResponse> {
   return api.get<SubscriptionResponse>('/subscriptions/current');
 }
 
-export async function createCheckoutSession(planId: string, billingInterval: 'monthly' | 'yearly', locale: string = 'en'): Promise<CheckoutSessionResponse> {
+export async function createCheckoutSession(planId: string, billingInterval: 'monthly' | 'yearly', locale: string = 'es'): Promise<CheckoutSessionResponse> {
   return api.post<CheckoutSessionResponse>('/subscriptions/create-checkout-session', {
     planId,
     billingInterval,
@@ -105,7 +105,7 @@ export async function createCheckoutSession(planId: string, billingInterval: 'mo
   });
 }
 
-export async function createPortalSession(locale: string = 'en'): Promise<PortalSessionResponse> {
+export async function createPortalSession(locale: string = 'es'): Promise<PortalSessionResponse> {
   return api.post<PortalSessionResponse>('/subscriptions/create-portal-session', {
     locale,
   });

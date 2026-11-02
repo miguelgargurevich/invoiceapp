@@ -17,19 +17,12 @@ test('porcentajeAhorro da el ahorro entero frente a doce meses del mensual', () 
   assert.equal(porcentajeAhorro(0, 0), 0);
 });
 
-test('la vista previa en español usa series peruanas y no muestra dólares', () => {
-  const es = datosVistaPrevia('es');
-  assert.equal(es.valores[1], 'S/ 18,450.00');
+test('la vista previa usa series peruanas y no muestra dólares', () => {
+  const vista = datosVistaPrevia();
+  assert.equal(vista.valores[1], 'S/ 18,450.00');
   assert.deepEqual(
-    es.filas?.map((f) => f.numero),
+    vista.filas?.map((f) => f.numero),
     ['F001-000123', 'B001-000045', 'FC01-000002'],
   );
-  assert.equal(es.dominio, 'facturo.gargurevich.dev');
-});
-
-test('la vista previa en inglés queda como estaba (sin filas de comprobantes)', () => {
-  const en = datosVistaPrevia('en');
-  assert.equal(en.valores[1], '$48,500');
-  assert.equal(en.filas, undefined);
-  assert.equal(en.dominio, 'app.facturo.pe');
+  assert.equal(vista.dominio, 'facturo.gargurevich.dev');
 });

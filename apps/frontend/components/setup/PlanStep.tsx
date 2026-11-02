@@ -62,7 +62,6 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
   const [plans, setPlans] = useState<Plan[]>([]);
   const [selectedPlanId, setSelectedPlanId] = useState(data.selectedPlan || '');
   const [billingInterval, setBillingInterval] = useState<'monthly' | 'yearly'>('yearly');
-  const locale = data.locale || 'en';
 
   const calculateYearlySavings = (plan: Plan) => {
     if (!plan.priceMonthly || !plan.priceYearly) return 0;
@@ -123,20 +122,17 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
           <Crown className="w-8 h-8 text-white" />
         </div>
         <h2 className="text-2xl font-bold text-white mb-2">
-          {locale === 'es' ? 'Elige tu plan' : 'Choose your plan'}
+          Elige tu plan
         </h2>
         <p className="text-white/60">
-          {locale === 'es' 
-            ? 'Selecciona el plan que mejor se adapte a tus necesidades'
-            : 'Select the plan that best fits your needs'
-          }
+          Selecciona el plan que mejor se adapte a tus necesidades
         </p>
       </div>
 
       {/* Billing Toggle */}
       <div className="flex items-center justify-center gap-4 mb-8">
         <span className={`text-sm font-medium ${billingInterval === 'monthly' ? 'text-white' : 'text-white/60'}`}>
-          {locale === 'es' ? 'Mensual' : 'Monthly'}
+          Mensual
         </span>
         <button
           type="button"
@@ -152,11 +148,11 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
           />
         </button>
         <span className={`text-sm font-medium ${billingInterval === 'yearly' ? 'text-white' : 'text-white/60'}`}>
-          {locale === 'es' ? 'Anual' : 'Yearly'}
+          Anual
         </span>
         {billingInterval === 'yearly' && (
           <span className="px-2 py-1 text-xs font-semibold text-primary-700 dark:text-primary-300 bg-primary-100 dark:bg-primary-900/30 rounded-full">
-            {locale === 'es' ? 'Ahorra hasta 20%' : 'Save up to 20%'}
+            Ahorra hasta 20%
           </span>
         )}
       </div>
@@ -189,7 +185,7 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
               {isPopular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-primary-500 to-primary-700 rounded-full text-xs font-semibold text-white flex items-center gap-1">
                   <Star className="w-3 h-3 fill-current" />
-                  {locale === 'es' ? 'Popular' : 'Popular'}
+                  Popular
                 </div>
               )}
 
@@ -217,10 +213,10 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
                 </span>
                 <span className="text-white/60 ml-1 text-sm">
                   {isFree
-                    ? (locale === 'es' ? 'para siempre' : 'forever')
+                    ? 'para siempre'
                     : billingInterval === 'monthly'
-                    ? (locale === 'es' ? '/mes' : '/month')
-                    : (locale === 'es' ? '/año' : '/year')
+                    ? '/mes'
+                    : '/año'
                   }
                 </span>
                 {plan.currency === 'PEN' && (
@@ -229,7 +225,7 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
                 {billingInterval === 'yearly' && savings > 0 && !isFree && (
                   <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-300 rounded text-xs font-semibold">
                     <Zap className="w-3 h-3" />
-                    {locale === 'es' ? `Ahorra ${savings}%` : `Save ${savings}%`}
+                    {`Ahorra ${savings}%`}
                   </div>
                 )}
               </div>
@@ -248,7 +244,7 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
               {isSelected && (
                 <div className="flex items-center justify-center gap-2 px-3 py-2 bg-white/20 rounded-lg text-white text-sm font-bold border border-white/30 shadow-lg">
                   <Check className="w-5 h-5" />
-                  {locale === 'es' ? 'Seleccionado' : 'Selected'}
+                  Seleccionado
                 </div>
               )}
             </motion.button>
@@ -266,7 +262,7 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
           className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 text-white/80 hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <ChevronLeft className="w-5 h-5" />
-          {locale === 'es' ? 'Atrás' : 'Back'}
+          Atrás
         </motion.button>
         
         <motion.button
@@ -278,7 +274,7 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
           className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-500 to-primary-700 text-white font-semibold shadow-lg shadow-primary-500/30 hover:shadow-primary-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <>
-            {locale === 'es' ? 'Continuar' : 'Continue'}
+            Continuar
             <ChevronRight className="w-5 h-5" />
           </>
         </motion.button>

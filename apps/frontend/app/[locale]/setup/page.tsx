@@ -110,11 +110,13 @@ export default function SetupWizardPage({
     website: '',
     logoFile: null,
     logo: null,
-    locale: locale === 'es' ? 'es' : 'en', // parte del idioma de la página
-    // El idioma sugiere el país (el paso de empresa lo cambia) y el país, la moneda y el impuesto.
-    ...(locale === 'es'
-      ? { pais: 'PE' as const, currency: 'PEN', taxRate: 18, taxName: 'IGV', taxEnabled: true }
-      : { pais: 'US' as const, currency: 'USD', taxRate: 0, taxName: 'Tax', taxEnabled: false }),
+    locale: 'es',
+    // Facturo es para Perú: país, moneda e impuesto por defecto (el paso de empresa los puede cambiar).
+    pais: 'PE' as const,
+    currency: 'PEN',
+    taxRate: 18,
+    taxName: 'IGV',
+    taxEnabled: true,
     selectedPlan: 'free',
     billingInterval: 'yearly',
   });
@@ -163,11 +165,11 @@ export default function SetupWizardPage({
             emailEmpresa: response.email || '',
             website: response.web || '',
             logo: response.logoUrl || null,
-            currency: response.currency || 'USD',
+            currency: response.currency || 'PEN',
             pais: response.pais === 'PE' || response.pais === 'US' ? response.pais : prev.pais,
-            locale: response.locale || 'en',
+            locale: 'es',
             taxRate: response.taxRate || 0,
-            taxName: response.taxName || 'Tax',
+            taxName: response.taxName || 'IGV',
             taxEnabled: (response.taxRate || 0) > 0,
           }));
         }
@@ -232,7 +234,7 @@ export default function SetupWizardPage({
           await new Promise(resolve => setTimeout(resolve, 400));
         } catch (error: any) {
           console.error('[SETUP] Error creating account:', error);
-          alert('Error creating account: ' + (error.message || 'Please try again'));
+          alert('Error al crear la cuenta: ' + (error.message || 'Intenta de nuevo'));
           setIsSaving(false);
           return;
         }
@@ -259,9 +261,7 @@ export default function SetupWizardPage({
       } catch (error: any) {
         console.error('[SETUP] Error saving company:', error);
         // 409 = el RUC ya existe en otra empresa: se muestra el mensaje del backend.
-        alert(error?.status === 409 ? error.message : setupData.locale === 'es'
-          ? 'No se pudo guardar tu empresa. Intenta de nuevo.'
-          : 'Could not save your company. Please try again.');
+        alert(error?.status === 409 ? error.message : 'No se pudo guardar tu empresa. Intenta de nuevo.');
         setIsSaving(false);
         return;
       }
@@ -326,9 +326,7 @@ export default function SetupWizardPage({
           }
         } catch (error) {
           console.error('[SETUP] Error creating checkout session:', error);
-          alert(setupData.locale === 'es'
-            ? 'Error al procesar el pago. Por favor intenta de nuevo.'
-            : 'Error processing payment. Please try again.');
+          alert('Error al procesar el pago. Por favor intenta de nuevo.');
           setIsSaving(false);
           return;
         }
@@ -353,7 +351,7 @@ export default function SetupWizardPage({
       router.push(`/${setupData.locale}/dashboard`);
     } catch (error) {
       console.error('Error completing setup:', error);
-      alert('Error completing setup. Please try again.');
+      alert('Error al completar la configuración. Intenta de nuevo.');
     } finally {
       setIsSaving(false);
     }

@@ -33,93 +33,6 @@ export function PricingSection() {
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Define default plans for landing page (in case API is not available)
-  const defaultPlans: Plan[] = [
-    {
-      id: 'free',
-      name: 'Free',
-      description: 'For individuals getting started',
-      priceMonthly: 0,
-      priceYearly: 0,
-      features: [
-        '5 invoices per month',
-        '5 clients',
-        '50 MB storage',
-        'Basic reports',
-        'Email support',
-      ],
-      maxInvoices: 5,
-      maxClients: 5,
-      maxUsers: 1,
-      isActive: true,
-      sortOrder: 0,
-    },
-    {
-      id: 'starter',
-      name: 'Starter',
-      description: 'Great for small businesses',
-      priceMonthly: 15,
-      priceYearly: 144,
-      features: [
-        '20 invoices per month',
-        '10 clients',
-        '100 MB storage',
-        'Digital signatures',
-        'Basic reports',
-        'Priority support',
-      ],
-      maxInvoices: 20,
-      maxClients: 10,
-      maxUsers: 1,
-      isActive: true,
-      sortOrder: 1,
-    },
-    {
-      id: 'pro',
-      name: 'Pro',
-      description: 'Advanced features for growing businesses',
-      priceMonthly: 29,
-      priceYearly: 278,
-      features: [
-        '100 invoices per month',
-        '50 clients',
-        '500 MB storage',
-        'Proposals & quotes',
-        'Digital signatures',
-        'Custom branding',
-        'Job tracking',
-        'Advanced reports',
-      ],
-      maxInvoices: 100,
-      maxClients: 50,
-      maxUsers: 1,
-      isActive: true,
-      sortOrder: 2,
-    },
-    {
-      id: 'business',
-      name: 'Business',
-      description: 'Enterprise solution - Unlimited usage',
-      priceMonthly: 49,
-      priceYearly: 470,
-      features: [
-        'Unlimited invoices',
-        'Unlimited clients',
-        'Unlimited proposals',
-        '2 GB storage',
-        'Multi-currency support',
-        'Advanced reports',
-        'Priority support',
-        'API access',
-      ],
-      maxInvoices: null,
-      maxClients: null,
-      maxUsers: null,
-      isActive: true,
-      sortOrder: 3,
-    },
-  ];
-
   // Planes de Perú (en soles, IGV incluido) para la página en español; si la API no responde, se ven estos.
   const defaultPlansPe: Plan[] = [
     {
@@ -216,25 +129,22 @@ export function PricingSection() {
   ];
 
   useEffect(() => {
-    // El país sale del idioma: español = Perú (soles), inglés = Estados Unidos (dólares).
-    const esPeru = locale === 'es';
-    const porDefecto = esPeru ? defaultPlansPe : defaultPlans;
+    // La landing es solo para Perú: planes en soles, con IGV incluido.
     async function fetchPlans() {
       try {
-        // getPlans arma la URL con /api igual que el resto de la app (antes pedía /subscriptions/plans y daba 404).
-        const data = await getPlans(esPeru ? 'PE' : 'US');
-        setPlans(data.length > 0 ? data : porDefecto);
+        // getPlans arma la URL con /api igual que el resto de la app.
+        const data = await getPlans('PE');
+        setPlans(data.length > 0 ? data : defaultPlansPe);
       } catch {
-        setPlans(porDefecto);
+        setPlans(defaultPlansPe);
       } finally {
         setLoading(false);
       }
     }
     fetchPlans();
-    // defaultPlans y defaultPlansPe son constantes de cada render: solo cambian con el idioma.
-  }, [locale]);
+  }, []);
 
-  const displayPlans = plans.length > 0 ? plans : (locale === 'es' ? defaultPlansPe : defaultPlans);
+  const displayPlans = plans.length > 0 ? plans : defaultPlansPe;
 
   const calculateYearlySavings = (plan: Plan) => porcentajeAhorro(plan.priceMonthly, plan.priceYearly);
 

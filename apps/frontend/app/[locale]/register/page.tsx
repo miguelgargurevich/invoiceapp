@@ -9,9 +9,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { 
-  Eye, EyeOff, Mail, Lock, User, Globe, Moon, Sun, 
+  Eye, EyeOff, Mail, Lock, User, Moon, Sun,
   CheckCircle, ArrowLeft, FileText, Users, Zap, Shield,
-  Sparkles, CheckCircle2, Gift
+  Sparkles, CheckCircle2, Gift, Rocket, Coffee
 } from 'lucide-react';
 import { IconoFacturo } from '@/components/marca/LogoFacturo';
 import { useAuth } from '@/contexts/AuthContext';
@@ -27,10 +27,10 @@ type RegisterForm = {
 };
 
 const benefits = [
-  { icon: FileText, text: 'Create Professional Invoices', textEs: 'Crea Facturas Profesionales' },
-  { icon: Users, text: 'Manage Unlimited Clients', textEs: 'Gestiona Clientes Ilimitados' },
-  { icon: Zap, text: 'Get Paid Faster', textEs: 'Cobra Más Rápido' },
-  { icon: Shield, text: 'Secure & Encrypted', textEs: 'Seguro y Encriptado' },
+  { icon: FileText, text: 'Crea Facturas Profesionales' },
+  { icon: Users, text: 'Gestiona Clientes Ilimitados' },
+  { icon: Zap, text: 'Cobra Más Rápido' },
+  { icon: Shield, text: 'Seguro y Encriptado' },
 ];
 
 export default function RegisterPage({
@@ -97,11 +97,6 @@ export default function RegisterPage({
     }
   };
 
-  const switchLocale = () => {
-    const newLocale = locale === 'es' ? 'en' : 'es';
-    router.push(`/${newLocale}/register`);
-  };
-
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
@@ -153,17 +148,14 @@ export default function RegisterPage({
               <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-4">
                 <Gift className="w-4 h-4 text-yellow-400" />
                 <span className="text-white text-sm font-medium">
-                  {locale === 'es' ? '14 días de prueba gratis' : '14-day free trial'}
+                  14 días de prueba gratis
                 </span>
               </div>
               <h2 className="text-2xl font-semibold text-white mb-2">
-                {locale === 'es' ? 'Empieza gratis hoy' : 'Start free today'}
+                Empieza gratis hoy
               </h2>
               <p className="text-emerald-200">
-                {locale === 'es' 
-                  ? 'Sin tarjeta de crédito requerida. Cancela en cualquier momento.'
-                  : 'No credit card required. Cancel anytime.'
-                }
+                Sin tarjeta de crédito requerida. Cancela en cualquier momento.
               </p>
             </div>
 
@@ -180,7 +172,7 @@ export default function RegisterPage({
                     <benefit.icon className="w-5 h-5 text-white" />
                   </div>
                   <span className="text-white font-medium">
-                    {locale === 'es' ? benefit.textEs : benefit.text}
+                    {benefit.text}
                   </span>
                   <CheckCircle className="w-5 h-5 text-emerald-300 ml-auto" />
                 </motion.div>
@@ -205,10 +197,7 @@ export default function RegisterPage({
               </div>
             </div>
             <p className="text-white/90 text-sm">
-              {locale === 'es' 
-                ? 'Únete a más de 10,000 profesionales que confían en Facturo'
-                : 'Join 10,000+ professionals who trust Facturo'
-              }
+              Únete a más de 10,000 profesionales que confían en Facturo
             </p>
           </div>
 
@@ -228,29 +217,21 @@ export default function RegisterPage({
             className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-            {locale === 'es' ? 'Volver al inicio' : 'Back to home'}
+            Volver al inicio
           </Link>
-          
+
           <div className="flex items-center gap-2">
             <button
               onClick={toggleTheme}
               className="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+              title={theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
+              aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
             >
               {theme === 'dark' ? (
                 <Sun className="w-5 h-5 text-slate-500 dark:text-slate-400" />
               ) : (
                 <Moon className="w-5 h-5 text-slate-500" />
               )}
-            </button>
-            <button
-              onClick={switchLocale}
-              className="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors flex items-center gap-1.5"
-            >
-              <Globe className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-              <span className="text-sm font-medium text-slate-600 dark:text-slate-400 uppercase">
-                {locale === 'es' ? 'EN' : 'ES'}
-              </span>
             </button>
           </div>
         </div>
@@ -279,7 +260,10 @@ export default function RegisterPage({
             <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-700 p-8">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  {t('createAccount')} 🚀
+                  <span className="flex items-center gap-2">
+                  {t('createAccount')}
+                  <Rocket className="w-6 h-6 text-primary-500" />
+                </span>
                 </h2>
                 <p className="mt-2 text-slate-500 dark:text-slate-400">
                   {t('signUpDescription')}
@@ -296,13 +280,13 @@ export default function RegisterPage({
                     <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
                   </div>
                   <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-                    {locale === 'es' ? '¡Cuenta creada!' : 'Account Created!'}
+                    ¡Cuenta creada!
                   </h3>
                   <p className="text-slate-500 dark:text-slate-400 mb-4">
                     {t('signUpSuccess')}
                   </p>
                   <p className="text-sm text-slate-400 dark:text-slate-500">
-                    {locale === 'es' ? 'Redirigiendo al login...' : 'Redirecting to login...'}
+                    Redirigiendo al login...
                   </p>
                 </motion.div>
               ) : (
@@ -492,20 +476,21 @@ export default function RegisterPage({
             {/* Legal Links */}
             <div className="mt-6 flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-slate-400 dark:text-slate-500">
               <Link href={`/${locale}/terms`} className="hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                {locale === 'es' ? 'Términos' : 'Terms'}
+                Términos
               </Link>
               <Link href={`/${locale}/privacy`} className="hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                {locale === 'es' ? 'Privacidad' : 'Privacy'}
+                Privacidad
               </Link>
               <Link href={`/${locale}/contact`} className="hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                {locale === 'es' ? 'Contacto' : 'Contact'}
+                Contacto
               </Link>
             </div>
 
             {/* Footer credit */}
             <div className="mt-4 text-center">
-              <p className="text-xs text-slate-400 dark:text-slate-500">
-                ☕ Powered by — <span className="font-medium">Gargurevich Dev</span>
+              <p className="inline-flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+                <Coffee className="w-3.5 h-3.5" aria-hidden="true" />
+                Desarrollado por <span className="font-medium">Gargurevich Dev</span>
               </p>
             </div>
           </motion.div>

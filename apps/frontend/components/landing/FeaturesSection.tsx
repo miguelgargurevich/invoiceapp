@@ -1,6 +1,6 @@
 'use client';
 
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 import {
@@ -8,7 +8,6 @@ import {
   Users,
   CreditCard,
   BarChart3,
-  Globe,
   Shield,
   Smartphone,
   Zap,
@@ -35,22 +34,6 @@ interface ItemLanding {
   color: string;
 }
 
-// Inglés: los doce ítems de siempre (producto de EE. UU.).
-const ITEMS_EN: ItemLanding[] = [
-  { icon: FileText, color: 'primary', key: 'invoices' },
-  { icon: FileSignature, color: 'purple', key: 'proposals' },
-  { icon: Users, color: 'cyan', key: 'clients' },
-  { icon: CreditCard, color: 'green', key: 'payments' },
-  { icon: BarChart3, color: 'orange', key: 'reports' },
-  { icon: Globe, color: 'blue', key: 'multilang' },
-  { icon: Shield, color: 'red', key: 'signatures' },
-  { icon: Camera, color: 'pink', key: 'photos' },
-  { icon: Receipt, color: 'indigo', key: 'receipts' },
-  { icon: Clock, color: 'teal', key: 'tracking' },
-  { icon: Smartphone, color: 'violet', key: 'mobile' },
-  { icon: Zap, color: 'amber', key: 'fast' },
-];
-
 // Español (Perú): lo que Facturo resuelve para emitir comprobantes en regla.
 const ITEMS_ES: ItemLanding[] = [
   { icon: FileText, color: 'primary', key: 'comprobantes' },
@@ -69,8 +52,7 @@ const ITEMS_ES: ItemLanding[] = [
 
 export function FeaturesSection() {
   const t = useTranslations('landing');
-  const locale = useLocale();
-  const features = locale === 'es' ? ITEMS_ES : ITEMS_EN;
+  const features = ITEMS_ES;
 
   const colorClasses: Record<string, { bg: string; icon: string; glow: string }> = {
     primary: {

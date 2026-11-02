@@ -26,33 +26,25 @@ interface CurrencyStepProps {
 }
 
 const CURRENCIES = [
-  { code: 'USD', symbol: '$', name: 'US Dollar', locale: 'en' },
-  { code: 'EUR', symbol: '€', name: 'Euro', locale: 'en' },
-  { code: 'GBP', symbol: '£', name: 'British Pound', locale: 'en' },
-  { code: 'PEN', symbol: 'S/', name: 'Peruvian Sol', locale: 'es' },
-  { code: 'MXN', symbol: '$', name: 'Mexican Peso', locale: 'es' },
-  { code: 'ARS', symbol: '$', name: 'Argentine Peso', locale: 'es' },
-  { code: 'COP', symbol: '$', name: 'Colombian Peso', locale: 'es' },
-  { code: 'CLP', symbol: '$', name: 'Chilean Peso', locale: 'es' },
-  { code: 'BRL', symbol: 'R$', name: 'Brazilian Real', locale: 'es' },
-  { code: 'CAD', symbol: '$', name: 'Canadian Dollar', locale: 'en' },
-  { code: 'AUD', symbol: '$', name: 'Australian Dollar', locale: 'en' },
-  { code: 'JPY', symbol: '¥', name: 'Japanese Yen', locale: 'en' },
-];
-
-const LOCALES = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
+  { code: 'USD', symbol: '$', name: 'Dólar estadounidense' },
+  { code: 'EUR', symbol: '€', name: 'Euro' },
+  { code: 'GBP', symbol: '£', name: 'Libra esterlina' },
+  { code: 'PEN', symbol: 'S/', name: 'Sol peruano' },
+  { code: 'MXN', symbol: '$', name: 'Peso mexicano' },
+  { code: 'ARS', symbol: '$', name: 'Peso argentino' },
+  { code: 'COP', symbol: '$', name: 'Peso colombiano' },
+  { code: 'CLP', symbol: '$', name: 'Peso chileno' },
+  { code: 'BRL', symbol: 'R$', name: 'Real brasileño' },
+  { code: 'CAD', symbol: '$', name: 'Dólar canadiense' },
+  { code: 'AUD', symbol: '$', name: 'Dólar australiano' },
+  { code: 'JPY', symbol: '¥', name: 'Yen japonés' },
 ];
 
 export default function CurrencyStep({ data, onUpdate, onNext, onPrev }: CurrencyStepProps) {
   const t = useTranslations('setup');
 
   const handleCurrencySelect = (currency: typeof CURRENCIES[0]) => {
-    onUpdate({ 
-      currency: currency.code,
-      locale: currency.locale
-    });
+    onUpdate({ currency: currency.code });
   };
 
   return (
@@ -64,36 +56,6 @@ export default function CurrencyStep({ data, onUpdate, onNext, onPrev }: Currenc
         </div>
         <h2 className="text-2xl font-bold text-white mb-2">{t('currency.title')}</h2>
         <p className="text-white/60">{t('currency.subtitle')}</p>
-      </div>
-
-      {/* Language Selection */}
-      <div className="mb-6">
-        <label className="block text-white/80 text-sm font-medium mb-3">
-          {t('currency.language')}
-        </label>
-        <div className="grid grid-cols-2 gap-3">
-          {LOCALES.map((locale) => (
-            <motion.button
-              key={locale.code}
-              type="button"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => onUpdate({ locale: locale.code })}
-              className={`
-                relative flex items-center gap-3 p-4 rounded-xl border transition-all
-                ${data.locale === locale.code
-                  ? 'bg-primary-500/20 border-primary-400 text-white'
-                  : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'}
-              `}
-            >
-              <span className="text-2xl">{locale.flag}</span>
-              <span className="font-medium">{locale.name}</span>
-              {data.locale === locale.code && (
-                <Check className="w-5 h-5 text-primary-300 absolute right-3" />
-              )}
-            </motion.button>
-          ))}
-        </div>
       </div>
 
       {/* Currency Selection */}
@@ -133,7 +95,7 @@ export default function CurrencyStep({ data, onUpdate, onNext, onPrev }: Currenc
       <div className="bg-white/5 rounded-xl p-4 mb-8">
         <p className="text-white/60 text-sm mb-2">{t('currency.preview')}</p>
         <p className="text-2xl font-bold text-white">
-          {new Intl.NumberFormat(data.locale === 'es' ? 'es-ES' : 'en-US', {
+          {new Intl.NumberFormat('es-PE', {
             style: 'currency',
             currency: data.currency
           }).format(1234.56)}
@@ -152,7 +114,7 @@ export default function CurrencyStep({ data, onUpdate, onNext, onPrev }: Currenc
           <ChevronLeft className="w-5 h-5" />
           {t('buttons.back')}
         </motion.button>
-        
+
         <motion.button
           type="button"
           whileHover={{ scale: 1.02 }}

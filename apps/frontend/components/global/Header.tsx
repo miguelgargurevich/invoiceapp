@@ -8,7 +8,6 @@ import {
   Search,
   Sun,
   Moon,
-  Globe,
   User,
   LogOut,
   Settings,
@@ -35,9 +34,8 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
   const tSettings = useTranslations('settings');
 
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showLangMenu, setShowLangMenu] = useState(false);
 
-  const currentLocale = pathname.split('/')[1] || 'en';
+  const currentLocale = pathname.split('/')[1] || 'es';
 
   const getPlanBadgeStyle = (planName: string) => {
     switch (planName?.toLowerCase()) {
@@ -53,13 +51,6 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
       default:
         return 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700';
     }
-  };
-
-  const handleLanguageChange = (locale: string) => {
-    const segments = pathname.split('/');
-    segments[1] = locale;
-    router.push(segments.join('/'));
-    setShowLangMenu(false);
   };
 
   const handleSignOut = async () => {
@@ -111,7 +102,7 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
                 getPlanBadgeStyle(subscription.plan?.name || 'free')
               )}
             >
-              {subscription.plan?.name || 'Free'}
+              {subscription.plan?.name || 'Gratis'}
             </button>
           )}
 
@@ -126,43 +117,6 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
               <Moon className="w-5 h-5" />
             )}
           </button>
-
-          {/* Language selector */}
-          <div className="relative">
-            <button
-              onClick={() => setShowLangMenu(!showLangMenu)}
-              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
-            >
-              <Globe className="w-4 h-4" />
-              <span className="hidden md:inline uppercase">{currentLocale}</span>
-              <ChevronDown className={`w-3 h-3 transition-transform ${showLangMenu ? 'rotate-180' : ''}`} />
-            </button>
-
-            {showLangMenu && (
-              <>
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setShowLangMenu(false)}
-                />
-                <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden z-20">
-                  <button
-                    onClick={() => handleLanguageChange('es')}
-                    className="flex items-center gap-2 px-4 py-3 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left"
-                  >
-                    <Globe className="w-4 h-4" />
-                    Español
-                  </button>
-                  <button
-                    onClick={() => handleLanguageChange('en')}
-                    className="flex items-center gap-2 px-4 py-3 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors w-full text-left"
-                  >
-                    <Globe className="w-4 h-4" />
-                    English
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
 
           {/* User menu */}
           <div className="relative">

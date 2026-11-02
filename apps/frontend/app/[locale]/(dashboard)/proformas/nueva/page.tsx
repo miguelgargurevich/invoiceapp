@@ -560,14 +560,14 @@ export default function NuevaProformaPage({
                 label={t('workDescription')}
                 value={workDescription}
                 onChange={(e) => setWorkDescription(e.target.value)}
-                placeholder="Detailed description of work to be performed..."
+                placeholder="Descripción detallada del trabajo a realizar..."
                 rows={4}
               />
               <Textarea
                 label={t('paymentTerms')}
                 value={paymentTerms}
                 onChange={(e) => setPaymentTerms(e.target.value)}
-                placeholder="Payment schedule and terms..."
+                placeholder="Calendario y condiciones de pago..."
                 rows={3}
               />
             </div>
@@ -636,14 +636,12 @@ export default function NuevaProformaPage({
                 label={t('issueDate')}
                 value={fechaEmision}
                 onChange={setFechaEmision}
-                locale={locale as 'es' | 'en'}
               />
               <DatePicker
                 label={t('validUntil')}
                 value={fechaValidez}
                 onChange={setFechaValidez}
                 minDate={fechaEmision || undefined}
-                locale={locale as 'es' | 'en'}
               />
             </div>
           </Card>
@@ -769,7 +767,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
       isOpen={isOpen}
       onClose={onClose}
       title={t('addClient')}
-      subtitle={t('addClientSubtitle') || 'Add a new client to your database'}
+      subtitle={t('addClientSubtitle') || 'Agrega un nuevo cliente a tu base de datos'}
       icon={Users}
       size="xl"
     >
@@ -784,7 +782,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
             </div>
             <div>
               <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Basic Information</h3>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Required contact details</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Datos de contacto obligatorios</p>
             </div>
           </div>
           
@@ -799,7 +797,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
               onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
               required
               disabled={loading}
-              placeholder={t('namePlaceholder') || 'Client name'}
+              placeholder={t('namePlaceholder') || 'Nombre del cliente'}
               className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-600 focus:border-transparent transition-all placeholder:text-gray-400"
             />
           </div>
@@ -846,7 +844,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
               value={formData.direccion}
               onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
               disabled={loading}
-              placeholder={t('addressPlaceholder') || 'Street address'}
+              placeholder={t('addressPlaceholder') || 'Dirección'}
               className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-600 focus:border-transparent transition-all placeholder:text-gray-400"
             />
           </div>
@@ -883,7 +881,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Document Information</h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Optional identification details</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Datos de identificación opcionales</p>
                 </div>
               </div>
               
@@ -904,7 +902,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
                     <option value="ITIN">ITIN</option>
                     <option value="DRIVER_LICENSE">Driver's License</option>
                     <option value="STATE_ID">State ID</option>
-                    <option value="PASSPORT">Passport</option>
+                    <option value="PASSPORT">Pasaporte</option>
                   </select>
                 </div>
                 

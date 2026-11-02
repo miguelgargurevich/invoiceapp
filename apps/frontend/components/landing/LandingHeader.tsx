@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Globe, ChevronDown, Moon, Sun, LayoutDashboard } from 'lucide-react';
+import { Menu, X, Moon, Sun, LayoutDashboard } from 'lucide-react';
 import { LogoFacturo } from '@/components/marca/LogoFacturo';
 
 import { useTheme } from '@/contexts/ThemeContext';
@@ -15,7 +15,6 @@ export function LandingHeader() {
   const locale = useLocale();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
 
@@ -30,13 +29,10 @@ export function LandingHeader() {
   const navItems = [
     { href: '#features', label: t('nav.features') },
     { href: '#pricing', label: t('nav.pricing') },
-    // Testimonios solo en los idiomas que los traen (en español todavía no hay clientes reales que citar).
+    // Testimonios solo si el idioma trae la sección (hoy no hay clientes reales que citar).
     ...(t.has('nav.testimonials') ? [{ href: '#testimonials', label: t('nav.testimonials') }] : []),
     { href: '#faq', label: t('nav.faq') },
   ];
-
-  const otherLocale = locale === 'en' ? 'es' : 'en';
-  const otherLocaleName = locale === 'en' ? 'Español' : 'English';
 
   return (
     <>
@@ -75,41 +71,10 @@ export function LandingHeader() {
               <button
                 onClick={toggleTheme}
                 className="p-2 text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
-                aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+                aria-label={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
               >
                 {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
               </button>
-              {/* Language Switcher */}
-              <div className="relative">
-                <button
-                  onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-                  className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
-                >
-                  <Globe className="w-4 h-4" />
-                  <span className="uppercase">{locale}</span>
-                  <ChevronDown className={`w-3 h-3 transition-transform ${isLangMenuOpen ? 'rotate-180' : ''}`} />
-                </button>
-                
-                <AnimatePresence>
-                  {isLangMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      className="absolute right-0 mt-2 w-36 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden"
-                    >
-                      <Link
-                        href={`/${otherLocale}/landing`}
-                        onClick={() => setIsLangMenuOpen(false)}
-                        className="flex items-center gap-2 px-4 py-3 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                      >
-                        <Globe className="w-4 h-4" />
-                        {otherLocaleName}
-                      </Link>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
 
               {user ? (
                 <Link
@@ -127,7 +92,7 @@ export function LandingHeader() {
                   >
                     {t('nav.login')}
                   </Link>
-                  
+
                   <Link
                     href={`/${locale}/setup`}
                     className="px-5 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 rounded-xl shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all hover:scale-105"
@@ -141,6 +106,7 @@ export function LandingHeader() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
               className="md:hidden p-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
             >
               {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -179,24 +145,16 @@ export function LandingHeader() {
                     </a>
                   ))}
                 </nav>
-                
+
                 <div className="space-y-3 pt-6 border-t border-slate-200 dark:border-slate-700">
                   <button
                     onClick={toggleTheme}
                     className="flex items-center gap-2 w-full px-4 py-3 text-base font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                   >
                     {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                    {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                    {theme === 'dark' ? 'Modo claro' : 'Modo oscuro'}
                   </button>
-                  
-                  <Link
-                    href={`/${otherLocale}/landing`}
-                    className="flex items-center gap-2 px-4 py-3 text-base font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
-                  >
-                    <Globe className="w-5 h-5" />
-                    {otherLocaleName}
-                  </Link>
-                  
+
                   {user ? (
                     <Link
                       href={`/${locale}/dashboard`}
@@ -213,7 +171,7 @@ export function LandingHeader() {
                       >
                         {t('nav.login')}
                       </Link>
-                      
+
                       <Link
                         href={`/${locale}/setup`}
                         className="block w-full px-4 py-3 text-center text-base font-semibold text-white bg-gradient-to-r from-primary-600 to-primary-700 rounded-xl shadow-lg"

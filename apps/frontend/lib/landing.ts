@@ -14,8 +14,8 @@ export interface DatosVistaPrevia {
   filas?: FilaVistaPrevia[];
 }
 
-// Español (Perú): datos de ejemplo de la vista previa. Son ilustrativos, no cifras de clientes.
-const VISTA_PREVIA_ES: DatosVistaPrevia = {
+// Datos de ejemplo de la vista previa (Perú, soles). Son ilustrativos, no cifras de clientes.
+const VISTA_PREVIA: DatosVistaPrevia = {
   dominio: 'facturo.gargurevich.dev',
   valores: ['126', 'S/ 18,450.00', '98 %'],
   filas: [
@@ -25,14 +25,8 @@ const VISTA_PREVIA_ES: DatosVistaPrevia = {
   ],
 };
 
-// Inglés: se queda como estaba antes (producto de EE. UU.).
-const VISTA_PREVIA_EN: DatosVistaPrevia = {
-  dominio: 'app.facturo.pe',
-  valores: ['247', '$48,500', '89'],
-};
-
-export function datosVistaPrevia(locale: string): DatosVistaPrevia {
-  return locale === 'es' ? VISTA_PREVIA_ES : VISTA_PREVIA_EN;
+export function datosVistaPrevia(): DatosVistaPrevia {
+  return VISTA_PREVIA;
 }
 
 // Porcentaje que ahorra el plan anual frente a doce meses del mensual (entero, redondeado).

@@ -21,7 +21,7 @@ import { datosVistaPrevia } from '@/lib/landing';
 export function HeroSection() {
   const t = useTranslations('landing');
   const locale = useLocale();
-  const datos = datosVistaPrevia(locale);
+  const datos = datosVistaPrevia();
 
   const benefits = [
     t('hero.benefit1'),
@@ -30,44 +30,14 @@ export function HeroSection() {
   ];
 
   // Timeline icons matching proposal flow: Created → Sent → Signed → Invoiced → Paid
-  // En español, los íconos siguen el flujo de comprobantes: emitir, enviar a SUNAT, aceptar, cobrar.
-  const timelineStepsEs = [
+  // Los íconos siguen el flujo de comprobantes: emitir, enviar a SUNAT, aceptar, cobrar.
+  const timelineSteps = [
     { icon: FileText, gradient: 'from-primary-500 to-primary-600', bg: 'bg-primary-500' },
     { icon: Send, gradient: 'from-primary-500 to-primary-600', bg: 'bg-primary-500' },
     { icon: ShieldCheck, gradient: 'from-violet-500 to-violet-600', bg: 'bg-violet-500' },
     { icon: Receipt, gradient: 'from-amber-500 to-amber-600', bg: 'bg-amber-500' },
     { icon: Wallet, gradient: 'from-emerald-500 to-emerald-600', bg: 'bg-emerald-500' },
   ];
-
-  const timelineStepsEn = [
-    { 
-      icon: FileText, 
-      gradient: 'from-primary-500 to-primary-600',
-      bg: 'bg-primary-500'
-    },
-    { 
-      icon: Send, 
-      gradient: 'from-primary-500 to-primary-600',
-      bg: 'bg-primary-500'
-    },
-    { 
-      icon: PenTool, 
-      gradient: 'from-violet-500 to-violet-600',
-      bg: 'bg-violet-500'
-    },
-    { 
-      icon: FileText, 
-      gradient: 'from-amber-500 to-amber-600',
-      bg: 'bg-amber-500'
-    },
-    { 
-      icon: DollarSign, 
-      gradient: 'from-emerald-500 to-emerald-600',
-      bg: 'bg-emerald-500'
-    },
-  ];
-
-  const timelineSteps = locale === 'es' ? timelineStepsEs : timelineStepsEn;
 
   return (
     <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">

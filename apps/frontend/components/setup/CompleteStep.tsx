@@ -55,7 +55,7 @@ export default function CompleteStep({ data, onComplete, onPrev, isSaving }: Com
     { 
       icon: DollarSign, 
       label: t('complete.currency'), 
-      value: `${data.currency} (${data.locale === 'en' ? 'English' : 'Español'})`,
+      value: data.currency,
       color: 'from-primary-500 to-primary-700'
     },
     { 
@@ -88,9 +88,10 @@ export default function CompleteStep({ data, onComplete, onPrev, isSaving }: Com
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="text-2xl font-bold text-white mb-2"
+          className="text-2xl font-bold text-white mb-2 inline-flex items-center gap-3"
         >
           {t('complete.title')}
+          <Rocket className="w-7 h-7 text-primary-300 shrink-0" aria-hidden="true" />
         </motion.h2>
         <motion.p
           initial={{ y: 20, opacity: 0 }}

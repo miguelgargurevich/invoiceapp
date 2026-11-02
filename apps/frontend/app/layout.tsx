@@ -48,7 +48,6 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'es_PE',
-    alternateLocale: ['en_US'],
     url: URL_SITIO,
     title: 'Facturo — Facturación electrónica SUNAT para emprendedores y pymes del Perú',
     description: 'Emite facturas y boletas electrónicas válidas ante SUNAT, con el IGV calculado y el CDR guardado. Plan gratis para empezar.',
@@ -87,7 +86,7 @@ export const metadata: Metadata = {
   category: 'Business Software',
 };
 
-// <html> y <body> viven en app/[locale]/layout.tsx, que es el que sabe el idioma (lang="es" o "en").
+// <html> y <body> viven en app/[locale]/layout.tsx (lang="es").
 export default function RootLayout({
   children,
 }: {
