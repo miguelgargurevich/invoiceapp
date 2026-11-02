@@ -86,6 +86,7 @@ model Empresa {
   serieProforma   String    @default("P001") @map("serie_proforma")
   setupCompleted  Boolean   @default(false) @map("setup_completed") // Whether user completed onboarding wizard
   pais            String    @default("US") // "US" | "PE": "PE" activa la facturación electrónica SUNAT
+  colorPrimario   String?   @map("color_primario") // Color de marca «#RRGGBB» (null = berenjena de Facturo). Plan con hasCustomBranding
   userId          String    @unique @map("user_id")
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")
