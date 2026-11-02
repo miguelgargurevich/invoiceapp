@@ -443,6 +443,7 @@
     }
   },
   "quotes": {
+    "email": "Correo",
     "title": "Proformas",
     "subtitle": "Crea y gestiona tus proformas",
     "pageDescription": "Cotiza a tus clientes y conviértelas en comprobantes",

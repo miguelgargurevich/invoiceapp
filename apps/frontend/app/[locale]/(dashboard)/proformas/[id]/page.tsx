@@ -692,13 +692,12 @@ export default function ProformaDetailPage({
         }
         actions={
           <>
-            <Button variant="outline" size="sm" onClick={() => setIsPrintPreviewOpen(true)}>
+            <Button variant="outline" onClick={() => setIsPrintPreviewOpen(true)}>
               <Printer className="w-4 h-4 mr-1" />
               {t('print')}
             </Button>
             <Button
               variant="outline"
-              className="h-12 text-base"
               onClick={() => setShowPhotosGallery(true)}
             >
               <Camera className="w-5 h-5 mr-2" />
@@ -706,7 +705,6 @@ export default function ProformaDetailPage({
             </Button>
             {proforma.estado !== 'ANULADA' && proforma.signatureStatus !== 'SIGNED' && (
               <Button
-                size="sm"
                 onClick={handleRequestSignature}
                 disabled={requestingSignature}
                 variant="outline"
@@ -721,13 +719,13 @@ export default function ProformaDetailPage({
               </Button>
             )}
             {canConvert && (
-              <Button size="sm" onClick={() => setIsConvertDialogOpen(true)}>
+              <Button onClick={() => setIsConvertDialogOpen(true)}>
                 <FileText className="w-4 h-4 mr-1" />
                 {t('convertToInvoice')}
               </Button>
             )}
             {proforma.estado === 'facturada' && proforma.facturasGeneradas && proforma.facturasGeneradas.length > 0 && (
-              <Button size="sm" onClick={() => router.push(`/${locale}/facturas/${proforma.facturasGeneradas![0].id}`)}>
+              <Button variant="outline" onClick={() => router.push(`/${locale}/facturas/${proforma.facturasGeneradas![0].id}`)}>
                 <FileText className="w-4 h-4 mr-1" />
                 {t('viewInvoice')}
               </Button>
@@ -772,7 +770,7 @@ export default function ProformaDetailPage({
               )}
               {proforma.cliente.email && (
                 <div>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Email</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">{t('email')}</span>
                   <p className="font-medium text-gray-900 dark:text-gray-100">
                     {proforma.cliente.email}
                   </p>
@@ -789,13 +787,15 @@ export default function ProformaDetailPage({
                 {t('items')}
               </h2>
               {proforma.estado !== 'facturada' && proforma.estado !== 'convertida' && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-1.5"
                   onClick={handleOpenEditItems}
-                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                   title={t('editItems') || 'Editar ítems'}
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
-                </button>
+                </Button>
               )}
             </div>
             {/* Desktop table */}
@@ -879,13 +879,15 @@ export default function ProformaDetailPage({
                   {t('jobInformation')}
                 </h2>
                 {proforma.estado !== 'facturada' && proforma.estado !== 'convertida' && (
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-1.5"
                     onClick={handleOpenEditJobInfo}
-                    className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                     title="Editar información del trabajo"
                   >
                     <Edit2 className="w-4 h-4 text-gray-500" />
-                  </button>
+                  </Button>
                 )}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -969,13 +971,15 @@ export default function ProformaDetailPage({
                 {t('termsAndConditions')}
               </h2>
               {proforma.estado !== 'INVOICED' && proforma.estado !== 'CANCELLED' && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-1.5"
                   onClick={handleOpenEditConditions}
-                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                   title="Editar condiciones"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
-                </button>
+                </Button>
               )}
             </div>
             {proforma.condiciones ? (
@@ -995,13 +999,15 @@ export default function ProformaDetailPage({
                 {t('notes')}
               </h2>
               {proforma.estado !== 'INVOICED' && proforma.estado !== 'CANCELLED' && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-1.5"
                   onClick={handleOpenEditObservations}
-                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                   title="Editar notas"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
-                </button>
+                </Button>
               )}
             </div>
             {proforma.observaciones ? (
@@ -1056,13 +1062,15 @@ export default function ProformaDetailPage({
                 {t('dates')}
               </h2>
               {proforma.estado !== 'facturada' && proforma.estado !== 'convertida' && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-1.5"
                   onClick={handleOpenEditDates}
-                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                   title="Editar fechas"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
-                </button>
+                </Button>
               )}
             </div>
             <div className="space-y-3">
@@ -1096,7 +1104,7 @@ export default function ProformaDetailPage({
             <div className="space-y-3">
               {canConvert && (
                 <Button
-                  className="w-full h-12 text-base"
+                  className="w-full"
                   onClick={() => setIsConvertDialogOpen(true)}
                   disabled={converting}
                 >
@@ -1105,8 +1113,8 @@ export default function ProformaDetailPage({
                 </Button>
               )}
               <Button
-                variant="outline"
-                className="w-full h-12 text-base text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                variant="danger"
+                className="w-full"
                 onClick={() => setIsDeleteDialogOpen(true)}
               >
                 <XCircle className="w-5 h-5 mr-2" />
@@ -1150,7 +1158,7 @@ export default function ProformaDetailPage({
             {/* Success Icon - Only show if email sent */}
             {signatureRequestModal.emailSent && (
               <>
-                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/20 mb-4">
+                <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
                   <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
                 </div>
                 {/* Email Info */}
@@ -1272,7 +1280,7 @@ export default function ProformaDetailPage({
       >
         <div className="space-y-5">
           {/* Date Fields */}
-          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -1304,14 +1312,14 @@ export default function ProformaDetailPage({
               variant="outline"
               onClick={() => setIsEditDatesOpen(false)}
               disabled={editingDates}
-              className="flex-1 h-11"
+              className="flex-1"
             >
               {tCommon('cancel')}
             </Button>
             <Button
               onClick={handleSaveDates}
               disabled={editingDates || !fechaEmisionEdit || !fechaValidezEdit}
-              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+              className="flex-1"
             >
               {editingDates ? (
                 <>
@@ -1343,7 +1351,7 @@ export default function ProformaDetailPage({
       >
         <div className="space-y-5">
           {/* Job Fields */}
-          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -1448,14 +1456,14 @@ export default function ProformaDetailPage({
               variant="outline"
               onClick={() => setIsEditJobInfoOpen(false)}
               disabled={editingJobInfo}
-              className="flex-1 h-11"
+              className="flex-1"
             >
               {tCommon('cancel')}
             </Button>
             <Button
               onClick={handleSaveJobInfo}
               disabled={editingJobInfo}
-              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+              className="flex-1"
             >
               {editingJobInfo ? (
                 <>
@@ -1487,7 +1495,7 @@ export default function ProformaDetailPage({
       >
         <div className="space-y-5">
           {/* Textarea Field */}
-          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               {t('paymentTerms')}
             </label>
@@ -1507,14 +1515,14 @@ export default function ProformaDetailPage({
               variant="outline"
               onClick={() => setIsEditPaymentTermsOpen(false)}
               disabled={editingPaymentTerms}
-              className="flex-1 h-11"
+              className="flex-1"
             >
               {tCommon('cancel')}
             </Button>
             <Button
               onClick={handleSavePaymentTerms}
               disabled={editingPaymentTerms}
-              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+              className="flex-1"
             >
               {editingPaymentTerms ? (
                 <>
@@ -1545,7 +1553,7 @@ export default function ProformaDetailPage({
         size="md"
       >
         <div className="space-y-5">
-          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               {t('notes')}
             </label>
@@ -1564,14 +1572,14 @@ export default function ProformaDetailPage({
               variant="outline"
               onClick={() => setIsEditObservationsOpen(false)}
               disabled={editingObservations}
-              className="flex-1 h-11"
+              className="flex-1"
             >
               {tCommon('cancel')}
             </Button>
             <Button
               onClick={handleSaveObservations}
               disabled={editingObservations}
-              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+              className="flex-1"
             >
               {editingObservations ? (
                 <>
@@ -1603,7 +1611,7 @@ export default function ProformaDetailPage({
       >
         <div className="space-y-5">
           {/* Textarea Field */}
-          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               {t('termsConditionsLabel')}
             </label>
@@ -1623,14 +1631,14 @@ export default function ProformaDetailPage({
               variant="outline"
               onClick={() => setIsEditConditionsOpen(false)}
               disabled={editingConditions}
-              className="flex-1 h-11"
+              className="flex-1"
             >
               {tCommon('cancel')}
             </Button>
             <Button
               onClick={handleSaveConditions}
               disabled={editingConditions}
-              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+              className="flex-1"
             >
               {editingConditions ? (
                 <>
@@ -1666,7 +1674,7 @@ export default function ProformaDetailPage({
             {itemsEdit.map((item, index) => (
               <div 
                 key={item.id} 
-                className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-4 border border-gray-100 dark:border-gray-800"
+                className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-gray-100 dark:border-gray-800"
               >
                 <div className="flex items-start gap-3">
                   <div className="flex-1 space-y-3">
@@ -1721,31 +1729,34 @@ export default function ProformaDetailPage({
                       </div>
                     </div>
                   </div>
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => handleRemoveItem(index)}
                     disabled={editingItems || itemsEdit.length <= 1}
-                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
                     title={tCommon('delete')}
                   >
                     <Trash2 className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Add Item Button */}
-          <button
+          <Button
+            variant="outline"
             onClick={handleAddItem}
             disabled={editingItems}
-            className="w-full py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-gray-500 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center gap-2"
+            className="w-full py-3 border-dashed"
+            icon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
-            {t('addItem') || 'Add Item'}
-          </button>
+            {t('addItem')}
+          </Button>
 
           {/* Total */}
-          <div className="bg-gradient-to-br from-primary-50 to-primary-50/50 dark:from-primary-900/20 dark:to-primary-900/10 rounded-xl p-4 border border-primary-200 dark:border-primary-800">
+          <div className="bg-primary-50 dark:bg-primary-900/20 rounded-xl p-4 border border-primary-200 dark:border-primary-800">
             <div className="flex items-center justify-between text-lg font-semibold">
               <span className="text-gray-700 dark:text-gray-300">{t('total')}</span>
               <span className="text-gray-900 dark:text-gray-100">
@@ -1760,14 +1771,14 @@ export default function ProformaDetailPage({
               variant="outline"
               onClick={() => setIsEditItemsOpen(false)}
               disabled={editingItems}
-              className="flex-1 h-11"
+              className="flex-1"
             >
               {tCommon('cancel')}
             </Button>
             <Button
               onClick={handleSaveItems}
               disabled={editingItems || itemsEdit.length === 0}
-              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+              className="flex-1"
             >
               {editingItems ? (
                 <>
