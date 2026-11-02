@@ -430,7 +430,7 @@ export default function NuevaFacturaPage({
                 <Package className="w-5 h-5 text-primary-600" />
                 {t('items')}
               </h2>
-              <Button size="md" onClick={addLinea}>
+              <Button size="md" variant="outline" onClick={addLinea}>
                 <Plus className="w-5 h-5 mr-2" />
                 {t('addItem')}
               </Button>

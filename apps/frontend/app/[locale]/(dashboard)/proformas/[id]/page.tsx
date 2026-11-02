@@ -719,7 +719,7 @@ export default function ProformaDetailPage({
               </Button>
             )}
             {canConvert && (
-              <Button onClick={() => setIsConvertDialogOpen(true)}>
+              <Button variant="outline" onClick={() => setIsConvertDialogOpen(true)}>
                 <FileText className="w-4 h-4 mr-1" />
                 {t('convertToInvoice')}
               </Button>
