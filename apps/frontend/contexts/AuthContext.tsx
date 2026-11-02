@@ -43,6 +43,7 @@ export interface Empresa {
   serieFactura: string;
   serieProforma: string;
   pais?: string; // 'US' | 'PE': 'PE' activa la facturación electrónica SUNAT
+  colorPrimario?: string | null; // '#RRGGBB' o null (= berenjena de Facturo). Solo lo usa el panel.
   userId: string;
   createdAt: string;
   updatedAt: string;

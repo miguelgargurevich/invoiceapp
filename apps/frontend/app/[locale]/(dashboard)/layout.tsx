@@ -4,6 +4,7 @@ import { ReactNode } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { SubscriptionProvider } from '@/contexts/SubscriptionContext';
 import { AppLayout } from '@/components/global/AppLayout';
+import { TemaMarca } from '@/components/global/TemaMarca';
 import { LoadingPage } from '@/components/common';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -62,6 +63,7 @@ export default function DashboardLayout({
 
   return (
     <SubscriptionProvider>
+      <TemaMarca />
       <AppLayout>{children}</AppLayout>
     </SubscriptionProvider>
   );
