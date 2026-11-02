@@ -209,7 +209,7 @@ export default function ClienteDetailPage({
                   label={t('phone')}
                   value={formData.telefono}
                   onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-                  placeholder="+1 (555) 123-4567"
+                  placeholder="+51 999 999 999"
                   required
                 />
                 
@@ -219,7 +219,7 @@ export default function ClienteDetailPage({
                   inputMode="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="email@example.com"
+                  placeholder="correo@empresa.pe"
                 />
               </div>
 

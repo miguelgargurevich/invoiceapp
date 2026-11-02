@@ -634,7 +634,7 @@
     "email": "Correo",
     "emailPlaceholder": "correo@ejemplo.com",
     "phone": "Teléfono",
-    "phonePlaceholder": "(555) 123-4567",
+    "phonePlaceholder": "+51 999 999 999",
     "address": "Dirección",
     "addressPlaceholder": "Dirección del cliente",
     "optional": "Opcional",

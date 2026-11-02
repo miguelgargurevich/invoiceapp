@@ -903,7 +903,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
                 onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
                 required
                 disabled={loading}
-                placeholder={t('phonePlaceholder') || '(555) 123-4567'}
+                placeholder={t('phonePlaceholder') || '+51 999 999 999'}
                 className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-600 focus:border-transparent transition-all placeholder:text-gray-400"
               />
             </div>
@@ -917,7 +917,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 disabled={loading}
-                placeholder={t('emailPlaceholder') || 'email@example.com'}
+                placeholder={t('emailPlaceholder') || 'correo@empresa.pe'}
                 className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-600 focus:border-transparent transition-all placeholder:text-gray-400"
               />
             </div>

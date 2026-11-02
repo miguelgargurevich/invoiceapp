@@ -105,7 +105,7 @@ export default function NuevoProductoPage({
                 {t('productDetails')}
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Fill in the product or service information
+                Completa los datos del producto o servicio
               </p>
             </div>
           </div>

@@ -86,7 +86,7 @@ export default function NuevoClientePage({
                 {t('clientDetails')}
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Fill in the client information
+                Completa los datos del cliente
               </p>
             </div>
           </div>
@@ -106,7 +106,7 @@ export default function NuevoClientePage({
               label={t('phone')}
               value={formData.telefono}
               onChange={(e) => setFormData({ ...formData, telefono: e.target.value })}
-              placeholder="+1 (555) 123-4567"
+              placeholder="+51 999 999 999"
               required
             />
             
@@ -116,7 +116,7 @@ export default function NuevoClientePage({
               inputMode="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              placeholder="email@example.com"
+              placeholder="correo@empresa.pe"
             />
           </div>
 
