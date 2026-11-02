@@ -1,4 +1,5 @@
 const { Resend } = require('resend');
+const { colorDeMarca, colorParaTextoBlanco, tintar } = require('../planes/marca');
 
 // Initialize Resend client
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -106,6 +107,7 @@ async function sendEmail({ to, subject, text, html, attachments = [] }) {
  */
 async function sendInvoiceEmail({ to, subject, message, factura, empresa, pdfBuffer, locale = 'en' }) {
   const t = getTranslations(locale);
+  const acento = colorParaTextoBlanco(colorDeMarca(empresa));
   
   const htmlContent = `
     <!DOCTYPE html>
@@ -118,7 +120,7 @@ async function sendInvoiceEmail({ to, subject, message, factura, empresa, pdfBuf
         .header { background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
         .header h1 { margin: 0; color: #1a1a1a; font-size: 24px; }
         .invoice-info { background-color: #fff; border: 1px solid #e0e0e0; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-        .invoice-number { font-size: 20px; font-weight: bold; color: #2563eb; }
+        .invoice-number { font-size: 20px; font-weight: bold; color: ${acento}; }
         .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
         .info-label { color: #666; }
         .info-value { font-weight: 500; }
@@ -203,6 +205,8 @@ async function sendInvoiceEmail({ to, subject, message, factura, empresa, pdfBuf
  */
 async function sendProformaEmail({ to, subject, message, proforma, empresa, pdfBuffer, locale = 'en' }) {
   const t = getTranslations(locale);
+  const acento = colorParaTextoBlanco(colorDeMarca(empresa));
+  const tinte = tintar(colorDeMarca(empresa), 0.9);
   
   const htmlContent = `
     <!DOCTYPE html>
@@ -212,14 +216,14 @@ async function sendProformaEmail({ to, subject, message, proforma, empresa, pdfB
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #e0f2fe; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #0284c7; }
-        .header h1 { margin: 0; color: #0369a1; font-size: 24px; }
+        .header { background-color: ${tinte}; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid ${acento}; }
+        .header h1 { margin: 0; color: ${acento}; font-size: 24px; }
         .proforma-info { background-color: #fff; border: 1px solid #e0e0e0; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-        .proforma-number { font-size: 20px; font-weight: bold; color: #0284c7; }
+        .proforma-number { font-size: 20px; font-weight: bold; color: ${acento}; }
         .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
         .info-label { color: #666; }
         .info-value { font-weight: 500; }
-        .total { font-size: 24px; font-weight: bold; color: #0369a1; }
+        .total { font-size: 24px; font-weight: bold; color: ${acento}; }
         .message { white-space: pre-wrap; margin-bottom: 20px; }
         .validity { background-color: #fef3c7; padding: 12px; border-radius: 8px; margin-bottom: 20px; color: #92400e; font-size: 14px; }
         .footer { text-align: center; color: #666; font-size: 12px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
@@ -229,11 +233,11 @@ async function sendProformaEmail({ to, subject, message, proforma, empresa, pdfB
       <div class="container">
         <div class="header">
           <h1>${empresa?.nombre || 'Facturo'}</h1>
-          ${empresa?.ruc ? `<p style="margin: 5px 0 0 0; color: #0369a1;">RUC: ${empresa.ruc}</p>` : ''}
+          ${empresa?.ruc ? `<p style="margin: 5px 0 0 0; color: ${acento};">RUC: ${empresa.ruc}</p>` : ''}
         </div>
-        
+
         <div class="message">${message.replace(/\n/g, '<br>')}</div>
-        
+
         <div class="proforma-info">
           <div class="proforma-number">${t.proforma} ${proforma.serie}-${String(proforma.numero).padStart(6, '0')}</div>
           <div style="margin-top: 15px;">
@@ -305,6 +309,7 @@ async function sendSignatureRequestEmail({
   baseUrl,
   locale = 'en'
 }) {
+  const acento = colorParaTextoBlanco(colorDeMarca(empresa));
   const signingUrl = `${baseUrl}/${locale}/sign/${token}`;
   const expiresDate = new Date(expiresAt).toLocaleDateString('en-US', {
     year: 'numeric',
@@ -519,7 +524,7 @@ async function sendSignatureRequestEmail({
 
             <p class="message" style="margin-top: 30px;">
               If you have any questions or concerns, please contact ${empresa.nombre} directly 
-              ${empresa.email ? `at <a href="mailto:${empresa.email}" style="color: #3b82f6;">${empresa.email}</a>` : ''}.
+              ${empresa.email ? `at <a href="mailto:${empresa.email}" style="color: ${acento};">${empresa.email}</a>` : ''}.
             </p>
           </div>
 
@@ -571,6 +576,7 @@ async function sendSignatureConfirmationEmail({
   signedAt,
   locale = 'en'
 }) {
+  const acento = colorParaTextoBlanco(colorDeMarca(empresa));
   const documentType = document.serie?.startsWith('F') ? 'Invoice' : 'Proposal';
   const documentNumber = `${document.serie}-${document.numero}`;
   const signedDate = new Date(signedAt).toLocaleDateString('en-US', {
@@ -670,7 +676,7 @@ async function sendSignatureConfirmationEmail({
           }
           .download-button {
             display: inline-block;
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            background: ${acento};
             color: #ffffff !important;
             text-decoration: none;
             padding: 14px 32px;
@@ -812,6 +818,7 @@ async function sendSignatureConfirmationEmail({
  */
 async function sendInvoiceCreationEmail({ factura, empresa, locale = 'en' }) {
   const t = getTranslations(locale);
+  const acento = colorParaTextoBlanco(colorDeMarca(empresa));
   
   const clientEmail = factura.cliente?.email;
   if (!clientEmail) {
@@ -835,10 +842,10 @@ async function sendInvoiceCreationEmail({ factura, empresa, locale = 'en' }) {
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background-color: #2563eb; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .header { background-color: ${acento}; color: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
         .header h1 { margin: 0; font-size: 24px; }
         .invoice-info { background-color: #fff; border: 1px solid #e0e0e0; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-        .invoice-number { font-size: 20px; font-weight: bold; color: #2563eb; margin-bottom: 15px; }
+        .invoice-number { font-size: 20px; font-weight: bold; color: ${acento}; margin-bottom: 15px; }
         .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
         .info-label { color: #666; }
         .info-value { font-weight: 500; }
