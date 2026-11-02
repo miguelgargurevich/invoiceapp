@@ -92,8 +92,6 @@
     "signInError": "Error al iniciar sesión",
     "signUpError": "Error al crear la cuenta",
     "tagline": "Gestiona tus facturas y proformas de manera profesional",
-    "testimonial": "Este sistema ha transformado completamente la forma en que manejamos nuestra facturación. Simple, rápido y confiable.",
-    "testimonialAuthor": "María González, Gerente de Ventas",
     "allRightsReserved": "Todos los derechos reservados"
   },
   "header": {
@@ -1570,7 +1568,7 @@
       "process": {
         "title": "4. Proceso de Reembolso",
         "content": "Para solicitar un reembolso:",
-        "step1": "Contacte a nuestro equipo de facturación en billing@invoiceapp.com",
+        "step1": "Escríbenos desde la página de contacto para solicitar tu reembolso",
         "step2": "Proporcione el correo electrónico de su cuenta y el motivo de la solicitud de reembolso",
         "step3": "Nuestro equipo revisará su solicitud dentro de 5 días hábiles",
         "step4": "Si se aprueba, los reembolsos se procesan al método de pago original"

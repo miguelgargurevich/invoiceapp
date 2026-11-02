@@ -8,6 +8,7 @@ import { Check, Sparkles, Zap, Crown, Building2 } from 'lucide-react';
 import { formatPrice } from '@/lib/precios';
 import { getPlans } from '@/lib/subscriptions';
 import { equivalenteMensual, porcentajeAhorro } from '@/lib/landing';
+import { CorreoContacto } from '@/components/common/CorreoContacto';
 
 interface Plan {
   id: string;
@@ -374,9 +375,9 @@ export function PricingSection() {
         >
           <p className="text-slate-600 dark:text-slate-400">
             {t('pricing.needCustom')}{' '}
-            <a href="mailto:sales@invoiceapp.io" className="text-primary-600 dark:text-primary-400 font-medium hover:underline">
+            <CorreoContacto className="text-primary-600 dark:text-primary-400 font-medium hover:underline">
               {t('pricing.contactUs')}
-            </a>
+            </CorreoContacto>
           </p>
         </motion.div>
       </div>

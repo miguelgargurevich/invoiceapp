@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
-import { Twitter, Github, Linkedin, Mail } from 'lucide-react';
 import { LogoFacturo } from '@/components/marca/LogoFacturo';
 
 export function LandingFooter() {
@@ -31,13 +30,6 @@ export function LandingFooter() {
     ],
   };
 
-  const socialLinks = [
-    { href: 'https://twitter.com/invoiceapp', icon: Twitter, label: 'Twitter' },
-    { href: 'https://github.com/invoiceapp', icon: Github, label: 'GitHub' },
-    { href: 'https://linkedin.com/company/invoiceapp', icon: Linkedin, label: 'LinkedIn' },
-    { href: 'mailto:hello@invoiceapp.io', icon: Mail, label: 'Correo' },
-  ];
-
   return (
     <footer className="bg-slate-50 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,25 +43,6 @@ export function LandingFooter() {
             <p className="text-slate-600 dark:text-slate-400 mb-6 max-w-sm">
               {t('footer.description')}
             </p>
-            
-            {/* Social Links */}
-            <div className="flex items-center gap-3">
-              {socialLinks.map((social) => {
-                const Icon = social.icon;
-                return (
-                  <a
-                    key={social.label}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-primary-100 dark:hover:bg-primary-900/30 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
-                    aria-label={social.label}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </a>
-                );
-              })}
-            </div>
           </div>
 
           {/* Product Links */}

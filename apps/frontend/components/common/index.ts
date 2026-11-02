@@ -35,3 +35,4 @@ export {
 export { ActivityTimeline, createTimelineFromDocument } from './ActivityTimeline';
 export type { TimelineEvent } from './ActivityTimeline';
 export { UpgradePrompt, UsageLimitWarning, FeatureGate } from './UpgradePrompt';
+export { CorreoContacto } from './CorreoContacto';

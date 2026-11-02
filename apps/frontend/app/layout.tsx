@@ -66,7 +66,6 @@ export const metadata: Metadata = {
     title: 'Facturo — Facturación electrónica SUNAT',
     description: 'Emite comprobantes electrónicos válidos ante SUNAT y guarda el CDR. Plan gratis para empezar.',
     images: ['/og-image.png'],
-    creator: '@invoiceapp',
   },
   robots: {
     index: true,

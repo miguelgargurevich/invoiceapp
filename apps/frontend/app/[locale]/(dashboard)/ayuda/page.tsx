@@ -12,7 +12,7 @@ import {
   Search,
   ChevronDown,
 } from 'lucide-react';
-import { Card, Input, Button } from '@/components/common';
+import { Card, Input, Button, CorreoContacto } from '@/components/common';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AyudaPage() {
@@ -220,10 +220,10 @@ export default function AyudaPage() {
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
                 {t('emailDesc')}
               </p>
-              <Button variant="outline" size="sm">
-                <Mail className="w-4 h-4 mr-2" />
-                soporte@invoiceapp.com
-              </Button>
+              <CorreoContacto className="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <Mail className="w-4 h-4" />
+                Escríbenos
+              </CorreoContacto>
             </div>
 
             <div className="flex flex-col items-center text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">

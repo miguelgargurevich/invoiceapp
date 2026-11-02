@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { CorreoContacto } from '@/components/common/CorreoContacto';
 
 export default function PrivacyPage() {
   const t = useTranslations('legal.privacy');
@@ -130,7 +131,7 @@ export default function PrivacyPage() {
           {t('contact.content')}
         </p>
         <p className="text-gray-600 dark:text-gray-300 mt-2">
-          <strong>Email:</strong> privacy@invoiceapp.com
+          <strong>Email:</strong> <CorreoContacto />
         </p>
       </section>
     </article>

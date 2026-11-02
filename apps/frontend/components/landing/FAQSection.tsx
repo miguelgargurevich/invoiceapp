@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, HelpCircle } from 'lucide-react';
+import { CorreoContacto } from '@/components/common/CorreoContacto';
 
 export function FAQSection() {
   const t = useTranslations('landing');
@@ -105,9 +106,9 @@ export function FAQSection() {
         >
           <p className="text-slate-700 dark:text-slate-300">
             {t('faq.moreQuestions')}{' '}
-            <a href="mailto:support@invoiceapp.io" className="text-primary-600 dark:text-primary-400 font-medium hover:underline">
+            <CorreoContacto className="text-primary-600 dark:text-primary-400 font-medium hover:underline">
               {t('faq.contactSupport')}
-            </a>
+            </CorreoContacto>
           </p>
         </motion.div>
       </div>

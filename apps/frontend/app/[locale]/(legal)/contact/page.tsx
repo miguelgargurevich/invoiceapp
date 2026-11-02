@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { Mail, MapPin, Building2 } from 'lucide-react';
+import { CORREO_CONTACTO } from '@/lib/sitio';
 
 export default function ContactPage() {
   const t = useTranslations('legal.contactPage');
@@ -53,89 +54,19 @@ export default function ContactPage() {
               <p className="font-medium text-gray-900 dark:text-white">
                 {t('email.label')}
               </p>
-              <div className="space-y-1">
+              {CORREO_CONTACTO ? (
+                <a href={`mailto:${CORREO_CONTACTO}`} className="text-primary-600 dark:text-primary-400 hover:underline">
+                  {CORREO_CONTACTO}
+                </a>
+              ) : (
                 <p className="text-gray-600 dark:text-gray-300">
-                  <span className="text-gray-500 dark:text-gray-400">{t('email.general')}:</span>{' '}
-                  <a href="mailto:hello@invoiceapp.com" className="text-primary-600 dark:text-primary-400 hover:underline">
-                    hello@invoiceapp.com
-                  </a>
+                  Pronto publicaremos nuestro correo de contacto.
                 </p>
-                <p className="text-gray-600 dark:text-gray-300">
-                  <span className="text-gray-500 dark:text-gray-400">{t('email.support')}:</span>{' '}
-                  <a href="mailto:support@invoiceapp.com" className="text-primary-600 dark:text-primary-400 hover:underline">
-                    support@invoiceapp.com
-                  </a>
-                </p>
-                <p className="text-gray-600 dark:text-gray-300">
-                  <span className="text-gray-500 dark:text-gray-400">{t('email.billing')}:</span>{' '}
-                  <a href="mailto:billing@invoiceapp.com" className="text-primary-600 dark:text-primary-400 hover:underline">
-                    billing@invoiceapp.com
-                  </a>
-                </p>
-              </div>
+              )}
             </div>
           </div>
         </div>
       </div>
-
-      {/* Support Hours */}
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-          {t('supportHours.title')}
-        </h2>
-        <div className="not-prose bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{t('supportHours.weekdays')}</p>
-              <p className="font-medium text-gray-900 dark:text-white">9:00 AM - 6:00 PM EST</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{t('supportHours.weekends')}</p>
-              <p className="font-medium text-gray-900 dark:text-white">{t('supportHours.closed')}</p>
-            </div>
-          </div>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
-            {t('supportHours.responseTime')}
-          </p>
-        </div>
-      </section>
-
-      {/* Departments */}
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-          {t('departments.title')}
-        </h2>
-        <div className="not-prose grid md:grid-cols-2 gap-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-            <h3 className="font-medium text-gray-900 dark:text-white mb-2">{t('departments.support.title')}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{t('departments.support.description')}</p>
-            <a href="mailto:support@invoiceapp.com" className="text-sm text-primary-600 dark:text-primary-400 hover:underline">
-              support@invoiceapp.com
-            </a>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-            <h3 className="font-medium text-gray-900 dark:text-white mb-2">{t('departments.billing.title')}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{t('departments.billing.description')}</p>
-            <a href="mailto:billing@invoiceapp.com" className="text-sm text-primary-600 dark:text-primary-400 hover:underline">
-              billing@invoiceapp.com
-            </a>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-            <h3 className="font-medium text-gray-900 dark:text-white mb-2">{t('departments.sales.title')}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{t('departments.sales.description')}</p>
-            <a href="mailto:sales@invoiceapp.com" className="text-sm text-primary-600 dark:text-primary-400 hover:underline">
-              sales@invoiceapp.com
-            </a>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
-            <h3 className="font-medium text-gray-900 dark:text-white mb-2">{t('departments.legal.title')}</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{t('departments.legal.description')}</p>
-            <a href="mailto:legal@invoiceapp.com" className="text-sm text-primary-600 dark:text-primary-400 hover:underline">
-              legal@invoiceapp.com
-            </a>
-          </div>
-        </div>
-      </section>
     </article>
   );
 }
