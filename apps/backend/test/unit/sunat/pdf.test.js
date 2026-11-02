@@ -1,6 +1,27 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const zlib = require('node:zlib');
 const { generarPdf, textoQr } = require('../../../src/sunat/pdf/representacion');
+const { colorParaTextoBlanco, hexARgb01 } = require('../../../src/planes/marca');
+
+// Colores que pinta el PDF: pdf-lib escribe «r g b rg» (relleno) y «r g b RG» (trazo); el stream va comprimido.
+function coloresDelPdf(pdf) {
+  const s = pdf.toString('latin1');
+  const re = /stream\r?\n/g;
+  let texto = '';
+  let m;
+  while ((m = re.exec(s))) {
+    const ini = m.index + m[0].length;
+    const fin = s.indexOf('endstream', ini);
+    try { texto += zlib.inflateSync(Buffer.from(s.slice(ini, fin), 'latin1')).toString('latin1'); } catch { /* no es un stream de contenido */ }
+  }
+  return [...texto.matchAll(/(-?[\d.]+) (-?[\d.]+) (-?[\d.]+) (rg|RG)\n/g)]
+    .map(([, r, g, b, op]) => ({ r: Number(r), g: Number(g), b: Number(b), op }));
+}
+const usa = (colores, hex, op = 'rg') => {
+  const { r, g, b } = hexARgb01(hex);
+  return colores.some((c) => c.op === op && Math.abs(c.r - r) < 1e-9 && Math.abs(c.g - g) < 1e-9 && Math.abs(c.b - b) < 1e-9);
+};
 
 const factura = {
   tipoComprobante: '01', serie: 'F001', numero: 7, fechaEmision: new Date('2026-11-01T15:00:00Z'), moneda: 'PEN',
@@ -27,4 +48,26 @@ test('genera un PDF de varias páginas sin romperse con caracteres especiales', 
   const pdf = await generarPdf(factura);
   assert.equal(pdf.subarray(0, 4).toString(), '%PDF');
   assert.ok(pdf.length > 2000);
+});
+
+test('con colorPrimario el PDF pinta el color de marca (borde, franja, tipo/número y la línea de la tabla)', async () => {
+  const pdf = await generarPdf({ ...factura, empresa: { ...factura.empresa, colorPrimario: '#1E40AF' } });
+  assert.equal(pdf.subarray(0, 4).toString(), '%PDF');
+  const colores = coloresDelPdf(pdf);
+  assert.ok(usa(colores, '#1E40AF'), 'falta el color de marca en relleno');
+  assert.ok(usa(colores, '#1E40AF', 'RG'), 'falta el color de marca en trazo (borde del recuadro)');
+  assert.ok(usa(colores, '#FFFFFF'), 'la franja del RUC debe llevar texto blanco');
+  assert.ok(usa(colores, '#000000'), 'el resto del documento sigue en negro');
+});
+
+test('sin colorPrimario el PDF usa el berenjena de Facturo', async () => {
+  const colores = coloresDelPdf(await generarPdf(factura));
+  assert.ok(usa(colores, '#6B2C6E'));
+  assert.ok(usa(colores, '#6B2C6E', 'RG'));
+});
+
+test('un color claro (amarillo) se pinta en su versión legible, no tal cual', async () => {
+  const colores = coloresDelPdf(await generarPdf({ ...factura, empresa: { ...factura.empresa, colorPrimario: '#FFFF00' } }));
+  assert.ok(!usa(colores, '#FFFF00'), 'el amarillo puro no debe usarse como texto ni como trazo');
+  assert.ok(usa(colores, colorParaTextoBlanco('#FFFF00')));
 });

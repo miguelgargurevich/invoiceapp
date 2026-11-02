@@ -3,6 +3,7 @@ const QRCode = require('qrcode');
 const { fechaLima } = require('../fechas');
 const { dos, aDecimal } = require('../numeros');
 const { codigoDocIdentidad } = require('../catalogos');
+const { colorDeMarca, colorParaTextoBlanco, hexARgb01 } = require('../../planes/marca');
 
 const NOMBRES_COMPROBANTE = Object.freeze({
   '01': 'FACTURA ELECTRÓNICA',
@@ -31,8 +32,13 @@ async function generarPdf(f) {
   let pagina = pdf.addPage([ANCHO, ALTO]);
   let y = ALTO - 40;
 
+  // Color de marca de la empresa, legible también como texto sobre blanco (ver planes/marca.js).
+  const { r, g, b } = hexARgb01(colorParaTextoBlanco(colorDeMarca(f.empresa)));
+  const colorMarca = rgb(r, g, b);
+  const blanco = rgb(1, 1, 1);
+
   const texto = (t, x, opciones = {}) => pagina.drawText(limpiar(t), {
-    x, y, size: opciones.size ?? 9, font: opciones.bold ? negrita : normal, color: rgb(0, 0, 0),
+    x, y, size: opciones.size ?? 9, font: opciones.bold ? negrita : normal, color: opciones.color ?? rgb(0, 0, 0),
   });
   const bajar = (n = 12) => {
     y -= n;
@@ -40,11 +46,12 @@ async function generarPdf(f) {
   };
 
   // Cabecera: emisor a la izquierda, recuadro del comprobante a la derecha.
-  pagina.drawRectangle({ x: 380, y: ALTO - 112, width: 175, height: 80, borderColor: rgb(0, 0, 0), borderWidth: 1 });
+  pagina.drawRectangle({ x: 380, y: ALTO - 112, width: 175, height: 80, borderColor: colorMarca, borderWidth: 1.5 });
+  pagina.drawRectangle({ x: 381, y: ALTO - 56, width: 173, height: 23, color: colorMarca }); // franja del RUC
   const yCabecera = y;
-  y = ALTO - 50; texto(`RUC ${f.empresa.ruc}`, 392, { bold: true, size: 10 });
-  y = ALTO - 68; texto(NOMBRES_COMPROBANTE[f.tipoComprobante], 392, { bold: true });
-  y = ALTO - 88; texto(`${f.serie}-${String(f.numero).padStart(8, '0')}`, 392, { bold: true, size: 12 });
+  y = ALTO - 50; texto(`RUC ${f.empresa.ruc}`, 392, { bold: true, size: 10, color: blanco });
+  y = ALTO - 68; texto(NOMBRES_COMPROBANTE[f.tipoComprobante], 392, { bold: true, color: colorMarca });
+  y = ALTO - 88; texto(`${f.serie}-${String(f.numero).padStart(8, '0')}`, 392, { bold: true, size: 12, color: colorMarca });
   y = yCabecera;
   texto(f.empresa.razonSocial || f.empresa.nombre, IZQ, { bold: true, size: 12 }); bajar(16);
   texto(`RUC ${f.empresa.ruc}`, IZQ); bajar();
@@ -59,7 +66,9 @@ async function generarPdf(f) {
   bajar(10);
 
   texto('Cant.', IZQ, { bold: true }); texto('Unidad', 85, { bold: true }); texto('Descripción', 130, { bold: true });
-  texto('V. unitario', 400, { bold: true }); texto('Valor venta', 480, { bold: true }); bajar(14);
+  texto('V. unitario', 400, { bold: true }); texto('Valor venta', 480, { bold: true });
+  pagina.drawLine({ start: { x: IZQ, y: y - 4 }, end: { x: ANCHO - IZQ, y: y - 4 }, thickness: 1, color: colorMarca });
+  bajar(14);
   for (const d of [...f.detalles].sort((a, b) => a.orden - b.orden)) {
     texto(aDecimal(d.cantidad).toString(), IZQ);
     texto(d.codigoUnidadSunat, 85);
