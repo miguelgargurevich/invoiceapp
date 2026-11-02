@@ -95,7 +95,7 @@ export default function ProductosPage({
     
     try {
       await api.delete(`/productos/${selectedProducto.id}`);
-      showSuccess(t('deleteSuccess') || 'Product deleted successfully');
+      showSuccess(t('deleteSuccess') || 'Producto eliminado correctamente');
       loadProductos();
     } catch (error: any) {
       console.error('Error deleting producto:', error);
@@ -210,7 +210,7 @@ export default function ProductosPage({
               handleDelete(producto);
             }}
             className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-            title="Delete"
+            title="Eliminar"
           >
             <Trash2 className="w-4 h-4 text-red-500" />
           </button>
@@ -344,7 +344,7 @@ export default function ProductosPage({
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={confirmDelete}
-        title="Delete Product"
+        title="Eliminar producto"
         message={`Are you sure you want to delete "${selectedProducto?.nombre}"? This action cannot be undone.`}
         confirmLabel="Delete"
         variant="danger"

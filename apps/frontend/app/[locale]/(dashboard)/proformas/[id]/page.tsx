@@ -205,7 +205,7 @@ export default function ProformaDetailPage({
       const data = response.data || response;
       
       if (!data) {
-        throw new Error('No data received from API');
+        throw new Error('No se recibieron datos del servidor');
       }
       
       setProforma({
@@ -229,7 +229,7 @@ export default function ProformaDetailPage({
       });
     } catch (error) {
       console.error('Error loading proforma:', error);
-      showError(t('proformaPage.errorLoading') || 'Error loading proposal');
+      showError(t('proformaPage.errorLoading') || 'Error al cargar la proforma');
     } finally {
       setLoading(false);
     }
@@ -337,7 +337,7 @@ export default function ProformaDetailPage({
       }
     } catch (error: any) {
       console.error('Error requesting signature:', error);
-      showError(error.response?.data?.error || 'Failed to request signature');
+      showError(error.response?.data?.error || 'Error al solicitar la firma');
     } finally {
       setRequestingSignature(false);
     }
@@ -363,10 +363,10 @@ export default function ProformaDetailPage({
         emailSent: true
       }));
       
-      showSuccess('Email sent successfully!');
+      showSuccess('¡Correo enviado correctamente!');
     } catch (error: any) {
       console.error('Error sending email:', error);
-      showError(error.response?.data?.error || 'Failed to send email');
+      showError(error.response?.data?.error || 'Error al enviar el correo');
     } finally {
       setSendingEmail(false);
     }
@@ -407,7 +407,7 @@ export default function ProformaDetailPage({
     if (!proforma || !fechaEmisionEdit || !fechaValidezEdit) return;
 
     if (fechaEmisionEdit > fechaValidezEdit) {
-      showError('Valid until date must be after issue date');
+      showError('La fecha de validez debe ser posterior a la de emisión');
       return;
     }
 
@@ -418,12 +418,12 @@ export default function ProformaDetailPage({
         fechaValidez: fechaValidezEdit.toISOString(),
       });
       
-      showSuccess(t('updateSuccess') || 'Dates updated successfully');
+      showSuccess(t('updateSuccess') || 'Fechas actualizadas correctamente');
       setIsEditDatesOpen(false);
       loadProforma();
     } catch (error: any) {
       console.error('Error updating dates:', error);
-      showError(error.response?.data?.error || 'Failed to update dates');
+      showError(error.response?.data?.error || 'Error al actualizar las fechas');
     } finally {
       setEditingDates(false);
     }
@@ -444,12 +444,12 @@ export default function ProformaDetailPage({
         observaciones: observacionesEdit,
       });
       
-      showSuccess(t('updateSuccess') || 'Observations updated successfully');
+      showSuccess(t('updateSuccess') || 'Observaciones actualizadas correctamente');
       setIsEditObservationsOpen(false);
       loadProforma();
     } catch (error: any) {
       console.error('Error updating observations:', error);
-      showError(error.response?.data?.error || 'Failed to update observations');
+      showError(error.response?.data?.error || 'Error al actualizar las observaciones');
     } finally {
       setEditingObservations(false);
     }
@@ -470,12 +470,12 @@ export default function ProformaDetailPage({
         condiciones: condicionesEdit,
       });
       
-      showSuccess(t('updateSuccess') || 'Conditions updated successfully');
+      showSuccess(t('updateSuccess') || 'Condiciones actualizadas correctamente');
       setIsEditConditionsOpen(false);
       loadProforma();
     } catch (error: any) {
       console.error('Error updating conditions:', error);
-      showError(error.response?.data?.error || 'Failed to update conditions');
+      showError(error.response?.data?.error || 'Error al actualizar las condiciones');
     } finally {
       setEditingConditions(false);
     }
@@ -500,12 +500,12 @@ export default function ProformaDetailPage({
       setEditingJobInfo(true);
       await api.put(`/proformas/${proforma.id}/job-info`, jobInfoEdit);
       
-      showSuccess(t('updateSuccess') || 'Job information updated successfully');
+      showSuccess(t('updateSuccess') || 'Información del trabajo actualizada correctamente');
       setIsEditJobInfoOpen(false);
       loadProforma();
     } catch (error: any) {
       console.error('Error updating job info:', error);
-      showError(error.response?.data?.error || 'Failed to update job information');
+      showError(error.response?.data?.error || 'Error al actualizar la información del trabajo');
     } finally {
       setEditingJobInfo(false);
     }
@@ -526,12 +526,12 @@ export default function ProformaDetailPage({
         paymentTerms: paymentTermsEdit,
       });
       
-      showSuccess(t('updateSuccess') || 'Payment terms updated successfully');
+      showSuccess(t('updateSuccess') || 'Condiciones de pago actualizadas correctamente');
       setIsEditPaymentTermsOpen(false);
       loadProforma();
     } catch (error: any) {
       console.error('Error updating payment terms:', error);
-      showError(error.response?.data?.error || 'Failed to update payment terms');
+      showError(error.response?.data?.error || 'Error al actualizar las condiciones de pago');
     } finally {
       setEditingPaymentTerms(false);
     }
@@ -575,7 +575,7 @@ export default function ProformaDetailPage({
     // Validate items
     const validItems = itemsEdit.filter(item => item.descripcion.trim() !== '');
     if (validItems.length === 0) {
-      showError(t('itemsRequired') || 'At least one item is required');
+      showError(t('itemsRequired') || 'Agrega al menos un ítem');
       return;
     }
 
@@ -590,12 +590,12 @@ export default function ProformaDetailPage({
         }))
       });
       
-      showSuccess(t('updateSuccess') || 'Items updated successfully');
+      showSuccess(t('updateSuccess') || 'Ítems actualizados correctamente');
       setIsEditItemsOpen(false);
       loadProforma();
     } catch (error: any) {
       console.error('Error updating items:', error);
-      showError(error.response?.data?.error || 'Failed to update items');
+      showError(error.response?.data?.error || 'Error al actualizar los ítems');
     } finally {
       setEditingItems(false);
     }
@@ -606,14 +606,14 @@ export default function ProformaDetailPage({
 
     try {
       setConverting(true);
-      showSuccess(t('convertingToInvoice') || 'Converting proposal to invoice...');
+      showSuccess(t('convertingToInvoice') || 'Convirtiendo la proforma en factura...');
       const response: any = await api.post(`/proformas/${proforma.id}/convertir-factura`);
-      showSuccess(t('invoiceCreated') || 'Invoice created successfully!');
+      showSuccess(t('invoiceCreated') || '¡Factura creada correctamente!');
       setIsConvertDialogOpen(false);
       router.push(`/${locale}/facturas/${response.factura?.id || response.data?.factura?.id}`);
     } catch (error: any) {
       console.error('Error converting to invoice:', error);
-      showError(error.response?.data?.error || t('convertError') || 'Error converting to invoice');
+      showError(error.response?.data?.error || t('convertError') || 'Error al convertir en factura');
     } finally {
       setConverting(false);
     }
@@ -808,7 +808,7 @@ export default function ProformaDetailPage({
                 <button
                   onClick={handleOpenEditItems}
                   className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-                  title={t('editItems') || 'Edit items'}
+                  title={t('editItems') || 'Editar ítems'}
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
                 </button>
@@ -898,7 +898,7 @@ export default function ProformaDetailPage({
                   <button
                     onClick={handleOpenEditJobInfo}
                     className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-                    title="Edit job information"
+                    title="Editar información del trabajo"
                   >
                     <Edit2 className="w-4 h-4 text-gray-500" />
                   </button>
@@ -988,7 +988,7 @@ export default function ProformaDetailPage({
                 <button
                   onClick={handleOpenEditConditions}
                   className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-                  title="Edit conditions"
+                  title="Editar condiciones"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
                 </button>
@@ -998,7 +998,7 @@ export default function ProformaDetailPage({
               <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{proforma.condiciones}</p>
             ) : (
               <p className="text-gray-400 dark:text-gray-500 italic text-sm">
-                {t('termsConditionsPlaceholder') || 'No terms and conditions'}
+                {t('termsConditionsPlaceholder') || 'Sin condiciones'}
               </p>
             )}
           </Card>
@@ -1014,7 +1014,7 @@ export default function ProformaDetailPage({
                 <button
                   onClick={handleOpenEditObservations}
                   className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-                  title="Edit notes"
+                  title="Editar notas"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
                 </button>
@@ -1024,7 +1024,7 @@ export default function ProformaDetailPage({
               <p className="text-gray-600 dark:text-gray-400 whitespace-pre-wrap">{proforma.observaciones}</p>
             ) : (
               <p className="text-gray-400 dark:text-gray-500 italic text-sm">
-                {t('notesPlaceholder') || 'No notes'}
+                {t('notesPlaceholder') || 'Sin notas'}
               </p>
             )}
           </Card>
@@ -1075,7 +1075,7 @@ export default function ProformaDetailPage({
                 <button
                   onClick={handleOpenEditDates}
                   className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-                  title="Edit dates"
+                  title="Editar fechas"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
                 </button>
@@ -1157,7 +1157,7 @@ export default function ProformaDetailPage({
             setUrlCopied(false);
           }}
           title={signatureRequestModal.emailSent ? t('signatureRequestSent') : t('requestSignature')}
-          subtitle={signatureRequestModal.emailSent ? 'Signature request has been sent successfully' : 'Get this proposal signed digitally'}
+          subtitle={signatureRequestModal.emailSent ? 'Solicitud de firma enviada correctamente' : 'Firma esta proforma digitalmente'}
           icon={PenLine}
           iconColor={signatureRequestModal.emailSent ? 'success' : 'primary'}
           size="lg"
@@ -1282,7 +1282,7 @@ export default function ProformaDetailPage({
         isOpen={isEditDatesOpen}
         onClose={() => !editingDates && setIsEditDatesOpen(false)}
         title={t('dates')}
-        subtitle="Update proposal issue and validity dates"
+        subtitle="Actualiza las fechas de emisión y validez de la proforma"
         icon={Calendar}
         size="md"
       >
@@ -1353,7 +1353,7 @@ export default function ProformaDetailPage({
         isOpen={isEditJobInfoOpen}
         onClose={() => { !editingJobInfo && setIsEditJobInfoOpen(false); setShowJobMoreOptions(false); }}
         title={t('jobInformation')}
-        subtitle="Update job details and work description"
+        subtitle="Actualiza los detalles y la descripción del trabajo"
         icon={Briefcase}
         size="md"
       >
@@ -1497,7 +1497,7 @@ export default function ProformaDetailPage({
         isOpen={isEditPaymentTermsOpen}
         onClose={() => !editingPaymentTerms && setIsEditPaymentTermsOpen(false)}
         title={t('paymentTerms')}
-        subtitle="Define payment conditions and schedule"
+        subtitle="Define las condiciones y el calendario de pago"
         icon={CreditCard}
         size="md"
       >
@@ -1556,7 +1556,7 @@ export default function ProformaDetailPage({
         isOpen={isEditObservationsOpen}
         onClose={() => !editingObservations && setIsEditObservationsOpen(false)}
         title={t('notes')}
-        subtitle="Add notes or special instructions"
+        subtitle="Agrega notas o instrucciones especiales"
         icon={MessageSquare}
         size="md"
       >
@@ -1613,7 +1613,7 @@ export default function ProformaDetailPage({
         isOpen={isEditConditionsOpen}
         onClose={() => !editingConditions && setIsEditConditionsOpen(false)}
         title={t('termsAndConditions')}
-        subtitle={t('termsConditionsSubtitle') || 'Contract terms and conditions'}
+        subtitle={t('termsConditionsSubtitle') || 'Condiciones del contrato'}
         icon={ScrollText}
         size="md"
       >
@@ -1672,7 +1672,7 @@ export default function ProformaDetailPage({
         isOpen={isEditItemsOpen}
         onClose={() => !editingItems && setIsEditItemsOpen(false)}
         title={t('items')}
-        subtitle={t('editItemsSubtitle') || 'Add, edit or remove line items'}
+        subtitle={t('editItemsSubtitle') || 'Agrega, edita o quita ítems'}
         icon={Package}
         size="lg"
       >
@@ -1695,7 +1695,7 @@ export default function ProformaDetailPage({
                         value={item.descripcion}
                         onChange={(e) => handleUpdateItem(index, 'descripcion', e.target.value)}
                         disabled={editingItems}
-                        placeholder={t('descriptionPlaceholder') || 'Item description...'}
+                        placeholder={t('descriptionPlaceholder') || 'Descripción del ítem...'}
                         className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
                       />
                     </div>

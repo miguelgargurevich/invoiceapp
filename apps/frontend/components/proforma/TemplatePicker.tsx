@@ -40,7 +40,7 @@ const PROPOSAL_TEMPLATES: ProposalTemplate[] = [
     defaultTerms: 
 `All material is guaranteed to be as specified. All work to be completed in a workmanlike manner according to standard practices. Any alteration or deviation from above specifications involving extra costs will be executed only upon written orders, and will become an extra charge over and above the estimate.
 All agreements contingent upon strikes, accidents or delays beyond our control. Owner to carry fire, windstorm and other necessary insurance.
-Our workers are fully covered by Workman's Compensation Insurance.`,
+Nuestros trabajadores están totalmente cubiertos por un seguro de compensación laboral.`,
     defaultPaymentTerms: `PAYMENT TERMS:
 • 50% deposit required to schedule work
 • 25% upon substantial completion
@@ -84,8 +84,8 @@ Our workers are fully covered by Workman's Compensation Insurance.`,
   {
     id: 'agency',
     industry: 'agency',
-    name: 'Agency',
-    description: 'Full-service marketing, creative, digital',
+    name: 'Agencia',
+    description: 'Servicios completos de marketing, creatividad y medios digitales',
     icon: Building2,
     color: 'from-primary-500 to-cyan-500',
     defaultTerms: 

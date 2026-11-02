@@ -152,8 +152,8 @@ export default function AdminPage({
       console.error('Error updating user status:', error);
       
       const errorMessage = error.message === 'Bad Request'
-        ? t('cannotChangeOwnStatus') || 'You cannot change your own status'
-        : t('errorUpdatingStatus') || 'Error updating user status';
+        ? t('cannotChangeOwnStatus') || 'No puedes cambiar tu propio estado'
+        : t('errorUpdatingStatus') || 'Error al actualizar el estado del usuario';
       
       showToast(errorMessage, 'error');
       setConfirmDialog({ open: false, userId: '', userName: '', currentStatus: true });
@@ -200,7 +200,7 @@ export default function AdminPage({
             {t('title') || 'Admin Panel'}
           </h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">
-            {t('subtitle') || 'System administration and management'}
+            {t('subtitle') || 'Administración y gestión del sistema'}
           </p>
         </div>
       </div>
@@ -289,7 +289,7 @@ export default function AdminPage({
               <div className="flex items-start justify-between">
                 <div>
                   <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-                    {t('totalInvoices') || 'Invoices'}
+                    {t('totalInvoices') || 'Facturas'}
                   </div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                     {stats.totalFacturas}
@@ -305,7 +305,7 @@ export default function AdminPage({
               <div className="flex items-start justify-between">
                 <div>
                   <div className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-                    {t('totalProposals') || 'Proposals'}
+                    {t('totalProposals') || 'Proformas'}
                   </div>
                   <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                     {stats.totalProformas}
@@ -401,7 +401,7 @@ export default function AdminPage({
                       {t('email') || 'Email'}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
-                      {t('created') || 'Created'}
+                      {t('created') || 'Creado'}
                     </th>
                   </tr>
                 </thead>
@@ -438,7 +438,7 @@ export default function AdminPage({
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                   type="text"
-                  placeholder={t('searchUsers') || 'Search users...'}
+                  placeholder={t('searchUsers') || 'Buscar usuarios...'}
                   value={searchUsers}
                   onChange={(e) => {
                     setSearchUsers(e.target.value);
@@ -531,7 +531,7 @@ export default function AdminPage({
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <input
                   type="text"
-                  placeholder={t('searchCompanies') || 'Search companies...'}
+                  placeholder={t('searchCompanies') || 'Buscar empresas...'}
                   value={searchEmpresas}
                   onChange={(e) => {
                     setSearchEmpresas(e.target.value);
@@ -559,7 +559,7 @@ export default function AdminPage({
                       {t('stats') || 'Stats'}
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
-                      {t('created') || 'Created'}
+                      {t('created') || 'Creado'}
                     </th>
                   </tr>
                 </thead>
@@ -606,7 +606,7 @@ export default function AdminPage({
             : t('confirmActivateMessage') || `Are you sure you want to activate user "${confirmDialog.userName}"? They will regain access to the system.`
         }
         confirmLabel={confirmDialog.currentStatus ? t('deactivate') || 'Deactivate' : t('activate') || 'Activate'}
-        cancelLabel={t('cancel') || 'Cancel'}
+        cancelLabel={t('cancel') || 'Cancelar'}
         variant={confirmDialog.currentStatus ? 'danger' : 'warning'}
       />
     </div>

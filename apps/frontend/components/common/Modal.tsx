@@ -129,7 +129,7 @@ export function Modal({
                       whileTap={{ scale: 0.95 }}
                       onClick={onClose}
                       className="flex-shrink-0 p-2 -mr-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-xl transition-colors"
-                      aria-label="Close modal"
+                      aria-label="Cerrar ventana"
                     >
                       <X className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                     </motion.button>

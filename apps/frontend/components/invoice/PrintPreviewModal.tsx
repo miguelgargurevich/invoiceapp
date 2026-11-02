@@ -229,7 +229,7 @@ export default function PrintPreviewModal({
             <button
               onClick={handleZoomOut}
               className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-              title="Zoom out"
+              title="Alejar"
             >
               <ZoomOut className="w-4 h-4" />
             </button>
@@ -239,7 +239,7 @@ export default function PrintPreviewModal({
             <button
               onClick={handleZoomIn}
               className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-              title="Zoom in"
+              title="Acercar"
             >
               <ZoomIn className="w-4 h-4" />
             </button>

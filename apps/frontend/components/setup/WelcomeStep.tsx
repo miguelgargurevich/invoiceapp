@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { Sparkles, Clock, Shield, Zap, ChevronRight, ArrowLeft } from 'lucide-react';
+import { Sparkles, Clock, Shield, Zap, ChevronRight, ArrowLeft, PartyPopper } from 'lucide-react';
 
 interface WelcomeStepProps {
   onNext: () => void;
@@ -43,7 +43,10 @@ export default function WelcomeStep({ onNext }: WelcomeStepProps) {
         transition={{ delay: 0.2 }}
         className="text-4xl font-bold text-white mb-4"
       >
-        {t('welcome.title')}
+        <span className="inline-flex items-center gap-3">
+          {t('welcome.title')}
+          <PartyPopper className="w-9 h-9 text-primary-300 shrink-0" aria-hidden="true" />
+        </span>
       </motion.h1>
 
       {/* Subtitle */}

@@ -35,7 +35,7 @@ export function LandingFooter() {
     { href: 'https://twitter.com/invoiceapp', icon: Twitter, label: 'Twitter' },
     { href: 'https://github.com/invoiceapp', icon: Github, label: 'GitHub' },
     { href: 'https://linkedin.com/company/invoiceapp', icon: Linkedin, label: 'LinkedIn' },
-    { href: 'mailto:hello@invoiceapp.io', icon: Mail, label: 'Email' },
+    { href: 'mailto:hello@invoiceapp.io', icon: Mail, label: 'Correo' },
   ];
 
   return (

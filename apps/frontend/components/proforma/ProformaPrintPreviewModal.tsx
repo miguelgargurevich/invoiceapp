@@ -203,11 +203,11 @@ export default function ProformaPrintPreviewModal({
         pdf.save(`${t('title')}-${proforma.serie}-${proforma.numero}.pdf`);
       } else {
         //console.error('[ProformaPDF] PDF generation returned null');
-        showError('Error generating PDF. Please try again.');
+        showError('Error al generar el PDF. Intenta de nuevo.');
       }
     } catch (error) {
       console.error('[ProformaPDF] Error generating PDF:', error);
-      showError('Error generating PDF. Please try again.');
+      showError('Error al generar el PDF. Intenta de nuevo.');
     } finally {
       setDownloading(false);
     }
@@ -247,13 +247,13 @@ export default function ProformaPrintPreviewModal({
         }
       } else {
         //console.error('[ProformaPDF] PDF generation returned null');
-        showError('Error generating PDF. Please try again.');
+        showError('Error al generar el PDF. Intenta de nuevo.');
       }
     } catch (error: any) {
       //console.error('[ProformaPDF] Error sharing:', error);
       // Only show error if it's not a user cancellation
       if (error.name !== 'AbortError') {
-        showError('Error sharing PDF. Please try download instead.');
+        showError('Error al compartir el PDF. Intenta descargarlo.');
       }
     } finally {
       setDownloading(false);
@@ -272,7 +272,7 @@ export default function ProformaPrintPreviewModal({
             <button
               onClick={handleZoomOut}
               className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-              title="Zoom out"
+              title="Alejar"
             >
               <ZoomOut className="w-4 h-4" />
             </button>
@@ -282,7 +282,7 @@ export default function ProformaPrintPreviewModal({
             <button
               onClick={handleZoomIn}
               className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
-              title="Zoom in"
+              title="Acercar"
             >
               <ZoomIn className="w-4 h-4" />
             </button>

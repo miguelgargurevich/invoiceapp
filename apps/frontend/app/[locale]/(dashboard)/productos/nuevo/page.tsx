@@ -37,7 +37,7 @@ export default function NuevoProductoPage({
     e.preventDefault();
     
     if (!formData.nombre || !formData.precioVenta) {
-      showError('Please fill in required fields');
+      showError('Completa los campos obligatorios');
       return;
     }
 
@@ -54,7 +54,7 @@ export default function NuevoProductoPage({
       router.push(`/${locale}/productos`);
     } catch (error: any) {
       console.error('Error saving producto:', error);
-      showError(error.response?.data?.error || 'Error saving product');
+      showError(error.response?.data?.error || 'Error al guardar el producto');
     } finally {
       setLoading(false);
     }
@@ -163,7 +163,7 @@ export default function NuevoProductoPage({
               label={t('name')}
               value={formData.nombre}
               onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-              placeholder="Product or service name"
+              placeholder="Nombre del producto o servicio"
               required
             />
           </div>
@@ -173,7 +173,7 @@ export default function NuevoProductoPage({
             label={t('description')}
             value={formData.descripcion}
             onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
-            placeholder="Detailed description..."
+            placeholder="Descripción detallada..."
             rows={3}
           />
 
@@ -254,7 +254,7 @@ export default function NuevoProductoPage({
             </Button>
             <Button type="submit" disabled={loading}>
               <Save className="w-4 h-4 mr-2" />
-              {loading ? 'Saving...' : 'Save'}
+              {loading ? 'Guardando...' : 'Guardar'}
             </Button>
           </div>
         </form>

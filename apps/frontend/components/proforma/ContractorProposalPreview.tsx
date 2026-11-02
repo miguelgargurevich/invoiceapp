@@ -117,7 +117,7 @@ const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalP
           <div className="text-right space-x-2">
             <span>Page No. <strong>{pageNumber}</strong></span>
             <span>of <strong>{totalPages}</strong> Pages</span>
-            {isInsured && <span className="ml-4"><strong>Insured</strong></span>}
+            {isInsured && <span className="ml-4"><strong>Asegurado</strong></span>}
           </div>
         </div>
 
@@ -234,7 +234,7 @@ const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalP
 
         {/* PAYMENT TERMS - Row 20 */}
         <div className="mb-4">
-          <p className="font-semibold text-sm mb-1">Payment to be made as follows:</p>
+          <p className="font-semibold text-sm mb-1">El pago se realizará de la siguiente manera:</p>
           <div className="border border-black p-2 min-h-[60px]">
             <div className="whitespace-pre-wrap text-sm">
               {proforma.paymentTerms || '___________'}
@@ -267,8 +267,8 @@ const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalP
 
         {/* GENERAL CONDITIONS */}
         <div className="text-xs mb-4 space-y-1 text-justify">
-          <p><strong>Our workers are fully covered by Workman's Compensation Insurance.</strong></p>
-          <p><strong>All work guaranteed for one year from date of completion.</strong></p>
+          <p><strong>Nuestros trabajadores están totalmente cubiertos por un seguro de compensación laboral.</strong></p>
+          <p><strong>Todo el trabajo está garantizado por un año desde la fecha de finalización.</strong></p>
           <p>
             Owner to carry fire, tornado, and other necessary insurance upon above work. 
             Proposer is not responsible for damage from other trades. Proposer shall not be 

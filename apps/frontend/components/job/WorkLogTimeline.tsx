@@ -270,8 +270,8 @@ export function WorkLogTimeline({ documentType, documentId }: WorkLogTimelinePro
       onClose={() => setLogToDelete(null)}
       onConfirm={confirmDelete}
       title={t('common.confirmDelete')}
-      message={t('common.confirmDeleteMessage') || 'Are you sure you want to delete this work log?'}
-      confirmLabel={t('common.delete') || 'Delete'}
+      message={t('common.confirmDeleteMessage') || '¿Seguro que quieres eliminar esta entrada de trabajo?'}
+      confirmLabel={t('common.delete') || 'Eliminar'}
       variant="danger"
     />
     </>

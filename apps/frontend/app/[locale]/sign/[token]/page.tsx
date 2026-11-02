@@ -125,7 +125,7 @@ export default function SignDocumentPage() {
         setSuccess(true);
       }
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Invalid or expired signature request');
+      setError(err.response?.data?.error || 'La solicitud de firma no es válida o ya venció');
     } finally {
       setLoading(false);
     }
@@ -137,7 +137,7 @@ export default function SignDocumentPage() {
 
   const handleSubmit = async () => {
     if (!signatureData || !consentGiven) {
-      showWarning('Please sign the document and accept the terms');
+      showWarning('Firma el documento y acepta los términos');
       return;
     }
 
@@ -221,7 +221,7 @@ export default function SignDocumentPage() {
         signatureDataUrl: signatureData,
         signedPdfDataUrl: signedPdfBase64,
         consentGiven,
-        consentText: 'I agree to electronically sign this document and understand that my signature is legally binding.',
+        consentText: 'Acepto firmar este documento electrónicamente y entiendo que mi firma tiene validez legal.',
         ipAddress: ip,
         userAgent: navigator.userAgent,
         deviceType: /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
@@ -230,7 +230,7 @@ export default function SignDocumentPage() {
       setSuccess(true);
     } catch (err: any) {
       console.error('Error submitting signature:', err);
-      showError(err.response?.data?.error || 'Failed to submit signature');
+      showError(err.response?.data?.error || 'Error al enviar la firma');
       setGeneratingPdf(false);
     } finally {
       setSubmitting(false);

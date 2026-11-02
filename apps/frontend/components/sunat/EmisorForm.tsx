@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Save } from 'lucide-react';
+import { Save, Check } from 'lucide-react';
 import { Button, Card, Input, Select, SkeletonCard } from '@/components/common';
 import { useToast } from '@/contexts/ToastContext';
 import { sunatApi } from '@/lib/sunat/api';
@@ -136,7 +136,7 @@ export function EmisorForm({ ruc, onGuardado }: Props) {
             <div>
               <p className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('solClave')}</p>
               <div className="flex items-center gap-3 text-sm text-emerald-700 dark:text-emerald-400">
-                {t('configurada')}
+                <span className="inline-flex items-center gap-1">{t('configurada')}<Check className="w-4 h-4" aria-hidden="true" /></span>
                 <Button variant="ghost" size="sm" onClick={() => setCambiandoClave(true)}>{t('cambiar')}</Button>
               </div>
             </div>

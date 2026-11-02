@@ -74,7 +74,7 @@ export default function ProductoDetailPage({
       });
     } catch (error) {
       console.error('Error loading producto:', error);
-      showError('Error loading product');
+      showError('Error al cargar el producto');
       router.push(`/${locale}/productos`);
     } finally {
       setLoading(false);
@@ -85,7 +85,7 @@ export default function ProductoDetailPage({
     e.preventDefault();
     
     if (!formData.codigo || !formData.nombre || !formData.precioVenta) {
-      showError('Please fill in required fields');
+      showError('Completa los campos obligatorios');
       return;
     }
 
@@ -101,7 +101,7 @@ export default function ProductoDetailPage({
       router.push(`/${locale}/productos`);
     } catch (error: any) {
       console.error('Error updating producto:', error);
-      showError(error.response?.data?.error || 'Error updating product');
+      showError(error.response?.data?.error || 'Error al actualizar el producto');
     } finally {
       setSaving(false);
     }
@@ -114,7 +114,7 @@ export default function ProductoDetailPage({
       router.push(`/${locale}/productos`);
     } catch (error: any) {
       console.error('Error deleting producto:', error);
-      showError(error.response?.data?.error || 'Error deleting product');
+      showError(error.response?.data?.error || 'Error al eliminar el producto');
     }
   };
 
@@ -237,7 +237,7 @@ export default function ProductoDetailPage({
                   label={t('name')}
                   value={formData.nombre}
                   onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                  placeholder="Product or service name"
+                  placeholder="Nombre del producto o servicio"
                   required
                 />
                 <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
@@ -250,7 +250,7 @@ export default function ProductoDetailPage({
                 label={t('description')}
                 value={formData.descripcion}
                 onChange={(e) => setFormData({ ...formData, descripcion: e.target.value })}
-                placeholder="Detailed description..."
+                placeholder="Descripción detallada..."
                 rows={3}
               />
 
@@ -331,7 +331,7 @@ export default function ProductoDetailPage({
                 </Button>
                 <Button type="submit" disabled={saving}>
                   <Save className="w-4 h-4 mr-2" />
-                  {saving ? 'Saving...' : 'Save'}
+                  {saving ? 'Guardando...' : 'Guardar'}
                 </Button>
               </div>
             </form>
@@ -379,7 +379,7 @@ export default function ProductoDetailPage({
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={handleDelete}
-        title="Delete Product"
+        title="Eliminar producto"
         message={`Are you sure you want to delete "${producto?.nombre}"? This action cannot be undone.`}
         variant="danger"
       />

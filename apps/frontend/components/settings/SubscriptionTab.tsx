@@ -110,7 +110,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
       const syncSubscription = async () => {
         try {
           await syncSubscriptionFromSession(sessionId);
-          console.log('✅ Subscription synced from session');
+          console.log('Subscription synced from session');
           
           // Refresh contexts
           await refreshSubscription();
@@ -123,7 +123,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
           url.searchParams.delete('plan');
           window.history.replaceState({}, '', url.toString());
         } catch (error) {
-          console.error('❌ Error syncing subscription:', error);
+          console.error('Error syncing subscription:', error);
         }
       };
       
@@ -185,7 +185,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
       setUsage(usageData);
     } catch (err) {
       console.error('Error loading subscription data:', err);
-      setError(err instanceof Error ? err.message : 'Error loading data');
+      setError(err instanceof Error ? err.message : 'Error al cargar los datos');
     } finally {
       setLoading(false);
     }
@@ -397,7 +397,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                 <button
                   onClick={() => setShowTestModeModal(true)}
                   className="p-1.5 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors"
-                  title="Test Mode Information"
+                  title="Información del modo de prueba"
                 >
                   <Info className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
                 </button>

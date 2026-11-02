@@ -98,7 +98,7 @@ export default function SendEmailModal({
       isOpen={isOpen} 
       onClose={handleClose} 
       title={t('sendEmail')} 
-      subtitle="Send this invoice to your client via email"
+      subtitle="Envía esta factura a tu cliente por correo"
       icon={Mail}
       iconColor="primary"
       size="lg"

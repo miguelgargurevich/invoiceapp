@@ -35,7 +35,7 @@ export default function NuevoClientePage({
     e.preventDefault();
     
     if (!formData.nombre || !formData.telefono) {
-      showError('Please fill in required fields (Name and Phone)');
+      showError('Completa los campos obligatorios (nombre y teléfono)');
       return;
     }
 
@@ -46,7 +46,7 @@ export default function NuevoClientePage({
       router.push(`/${locale}/clientes`);
     } catch (error: any) {
       console.error('Error saving cliente:', error);
-      showError(error.response?.data?.error || 'Error saving client');
+      showError(error.response?.data?.error || 'Error al guardar el cliente');
     } finally {
       setLoading(false);
     }
@@ -95,7 +95,7 @@ export default function NuevoClientePage({
             label={t('name')}
             value={formData.nombre}
             onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-            placeholder="Client name or business name"
+            placeholder="Nombre del cliente o razón social"
             required
           />
 
@@ -124,7 +124,7 @@ export default function NuevoClientePage({
             label={t('address')}
             value={formData.direccion}
             onChange={(e) => setFormData({ ...formData, direccion: e.target.value })}
-            placeholder="Full address"
+            placeholder="Dirección completa"
           />
 
           {/* Document Type & Number (Optional) */}
@@ -150,7 +150,7 @@ export default function NuevoClientePage({
                     <option value="ITIN">ITIN (Individual Tax ID)</option>
                     <option value="DRIVER_LICENSE">Driver's License</option>
                     <option value="STATE_ID">State ID</option>
-                    <option value="PASSPORT">Passport</option>
+                    <option value="PASSPORT">Pasaporte</option>
                   </>
                 )}
               </select>
@@ -160,7 +160,7 @@ export default function NuevoClientePage({
               label={t('documentNumber')}
               value={formData.documento}
               onChange={(e) => setFormData({ ...formData, documento: e.target.value })}
-              placeholder="Optional"
+              placeholder="Opcional"
             />
           </div>
 

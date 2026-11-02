@@ -450,8 +450,8 @@ export default function JobPhotosGallery({
         onClose={() => setPhotoToDelete(null)}
         onConfirm={confirmDeletePhoto}
         title={t('confirmDeletePhoto')}
-        message={t('confirmDeletePhotoMessage') || 'Are you sure you want to delete this photo?'}
-        confirmLabel={t('delete') || 'Delete'}
+        message={t('confirmDeletePhotoMessage') || '¿Seguro que quieres eliminar esta foto?'}
+        confirmLabel={t('delete') || 'Eliminar'}
         variant="danger"
       />
     </>

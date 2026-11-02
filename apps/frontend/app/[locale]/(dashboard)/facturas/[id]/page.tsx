@@ -27,7 +27,10 @@ import {
   Plus,
   Trash2,
   MapPin,
-  Send
+  Send,
+  Landmark,
+  Banknote,
+  PenLine
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
@@ -240,13 +243,13 @@ export default function FacturaDetailPage({
     
     // Client-side validation
     if (monto <= 0) {
-      showError(t('paymentAmountMustBePositive') || 'Payment amount must be greater than 0');
+      showError(t('paymentAmountMustBePositive') || 'El monto del pago debe ser mayor que 0');
       return;
     }
     
     // Use cents comparison to avoid floating point precision issues
     if (Math.round(monto * 100) > Math.round(factura.saldoPendiente * 100)) {
-      showError(`${t('paymentExceedsPending') || 'Amount exceeds pending balance'}: ${formatCurrency(factura.saldoPendiente)}`);
+      showError(`${t('paymentExceedsPending') || 'El monto supera el saldo pendiente'}: ${formatCurrency(factura.saldoPendiente)}`);
       return;
     }
 
@@ -259,7 +262,7 @@ export default function FacturaDetailPage({
         notas: paymentData.notas || null,
       });
       
-      showSuccess(t('paymentRegistered') || 'Payment registered successfully');
+      showSuccess(t('paymentRegistered') || 'Pago registrado correctamente');
       setIsPaymentModalOpen(false);
       setPaymentData({
         monto: '',
@@ -270,7 +273,7 @@ export default function FacturaDetailPage({
       loadFactura();
     } catch (error: any) {
       console.error('Error registering payment:', error);
-      const errorMessage = error.response?.data?.error || error.message || 'Error registering payment';
+      const errorMessage = error.response?.data?.error || error.message || 'Error al registrar el pago';
       showError(errorMessage);
     } finally {
       setSavingPayment(false);
@@ -282,12 +285,12 @@ export default function FacturaDetailPage({
 
     try {
       await api.delete(`/facturas/${factura.id}`);
-      showSuccess(t('invoiceCancelled') || 'Invoice cancelled successfully');
+      showSuccess(t('invoiceCancelled') || 'Factura anulada correctamente');
       setIsCancelDialogOpen(false);
       loadFactura();
     } catch (error: any) {
       console.error('Error cancelling invoice:', error);
-      showError(error.response?.data?.error || 'Failed to cancel invoice');
+      showError(error.response?.data?.error || 'Error al anular la factura');
     }
   };
 
@@ -302,7 +305,7 @@ export default function FacturaDetailPage({
     if (!factura || !fechaEmisionEdit || !fechaVencimientoEdit) return;
 
     if (fechaEmisionEdit > fechaVencimientoEdit) {
-      showWarning('Due date must be after issue date');
+      showWarning('La fecha de vencimiento debe ser posterior a la de emisión');
       return;
     }
 
@@ -313,12 +316,12 @@ export default function FacturaDetailPage({
         fechaVencimiento: fechaVencimientoEdit.toISOString(),
       });
       
-      showSuccess('Dates updated successfully');
+      showSuccess('Fechas actualizadas correctamente');
       setIsEditDatesOpen(false);
       loadFactura();
     } catch (error: any) {
       console.error('Error updating dates:', error);
-      showError(error.response?.data?.error || 'Failed to update dates');
+      showError(error.response?.data?.error || 'Error al actualizar las fechas');
     } finally {
       setEditingDates(false);
     }
@@ -339,12 +342,12 @@ export default function FacturaDetailPage({
         observaciones: observacionesEdit,
       });
       
-      showSuccess(t('messages.updated') || 'Observations updated successfully');
+      showSuccess(t('messages.updated') || 'Observaciones actualizadas correctamente');
       setIsEditObservationsOpen(false);
       loadFactura();
     } catch (error: any) {
       console.error('Error updating observations:', error);
-      showError(error.response?.data?.error || 'Failed to update observations');
+      showError(error.response?.data?.error || 'Error al actualizar las observaciones');
     } finally {
       setEditingObservations(false);
     }
@@ -365,12 +368,12 @@ export default function FacturaDetailPage({
         orderType: orderTypeEdit || null,
       });
       
-      showSuccess('Order type updated successfully');
+      showSuccess('Tipo de orden actualizado correctamente');
       setIsEditOrderTypeOpen(false);
       loadFactura();
     } catch (error: any) {
       console.error('Error updating order type:', error);
-      showError(error.response?.data?.error || 'Failed to update order type');
+      showError(error.response?.data?.error || 'Error al actualizar el tipo de orden');
     } finally {
       setEditingOrderType(false);
     }
@@ -401,12 +404,12 @@ export default function FacturaDetailPage({
         totalLabor: totalLaborEdit,
       });
       
-      showSuccess('Payment summary updated successfully');
+      showSuccess('Resumen de pagos actualizado correctamente');
       setIsEditPaymentSummaryOpen(false);
       loadFactura();
     } catch (error: any) {
       console.error('Error updating payment summary:', error);
-      showError(error.response?.data?.error || 'Failed to update payment summary');
+      showError(error.response?.data?.error || 'Error al actualizar el resumen de pagos');
     } finally {
       setEditingPaymentSummary(false);
     }
@@ -430,12 +433,12 @@ export default function FacturaDetailPage({
       setEditingJobInfo(true);
       await api.put(`/facturas/${factura.id}/job-info`, jobInfoEdit);
       
-      showSuccess('Job information updated successfully');
+      showSuccess('Información del trabajo actualizada correctamente');
       setIsEditJobInfoOpen(false);
       loadFactura();
     } catch (error: any) {
       console.error('Error updating job info:', error);
-      showError(error.response?.data?.error || 'Failed to update job information');
+      showError(error.response?.data?.error || 'Error al actualizar la información del trabajo');
     } finally {
       setEditingJobInfo(false);
     }
@@ -479,7 +482,7 @@ export default function FacturaDetailPage({
     // Validate items
     const validItems = itemsEdit.filter(item => item.descripcion.trim() !== '');
     if (validItems.length === 0) {
-      showError(t('messages.itemsRequired') || 'At least one item is required');
+      showError(t('messages.itemsRequired') || 'Agrega al menos un ítem');
       return;
     }
 
@@ -494,12 +497,12 @@ export default function FacturaDetailPage({
         }))
       });
       
-      showSuccess(t('messages.itemsUpdated') || 'Items updated successfully');
+      showSuccess(t('messages.itemsUpdated') || 'Ítems actualizados correctamente');
       setIsEditItemsOpen(false);
       loadFactura();
     } catch (error: any) {
       console.error('Error updating items:', error);
-      showError(error.response?.data?.error || 'Failed to update items');
+      showError(error.response?.data?.error || 'Error al actualizar los ítems');
     } finally {
       setEditingItems(false);
     }
@@ -702,7 +705,7 @@ export default function FacturaDetailPage({
                 <button
                   onClick={handleOpenEditItems}
                   className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-                  title={t('editItems') || 'Edit items'}
+                  title={t('editItems') || 'Editar ítems'}
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
                 </button>
@@ -813,7 +816,7 @@ export default function FacturaDetailPage({
                 <button
                   onClick={handleOpenEditJobInfo}
                   className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-                  title="Edit job information"
+                  title="Editar información del trabajo"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
                 </button>
@@ -864,7 +867,7 @@ export default function FacturaDetailPage({
                 <button
                   onClick={handleOpenEditObservations}
                   className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-                  title="Edit observations"
+                  title="Editar observaciones"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
                 </button>
@@ -894,7 +897,7 @@ export default function FacturaDetailPage({
                 <button
                   onClick={handleOpenEditPaymentSummary}
                   className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-                  title="Edit payment summary"
+                  title="Editar resumen de pagos"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
                 </button>
@@ -956,7 +959,7 @@ export default function FacturaDetailPage({
                 <button
                   onClick={handleOpenEditOrderType}
                   className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-                  title="Edit order type"
+                  title="Editar tipo de orden"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
                 </button>
@@ -990,7 +993,7 @@ export default function FacturaDetailPage({
                 <button
                   onClick={handleOpenEditDates}
                   className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
-                  title="Edit dates"
+                  title="Editar fechas"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
                 </button>
@@ -1057,7 +1060,7 @@ export default function FacturaDetailPage({
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
         title={t('registerPayment')}
-        subtitle="Record a payment for this invoice"
+        subtitle="Registra un pago para esta factura"
         icon={CreditCard}
         iconColor="success"
         size="md"
@@ -1097,7 +1100,7 @@ export default function FacturaDetailPage({
                 <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
               </div>
               <p className="text-green-600 dark:text-green-400 font-semibold text-lg">
-                {t('invoiceFullyPaid') || 'This invoice is fully paid'}
+                {t('invoiceFullyPaid') || 'Esta factura está pagada en su totalidad'}
               </p>
             </div>
           ) : (
@@ -1131,7 +1134,7 @@ export default function FacturaDetailPage({
                 </div>
                 {paymentData.monto && Math.round(parseFloat(paymentData.monto) * 100) > Math.round((factura?.saldoPendiente || 0) * 100) && (
                   <p className="mt-2 text-xs text-red-500 font-medium">
-                    {t('amountExceedsPending') || 'Amount exceeds pending balance'}
+                    {t('amountExceedsPending') || 'El monto supera el saldo pendiente'}
                   </p>
                 )}
               </div>
@@ -1143,10 +1146,10 @@ export default function FacturaDetailPage({
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { value: 'TRANSFERENCIA', label: t('transfer'), icon: '🏦' },
-                    { value: 'EFECTIVO', label: t('cash'), icon: '💵' },
-                    { value: 'TARJETA', label: t('card'), icon: '💳' },
-                    { value: 'CHEQUE', label: t('check'), icon: '📝' },
+                    { value: 'TRANSFERENCIA', label: t('transfer'), icon: Landmark },
+                    { value: 'EFECTIVO', label: t('cash'), icon: Banknote },
+                    { value: 'TARJETA', label: t('card'), icon: CreditCard },
+                    { value: 'CHEQUE', label: t('check'), icon: PenLine },
                   ].map((method) => (
                     <button
                       key={method.value}
@@ -1158,7 +1161,7 @@ export default function FacturaDetailPage({
                           : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 bg-white dark:bg-gray-800/50'
                       }`}
                     >
-                      <span className="text-2xl">{method.icon}</span>
+                      <span className="text-gray-600 dark:text-gray-300"><method.icon className="w-6 h-6" aria-hidden="true" /></span>
                       <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{method.label}</span>
                     </button>
                   ))}
@@ -1201,7 +1204,7 @@ export default function FacturaDetailPage({
               onClick={() => setIsPaymentModalOpen(false)}
               className="flex-1 h-11"
             >
-              {factura && factura.saldoPendiente <= 0 ? (t('close') || 'Close') : t('cancel')}
+              {factura && factura.saldoPendiente <= 0 ? (t('close') || 'Cerrar') : t('cancel')}
             </Button>
             {factura && factura.saldoPendiente > 0 && (
               <Button 
@@ -1260,7 +1263,7 @@ export default function FacturaDetailPage({
         isOpen={isEditDatesOpen}
         onClose={() => !editingDates && setIsEditDatesOpen(false)}
         title={t('dates')}
-        subtitle="Update the issue and due dates for this invoice"
+        subtitle="Actualiza las fechas de emisión y vencimiento de esta factura"
         icon={Calendar}
         size="md"
       >
@@ -1331,7 +1334,7 @@ export default function FacturaDetailPage({
         isOpen={isEditObservationsOpen}
         onClose={() => !editingObservations && setIsEditObservationsOpen(false)}
         title={t('observations')}
-        subtitle="Add notes or special instructions for this invoice"
+        subtitle="Agrega notas o instrucciones especiales para esta factura"
         icon={MessageSquare}
         size="md"
       >
@@ -1389,8 +1392,8 @@ export default function FacturaDetailPage({
       <Modal
         isOpen={isEditJobInfoOpen}
         onClose={() => { !editingJobInfo && setIsEditJobInfoOpen(false); setShowJobMoreOptions(false); }}
-        title="Job Information"
-        subtitle="Update job details and work description"
+        title="Información del trabajo"
+        subtitle="Actualiza los detalles y la descripción del trabajo"
         icon={Briefcase}
         size="md"
       >
@@ -1406,7 +1409,7 @@ export default function FacturaDetailPage({
                   value={jobInfoEdit.workDescription}
                   onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, workDescription: e.target.value })}
                   disabled={editingJobInfo}
-                  placeholder="Describe the work to be done"
+                  placeholder="Describe el trabajo a realizar"
                   rows={4}
                   className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent resize-none transition-all placeholder:text-gray-400"
                 />
@@ -1420,7 +1423,7 @@ export default function FacturaDetailPage({
                   value={jobInfoEdit.paymentTerms}
                   onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, paymentTerms: e.target.value })}
                   disabled={editingJobInfo}
-                  placeholder="Define payment conditions"
+                  placeholder="Define las condiciones de pago"
                   rows={3}
                   className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent resize-none transition-all placeholder:text-gray-400"
                 />
@@ -1455,7 +1458,7 @@ export default function FacturaDetailPage({
                       value={jobInfoEdit.jobName}
                       onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, jobName: e.target.value })}
                       disabled={editingJobInfo}
-                      placeholder="Enter job name"
+                      placeholder="Escribe el nombre del trabajo"
                       className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
                     />
                   </div>
@@ -1469,7 +1472,7 @@ export default function FacturaDetailPage({
                       value={jobInfoEdit.jobLocation}
                       onChange={(e) => setJobInfoEdit({ ...jobInfoEdit, jobLocation: e.target.value })}
                       disabled={editingJobInfo}
-                      placeholder="Enter job location"
+                      placeholder="Escribe la ubicación del trabajo"
                       className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
                     />
                   </div>
@@ -1516,8 +1519,8 @@ export default function FacturaDetailPage({
       <Modal
         isOpen={isEditOrderTypeOpen}
         onClose={() => !editingOrderType && setIsEditOrderTypeOpen(false)}
-        title="Order Type"
-        subtitle="Select the type of work for this invoice"
+        title="Tipo de orden"
+        subtitle="Selecciona el tipo de trabajo de esta factura"
         icon={ClipboardList}
         size="md"
       >
@@ -1540,7 +1543,7 @@ export default function FacturaDetailPage({
                 />
                 <div>
                   <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">Day Work</span>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Hourly or daily rate work</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Trabajo por hora o por día</p>
                 </div>
               </label>
               <label className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${orderTypeEdit === 'contract' ? 'border-gray-800 dark:border-gray-600 bg-gray-50 dark:bg-gray-800' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50/50 dark:hover:bg-gray-800/50'}`}>
@@ -1554,8 +1557,8 @@ export default function FacturaDetailPage({
                   className="w-4 h-4 text-gray-800 dark:text-gray-300 border-gray-300 focus:ring-gray-800"
                 />
                 <div>
-                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">Contract</span>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Fixed price contract work</p>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">Contrato</span>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Trabajo a precio fijo por contrato</p>
                 </div>
               </label>
               <label className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${orderTypeEdit === 'extra' ? 'border-gray-800 dark:border-gray-600 bg-gray-50 dark:bg-gray-800' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50/50 dark:hover:bg-gray-800/50'}`}>
@@ -1570,7 +1573,7 @@ export default function FacturaDetailPage({
                 />
                 <div>
                   <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">Extra</span>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Additional work outside scope</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Trabajo adicional fuera del alcance</p>
                 </div>
               </label>
               <label className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${orderTypeEdit === '' ? 'border-gray-800 dark:border-gray-600 bg-gray-50 dark:bg-gray-800' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50/50 dark:hover:bg-gray-800/50'}`}>
@@ -1584,8 +1587,8 @@ export default function FacturaDetailPage({
                   className="w-4 h-4 text-gray-800 dark:text-gray-300 border-gray-300 focus:ring-gray-800"
                 />
                 <div>
-                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400 italic">None</span>
-                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">No specific order type</p>
+                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400 italic">Ninguno</span>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Sin tipo de orden específico</p>
                 </div>
               </label>
             </div>
@@ -1630,7 +1633,7 @@ export default function FacturaDetailPage({
         isOpen={isEditItemsOpen}
         onClose={() => !editingItems && setIsEditItemsOpen(false)}
         title={t('items')}
-        subtitle={t('editItemsSubtitle') || 'Add, edit or remove line items'}
+        subtitle={t('editItemsSubtitle') || 'Agrega, edita o quita ítems'}
         icon={Package}
         size="lg"
       >
@@ -1653,7 +1656,7 @@ export default function FacturaDetailPage({
                         value={item.descripcion}
                         onChange={(e) => handleUpdateItem(index, 'descripcion', e.target.value)}
                         disabled={editingItems}
-                        placeholder={t('descriptionPlaceholder') || 'Item description...'}
+                        placeholder={t('descriptionPlaceholder') || 'Descripción del ítem...'}
                         className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm focus:ring-2 focus:ring-gray-800 dark:focus:ring-gray-600 focus:border-transparent transition-all placeholder:text-gray-400"
                       />
                     </div>
@@ -1766,8 +1769,8 @@ export default function FacturaDetailPage({
       <Modal
         isOpen={isEditPaymentSummaryOpen}
         onClose={() => !editingPaymentSummary && setIsEditPaymentSummaryOpen(false)}
-        title="Payment Summary"
-        subtitle="Update materials and labor costs breakdown"
+        title="Resumen de pagos"
+        subtitle="Actualiza el desglose de materiales y mano de obra"
         icon={Receipt}
         size="md"
       >

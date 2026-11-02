@@ -153,7 +153,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         {/* Specifications and Estimates */}
         {proforma.workDescription && (
           <div className="mb-4 p-3 bg-gray-50 rounded border border-gray-300">
-            <div className="text-[10px] font-bold text-gray-800 mb-1">We Hereby submit specifications and estimates for:</div>
+            <div className="text-[10px] font-bold text-gray-800 mb-1">Por medio de la presente presentamos las especificaciones y el presupuesto para:</div>
             <p className="text-[9px] text-gray-700 whitespace-pre-wrap">{proforma.workDescription}</p>
           </div>
         )}
@@ -172,7 +172,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         <div className="mb-4 p-3 bg-gray-50 border border-gray-300 rounded">
           <div className="text-[10px]">
             <p className="text-gray-800 mb-2">
-              <span className="font-bold text-gray-900">Payment to be made as follows:</span>
+              <span className="font-bold text-gray-900">El pago se realizará de la siguiente manera:</span>
               {proforma.paymentTerms && <span className="ml-1">{proforma.paymentTerms}</span>}
             </p>
             <p className="text-gray-800 mt-2">

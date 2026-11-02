@@ -265,7 +265,7 @@ export default function FacturasPage({
     statusPending: t('statusPending'),
     statusSent: t('statusIssued'),
     statusSigned: t('statusSigned') || 'Signed',
-    statusInvoiced: t('statusInvoiced') || 'Invoiced',
+    statusInvoiced: t('statusInvoiced') || 'Facturada',
     statusPaid: t('statusPaid'),
     statusOverdue: t('statusOverdue'),
     statusCancelled: t('statusCancelled'),

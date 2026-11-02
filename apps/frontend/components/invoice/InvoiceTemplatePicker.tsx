@@ -46,7 +46,7 @@ const INVOICE_TEMPLATES: InvoiceTemplate[] = [
     defaultNotes: `If an attorney is used to enforce or collect any obligations due on this obligation, then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.`,
     defaultTerms: `All material is guaranteed to be as specified. All work to be completed in a workmanlike manner according to standard practices. Any alteration or deviation from above specifications involving extra costs will be executed only upon written orders, and will become an extra charge over and above the estimate.
 All agreements contingent upon strikes, accidents or delays beyond our control. Owner to carry fire, windstorm and other necessary insurance.
-Our workers are fully covered by Workman's Compensation Insurance.`,
+Nuestros trabajadores están totalmente cubiertos por un seguro de compensación laboral.`,
     suggestedItems: [
       { description: 'Labor - Installation', isLabor: true },
       { description: 'Labor - Site Preparation', isLabor: true },
@@ -81,8 +81,8 @@ Our workers are fully covered by Workman's Compensation Insurance.`,
   {
     id: 'agency',
     industry: 'agency',
-    name: 'Agency',
-    description: 'Full-service marketing, creative, digital',
+    name: 'Agencia',
+    description: 'Servicios completos de marketing, creatividad y medios digitales',
     icon: Building2,
     color: 'from-primary-500 to-cyan-500',
     defaultWorkDescription: 

@@ -120,13 +120,13 @@ export function UpgradeModal({
       name: 'Pro',
       price: '$29',
       color: 'from-primary-500 to-primary-600',
-      features: ['Proposals', 'Digital Signatures', 'Custom Branding', 'Job Tracking']
+      features: ['Proformas', 'Firmas digitales', 'Marca personalizada', 'Seguimiento de trabajos']
     },
     business: {
-      name: 'Business',
+      name: 'Negocio',
       price: '$49',
       color: 'from-purple-500 to-pink-600',
-      features: ['Multi-Currency', 'Advanced Reports', 'Priority Support', 'API Access']
+      features: ['Multimoneda', 'Reportes avanzados', 'Soporte prioritario', 'Acceso a API']
     }
   };
 
