@@ -156,8 +156,11 @@ export function ComprobanteForm({ locale, inicial, comprobanteId, documentoAfect
                 value={f.serie}
                 onChange={(e) => cambiar({ serie: e.target.value })}
               />
-              {series.length > 0 && seriesTipo.length === 0 && (
-                <p className="mt-1 text-xs text-amber-700 dark:text-amber-400">{t('form.sinSeries')}</p>
+              {seriesTipo.length === 0 && (
+                <p className="mt-1 text-xs text-amber-700 dark:text-amber-400">
+                  {t('form.sinSeries')}{' '}
+                  <a href={`/${locale}/configuracion?tab=sunat`} className="font-medium underline">{t('form.irConfigSunat')}</a>
+                </p>
               )}
             </div>
             <div className="md:col-span-2">

@@ -79,6 +79,9 @@ function vistaEmisor(emisor) {
   };
 }
 
+// Series con las que arranca una empresa al configurar su emisor: factura, boleta y sus notas.
+const SERIES_INICIALES = [['01', 'F001'], ['03', 'B001'], ['07', 'FC01'], ['08', 'FD01'], ['07', 'BC01']];
+
 function crearRouterSunat({ prisma, obtenerSunat, auth = [authenticateToken, getEmpresaFromUser] }) {
   const router = express.Router();
   router.use(...auth);
@@ -130,6 +133,14 @@ function crearRouterSunat({ prisma, obtenerSunat, auth = [authenticateToken, get
       prisma.emisorSunat.upsert({ where: { empresaId: req.empresa.id }, create: { empresaId: req.empresa.id, ...datos }, update: datos }),
       prisma.empresa.update({ where: { id: req.empresa.id }, data: { pais: 'PE' } }),
     ]);
+    // Primera vez: si la empresa no tiene series, se crean las estándar para poder emitir de inmediato.
+    const tieneSeries = await prisma.configuracionSeries.count({ where: { empresaId: req.empresa.id } });
+    if (tieneSeries === 0) {
+      await prisma.configuracionSeries.createMany({
+        data: SERIES_INICIALES.map(([tipoDocumento, serie]) => ({ empresaId: req.empresa.id, tipoDocumento, serie, ultimoNumero: 0 })),
+        skipDuplicates: true,
+      });
+    }
     // La empresa ya es PE: su suscripción pasa al plan del país nuevo (no conserva uno de EE. UU.).
     // Si esto fallara, cada lectura posterior de la suscripción la corrige igual.
     await getOrCreateSubscription(req.empresa.id, prisma);

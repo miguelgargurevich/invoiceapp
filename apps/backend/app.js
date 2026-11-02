@@ -225,7 +225,11 @@ app.use('/api/sunat', limiter, crearRouterSunat({ prisma: prismaSunat, obtenerSu
 
 // Servir archivos estáticos (uploads)
 // Misma carpeta que escribe el proveedor local de utils/storage.js (LOCAL_UPLOADS_DIR, por defecto ./uploads)
-app.use('/uploads', express.static(process.env.LOCAL_UPLOADS_DIR || 'uploads'));
+// helmet pone Cross-Origin-Resource-Policy: same-origin; la web vive en otro origen (facturo.… vs api.facturo.…),
+// así que sin esto el navegador bloquea el logo y las fotos. Solo afecta a /uploads.
+app.use('/uploads', express.static(process.env.LOCAL_UPLOADS_DIR || 'uploads', {
+  setHeaders: (res) => res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin'),
+}));
 
 // Manejo de errores 404
 app.use((req, res) => {

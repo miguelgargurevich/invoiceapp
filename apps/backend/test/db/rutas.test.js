@@ -167,6 +167,15 @@ test('emisor: no expone secretos, exige confirmar producción y valida el RUC de
   assert.doesNotMatch(ok.texto, /Cifrad|nueva|v1:/);
 });
 
+test('al configurar el emisor sin series se crean las estándar, una sola vez', async () => {
+  await prisma.configuracionSeries.deleteMany({ where: { empresaId: ctx.empresa.id } });
+  const direccion = { ubigeo: '150101', departamento: 'LIMA', provincia: 'LIMA', distrito: 'LIMA', direccionFiscal: 'AV 1' };
+  assert.equal((await pedir('PUT', '/api/sunat/emisor', direccion)).status, 200);
+  assert.equal((await pedir('PUT', '/api/sunat/emisor', direccion)).status, 200);
+  const series = (await pedir('GET', '/api/sunat/series')).json.map((s) => `${s.tipoDocumento}-${s.serie}`).sort();
+  assert.deepEqual(series, ['01-F001', '03-B001', '07-BC01', '07-FC01', '08-FD01']);
+});
+
 test('series y alertas', async () => {
   assert.equal((await pedir('POST', '/api/sunat/series', { tipoComprobante: '03', serie: 'F002' })).status, 400);
   assert.equal((await pedir('POST', '/api/sunat/series', { tipoComprobante: '03', serie: 'B002' })).status, 201);

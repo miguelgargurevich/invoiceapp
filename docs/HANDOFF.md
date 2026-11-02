@@ -16,6 +16,11 @@
 
 ## Última sesión
 
+- 2026-11-02 (Claude Code con Opus 5.5): **series y logo en producción**.
+  - Las series no «cargaban» porque la empresa de producción no tenía ninguna (emisor sin configurar). Ahora `PUT /api/sunat/emisor` crea F001, B001, FC01, FD01 y BC01 si la empresa no tiene series (una sola vez; prueba en `test/db/rutas.test.js`), y «Nuevo comprobante» avisa con enlace a Configuración › SUNAT cuando no hay series del tipo.
+  - El logo no se veía en producción: helmet manda `Cross-Origin-Resource-Policy: same-origin` y la web (facturo.…) y la API (api.facturo.…) son orígenes distintos. `/uploads` ahora responde `cross-origin` (solo esa ruta).
+  - Verificado: backend 122/122 y BD 103/103, `tsc` del frontend en verde.
+
 - 2026-11-02 (Claude Code con Haiku 5.5 y subagentes Haiku en el mismo worktree, `.claude/worktrees/estilo-uniforme`, rama `feat/estilo-uniforme` sobre `main` 02a40c7): **cabeceras y botones uniformes** (pedido de Miguel: «iguala el estilo de las cabeceras de todas las páginas y los botones»). Sin push.
   - Cabeceras: `components/common/PageHeader.tsx` (título, subtítulo, ícono, flecha de volver, acciones, insignia) en las 26 páginas del panel y en `DashboardGeneral`/`DashboardPeru`. Causa del título de distinto tamaño: las reglas `.text-*  h1–h3` de `globals.css` (quitadas); los `!text-*` de parche también.
   - Botones: `Button` acepta `href` (Link con estilo de botón). `primary` = acción principal (una por pantalla), `outline` = secundarias, `ghost` = ícono o tabla, `danger` = borrar o anular. Degradados quitados de botones, tarjetas y paneles, salvo login, registro, asistente (`components/setup`) y landing.
