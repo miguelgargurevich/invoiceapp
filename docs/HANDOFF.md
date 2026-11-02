@@ -1,6 +1,7 @@
 # Handoff — InvoiceApp
 
 > Actualizado: 2026-11-02 por claude-code (Haiku 5.5)
+> Actualizado: 2026-11-02 por claude-code
 
 ## Estado actual
 
@@ -23,6 +24,12 @@
   - Verificado: `npm test` 75/75; `npx tsc --noEmit` exit 0; `npx next build` exit 0 (63 páginas). Mutaciones en `lib/dashboard.ts`, restauradas con `cp` + `cmp`: contar borradores → 2 en rojo; mes en UTC en vez de Lima → 2 en rojo.
   - NO verificado: el render en el navegador (modo claro y oscuro, menú móvil, layout en 375 px); el cupo con más de 100 comprobantes en el mes (se marca «+», pero `GET /api/comprobantes` no pagina).
   - Gotchas: (a) las claves nuevas de `dashboard` están solo en `es.json` (como se pidió no tocar `en.json`): en `/en` saldrían sin traducir. (b) El menú usa el namespace `navigation`; no existe `sidebar`. (c) El selector de empresa no está en el menú (vive en el header): no se tocó.
+- 2026-11-02 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/solo-espanol`, rama `feat/solo-espanol` sobre `main` 700dd41): **solo español, sin emojis** (pedido textual de Miguel: «te aseguras que no haya nada en inglés, lo desactivas, que todo sea en español [...] quitas los emojis y usar react icons, revisa»).
+  - Hecho: `i18n.ts` con `locales = ['es']`; `middleware.ts` manda `/en` y `/en/...` a `/es/...` con 308 (la cookie `preferredLocale=en` ya no cambia nada). Sin selector de idioma en cabecera, landing, login, registro, asistente ni Configuración › Idioma. `lang="es"` fijo; metadatos, JSON-LD, `alternateLocale`, sitemap y manifest en español. Textos fijos en inglés traducidos (formularios, avisos, modales, propuesta PDF, página pública de firma). Emojis fuera de la app y de `es.json`; donde aportaban, íconos de `lucide-react` (no se instaló nada: react-icons no está en el proyecto).
+  - `messages/en.json` sin cambios y sin uso. La sección `dashboard` de `es.json` no se tocó (la rehace la otra sesión). En `es.json` se quitaron las claves `settings.language/spanish/english` (sin uso).
+  - Verificado: `npx tsc --noEmit` exit 0; `npm test` 64/64 (una prueba menos: la de la vista previa en inglés); `npx next build` exit 0; `next start` en 3300: `/en/landing` → 308 `/es/landing`, `/` → 307 `/es`, `/es/landing` con `lang="es"` y sin selector.
+  - NO verificado: el aspecto en el navegador (Opus); el build se corrió antes de quitar las 3 claves de `settings` (no las usa ningún componente; tsc sigue en verde).
+  - Gotchas: (a) «Dashboard» y «Email» se quedan: la app ya los usa en español en la navegación. (b) `lib/seo-schemas.ts` tiene JSON-LD en inglés pero ningún archivo lo importa: código muerto, candidato a borrar. (c) Login y registro siguen con «Únete a más de 10,000 profesionales» y un testimonio de «María González»: cifras y testimonios sin respaldo, heredados y no tocados. (d) El texto de consentimiento de la firma (`sign/[token]`) ahora es en español; las firmas nuevas lo guardan así. (e) La propuesta de contratista conserva el seguro de «Workers' Compensation» traducido como «seguro de compensación laboral»: conviene que Miguel lo revise, es un texto con efecto legal de EE. UU. (f) `UpgradePrompt` sigue con precios en dólares ($29/$49).
 
 - 2026-11-01 (Claude Code con Sonnet 5.5, delegado en worktree `.claude/worktrees/fix-stripe-pais`, rama `feat/fix-stripe-pais` sobre `main` 2552ec5): **cancelar la suscripción de Stripe cuando una empresa cambia a Perú** (pedido de Miguel: «corrige lo que falta»; era el gotcha 4 de «seguridad de planes»).
   - Hecho: en `getOrCreateSubscription` (`middleware/subscription.js`), si el plan es de otro país y la fila trae `stripeSubscriptionId`, se cancela en Stripe (`subscriptions.cancel`, inmediato) ANTES de bajar a gratis. Si Stripe falla (red, id inexistente, `STRIPE_SECRET_KEY` apagada o ausente) se registra `console.error` solo con id de empresa y mensaje (claves `sk_…` tachadas) y la baja se hace igual. `pasarAGratis` acepta `limpiarStripe` (deja `stripeSubscriptionId` null; Culqi no lo usa). Cliente de Stripe nuevo en `src/planes/stripe.js` (`cancelarStripe`, `mensajeSeguro`; sin reintentos, tope de 8 s).
