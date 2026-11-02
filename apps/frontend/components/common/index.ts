@@ -1,5 +1,6 @@
 // Common Components
 export { Button } from './Button';
+export { PageHeader } from './PageHeader';
 export { Input } from './Input';
 export { Select } from './Select';
 export { Textarea } from './Textarea';
