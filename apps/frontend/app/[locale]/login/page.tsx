@@ -10,8 +10,8 @@ import { z } from 'zod';
 import { motion } from 'framer-motion';
 import { 
   Eye, EyeOff, Mail, Lock, Moon, Sun,
-  ArrowLeft, FileText, Users, Zap, Shield, CheckCircle2,
-  Sparkles, Hand, Coffee
+  ArrowLeft, FileText, Calculator, FileCheck, KeyRound, CheckCircle2,
+  Hand, Coffee
 } from 'lucide-react';
 import { IconoFacturo } from '@/components/marca/LogoFacturo';
 import { useAuth } from '@/contexts/AuthContext';
@@ -25,10 +25,10 @@ type LoginForm = {
 };
 
 const features = [
-  { icon: FileText, text: 'Facturas Profesionales' },
-  { icon: Users, text: 'Gestión de Clientes' },
-  { icon: Zap, text: 'Rápido y Fácil' },
-  { icon: Shield, text: 'Seguro y Confiable' },
+  { icon: FileText, text: 'Facturación electrónica SUNAT' },
+  { icon: Calculator, text: 'IGV calculado automáticamente' },
+  { icon: FileCheck, text: 'CDR de SUNAT guardado' },
+  { icon: KeyRound, text: 'Claves SOL cifradas' },
 ];
 
 export default function LoginPage({
@@ -161,29 +161,6 @@ export default function LoginPage({
                 </motion.div>
               ))}
             </div>
-          </div>
-
-          {/* Testimonial */}
-          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-            <div className="flex items-start gap-1 mb-3">
-              {[...Array(5)].map((_, i) => (
-                <Sparkles key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-              ))}
-            </div>
-            <blockquote className="text-white/90">
-              <p className="text-base italic leading-relaxed">
-                &ldquo;{t('testimonial')}&rdquo;
-              </p>
-              <footer className="mt-4 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                  <span className="text-white font-semibold text-sm">MG</span>
-                </div>
-                <div>
-                  <p className="text-white font-medium text-sm">María González</p>
-                  <p className="text-primary-200 text-xs">Contratista de Construcción</p>
-                </div>
-              </footer>
-            </blockquote>
           </div>
 
           {/* Footer */}

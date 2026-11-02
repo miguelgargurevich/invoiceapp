@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
 import { 
   Eye, EyeOff, Mail, Lock, User, Moon, Sun,
   CheckCircle, ArrowLeft, FileText, Users, Zap, Shield,
-  Sparkles, CheckCircle2, Gift, Rocket, Coffee
+  CheckCircle2, Gift, Rocket, Coffee
 } from 'lucide-react';
 import { IconoFacturo } from '@/components/marca/LogoFacturo';
 import { useAuth } from '@/contexts/AuthContext';
@@ -180,24 +180,10 @@ export default function RegisterPage({
             </div>
           </div>
 
-          {/* Social Proof */}
+          {/* Plan gratis: dato verdadero, sin prueba social */}
           <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-            <div className="flex items-center gap-4 mb-3">
-              <div className="flex -space-x-2">
-                {['MG', 'JR', 'SC', 'AL'].map((initials, i) => (
-                  <div key={i} className="w-8 h-8 rounded-full bg-white/20 border-2 border-emerald-600 flex items-center justify-center">
-                    <span className="text-white text-xs font-semibold">{initials}</span>
-                  </div>
-                ))}
-              </div>
-              <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Sparkles key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                ))}
-              </div>
-            </div>
             <p className="text-white/90 text-sm">
-              Únete a más de 10,000 profesionales que confían en Facturo
+              Empieza gratis con 10 comprobantes al mes.
             </p>
           </div>
 
