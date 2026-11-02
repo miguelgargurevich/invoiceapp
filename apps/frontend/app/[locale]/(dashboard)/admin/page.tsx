@@ -178,11 +178,11 @@ export default function AdminPage({
   const getRoleLabel = (role: string) => {
     switch (role) {
       case 'SUPER_ADMIN':
-        return 'Super Admin';
+        return 'Superadministrador';
       case 'ADMIN':
-        return 'Admin';
+        return 'Administrador';
       default:
-        return 'User';
+        return 'Usuario';
     }
   };
 

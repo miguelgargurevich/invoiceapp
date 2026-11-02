@@ -119,7 +119,7 @@ export default function SignatureCanvas({ onSignatureChange, disabled }: Signatu
         {isEmpty && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <p className="text-gray-400 dark:text-gray-500 text-sm">
-              Sign here
+              Firma aquí
             </p>
           </div>
         )}
@@ -133,7 +133,7 @@ export default function SignatureCanvas({ onSignatureChange, disabled }: Signatu
         className="w-full"
       >
         <Eraser className="w-4 h-4 mr-2" />
-        Clear Signature
+        Borrar firma
       </Button>
     </div>
   );

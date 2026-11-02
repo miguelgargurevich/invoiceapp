@@ -90,14 +90,14 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
           {/* Left Side - Proposal Number & Dates */}
           <div className="col-span-3">
             <div style={{ border: '2px solid #1f2937', padding: '8px 12px', borderRadius: '4px', display: 'inline-block', marginBottom: '8px' }}>
-              <p style={{ fontSize: '11px', fontWeight: 700, color: '#000000', margin: 0 }}>PROPOSAL</p>
+              <p style={{ fontSize: '11px', fontWeight: 700, color: '#000000', margin: 0 }}>PROFORMA</p>
               <p style={{ fontSize: '16px', fontWeight: 700, color: '#000000', margin: 0 }}>
                 {proforma.serie}-{String(proforma.numero).padStart(6, '0')}
               </p>
             </div>
             <div className="text-[9px] text-gray-700 space-y-0.5">
-              <p><span className="font-semibold">Date:</span> {formatDate(proforma.fechaEmision)}</p>
-              <p><span className="font-semibold">Valid Until:</span> {formatDate(proforma.fechaValidez)}</p>
+              <p><span className="font-semibold">Fecha:</span> {formatDate(proforma.fechaEmision)}</p>
+              <p><span className="font-semibold">Válida hasta:</span> {formatDate(proforma.fechaValidez)}</p>
             </div>
           </div>
 
@@ -133,7 +133,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
 
         {/* Client Information */}
         <div className="mb-4">
-          <div className="text-[9px] font-bold text-gray-800 mb-2 uppercase">Client Information</div>
+          <div className="text-[9px] font-bold text-gray-800 mb-2 uppercase">Datos del cliente</div>
           <div className="grid grid-cols-2 gap-4 text-[10px]">
             <div>
               <p className="font-bold text-gray-900">{proforma.cliente.razonSocial}</p>
@@ -164,7 +164,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         {/* Proposal Statement */}
         <div className="mb-3 text-center">
           <p className="text-[10px] font-bold text-gray-800">
-            We Propose hereby to furnish material and labor - complete in accordance with above specifications, for the sum of:
+            Proponemos suministrar los materiales y la mano de obra, de acuerdo con las especificaciones indicadas, por la suma de:
           </p>
         </div>
 
@@ -176,7 +176,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
               {proforma.paymentTerms && <span className="ml-1">{proforma.paymentTerms}</span>}
             </p>
             <p className="text-gray-800 mt-2">
-              <span className="font-bold">Total Amount:</span> {formatCurrency(proforma.total)}
+              <span className="font-bold">Importe total:</span> {formatCurrency(proforma.total)}
             </p>
           </div>
         </div>
@@ -184,7 +184,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
         {/* Contract Terms and Conditions */}
         {proforma.condiciones && (
           <div className="mb-4 p-3 bg-gray-50 border border-gray-300 rounded">
-            <p className="text-[10px] font-bold text-gray-900 mb-2">TERMS AND CONDITIONS</p>
+            <p className="text-[10px] font-bold text-gray-900 mb-2">TÉRMINOS Y CONDICIONES</p>
             <div className="text-[9px] text-gray-800 whitespace-pre-wrap">
               {proforma.condiciones}
             </div>
@@ -196,10 +196,10 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
 
         {/* Acceptance Section */}
         <div className="mb-3">
-          <p className="text-[10px] font-bold text-gray-900 mb-2">Acceptance of Proposal</p>
+          <p className="text-[10px] font-bold text-gray-900 mb-2">Aceptación de la proforma</p>
           <p className="text-[9px] text-gray-700 mb-3">
-            The above prices, specifications and conditions are satisfactory and are hereby accepted. 
-            You are authorized to do the work as specified. Payment will be made as outlined above.
+            Los precios, especificaciones y condiciones indicados son satisfactorios y se aceptan.
+            Se autoriza la realización del trabajo según lo descrito. El pago se hará como se indica arriba.
           </p>
         </div>
 
@@ -210,11 +210,11 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
             <div className="grid grid-cols-2 gap-8">
               {/* Customer Signature */}
               <div>
-                <p className="text-[9px] font-bold text-gray-800 mb-2">Customer Signature:</p>
+                <p className="text-[9px] font-bold text-gray-800 mb-2">Firma del cliente:</p>
                 <div className="mb-1">
                   <img 
                     src={proforma.signatureRequest.signature.signatureImageUrl} 
-                    alt="Customer Signature" 
+                    alt="Firma del cliente" 
                     className="h-16 w-auto object-contain"
                   />
                 </div>
@@ -223,7 +223,7 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
                   {proforma.signatureRequest.signature.signerName || proforma.cliente.razonSocial}
                 </p>
                 <p className="text-[9px] text-gray-800">
-                  <span className="font-bold">Date:</span>{' '}
+                  <span className="font-bold">Fecha:</span>{' '}
                   {proforma.signatureRequest.signature.signedAt 
                     ? formatDate(proforma.signatureRequest.signature.signedAt)
                     : formatDate(new Date().toISOString())
@@ -234,11 +234,11 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
               {/* Company Signature - only shown when customer has signed */}
               {empresa?.firmaEmpresa ? (
                 <div>
-                  <p className="text-[9px] font-bold text-gray-800 mb-2">Authorized Signature:</p>
+                  <p className="text-[9px] font-bold text-gray-800 mb-2">Firma autorizada:</p>
                   <div className="mb-1">
                     <img 
                       src={empresa.firmaEmpresa} 
-                      alt="Company Signature" 
+                      alt="Firma de la empresa" 
                       className="h-16 w-auto object-contain"
                     />
                   </div>
@@ -247,9 +247,9 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
                 </div>
               ) : (
                 <div>
-                  <p className="text-[9px] font-bold text-gray-800 mb-12">Authorized Signature:</p>
+                  <p className="text-[9px] font-bold text-gray-800 mb-12">Firma autorizada:</p>
                   <div className="border-t border-gray-800 mb-1"></div>
-                  <p className="text-[9px] text-gray-600">{empresa?.razonSocial || empresa?.nombre || 'Company'}</p>
+                  <p className="text-[9px] text-gray-600">{empresa?.razonSocial || empresa?.nombre || 'Mi empresa'}</p>
                 </div>
               )}
             </div>
@@ -260,11 +260,11 @@ const ProformaPreview = forwardRef<HTMLDivElement, ProformaPreviewProps>(
             <div>
               {/* Customer Signature Only */}
               <div>
-                <p className="text-[9px] font-bold text-gray-800 mb-12">Customer Signature:</p>
+                <p className="text-[9px] font-bold text-gray-800 mb-12">Firma del cliente:</p>
                 <div className="border-t border-gray-800 mb-1"></div>
-                <p className="text-[9px] text-gray-600 mb-4">Customer Name</p>
+                <p className="text-[9px] text-gray-600 mb-4">Nombre del cliente</p>
                 <p className="text-[9px] text-gray-800">
-                  <span className="font-bold">Date:</span>{' '}
+                  <span className="font-bold">Fecha:</span>{' '}
                   {formatDate(new Date().toISOString())}
                 </p>
               </div>

@@ -96,14 +96,14 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
           {/* Left Side - Receipt Number & Dates */}
           <div className="col-span-3">
             <div style={{ border: '2px solid #1f2937', padding: '8px 12px', borderRadius: '4px', display: 'inline-block', marginBottom: '8px' }}>
-              <p style={{ fontSize: '11px', fontWeight: 700, color: '#000000', margin: 0 }}>INVOICE</p>
+              <p style={{ fontSize: '11px', fontWeight: 700, color: '#000000', margin: 0 }}>FACTURA</p>
               <p style={{ fontSize: '16px', fontWeight: 700, color: '#000000', margin: 0 }}>
                 {factura.serie}-{String(factura.numero).padStart(6, '0')}
               </p>
             </div>
             <div className="text-[9px] text-gray-700 space-y-0.5">
-              <p><span className="font-semibold">Date:</span> {formatDate(factura.fechaEmision)}</p>
-              {/* <p><span className="font-semibold">Due Date:</span> {formatDate(factura.fechaVencimiento)}</p> */}
+              <p><span className="font-semibold">Fecha:</span> {formatDate(factura.fechaEmision)}</p>
+              {/* <p><span className="font-semibold">Vencimiento:</span> {formatDate(factura.fechaVencimiento)}</p> */}
             </div>
           </div>
 
@@ -137,7 +137,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
 
         {/* Client Information */}
         <div className="mb-4">
-          <div className="text-[9px] font-bold text-gray-800 mb-2 uppercase">Client Information</div>
+          <div className="text-[9px] font-bold text-gray-800 mb-2 uppercase">Datos del cliente</div>
           <div className="grid grid-cols-2 gap-4 text-[10px]">
             <div>
               <p className="font-bold text-gray-900">{factura.cliente.razonSocial}</p>
@@ -157,7 +157,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         {/* Work Description */}
         {factura.workDescription && (
           <div className="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
-            <div className="text-[10px] font-bold text-gray-800 mb-1">Work Description:</div>
+            <div className="text-[10px] font-bold text-gray-800 mb-1">Descripción del trabajo:</div>
             <p className="text-[9px] text-gray-700 whitespace-pre-wrap">{factura.workDescription}</p>
           </div>
         )}
@@ -165,7 +165,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         {/* Payment Terms */}
         {factura.paymentTerms && (
           <div className="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
-            <div className="text-[10px] font-bold text-gray-800 mb-1">Payment Terms:</div>
+            <div className="text-[10px] font-bold text-gray-800 mb-1">Condiciones de pago:</div>
             <p className="text-[9px] text-gray-700 whitespace-pre-wrap">{factura.paymentTerms}</p>
           </div>
         )}
@@ -173,9 +173,9 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         {/* Order Type */}
         {factura.orderType && (
           <div className="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
-            <div className="text-[10px] font-bold text-gray-800 mb-1">Order Type:</div>
+            <div className="text-[10px] font-bold text-gray-800 mb-1">Tipo de orden:</div>
             <p className="text-[9px] text-gray-700">
-              {factura.orderType === 'day_work' ? 'Day Work' : factura.orderType === 'contract' ? 'Contract' : 'Extra'}
+              {factura.orderType === 'day_work' ? 'Por día' : factura.orderType === 'contract' ? 'Contrato' : 'Adicional'}
             </p>
           </div>
         )}
@@ -186,14 +186,14 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
         {/* Payment Summary */}
         <div className="mb-6 flex justify-end">
           <div className="w-64">
-            <div className="text-[10px] font-bold text-gray-800 mb-2 uppercase text-right">Payment Summary</div>
+            <div className="text-[10px] font-bold text-gray-800 mb-2 uppercase text-right">Resumen de pagos</div>
             <div className="space-y-1">
               <div className="flex justify-between items-center py-1">
-                <span className="text-[10px] text-gray-700">Total Materials</span>
+                <span className="text-[10px] text-gray-700">Total materiales</span>
                 <span className="text-[10px] font-medium text-right">{formatCurrency(totalMaterials)}</span>
               </div>
               <div className="flex justify-between items-center py-1">
-                <span className="text-[10px] text-gray-700">Total Labor</span>
+                <span className="text-[10px] text-gray-700">Total mano de obra</span>
                 <span className="text-[10px] font-medium text-right">{formatCurrency(totalLabor)}</span>
               </div>
               <div className="flex justify-between items-center py-1 border-t border-gray-300 pt-1">
@@ -203,7 +203,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
                 <span className="text-[10px] font-medium text-right">{formatCurrency(tax)}</span>
               </div>
               <div className="flex justify-between items-center py-2 bg-gray-100 px-2 rounded mt-1">
-                <span className="text-[11px] font-bold text-gray-900">TOTAL AMOUNT</span>
+                <span className="text-[11px] font-bold text-gray-900">IMPORTE TOTAL</span>
                 <span className="text-[11px] font-bold text-gray-900 text-right">{formatCurrency(totalAmount)}</span>
               </div>
             </div>
@@ -215,12 +215,12 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
           <div className="grid grid-cols-2 gap-8">
             {/* Company Signature */}
             <div>
-              <div className="text-[9px] font-bold text-gray-800 mb-2">Company Signature</div>
+              <div className="text-[9px] font-bold text-gray-800 mb-2">Firma de la empresa</div>
               {empresa?.firmaEmpresa ? (
                 <div className="h-16 flex items-center justify-center mb-2">
                   <img 
                     src={empresa.firmaEmpresa} 
-                    alt="Company Signature" 
+                    alt="Firma de la empresa" 
                     className="max-h-full max-w-full object-contain"
                   />
                 </div>
@@ -229,7 +229,7 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
               )}
               <div className="border-t-2 border-gray-400 pt-1">
                 <p className="text-[8px] text-gray-600 text-center">
-                  {empresa?.nombre || 'Company Name'}
+                  {empresa?.nombre || 'Mi empresa'}
                 </p>
                 <p className="text-[8px] text-gray-500 text-center">
                   Date: {formatDate(factura.fechaEmision)}
