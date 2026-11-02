@@ -269,23 +269,29 @@ export default function ProformaPrintPreviewModal({
         {/* Compact Controls Bar */}
         <div className="flex items-center justify-between py-2 px-3 bg-gray-50 dark:bg-gray-900 border-b dark:border-gray-700">
           <div className="flex items-center gap-1">
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleZoomOut}
-              className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+              className="p-1.5"
               title="Alejar"
+              aria-label="Alejar"
             >
               <ZoomOut className="w-4 h-4" />
-            </button>
+            </Button>
             <span className="text-xs text-gray-500 min-w-[50px] text-center">
               {Math.round(zoom * 100)}%
             </span>
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleZoomIn}
-              className="p-1.5 hover:bg-gray-200 dark:hover:bg-gray-700 rounded transition-colors"
+              className="p-1.5"
               title="Acercar"
+              aria-label="Acercar"
             >
               <ZoomIn className="w-4 h-4" />
-            </button>
+            </Button>
           </div>
           
           <div className="flex items-center gap-2">

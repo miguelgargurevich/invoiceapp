@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
+import { Button } from '@/components/common';
 import {
   HardHat,
   Laptop,
@@ -35,7 +36,7 @@ const INVOICE_TEMPLATES: InvoiceTemplate[] = [
     name: 'Contratista',
     description: 'Construcción, renovación, electricidad, plomería',
     icon: HardHat,
-    color: 'from-orange-500 to-amber-500',
+    color: 'bg-orange-500',
     defaultWorkDescription:
 `Trabajo realizado según lo acordado:
 • Preparación y limpieza del lugar
@@ -58,7 +59,7 @@ const INVOICE_TEMPLATES: InvoiceTemplate[] = [
     name: 'Freelancer',
     description: 'Diseño, desarrollo, redacción, marketing',
     icon: Laptop,
-    color: 'from-purple-500 to-pink-500',
+    color: 'bg-purple-600',
     defaultWorkDescription:
 `Servicios prestados:
 • Proyecto completado según las especificaciones
@@ -81,7 +82,7 @@ const INVOICE_TEMPLATES: InvoiceTemplate[] = [
     name: 'Agencia',
     description: 'Servicios completos de marketing, creatividad y medios digitales',
     icon: Building2,
-    color: 'from-primary-500 to-cyan-500',
+    color: 'bg-primary-600',
     defaultWorkDescription:
 `Servicios prestados en este período:
 • Planificación y asesoría estratégica
@@ -104,7 +105,7 @@ const INVOICE_TEMPLATES: InvoiceTemplate[] = [
     name: 'Consultor',
     description: 'Negocios, TI, gestión, estrategia',
     icon: Briefcase,
-    color: 'from-slate-500 to-slate-700',
+    color: 'bg-slate-600',
     defaultWorkDescription:
 `Servicios de consultoría prestados:
 • Sesiones de diagnóstico y evaluación
@@ -185,14 +186,16 @@ export function InvoiceTemplatePicker({ isOpen, onClose, onSelect, selectedTempl
             {previewTemplate ? (
               /* Template Preview */
               <div className="space-y-4 sm:space-y-6">
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setPreviewTemplate(null)}
-                  className="text-sm text-primary-600 hover:text-primary-700 flex items-center gap-1"
+                  className="-ml-3 text-primary-600 hover:text-primary-700"
                 >
                   ← {t('backToTemplates')}
-                </button>
+                </Button>
                 <div className="flex items-start gap-4">
-                  <div className={`p-3 rounded-xl bg-gradient-to-r ${previewTemplate.color}`}>
+                  <div className={`p-3 rounded-xl ${previewTemplate.color}`}>
                     <previewTemplate.icon className="w-8 h-8 text-white" />
                   </div>
                   <div>
@@ -270,13 +273,13 @@ export function InvoiceTemplatePicker({ isOpen, onClose, onSelect, selectedTempl
                 </div>
 
                 <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <button
+                  <Button
                     onClick={() => handleSelect(previewTemplate)}
-                    className="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium transition-colors flex items-center gap-2"
+                    size="lg"
+                    icon={<Check className="w-5 h-5" />}
                   >
-                    <Check className="w-5 h-5" />
                     {t('useThisTemplate')}
-                  </button>
+                  </Button>
                 </div>
               </div>
             ) : (
@@ -302,7 +305,7 @@ export function InvoiceTemplatePicker({ isOpen, onClose, onSelect, selectedTempl
                     )}
 
                     <div className="flex items-start gap-4">
-                      <div className={`p-3 rounded-xl bg-gradient-to-r ${template.color}`}>
+                      <div className={`p-3 rounded-xl ${template.color}`}>
                         <template.icon className="w-6 h-6 text-white" />
                       </div>
                       <div className="flex-1">

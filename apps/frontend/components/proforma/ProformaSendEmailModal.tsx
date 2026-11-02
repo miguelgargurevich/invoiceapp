@@ -104,7 +104,7 @@ export default function ProformaSendEmailModal({
       <div className="space-y-6">
         {/* Status Messages */}
         {status === 'success' && (
-          <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 animate-in fade-in slide-in-from-top-2 duration-300">
             <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-medium">{t('emailSentSuccess')}</p>
@@ -114,7 +114,7 @@ export default function ProformaSendEmailModal({
         )}
 
         {status === 'error' && (
-          <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 rounded-lg border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 animate-in fade-in slide-in-from-top-2 duration-300">
             <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-medium">{errorMessage}</p>
@@ -124,7 +124,7 @@ export default function ProformaSendEmailModal({
         )}
 
         {/* Document Info Card */}
-        <div className="bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-900/20 dark:to-slate-900/20 rounded-xl p-4 border border-gray-200 dark:border-gray-800">
+        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-gray-200 dark:border-gray-800">
           <div className="flex items-start gap-4">
             <div className="bg-gray-800 dark:bg-gray-700 rounded-lg p-3">
               <Mail className="w-6 h-6 text-white" />
@@ -226,7 +226,7 @@ export default function ProformaSendEmailModal({
           <Button
             onClick={handleSendEmail}
             disabled={sending || status === 'success' || !emailData.to}
-            className="min-w-[140px] bg-gradient-to-r from-gray-800 to-slate-800 hover:from-gray-900 hover:to-slate-900"
+            className="min-w-[140px]"
           >
             {sending ? (
               <>
