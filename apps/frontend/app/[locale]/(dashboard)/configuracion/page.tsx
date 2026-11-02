@@ -8,9 +8,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button, Card, Input, Textarea, LoadingSpinner, PageHeader } from '@/components/common';
 import { cn } from '@/lib/utils';
-import api from '@/lib/api';
+import api, { ApiError } from '@/lib/api';
 import SignatureCanvas from '@/components/signature/SignatureCanvas';
 import SubscriptionTab from '@/components/settings/SubscriptionTab';
+import { ColorMarca } from '@/components/settings/ColorMarca';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { SunatTab } from '@/components/sunat/SunatTab';
 import {
   Building2,
@@ -42,6 +44,7 @@ export default function ConfiguracionPage({
   const searchParams = useSearchParams();
   const { user, empresa, refreshEmpresa } = useAuth();
   const { theme, setTheme, fontSize, setFontSize } = useTheme();
+  const { plan, loading: cargandoPlan } = useSubscription();
 
   const [activeTab, setActiveTab] = useState<Tab>('empresa');
   const [saving, setSaving] = useState(false);
@@ -53,6 +56,9 @@ export default function ConfiguracionPage({
   const [pendingSignature, setPendingSignature] = useState<string | null>(null);
   const [uploadingSignature, setUploadingSignature] = useState(false);
   const [signatureKey, setSignatureKey] = useState(0); // Key to force remount of SignatureCanvas
+  // Color de marca: '#RRGGBB' o null (predeterminado). errorColor: mensaje del backend si rechaza el color.
+  const [colorMarca, setColorMarca] = useState<string | null>(null);
+  const [errorColor, setErrorColor] = useState<string | null>(null);
 
   // Detect tab from URL params
   useEffect(() => {
@@ -124,6 +130,8 @@ export default function ConfiguracionPage({
 
   useEffect(() => {
     if (empresa) {
+      setColorMarca(empresa.colorPrimario ?? null);
+      setErrorColor(null);
       setEmpresaForm({
         ruc: empresa.ruc || '',
         razonSocial: empresa.razonSocial || '',
@@ -167,10 +175,15 @@ export default function ConfiguracionPage({
   }, [empresa, user]);
 
   const handleSaveEmpresa = async () => {
+    // colorPrimario viaja solo si cambió. Si una empresa sin plan conserva un color guardado,
+    // mandarlo en cada guardado daría 403 y bloquearía también el RUC, la dirección, etc.
+    const cambioColor = colorMarca !== (empresa?.colorPrimario ?? null);
     try {
       setSaving(true);
+      setErrorColor(null);
       //console.log('[CONFIG] Saving empresa data:', empresaForm);
-      const response = await api.put('/empresas/mi-empresa', empresaForm) as any;
+      const payload = cambioColor ? { ...empresaForm, colorPrimario: colorMarca } : empresaForm;
+      const response = await api.put('/empresas/mi-empresa', payload) as any;
       //console.log('[CONFIG] Save response:', response);
       
       // Actualizar el formulario con la respuesta ANTES de refrescar el contexto
@@ -191,8 +204,13 @@ export default function ConfiguracionPage({
       setTimeout(() => setMessage(''), 3000);
     } catch (error) {
       console.error('[CONFIG] Error saving empresa:', error);
-      setMessage(t('errorSaving'));
-      setTimeout(() => setMessage(''), 3000);
+      if (cambioColor && error instanceof ApiError && error.status === 403) {
+        // El plan no incluye colores de marca: se muestra el mensaje del backend junto al bloque de color.
+        setErrorColor(error.message);
+      } else {
+        setMessage(t('errorSaving'));
+        setTimeout(() => setMessage(''), 3000);
+      }
     } finally {
       setSaving(false);
     }
@@ -588,6 +606,21 @@ export default function ConfiguracionPage({
                       </Button>
                     </div>
                   )}
+                </div>
+
+                {/* Color de marca (plan con hasCustomBranding) */}
+                <div className="border-t border-gray-200 pt-6 dark:border-gray-700">
+                  <ColorMarca
+                    valor={colorMarca}
+                    onChange={(valor) => {
+                      setColorMarca(valor);
+                      setErrorColor(null);
+                    }}
+                    puedeCambiar={!!plan?.hasCustomBranding}
+                    cargando={cargandoPlan}
+                    locale={locale}
+                    error={errorColor}
+                  />
                 </div>
 
                 {/* Company Signature */}
