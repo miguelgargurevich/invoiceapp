@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { Button, Card, Input } from '@/components/common';
 import api from '@/lib/api';
+import { SelectTipoDocumento } from '@/components/common/SelectTipoDocumento';
 
 export default function NuevoClientePage({
   params: { locale },
@@ -133,27 +134,11 @@ export default function NuevoClientePage({
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t('documentType')}
               </label>
-              <select
+              <SelectTipoDocumento
                 value={formData.tipoDocumento}
                 onChange={(e) => setFormData({ ...formData, tipoDocumento: e.target.value })}
                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
-              >
-                {empresa?.pais === 'PE' ? (
-                  (['RUC', 'DNI', 'CE', 'PASAPORTE', 'OTHER'] as const).map((codigo) => (
-                    <option key={codigo} value={codigo}>{tSunat(`tiposDoc.${codigo}`)}</option>
-                  ))
-                ) : (
-                  <>
-                    <option value="OTHER">Other / None</option>
-                    <option value="SSN">SSN (Social Security Number)</option>
-                    <option value="EIN">EIN (Employer ID Number)</option>
-                    <option value="ITIN">ITIN (Individual Tax ID)</option>
-                    <option value="DRIVER_LICENSE">Driver's License</option>
-                    <option value="STATE_ID">State ID</option>
-                    <option value="PASSPORT">Pasaporte</option>
-                  </>
-                )}
-              </select>
+              />
             </div>
             
             <Input

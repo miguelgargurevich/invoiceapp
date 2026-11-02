@@ -36,6 +36,7 @@ import {
 import { InvoiceTemplatePicker, InvoiceTemplate } from '@/components/invoice/InvoiceTemplatePicker';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
+import { SelectTipoDocumento } from '@/components/common/SelectTipoDocumento';
 
 interface Cliente {
   id: string;
@@ -977,20 +978,12 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {t('documentType')}
                   </label>
-                  <select
+                  <SelectTipoDocumento
                     value={formData.tipoDocumento}
                     onChange={(e) => setFormData({ ...formData, tipoDocumento: e.target.value })}
                     disabled={loading}
                     className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-600 focus:border-transparent transition-all"
-                  >
-                    <option value="OTHER">Other / None</option>
-                    <option value="SSN">SSN</option>
-                    <option value="EIN">EIN</option>
-                    <option value="ITIN">ITIN</option>
-                    <option value="DRIVER_LICENSE">Driver's License</option>
-                    <option value="STATE_ID">State ID</option>
-                    <option value="PASSPORT">Pasaporte</option>
-                  </select>
+                  />
                 </div>
                 
                 <div>
