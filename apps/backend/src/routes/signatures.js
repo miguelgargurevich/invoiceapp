@@ -119,7 +119,7 @@ router.post('/request', async (req, res) => {
           empresa: document.empresa,
           expiresAt,
           baseUrl,
-          locale: 'en' // TODO: Get from request or user preferences
+          locale: 'es' // TODO: Get from request or user preferences
         });
         
         console.log('✅ Signature request email sent successfully to:', signerEmail);
@@ -198,7 +198,7 @@ router.post('/:token/send-email', async (req, res) => {
         empresa: document.empresa,
         expiresAt: signatureRequest.expiresAt,
         baseUrl,
-        locale: 'en'
+        locale: 'es'
       });
 
       // Update sentAt timestamp
@@ -467,7 +467,7 @@ router.post('/submit', async (req, res) => {
     //     empresa: signatureRequest.empresa,
     //     signedPdfUrl: signature.signedPdfUrl,
     //     signedAt: signature.signedAt,
-    //     locale: 'en' // TODO: Get from request or user preferences
+    //     locale: 'es' // TODO: Get from request or user preferences
     //   });
     //   console.log('✅ Signature confirmation emails sent successfully');
     // } catch (emailError) {

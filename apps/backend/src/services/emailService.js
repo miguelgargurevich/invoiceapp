@@ -12,7 +12,7 @@ const fromName = process.env.RESEND_FROM_NAME || 'Facturo';
  * @param {string} locale - Language locale (es or en)
  * @returns {Object} - Translation strings
  */
-function getTranslations(locale = 'en') {
+function getTranslations(locale = 'es') {
   const translations = {
     es: {
       invoice: 'Factura',
@@ -105,7 +105,7 @@ async function sendEmail({ to, subject, text, html, attachments = [] }) {
  * @param {string} options.locale - Language locale (es or en)
  * @returns {Promise<Object>} - Resend API response
  */
-async function sendInvoiceEmail({ to, subject, message, factura, empresa, pdfBuffer, locale = 'en' }) {
+async function sendInvoiceEmail({ to, subject, message, factura, empresa, pdfBuffer, locale = 'es' }) {
   const t = getTranslations(locale);
   const acento = colorParaTextoBlanco(colorDeMarca(empresa));
   
@@ -203,7 +203,7 @@ async function sendInvoiceEmail({ to, subject, message, factura, empresa, pdfBuf
  * @param {string} options.locale - Language locale (es or en)
  * @returns {Promise<Object>} - Resend API response
  */
-async function sendProformaEmail({ to, subject, message, proforma, empresa, pdfBuffer, locale = 'en' }) {
+async function sendProformaEmail({ to, subject, message, proforma, empresa, pdfBuffer, locale = 'es' }) {
   const t = getTranslations(locale);
   const acento = colorParaTextoBlanco(colorDeMarca(empresa));
   const tinte = tintar(colorDeMarca(empresa), 0.9);
@@ -297,262 +297,307 @@ async function sendProformaEmail({ to, subject, message, proforma, empresa, pdfB
 }
 
 /**
- * Send signature request email to client
+ * Correos de firma digital (español, Perú). Comparten diseño y estilos.
  */
-async function sendSignatureRequestEmail({ 
-  signerEmail, 
-  signerName, 
-  token, 
-  document, 
-  empresa,
-  expiresAt,
-  baseUrl,
-  locale = 'en'
-}) {
-  const acento = colorParaTextoBlanco(colorDeMarca(empresa));
-  const signingUrl = `${baseUrl}/${locale}/sign/${token}`;
-  const expiresDate = new Date(expiresAt).toLocaleDateString('en-US', {
+
+function escaparHtml(texto) {
+  return String(texto ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function tipoDocumentoFirma(document) {
+  return document.serie?.startsWith('F') ? 'Factura' : 'Proforma';
+}
+
+function fechaFirma(fecha, conHora = false) {
+  return new Date(fecha).toLocaleDateString('es-PE', {
+    timeZone: 'America/Lima',
     year: 'numeric',
     month: 'long',
-    day: 'numeric'
+    day: 'numeric',
+    ...(conHora ? { hour: '2-digit', minute: '2-digit' } : {}),
   });
+}
 
-  const documentType = document.serie?.startsWith('F') ? 'Invoice' : 'Proposal';
-  const documentNumber = `${document.serie}-${document.numero}`;
+function montoFirma(document) {
+  const simbolo = document.moneda === 'USD' ? 'US$' : 'S/';
+  return `${simbolo} ${Number(document.total).toFixed(2)}`;
+}
 
-  const htmlContent = `
+function saludoFirma(nombre) {
+  return nombre ? `Hola ${escaparHtml(nombre)},` : 'Hola,';
+}
+
+function estilosFirma(acento) {
+  return `
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f3f4f6;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+    }
+    .header {
+      background-color: ${acento};
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .logo {
+      max-width: 150px;
+      height: auto;
+      margin-bottom: 20px;
+    }
+    .header-title {
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: 600;
+      margin: 0;
+    }
+    .content {
+      padding: 40px 30px;
+    }
+    .greeting {
+      font-size: 18px;
+      color: #111827;
+      margin-bottom: 20px;
+      font-weight: 500;
+    }
+    .message {
+      color: #4b5563;
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+    .document-box {
+      background-color: #f9fafb;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 30px 0;
+    }
+    .document-label {
+      color: #6b7280;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    .document-number {
+      color: #111827;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .document-amount {
+      color: #111827;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .cta-button {
+      display: inline-block;
+      background: ${acento};
+      color: #ffffff !important;
+      text-decoration: none;
+      padding: 16px 40px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      margin: 20px 0;
+    }
+    .success-box {
+      background-color: #d1fae5;
+      border: 2px solid #10b981;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 30px 0;
+      text-align: center;
+    }
+    .success-title {
+      color: #065f46;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .success-details {
+      color: #047857;
+      font-size: 14px;
+      margin: 5px 0;
+    }
+    .expires-notice {
+      background-color: #fef3c7;
+      border: 1px solid #fbbf24;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .expires-text {
+      color: #92400e;
+      font-size: 13px;
+      margin: 0;
+    }
+    .info-box {
+      background-color: #f9fafb;
+      border-left: 4px solid #6b7280;
+      padding: 15px 20px;
+      margin: 25px 0;
+      border-radius: 4px;
+    }
+    .info-title {
+      color: #374151;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .info-list {
+      color: #4b5563;
+      font-size: 13px;
+      line-height: 1.8;
+      margin: 0;
+      padding-left: 20px;
+    }
+    .footer {
+      background-color: #f9fafb;
+      padding: 30px;
+      text-align: center;
+      border-top: 1px solid #e5e7eb;
+    }
+    .footer-text {
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.6;
+      margin: 5px 0;
+    }
+    .footer-link {
+      color: #374151;
+      text-decoration: none;
+    }
+    @media only screen and (max-width: 600px) {
+      .content {
+        padding: 30px 20px;
+      }
+      .header {
+        padding: 30px 20px;
+      }
+      .cta-button {
+        display: block;
+        padding: 14px 20px;
+      }
+    }
+  `;
+}
+
+function plantillaFirma({ acento, cabecera, cuerpo, pie }) {
+  return `
     <!DOCTYPE html>
     <html>
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-          body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f3f4f6;
-          }
-          .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-          }
-          .header {
-            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-            padding: 40px 20px;
-            text-align: center;
-          }
-          .logo {
-            max-width: 150px;
-            height: auto;
-            margin-bottom: 20px;
-          }
-          .header-title {
-            color: #ffffff;
-            font-size: 24px;
-            font-weight: 600;
-            margin: 0;
-          }
-          .content {
-            padding: 40px 30px;
-          }
-          .greeting {
-            font-size: 18px;
-            color: #111827;
-            margin-bottom: 20px;
-            font-weight: 500;
-          }
-          .message {
-            color: #4b5563;
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 30px;
-          }
-          .document-box {
-            background-color: #f9fafb;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 30px 0;
-          }
-          .document-label {
-            color: #6b7280;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-          }
-          .document-number {
-            color: #111827;
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 10px;
-          }
-          .document-amount {
-            color: #111827;
-            font-size: 24px;
-            font-weight: 700;
-          }
-          .cta-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-            color: #ffffff !important;
-            text-decoration: none;
-            padding: 16px 40px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            text-align: center;
-            margin: 20px 0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          }
-          .cta-button:hover {
-            background: linear-gradient(135deg, #111827 0%, #000000 100%);
-          }
-          .info-box {
-            background-color: #f9fafb;
-            border-left: 4px solid #6b7280;
-            padding: 15px 20px;
-            margin: 25px 0;
-            border-radius: 4px;
-          }
-          .info-title {
-            color: #374151;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-          }
-          .info-list {
-            color: #4b5563;
-            font-size: 13px;
-            line-height: 1.8;
-            margin: 0;
-            padding-left: 20px;
-          }
-          .footer {
-            background-color: #f9fafb;
-            padding: 30px;
-            text-align: center;
-            border-top: 1px solid #e5e7eb;
-          }
-          .footer-text {
-            color: #6b7280;
-            font-size: 13px;
-            line-height: 1.6;
-            margin: 5px 0;
-          }
-          .footer-link {
-            color: #374151;
-            text-decoration: none;
-          }
-          .expires-notice {
-            background-color: #fef3c7;
-            border: 1px solid #fbbf24;
-            border-radius: 6px;
-            padding: 12px 16px;
-            margin: 20px 0;
-            text-align: center;
-          }
-          .expires-text {
-            color: #92400e;
-            font-size: 13px;
-            margin: 0;
-          }
-          @media only screen and (max-width: 600px) {
-            .content {
-              padding: 30px 20px;
-            }
-            .header {
-              padding: 30px 20px;
-            }
-            .cta-button {
-              display: block;
-              padding: 14px 20px;
-            }
-          }
-        </style>
+        <style>${estilosFirma(acento)}</style>
       </head>
       <body>
         <div class="container">
-          <!-- Header -->
           <div class="header">
-            ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${empresa.nombre}" class="logo">` : ''}
-            <h1 class="header-title">Signature Request</h1>
+            ${cabecera}
           </div>
-
-          <!-- Content -->
           <div class="content">
-            <p class="greeting">Hello ${signerName || 'there'},</p>
-            
-            <p class="message">
-              <strong>${empresa.nombre}</strong> has requested your electronic signature 
-              for the following document. Your signature is required to complete this transaction.
-            </p>
-
-            <!-- Document Info -->
-            <div class="document-box">
-              <div class="document-label">${documentType}</div>
-              <div class="document-number">${documentNumber}</div>
-              <div class="document-amount">$${document.total.toFixed(2)}</div>
-            </div>
-
-            <!-- CTA Button -->
-            <div style="text-align: center;">
-              <a href="${signingUrl}" class="cta-button">
-                📝 Sign Document Now
-              </a>
-            </div>
-
-            <!-- Expires Notice -->
-            <div class="expires-notice">
-              <p class="expires-text">
-                ⏰ This signature request expires on <strong>${expiresDate}</strong>
-              </p>
-            </div>
-
-            <!-- Info Box -->
-            <div class="info-box">
-              <div class="info-title">What to expect:</div>
-              <ul class="info-list">
-                <li>The signing process takes less than 2 minutes</li>
-                <li>You can sign on any device (mobile-friendly)</li>
-                <li>Your signature is legally binding and secure</li>
-                <li>You'll receive a confirmation email after signing</li>
-              </ul>
-            </div>
-
-            <p class="message" style="margin-top: 30px;">
-              If you have any questions or concerns, please contact ${empresa.nombre} directly 
-              ${empresa.email ? `at <a href="mailto:${empresa.email}" style="color: ${acento};">${empresa.email}</a>` : ''}.
-            </p>
+            ${cuerpo}
           </div>
-
-          <!-- Footer -->
           <div class="footer">
-            <p class="footer-text">
-              This electronic signature request is compliant with the U.S. Electronic Signatures in Global 
-              and National Commerce Act (ESIGN) and the Uniform Electronic Transactions Act (UETA).
-            </p>
-            <p class="footer-text" style="margin-top: 15px;">
-              © ${new Date().getFullYear()} ${empresa.nombre}. All rights reserved.
-            </p>
-            <p class="footer-text" style="margin-top: 10px; font-size: 11px;">
-              If you're having trouble clicking the button, copy and paste this URL into your browser:<br>
-              <a href="${signingUrl}" class="footer-link">${signingUrl}</a>
-            </p>
+            ${pie}
           </div>
         </div>
       </body>
     </html>
   `;
+}
+
+/**
+ * Send signature request email to client
+ */
+async function sendSignatureRequestEmail({
+  signerEmail,
+  signerName,
+  token,
+  document,
+  empresa,
+  expiresAt,
+  baseUrl,
+  locale = 'es'
+}) {
+  const acento = colorParaTextoBlanco(colorDeMarca(empresa));
+  const signingUrl = `${baseUrl}/${locale}/sign/${token}`;
+  const tipo = tipoDocumentoFirma(document);
+  const numero = `${document.serie}-${document.numero}`;
+  const nombreEmpresa = escaparHtml(empresa.nombre);
+
+  const cabecera = `
+            ${empresa.logoUrl ? `<img src="${empresa.logoUrl}" alt="${nombreEmpresa}" class="logo">` : ''}
+            <h1 class="header-title">Solicitud de firma</h1>`;
+
+  const cuerpo = `
+            <p class="greeting">${saludoFirma(signerName)}</p>
+            <p class="message">
+              <strong>${nombreEmpresa}</strong> te pide tu firma electrónica para el siguiente documento.
+              Tu firma es necesaria para completar la operación.
+            </p>
+
+            <div class="document-box">
+              <div class="document-label">${tipo}</div>
+              <div class="document-number">${numero}</div>
+              <div class="document-amount">${montoFirma(document)}</div>
+            </div>
+
+            <div style="text-align: center;">
+              <a href="${signingUrl}" class="cta-button">Firmar documento</a>
+            </div>
+
+            <div class="expires-notice">
+              <p class="expires-text">
+                Esta solicitud vence el <strong>${fechaFirma(expiresAt)}</strong>
+              </p>
+            </div>
+
+            <div class="info-box">
+              <div class="info-title">Qué debes saber:</div>
+              <ul class="info-list">
+                <li>Firmar toma menos de 2 minutos</li>
+                <li>Puedes firmar desde cualquier dispositivo, también desde el celular</li>
+                <li>Tu firma queda registrada con la fecha, la hora y la dirección IP desde la que firmaste</li>
+                <li>Recibirás un correo de confirmación al firmar</li>
+              </ul>
+            </div>
+
+            <p class="message" style="margin-top: 30px;">
+              Si tienes alguna consulta, escribe directamente a ${nombreEmpresa}
+              ${empresa.email ? `a <a href="mailto:${empresa.email}" style="color: ${acento};">${empresa.email}</a>` : ''}.
+            </p>`;
+
+  const pie = `
+            <p class="footer-text">
+              © ${new Date().getFullYear()} ${nombreEmpresa}. Todos los derechos reservados.
+            </p>
+            <p class="footer-text" style="margin-top: 10px; font-size: 11px;">
+              Si el botón no funciona, copia y pega este enlace en tu navegador:<br>
+              <a href="${signingUrl}" class="footer-link">${signingUrl}</a>
+            </p>`;
 
   try {
     const result = await resend.emails.send({
       from: `${fromName} <${fromEmail}>`,
       to: signerEmail,
-      subject: `Signature Required: ${documentType} ${documentNumber}`,
-      html: htmlContent,
+      subject: `Firma requerida: ${tipo} ${numero}`,
+      html: plantillaFirma({ acento, cabecera, cuerpo, pie }),
       replyTo: empresa.email || undefined,
     });
 
@@ -565,6 +610,51 @@ async function sendSignatureRequestEmail({
 }
 
 /**
+ * Confirmación de firma: una plantilla para el firmante y otra para el dueño.
+ */
+function htmlConfirmacionFirma({ acento, empresa, tipo, numero, saludo, mensaje, nombreFirmante, fechaFirmado, urlPdf }) {
+  const nombreEmpresa = escaparHtml(empresa.nombre);
+
+  const cabecera = `
+            <h1 class="header-title">Documento firmado</h1>`;
+
+  const cuerpo = `
+            <p class="greeting">${saludo}</p>
+            <p class="message">${mensaje}</p>
+
+            <div class="success-box">
+              <div class="success-title">Firma confirmada</div>
+              <div class="success-details">Firmado el ${fechaFirmado}</div>
+              <div class="success-details">Firmante: ${escaparHtml(nombreFirmante)}</div>
+            </div>
+
+            <div class="document-box">
+              <div class="document-label">${tipo}</div>
+              <div class="document-number">${numero}</div>
+            </div>
+
+            ${urlPdf ? `
+            <div style="text-align: center;">
+              <a href="${urlPdf}" class="cta-button">Descargar documento firmado</a>
+            </div>` : ''}
+
+            <p class="message" style="margin-top: 30px;">
+              ${urlPdf
+                ? 'Se guardó una copia del documento firmado.'
+                : 'La firma quedó registrada. El documento firmado estará disponible en breve.'}
+              Si necesitas ayuda, escribe a ${nombreEmpresa}
+              ${empresa.email ? `a <a href="mailto:${empresa.email}" style="color: ${acento};">${empresa.email}</a>` : ''}.
+            </p>`;
+
+  const pie = `
+            <p class="footer-text">
+              © ${new Date().getFullYear()} ${nombreEmpresa}. Todos los derechos reservados.
+            </p>`;
+
+  return plantillaFirma({ acento, cabecera, cuerpo, pie });
+}
+
+/**
  * Send signature confirmation email to both client and business owner
  */
 async function sendSignatureConfirmationEmail({
@@ -574,228 +664,45 @@ async function sendSignatureConfirmationEmail({
   empresa,
   signedPdfUrl,
   signedAt,
-  locale = 'en'
+  locale = 'es'
 }) {
   const acento = colorParaTextoBlanco(colorDeMarca(empresa));
-  const documentType = document.serie?.startsWith('F') ? 'Invoice' : 'Proposal';
-  const documentNumber = `${document.serie}-${document.numero}`;
-  const signedDate = new Date(signedAt).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+  const tipo = tipoDocumentoFirma(document);
+  const numero = `${document.serie}-${document.numero}`;
+  const nombreFirmante = signerName || signerEmail;
+  const fechaFirmado = fechaFirma(signedAt, true);
+
+  const datosComunes = { acento, empresa, tipo, numero, nombreFirmante, fechaFirmado, urlPdf: signedPdfUrl };
+  const htmlFirmante = htmlConfirmacionFirma({
+    ...datosComunes,
+    saludo: saludoFirma(signerName),
+    mensaje: 'Tu firma quedó registrada y el documento está completo.',
+  });
+  const htmlDueno = htmlConfirmacionFirma({
+    ...datosComunes,
+    saludo: 'Hola,',
+    mensaje: `<strong>${escaparHtml(nombreFirmante)}</strong> firmó la ${tipo} ${numero}.`,
   });
 
-  const htmlContent = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <style>
-          body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f3f4f6;
-          }
-          .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-          }
-          .header {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            padding: 40px 20px;
-            text-align: center;
-          }
-          .success-icon {
-            font-size: 48px;
-            margin-bottom: 10px;
-          }
-          .header-title {
-            color: #ffffff;
-            font-size: 24px;
-            font-weight: 600;
-            margin: 0;
-          }
-          .content {
-            padding: 40px 30px;
-          }
-          .greeting {
-            font-size: 18px;
-            color: #111827;
-            margin-bottom: 20px;
-            font-weight: 500;
-          }
-          .message {
-            color: #4b5563;
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 30px;
-          }
-          .success-box {
-            background-color: #d1fae5;
-            border: 2px solid #10b981;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 30px 0;
-            text-align: center;
-          }
-          .success-title {
-            color: #065f46;
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 10px;
-          }
-          .success-details {
-            color: #047857;
-            font-size: 14px;
-            margin: 5px 0;
-          }
-          .document-box {
-            background-color: #f9fafb;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 30px 0;
-          }
-          .document-label {
-            color: #6b7280;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-          }
-          .document-number {
-            color: #111827;
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 10px;
-          }
-          .download-button {
-            display: inline-block;
-            background: ${acento};
-            color: #ffffff !important;
-            text-decoration: none;
-            padding: 14px 32px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            text-align: center;
-            margin: 20px 0;
-            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
-          }
-          .footer {
-            background-color: #f9fafb;
-            padding: 30px;
-            text-align: center;
-            border-top: 1px solid #e5e7eb;
-          }
-          .footer-text {
-            color: #6b7280;
-            font-size: 13px;
-            line-height: 1.6;
-            margin: 5px 0;
-          }
-          @media only screen and (max-width: 600px) {
-            .content {
-              padding: 30px 20px;
-            }
-            .header {
-              padding: 30px 20px;
-            }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <!-- Header -->
-          <div class="header">
-            <div class="success-icon">✅</div>
-            <h1 class="header-title">Document Signed Successfully</h1>
-          </div>
-
-          <!-- Content -->
-          <div class="content">
-            <p class="greeting">Hello ${signerName || 'there'},</p>
-            
-            <p class="message">
-              Your signature has been successfully recorded and the document has been completed.
-            </p>
-
-            <!-- Success Box -->
-            <div class="success-box">
-              <div class="success-title">Signature Confirmed</div>
-              <div class="success-details">Signed on ${signedDate}</div>
-              <div class="success-details">Signer: ${signerName}</div>
-            </div>
-
-            <!-- Document Info -->
-            <div class="document-box">
-              <div class="document-label">${documentType}</div>
-              <div class="document-number">${documentNumber}</div>
-            </div>
-
-            ${signedPdfUrl ? `
-              <div style="text-align: center;">
-                <a href="${signedPdfUrl}" class="download-button">
-                  📄 Download Signed Document
-                </a>
-              </div>
-            ` : ''}
-
-            <p class="message" style="margin-top: 30px;">
-              ${signedPdfUrl 
-                ? 'A copy of the signed document has been saved for your records.' 
-                : 'Your signature has been recorded successfully. The signed document will be available shortly.'}
-              If you need any assistance, please contact ${empresa.nombre} 
-              ${empresa.email ? `at <a href="mailto:${empresa.email}" style="color: #374151;">${empresa.email}</a>` : ''}.
-            </p>
-          </div>
-
-          <!-- Footer -->
-          <div class="footer">
-            <p class="footer-text">
-              This is a legally binding electronic signature compliant with the ESIGN Act and UETA.
-            </p>
-            <p class="footer-text" style="margin-top: 15px;">
-              © ${new Date().getFullYear()} ${empresa.nombre}. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </body>
-    </html>
-  `;
-
   try {
-    // Send to signer
+    // Al firmante
     const signerResult = await resend.emails.send({
       from: `${fromName} <${fromEmail}>`,
       to: signerEmail,
-      subject: `Confirmation: ${documentType} ${documentNumber} Signed`,
-      html: htmlContent,
+      subject: `Confirmación: firmaste la ${tipo} ${numero}`,
+      html: htmlFirmante,
       replyTo: empresa.email || undefined,
     });
 
     console.log('Signature confirmation email sent to signer:', signerResult);
 
-    // Send notification to business owner
+    // Aviso al dueño
     if (empresa.email) {
-      const ownerHtml = htmlContent.replace(
-        `Hello ${signerName || 'there'},`,
-        `Hello,`
-      ).replace(
-        'Your signature has been successfully recorded and the document has been completed.',
-        `<strong>${signerName}</strong> has signed ${documentType} ${documentNumber}.`
-      );
-
       const ownerResult = await resend.emails.send({
         from: `${fromName} <${fromEmail}>`,
         to: empresa.email,
-        subject: `Signed: ${documentType} ${documentNumber} by ${signerName}`,
-        html: ownerHtml,
+        subject: `Firmado: ${tipo} ${numero} por ${nombreFirmante}`,
+        html: htmlDueno,
       });
 
       console.log('Signature notification sent to owner:', ownerResult);
@@ -816,7 +723,7 @@ async function sendSignatureConfirmationEmail({
  * @param {string} options.locale - Language locale (es or en)
  * @returns {Promise<Object>} - Resend API response
  */
-async function sendInvoiceCreationEmail({ factura, empresa, locale = 'en' }) {
+async function sendInvoiceCreationEmail({ factura, empresa, locale = 'es' }) {
   const t = getTranslations(locale);
   const acento = colorParaTextoBlanco(colorDeMarca(empresa));
   
@@ -907,7 +814,7 @@ async function sendInvoiceCreationEmail({ factura, empresa, locale = 'en' }) {
  * @param {string} options.locale - Language locale (es or en)
  * @returns {Promise<Object>} - Resend API response
  */
-async function sendPaymentConfirmationEmail({ pago, factura, empresa, locale = 'en' }) {
+async function sendPaymentConfirmationEmail({ pago, factura, empresa, locale = 'es' }) {
   const t = getTranslations(locale);
   
   const clientEmail = factura.cliente?.email;
