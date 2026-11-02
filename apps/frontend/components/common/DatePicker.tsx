@@ -7,6 +7,7 @@ import { es } from 'date-fns/locale';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
+import { Button } from './Button';
 
 interface DatePickerProps {
   value?: Date | null;
@@ -263,26 +264,30 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
 
               {/* Quick actions */}
               <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex gap-2">
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => {
                     onChange(new Date());
                     setIsOpen(false);
                   }}
-                  className="flex-1 text-sm text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 py-1 rounded"
+                  className="flex-1 text-primary-600 dark:text-primary-400"
                 >
                   Hoy
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={() => {
                     onChange(null);
                     setIsOpen(false);
                   }}
-                  className="flex-1 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 py-1 rounded"
+                  className="flex-1 text-gray-600 dark:text-gray-400"
                 >
                   Limpiar
-                </button>
+                </Button>
               </div>
             </div>
           </>,

@@ -1,6 +1,8 @@
 {
   "common": {
     "appName": "Sistema de Facturación",
+    "openMenu": "Abrir menú",
+    "toggleTheme": "Cambiar tema",
     "loading": "Cargando...",
     "save": "Guardar",
     "saving": "Guardando...",

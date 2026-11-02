@@ -4,6 +4,7 @@ import { ReactNode, useState, useMemo } from 'react';
 import { ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
+import { Button } from './Button';
 import { EmptySearch } from './EmptyState';
 import { Skeleton } from './LoadingSpinner';
 
@@ -227,30 +228,22 @@ export function DataTable<T>({
             {t('page')} {currentPage} {t('of')} {totalPages}
           </span>
           <div className="flex gap-2">
-            <button
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => onPageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className={cn(
-                'px-3 py-1 text-sm rounded border',
-                currentPage === 1
-                  ? 'border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-600 cursor-not-allowed'
-                  : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-              )}
             >
               {t('previous')}
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={() => onPageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className={cn(
-                'px-3 py-1 text-sm rounded border',
-                currentPage === totalPages
-                  ? 'border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-600 cursor-not-allowed'
-                  : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-              )}
             >
               {t('next')}
-            </button>
+            </Button>
           </div>
         </div>
       )}

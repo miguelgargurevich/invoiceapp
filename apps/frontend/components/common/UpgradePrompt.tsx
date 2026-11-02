@@ -36,7 +36,7 @@ export function UpgradePrompt({
 
   if (variant === 'banner') {
     return (
-      <div className={`bg-gradient-to-r from-primary-500 to-primary-600 rounded-lg p-4 text-white ${className}`}>
+      <div className={`bg-primary-600 rounded-lg p-4 text-white ${className}`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Sparkles className="w-5 h-5" />
@@ -96,12 +96,14 @@ export function UpgradePrompt({
         {t('featureNotAvailable', { feature })}
         {planSugerido && <> · {t('disponibleDesde', { plan: planSugerido.nombre })}</>}
       </span>
-      <button
+      <Button
         onClick={handleUpgrade}
-        className="ml-auto text-amber-600 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-200 font-medium whitespace-nowrap"
+        variant="ghost"
+        size="sm"
+        className="ml-auto whitespace-nowrap font-medium text-amber-600 hover:bg-transparent hover:text-amber-800 dark:text-amber-400 dark:hover:bg-transparent dark:hover:text-amber-200"
       >
         {t('upgrade')} →
-      </button>
+      </Button>
     </div>
   );
 }
@@ -137,7 +139,7 @@ export function UpgradeModal({
     <Modal isOpen={isOpen} onClose={onClose} title="">
       <div className="text-center px-2 pb-2">
         {/* Icon */}
-        <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center shadow-lg">
+        <div className="w-20 h-20 mx-auto mb-6 bg-primary-600 rounded-2xl flex items-center justify-center shadow-lg">
           <Crown className="w-10 h-10 text-white" />
         </div>
 
@@ -152,7 +154,7 @@ export function UpgradeModal({
 
         {/* Plan Card: el plan más barato que incluye la función */}
         {plan && (
-          <div className="bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl p-1 mb-6">
+          <div className="bg-primary-100 dark:bg-primary-900/40 rounded-xl p-1 mb-6">
             <div className="bg-white dark:bg-gray-900 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <span className="font-bold text-lg text-gray-900 dark:text-white">Plan {plan.nombre}</span>
@@ -178,17 +180,18 @@ export function UpgradeModal({
         <div className="space-y-3">
           <Button
             onClick={handleUpgrade}
-            className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:opacity-90 text-white font-semibold py-3"
+            className="w-full font-semibold py-3"
           >
             <Sparkles className="w-5 h-5 mr-2" />
             {t('upgradeNow')}
           </Button>
-          <button
+          <Button
+            variant="ghost"
             onClick={onClose}
-            className="w-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm py-2"
+            className="w-full text-gray-500 dark:text-gray-400 text-sm py-2"
           >
             {t('maybeLater')}
-          </button>
+          </Button>
         </div>
       </div>
     </Modal>
@@ -220,12 +223,14 @@ export function UsageLimitWarning({ resource, used, limit, className = '' }: Usa
             ? t('limitReached', { resource })
             : t('nearLimit', { resource, used, limit })}
         </span>
-        <button
+        <Button
           onClick={() => router.push(`/${locale}/configuracion?tab=suscripcion`)}
-          className={`font-medium whitespace-nowrap ${isAtLimit ? 'text-red-600 dark:text-red-400 hover:text-red-800' : 'text-amber-600 dark:text-amber-400 hover:text-amber-800'}`}
+          variant="ghost"
+          size="sm"
+          className={`font-medium whitespace-nowrap hover:bg-transparent ${isAtLimit ? 'text-red-600 dark:text-red-400 hover:text-red-800' : 'text-amber-600 dark:text-amber-400 hover:text-amber-800'}`}
         >
           {t('upgrade')} →
-        </button>
+        </Button>
       </div>
       {!isAtLimit && (
         <div className="mt-2 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
@@ -289,17 +294,18 @@ export function UsageLimitModal({ isOpen, onClose, resource, used, limit }: Usag
         <div className="space-y-3">
           <Button
             onClick={handleUpgrade}
-            className="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:opacity-90 text-white font-semibold py-3"
+            className="w-full font-semibold py-3"
           >
             <Sparkles className="w-5 h-5 mr-2" />
             {t('upgradeForMore')}
           </Button>
-          <button
+          <Button
+            variant="ghost"
             onClick={onClose}
-            className="w-full text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-sm py-2"
+            className="w-full text-gray-500 dark:text-gray-400 text-sm py-2"
           >
             {t('maybeLater')}
-          </button>
+          </Button>
         </div>
       </div>
     </Modal>
@@ -333,7 +339,7 @@ export function PlanBadge({ funcion, className = '' }: { funcion: FuncionPlan; c
   const plan = planMasBarato(funcion);
   if (!plan) return null;
   return (
-    <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-gradient-to-r from-primary-500 to-primary-600 text-white ${className}`}>
+    <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-xs font-bold bg-primary-600 text-white ${className}`}>
       {plan.nombre.toUpperCase()}
     </span>
   );

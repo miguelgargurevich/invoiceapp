@@ -29,11 +29,11 @@ const sizeClasses = {
 };
 
 const iconColorClasses = {
-  primary: 'bg-gradient-to-br from-gray-800 to-gray-900 dark:from-gray-700 dark:to-gray-800 text-white',
-  success: 'bg-gradient-to-br from-emerald-500 to-green-600 text-white',
-  warning: 'bg-gradient-to-br from-amber-500 to-orange-600 text-white',
-  danger: 'bg-gradient-to-br from-red-500 to-rose-600 text-white',
-  info: 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white',
+  primary: 'bg-gray-800 dark:bg-gray-700 text-white',
+  success: 'bg-emerald-600 text-white',
+  warning: 'bg-amber-600 text-white',
+  danger: 'bg-red-600 text-white',
+  info: 'bg-blue-600 text-white',
 };
 
 export function Modal({
@@ -94,7 +94,7 @@ export function Modal({
             >
               {/* Header - Modern design with icon support */}
               {title && (
-                <div className="relative flex items-start gap-4 px-6 py-5 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-br from-gray-50/80 via-white to-gray-50/50 dark:from-gray-800/80 dark:via-gray-900 dark:to-gray-800/50">
+                <div className="relative flex items-start gap-4 px-6 py-5 border-b border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900">
                   {/* Icon */}
                   {Icon && (
                     <motion.div 
@@ -144,7 +144,7 @@ export function Modal({
 
               {/* Footer */}
               {footer && (
-                <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gradient-to-br from-gray-50/80 to-white dark:from-gray-800/50 dark:to-gray-900 rounded-b-2xl">
+                <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 rounded-b-2xl">
                   {footer}
                 </div>
               )}

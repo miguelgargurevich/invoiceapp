@@ -167,7 +167,7 @@ export function ActivityTimeline({ events, currentStatus, compact = false, displ
     <div className="space-y-4">
       {/* Current Status Banner */}
       {lastCompletedIndex >= 0 && lastCompletedIndex < displayEvents.length - 1 && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-3 border border-blue-200 dark:border-blue-800">
+        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 border border-blue-200 dark:border-blue-800">
           <div className="flex items-center justify-between gap-2 text-sm">
             <div className="flex items-center gap-2">
               <div className={`w-2 h-2 rounded-full ${EVENT_CONFIG[displayEvents[lastCompletedIndex].type].activeColor} animate-pulse`} />

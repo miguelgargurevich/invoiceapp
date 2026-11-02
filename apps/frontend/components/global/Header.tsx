@@ -13,6 +13,7 @@ import {
   Settings,
   ChevronDown,
 } from 'lucide-react';
+import { Button } from '@/components/common';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
@@ -63,12 +64,14 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
       <div className="flex items-center justify-between h-full px-4">
         {/* Izquierda: Menu hamburguesa y búsqueda */}
         <div className="flex items-center gap-4">
-          <button
+          <Button
+            variant="ghost"
             onClick={onMenuClick}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 md:hidden"
+            aria-label={t('openMenu')}
+            className="p-2 md:hidden"
           >
             <Menu className="w-5 h-5" />
-          </button>
+          </Button>
 
           {/* Búsqueda / Command Palette trigger */}
           <button
@@ -86,19 +89,21 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
         {/* Derecha: Acciones */}
         <div className="flex items-center gap-2">
           {/* Botón búsqueda móvil */}
-          <button
+          <Button
+            variant="ghost"
             onClick={onCommandPaletteOpen}
-            className="sm:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            aria-label={t('search')}
+            className="sm:hidden p-2"
           >
             <Search className="w-5 h-5" />
-          </button>
+          </Button>
 
           {/* Notificaciones - Reemplazado por Plan Badge */}
           {subscription && (
             <button
               onClick={() => router.push(`/${currentLocale}/configuracion?tab=suscripcion`)}
               className={cn(
-                'px-3 py-1.5 rounded-full text-xs font-semibold transition-all hover:scale-105',
+                'px-3 py-1.5 rounded-full text-xs font-semibold transition-all',
                 getPlanBadgeStyle(subscription.plan?.name || 'free')
               )}
             >
@@ -107,16 +112,18 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
           )}
 
           {/* Theme toggle */}
-          <button
+          <Button
+            variant="ghost"
             onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            aria-label={t('toggleTheme')}
+            className="p-2"
           >
             {resolvedTheme === 'dark' ? (
               <Sun className="w-5 h-5" />
             ) : (
               <Moon className="w-5 h-5" />
             )}
-          </button>
+          </Button>
 
           {/* User menu */}
           <div className="relative">
