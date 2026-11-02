@@ -235,18 +235,24 @@ export function WorkLogTimeline({ documentType, documentId }: WorkLogTimelinePro
                   </div>
                   
                   <div className="flex gap-1">
-                    <button
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleEdit(log)}
-                      className="p-1 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded"
+                      className="p-1 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20"
+                      aria-label="Editar"
                     >
                       <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
                       onClick={() => handleDelete(log.id)}
-                      className="p-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                      className="p-1"
+                      aria-label="Eliminar"
                     >
                       <Trash2 className="w-4 h-4" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
                 
