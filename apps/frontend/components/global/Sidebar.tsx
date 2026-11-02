@@ -128,8 +128,13 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
               className="flex items-center gap-2 w-full min-w-0 rounded-lg text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
             >
               <CompanyLogo />
-              <span className={cn('truncate text-sm font-semibold text-gray-900 dark:text-gray-100', isCollapsed && 'md:hidden')}>
-                {empresa?.nombre || 'Facturo'}
+              <span className={cn('flex min-w-0 flex-col leading-tight', isCollapsed && 'md:hidden')}>
+                <span className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  {empresa?.nombre || 'Facturo'}
+                </span>
+                {empresa?.ruc && (
+                  <span className="truncate text-[11px] tabular-nums text-gray-500 dark:text-gray-400">RUC {empresa.ruc}</span>
+                )}
               </span>
             </button>
           </div>
