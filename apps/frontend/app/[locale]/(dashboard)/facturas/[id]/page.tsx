@@ -618,12 +618,12 @@ export default function FacturaDetailPage({
         }
         actions={
           <>
-            <Button variant="outline" className="h-12 text-base" onClick={() => setIsPrintPreviewOpen(true)}>
+            <Button variant="outline" onClick={() => setIsPrintPreviewOpen(true)}>
               <Printer className="w-5 h-5 mr-2" />
               {t('print')}
             </Button>
             {factura.proformaOrigenId && (
-              <Button variant="outline" size="sm" onClick={() => router.push(`/${locale}/proformas/${factura.proformaOrigenId}`)}>
+              <Button variant="outline" onClick={() => router.push(`/${locale}/proformas/${factura.proformaOrigenId}`)}>
                 <FileText className="w-4 h-4 mr-1" />
                 {t('viewProposal')}
               </Button>
@@ -685,13 +685,15 @@ export default function FacturaDetailPage({
                 {t('items')}
               </h2>
               {factura.estado !== 'ANULADA' && factura.estado !== 'PAGADA' && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-1.5"
                   onClick={handleOpenEditItems}
-                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                   title={t('editItems') || 'Editar ítems'}
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
-                </button>
+                </Button>
               )}
             </div>
             {/* Desktop table */}
@@ -793,48 +795,50 @@ export default function FacturaDetailPage({
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <Briefcase className="w-5 h-5" />
-                Job Information
+                {t('jobInformation')}
               </h2>
               {factura.estado !== 'ANULADA' && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-1.5"
                   onClick={handleOpenEditJobInfo}
-                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                   title="Editar información del trabajo"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
-                </button>
+                </Button>
               )}
             </div>
             {(factura.jobName || factura.jobLocation || factura.workDescription || factura.paymentTerms) ? (
               <div className="space-y-3">
                 {factura.jobName && (
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Job Name</p>
+                    <p className="text-sm text-gray-500 mb-1">{t('jobName')}</p>
                     <p className="text-gray-900 dark:text-gray-100">{factura.jobName}</p>
                   </div>
                 )}
                 {factura.jobLocation && (
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Job Location</p>
+                    <p className="text-sm text-gray-500 mb-1">{t('jobLocation')}</p>
                     <p className="text-gray-900 dark:text-gray-100">{factura.jobLocation}</p>
                   </div>
                 )}
                 {factura.workDescription && (
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Work Description</p>
+                    <p className="text-sm text-gray-500 mb-1">{t('workDescription')}</p>
                     <p className="text-gray-900 dark:text-gray-100 whitespace-pre-wrap">{factura.workDescription}</p>
                   </div>
                 )}
                 {factura.paymentTerms && (
                   <div>
-                    <p className="text-sm text-gray-500 mb-1">Payment Terms</p>
+                    <p className="text-sm text-gray-500 mb-1">{t('paymentTerms')}</p>
                     <p className="text-gray-900 dark:text-gray-100 whitespace-pre-wrap">{factura.paymentTerms}</p>
                   </div>
                 )}
               </div>
             ) : (
               <p className="text-gray-400 dark:text-gray-500 italic text-sm">
-                No job information set. Click the edit icon to add details.
+                {t('noJobInfo')}
               </p>
             )}
           </Card>
@@ -847,13 +851,15 @@ export default function FacturaDetailPage({
                 {t('observations')}
               </h2>
               {factura.estado !== 'ANULADA' && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-1.5"
                   onClick={handleOpenEditObservations}
-                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                   title="Editar observaciones"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
-                </button>
+                </Button>
               )}
             </div>
             {factura.observaciones ? (
@@ -874,25 +880,27 @@ export default function FacturaDetailPage({
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <DollarSign className="w-5 h-5" />
-                Payment Summary
+                {t('paymentSummary')}
               </h2>
               {factura.estado !== 'ANULADA' && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-1.5"
                   onClick={handleOpenEditPaymentSummary}
-                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                   title="Editar resumen de pagos"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
-                </button>
+                </Button>
               )}
             </div>
             <div className="space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Total Materials</span>
+                <span className="text-gray-500">{t('totalMaterials')}</span>
                 <span>{formatCurrency(Number(factura.totalMaterials) || 0)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Total Labor</span>
+                <span className="text-gray-500">{t('totalLabor')}</span>
                 <span>{formatCurrency(
                   Number(factura.totalMaterials || 0) === 0 && Number(factura.totalLabor || 0) === 0
                     ? factura.subtotal
@@ -900,7 +908,7 @@ export default function FacturaDetailPage({
                 )}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Subtotal</span>
+                <span className="text-gray-500">{t('subtotal')}</span>
                 <span>{formatCurrency(
                   Number(factura.totalMaterials || 0) === 0 && Number(factura.totalLabor || 0) === 0
                     ? factura.subtotal
@@ -916,7 +924,7 @@ export default function FacturaDetailPage({
               </div>
               <div className="border-t border-gray-200 dark:border-gray-700 pt-2">
                 <div className="flex justify-between">
-                  <span className="font-semibold">Total Amount</span>
+                  <span className="font-semibold">{t('totalAmount')}</span>
                   <span className="text-xl font-bold text-primary-600">
                     {formatCurrency(factura.total)}
                   </span>
@@ -936,23 +944,25 @@ export default function FacturaDetailPage({
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                 <HardHat className="w-5 h-5" />
-                Order Type
+                {t('orderType')}
               </h2>
               {factura.estado !== 'ANULADA' && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-1.5"
                   onClick={handleOpenEditOrderType}
-                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                   title="Editar tipo de orden"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
-                </button>
+                </Button>
               )}
             </div>
             {factura.orderType ? (
               <div className="flex items-center gap-2">
                 <div className="px-3 py-1.5 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
                   <span className="text-sm font-medium text-primary-700 dark:text-primary-300">
-                    {factura.orderType === 'day_work' && 'Day Work'}
+                    {factura.orderType === 'day_work' && t('dayWork')}
                     {factura.orderType === 'contract' && 'Contract'}
                     {factura.orderType === 'extra' && 'Extra'}
                   </span>
@@ -960,7 +970,7 @@ export default function FacturaDetailPage({
               </div>
             ) : (
               <p className="text-gray-400 dark:text-gray-500 italic text-sm">
-                No order type set
+                {t('noOrderType')}
               </p>
             )}
           </Card>
@@ -973,13 +983,15 @@ export default function FacturaDetailPage({
                 {t('dates')}
               </h2>
               {factura.estado !== 'ANULADA' && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="p-1.5"
                   onClick={handleOpenEditDates}
-                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors"
                   title="Editar fechas"
                 >
                   <Edit2 className="w-4 h-4 text-gray-500" />
-                </button>
+                </Button>
               )}
             </div>
             <div className="space-y-3">
@@ -1053,14 +1065,14 @@ export default function FacturaDetailPage({
           {factura && (
             <div className={`rounded-xl p-4 border ${
               factura.saldoPendiente <= 0 
-                ? 'bg-gradient-to-br from-green-50 to-emerald-50/50 dark:from-green-900/20 dark:to-emerald-900/10 border-green-200 dark:border-green-800'
-                : 'bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-blue-900/20 dark:to-indigo-900/10 border-blue-200 dark:border-blue-800'
+                ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700'
             }`}>
               <div className="flex justify-between items-center">
-                <span className={`text-sm font-medium ${factura.saldoPendiente <= 0 ? 'text-green-700 dark:text-green-300' : 'text-blue-700 dark:text-blue-300'}`}>
+                <span className={`text-sm font-medium ${factura.saldoPendiente <= 0 ? 'text-green-700 dark:text-green-300' : 'text-slate-700 dark:text-slate-300'}`}>
                   {t('pendingBalance') || 'Pending Balance'}
                 </span>
-                <span className={`text-xl font-bold ${factura.saldoPendiente <= 0 ? 'text-green-900 dark:text-green-100' : 'text-blue-900 dark:text-blue-100'}`}>
+                <span className={`text-xl font-bold ${factura.saldoPendiente <= 0 ? 'text-green-900 dark:text-green-100' : 'text-slate-900 dark:text-slate-100'}`}>
                   {formatCurrency(factura.saldoPendiente)}
                 </span>
               </div>
@@ -1079,7 +1091,7 @@ export default function FacturaDetailPage({
           
           {factura && factura.saldoPendiente <= 0 ? (
             <div className="text-center py-6">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/20 flex items-center justify-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                 <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
               </div>
               <p className="text-green-600 dark:text-green-400 font-semibold text-lg">
@@ -1089,7 +1101,7 @@ export default function FacturaDetailPage({
           ) : (
             <>
               {/* Amount Field */}
-              <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   {t('amount')} <span className="text-red-500">*</span>
                 </label>
@@ -1107,13 +1119,15 @@ export default function FacturaDetailPage({
                     }`}
                     required
                   />
-                  <button
+                  <Button
                     type="button"
+                    variant="outline"
+                    size="sm"
                     onClick={() => setPaymentData({ ...paymentData, monto: factura?.saldoPendiente?.toFixed(2) || '0' })}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs bg-gray-800 dark:bg-gray-600 hover:bg-gray-900 dark:hover:bg-gray-500 px-3 py-1.5 rounded-lg text-white font-medium transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
                   >
-                    {t('payFull') || 'Pay Full'}
-                  </button>
+                    {t('payFull')}
+                  </Button>
                 </div>
                 {paymentData.monto && Math.round(parseFloat(paymentData.monto) * 100) > Math.round((factura?.saldoPendiente || 0) * 100) && (
                   <p className="mt-2 text-xs text-red-500 font-medium">
@@ -1123,7 +1137,7 @@ export default function FacturaDetailPage({
               </div>
               
               {/* Payment Method Cards */}
-              <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                   {t('paymentMethod')}
                 </label>
@@ -1152,7 +1166,7 @@ export default function FacturaDetailPage({
               </div>
               
               {/* Reference & Notes */}
-              <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800 space-y-4">
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-gray-100 dark:border-gray-800 space-y-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                     {t('reference')}
@@ -1185,7 +1199,7 @@ export default function FacturaDetailPage({
             <Button 
               variant="outline" 
               onClick={() => setIsPaymentModalOpen(false)}
-              className="flex-1 h-11"
+              className="flex-1"
             >
               {factura && factura.saldoPendiente <= 0 ? (t('close') || 'Cerrar') : t('cancel')}
             </Button>
@@ -1193,7 +1207,7 @@ export default function FacturaDetailPage({
               <Button 
                 onClick={handleRegisterPayment} 
                 disabled={savingPayment}
-                className="flex-1 h-11 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
+                className="flex-1"
               >
                 {savingPayment ? (
                   <>
@@ -1252,7 +1266,7 @@ export default function FacturaDetailPage({
       >
         <div className="space-y-5">
           {/* Date Fields */}
-          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -1284,14 +1298,14 @@ export default function FacturaDetailPage({
               variant="outline"
               onClick={() => setIsEditDatesOpen(false)}
               disabled={editingDates}
-              className="flex-1 h-11"
+              className="flex-1"
             >
               {t('cancel')}
             </Button>
             <Button
               onClick={handleSaveDates}
               disabled={editingDates || !fechaEmisionEdit || !fechaVencimientoEdit}
-              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+              className="flex-1"
             >
               {editingDates ? (
                 <>
@@ -1323,7 +1337,7 @@ export default function FacturaDetailPage({
       >
         <div className="space-y-5">
           {/* Textarea Field */}
-          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
               {t('observations')}
             </label>
@@ -1343,14 +1357,14 @@ export default function FacturaDetailPage({
               variant="outline"
               onClick={() => setIsEditObservationsOpen(false)}
               disabled={editingObservations}
-              className="flex-1 h-11"
+              className="flex-1"
             >
               {t('cancel')}
             </Button>
             <Button
               onClick={handleSaveObservations}
               disabled={editingObservations}
-              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+              className="flex-1"
             >
               {editingObservations ? (
                 <>
@@ -1382,11 +1396,11 @@ export default function FacturaDetailPage({
       >
         <div className="space-y-5">
           {/* Job Fields */}
-          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Work Description
+                  {t('workDescription')}
                 </label>
                 <textarea
                   value={jobInfoEdit.workDescription}
@@ -1400,7 +1414,7 @@ export default function FacturaDetailPage({
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Payment Terms
+                  {t('paymentTerms')}
                 </label>
                 <textarea
                   value={jobInfoEdit.paymentTerms}
@@ -1434,7 +1448,7 @@ export default function FacturaDetailPage({
                 <div className="space-y-4 pt-2 animate-in fade-in slide-in-from-top-2 duration-200">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Job Name
+                      {t('jobName')}
                     </label>
                     <input
                       type="text"
@@ -1448,7 +1462,7 @@ export default function FacturaDetailPage({
 
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Job Location
+                      {t('jobLocation')}
                     </label>
                     <input
                       type="text"
@@ -1470,14 +1484,14 @@ export default function FacturaDetailPage({
               variant="outline"
               onClick={() => setIsEditJobInfoOpen(false)}
               disabled={editingJobInfo}
-              className="flex-1 h-11"
+              className="flex-1"
             >
               {t('cancel')}
             </Button>
             <Button
               onClick={handleSaveJobInfo}
               disabled={editingJobInfo}
-              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+              className="flex-1"
             >
               {editingJobInfo ? (
                 <>
@@ -1509,9 +1523,9 @@ export default function FacturaDetailPage({
       >
         <div className="space-y-5">
           {/* Radio Options */}
-          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-              Select order type
+              {t('selectOrderType')}
             </label>
             <div className="space-y-2">
               <label className={`flex items-center gap-3 p-4 border-2 rounded-xl cursor-pointer transition-all ${orderTypeEdit === 'day_work' ? 'border-gray-800 dark:border-gray-600 bg-gray-50 dark:bg-gray-800' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50/50 dark:hover:bg-gray-800/50'}`}>
@@ -1525,7 +1539,7 @@ export default function FacturaDetailPage({
                   className="w-4 h-4 text-gray-800 dark:text-gray-300 border-gray-300 focus:ring-gray-800"
                 />
                 <div>
-                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">Day Work</span>
+                  <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t('dayWork')}</span>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Trabajo por hora o por día</p>
                 </div>
               </label>
@@ -1583,14 +1597,14 @@ export default function FacturaDetailPage({
               variant="outline"
               onClick={() => setIsEditOrderTypeOpen(false)}
               disabled={editingOrderType}
-              className="flex-1 h-11"
+              className="flex-1"
             >
               {t('cancel')}
             </Button>
             <Button
               onClick={handleSaveOrderType}
               disabled={editingOrderType}
-              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+              className="flex-1"
             >
               {editingOrderType ? (
                 <>
@@ -1626,7 +1640,7 @@ export default function FacturaDetailPage({
             {itemsEdit.map((item, index) => (
               <div 
                 key={item.id} 
-                className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-4 border border-gray-100 dark:border-gray-800"
+                className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-gray-100 dark:border-gray-800"
               >
                 <div className="flex items-start gap-3">
                   <div className="flex-1 space-y-3">
@@ -1681,31 +1695,34 @@ export default function FacturaDetailPage({
                       </div>
                     </div>
                   </div>
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => handleRemoveItem(index)}
                     disabled={editingItems || itemsEdit.length <= 1}
-                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20"
                     title={t('delete')}
                   >
                     <Trash2 className="w-4 h-4" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}
           </div>
 
           {/* Add Item Button */}
-          <button
+          <Button
+            variant="outline"
             onClick={handleAddItem}
             disabled={editingItems}
-            className="w-full py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-gray-500 dark:text-gray-400 hover:border-gray-400 dark:hover:border-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors flex items-center justify-center gap-2"
+            className="w-full py-3 border-dashed"
+            icon={<Plus className="w-4 h-4" />}
           >
-            <Plus className="w-4 h-4" />
-            {t('addItem') || 'Add Item'}
-          </button>
+            {t('addItem')}
+          </Button>
 
           {/* Total */}
-          <div className="bg-gradient-to-br from-primary-50 to-primary-50/50 dark:from-primary-900/20 dark:to-primary-900/10 rounded-xl p-4 border border-primary-200 dark:border-primary-800">
+          <div className="bg-primary-50 dark:bg-primary-900/20 rounded-xl p-4 border border-primary-200 dark:border-primary-800">
             <div className="flex items-center justify-between text-lg font-semibold">
               <span className="text-gray-700 dark:text-gray-300">{t('total')}</span>
               <span className="text-gray-900 dark:text-gray-100">
@@ -1720,14 +1737,14 @@ export default function FacturaDetailPage({
               variant="outline"
               onClick={() => setIsEditItemsOpen(false)}
               disabled={editingItems}
-              className="flex-1 h-11"
+              className="flex-1"
             >
               {t('cancel')}
             </Button>
             <Button
               onClick={handleSaveItems}
               disabled={editingItems || itemsEdit.length === 0}
-              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+              className="flex-1"
             >
               {editingItems ? (
                 <>
@@ -1759,11 +1776,11 @@ export default function FacturaDetailPage({
       >
         <div className="space-y-5">
           {/* Input Fields */}
-          <div className="bg-gradient-to-br from-gray-50 to-slate-50/50 dark:from-gray-800/50 dark:to-slate-800/30 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
+          <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-gray-100 dark:border-gray-800">
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Total Materials
+                  {t('totalMaterials')}
                 </label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
@@ -1780,7 +1797,7 @@ export default function FacturaDetailPage({
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Total Labor
+                  {t('totalLabor')}
                 </label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">$</span>
@@ -1798,22 +1815,22 @@ export default function FacturaDetailPage({
           </div>
 
           {/* Totals Summary */}
-          <div className="bg-gradient-to-br from-primary-50 to-primary-50/50 dark:from-primary-900/20 dark:to-primary-900/10 rounded-xl p-5 border border-primary-100 dark:border-primary-900/30">
+          <div className="bg-primary-50 dark:bg-primary-900/20 rounded-xl p-5 border border-primary-100 dark:border-primary-900/30">
             <div className="space-y-3">
               <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
+                <span className="text-gray-600 dark:text-gray-400">{t('subtotal')}</span>
                 <span className="font-medium text-gray-900 dark:text-gray-100">{formatCurrency(Number(totalMaterialsEdit) + Number(totalLaborEdit))}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span className="text-gray-600 dark:text-gray-400">
-                  Tax {empresa?.taxRate && Number(empresa.taxRate) > 0 ? `(${empresa.taxRate}%)` : ''}
+                  {t('tax')} {empresa?.taxRate && Number(empresa.taxRate) > 0 ? `(${empresa.taxRate}%)` : ''}
                 </span>
                 <span className="font-medium text-gray-900 dark:text-gray-100">
                   {formatCurrency((Number(totalMaterialsEdit) + Number(totalLaborEdit)) * (empresa?.taxRate ? parseFloat(empresa.taxRate.toString()) / 100 : 0))}
                 </span>
               </div>
               <div className="pt-3 border-t border-primary-200 dark:border-primary-800/50 flex justify-between items-center">
-                <span className="font-semibold text-gray-900 dark:text-gray-100">Total Amount</span>
+                <span className="font-semibold text-gray-900 dark:text-gray-100">{t('totalAmount')}</span>
                 <span className="text-lg font-bold text-primary-700 dark:text-primary-400">
                   {formatCurrency(
                     (Number(totalMaterialsEdit) + Number(totalLaborEdit)) * 
@@ -1830,14 +1847,14 @@ export default function FacturaDetailPage({
               variant="outline"
               onClick={() => setIsEditPaymentSummaryOpen(false)}
               disabled={editingPaymentSummary}
-              className="flex-1 h-11"
+              className="flex-1"
             >
               {t('cancel')}
             </Button>
             <Button
               onClick={handleSavePaymentSummary}
               disabled={editingPaymentSummary}
-              className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+              className="flex-1"
             >
               {editingPaymentSummary ? (
                 <>
