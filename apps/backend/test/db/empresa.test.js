@@ -3,6 +3,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const express = require('express');
 const { prisma, limpiar } = require('./ayuda');
+const { sembrarPlanesPe } = require('./planes-ayuda');
 const { generateAccessToken } = require('../../src/middleware/auth');
 const empresaRouter = require('../../src/routes/empresa');
 
@@ -76,4 +77,82 @@ test('una empresa nueva sin datos de impuesto arranca con los de Perú', async (
   assert.equal(r.json.taxName, 'IGV');
   assert.equal(r.json.pais, 'PE');
   assert.equal(r.json.setupCompleted, false);
+});
+
+// ---- Color de marca (colorPrimario) ----
+
+// Empresa de Perú con la suscripción del plan indicado (la crea la ruta; aquí se fija el plan).
+async function empresaConPlan(email, slug) {
+  const planes = await sembrarPlanesPe();
+  const u = await usuario(email);
+  const r = await guardar(u, { nombre: 'Color SAC', setupCompleted: true });
+  assert.equal(r.status, 200);
+  await prisma.subscription.create({ data: { empresaId: r.json.id, planId: planes[slug].id, status: 'ACTIVE' } });
+  return { u, empresaId: r.json.id };
+}
+const cambiarPlan = async (empresaId, slug) => {
+  const planes = await sembrarPlanesPe();
+  await prisma.subscription.update({ where: { empresaId }, data: { planId: planes[slug].id } });
+};
+const colorBD = async (empresaId) => (await prisma.empresa.findUnique({ where: { id: empresaId } })).colorPrimario;
+
+test('con plan Negocio guarda el color en mayúsculas', async () => {
+  const { u, empresaId } = await empresaConPlan('color-negocio@test.pe', 'pe-negocio');
+  const r = await guardar(u, { colorPrimario: '#1e40af' });
+  assert.equal(r.status, 200);
+  assert.equal(r.json.colorPrimario, '#1E40AF');
+  assert.equal(await colorBD(empresaId), '#1E40AF');
+});
+
+test('con plan Gratis poner un color responde 403 y no lo guarda', async () => {
+  const { u, empresaId } = await empresaConPlan('color-gratis@test.pe', 'pe-gratis');
+  const r = await guardar(u, { colorPrimario: '#1E40AF' });
+  assert.equal(r.status, 403);
+  assert.deepEqual(r.json, { error: 'Los colores de tu marca están disponibles desde el plan Negocio', code: 'FEATURE_NOT_AVAILABLE' });
+  assert.equal(await colorBD(empresaId), null);
+});
+
+test('un color que no es #RRGGBB responde 400 con el mensaje del contrato', async () => {
+  const { u } = await empresaConPlan('color-invalido@test.pe', 'pe-negocio');
+  for (const malo of ['rojo', '#FFF', '#1E40AG', '1E40AF', 12345, '']) {
+    const r = await guardar(u, { colorPrimario: malo });
+    assert.equal(r.status, 400, `debía rechazar ${JSON.stringify(malo)}`);
+    assert.equal(r.json.error, 'El color debe ser un código hexadecimal como #1E40AF');
+  }
+});
+
+test('null quita el color, incluso con plan Gratis', async () => {
+  const { u, empresaId } = await empresaConPlan('color-quitar@test.pe', 'pe-negocio');
+  assert.equal((await guardar(u, { colorPrimario: '#1E40AF' })).status, 200);
+  await cambiarPlan(empresaId, 'pe-gratis');
+  const r = await guardar(u, { colorPrimario: null });
+  assert.equal(r.status, 200);
+  assert.equal(r.json.colorPrimario, null);
+  assert.equal(await colorBD(empresaId), null);
+});
+
+test('reenviar el mismo color con plan Gratis no da 403 (un formulario que manda todos sus campos)', async () => {
+  const { u, empresaId } = await empresaConPlan('color-igual@test.pe', 'pe-negocio');
+  assert.equal((await guardar(u, { colorPrimario: '#1E40AF' })).status, 200);
+  await cambiarPlan(empresaId, 'pe-gratis');
+  const r = await guardar(u, { colorPrimario: '#1E40AF', direccion: 'Av. Igual 1' });
+  assert.equal(r.status, 200);
+  assert.equal(r.json.colorPrimario, '#1E40AF');
+});
+
+test('guardar otros campos no borra el color', async () => {
+  const { u } = await empresaConPlan('color-intacto@test.pe', 'pe-negocio');
+  assert.equal((await guardar(u, { colorPrimario: '#1E40AF' })).status, 200);
+  const r = await guardar(u, { direccion: 'Av. Otra 456', telefono: '+51 988 000 000' });
+  assert.equal(r.status, 200);
+  assert.equal(r.json.colorPrimario, '#1E40AF');
+  assert.equal(r.json.direccion, 'Av. Otra 456');
+});
+
+test('al crear la empresa el color se ignora (todavía no hay plan)', async () => {
+  await sembrarPlanesPe();
+  const u = await usuario('color-nueva@test.pe');
+  const r = await guardar(u, { nombre: 'Nueva color SAC', colorPrimario: '#1E40AF' });
+  assert.equal(r.status, 200);
+  assert.equal(r.json.colorPrimario, null);
 });

@@ -9,6 +9,8 @@ const { uploadFile, deleteFile, getStorageProvider } = require('../utils/storage
 // Configuración de multer para upload temporal
 const upload = multer({ storage: multer.memoryStorage() });
 
+const HEX_COLOR = /^#[0-9A-Fa-f]{6}$/;
+
 // GET /api/empresas/mi-empresa - Obtener empresa del usuario
 router.get('/mi-empresa', authenticateToken, async (req, res) => {
   try {
@@ -57,8 +59,29 @@ router.put('/mi-empresa', authenticateToken, async (req, res) => {
     // Campos que vienen en el cuerpo (frontend → esquema). Solo lo enviado se escribe: un formulario parcial
     // (p. ej. Configuración › Empresa) no debe pisar el resto con valores por defecto.
     const b = req.body;
+
+    // Color de marca: solo se escribe si viene en el cuerpo; null lo quita (siempre permitido).
+    let colorNuevo; // undefined = no enviado
+    if (b.colorPrimario !== undefined) {
+      if (b.colorPrimario !== null && !(typeof b.colorPrimario === 'string' && HEX_COLOR.test(b.colorPrimario))) {
+        return res.status(400).json({ error: 'El color debe ser un código hexadecimal como #1E40AF' });
+      }
+      colorNuevo = b.colorPrimario === null ? null : b.colorPrimario.toUpperCase();
+      // Poner un color distinto del guardado exige el plan con marca propia. Empresa nueva: aún no hay plan, se ignora.
+      if (existingEmpresa && colorNuevo !== null && colorNuevo !== existingEmpresa.colorPrimario) {
+        const sub = await getOrCreateSubscription(existingEmpresa.id);
+        if (!sub?.plan?.hasCustomBranding) {
+          return res.status(403).json({
+            error: 'Los colores de tu marca están disponibles desde el plan Negocio',
+            code: 'FEATURE_NOT_AVAILABLE',
+          });
+        }
+      }
+    }
+
     const moneda = b.currency || b.moneda;
     const empresaData = {
+      colorPrimario: colorNuevo,
       nombre: b.nombre || b.razonSocial,
       razonSocial: b.razonSocial || b.nombre,
       nombreComercial: b.nombreComercial,
@@ -82,6 +105,7 @@ router.put('/mi-empresa', authenticateToken, async (req, res) => {
 
     // Empresa nueva: valores por defecto de Perú (la app es para Perú) para lo que no venga.
     if (!existingEmpresa) {
+      delete empresaData.colorPrimario; // sin plan todavía: el color se pone después, con plan
       Object.assign(empresaData, {
         nombre: empresaData.nombre || 'Mi Empresa',
         razonSocial: empresaData.razonSocial || empresaData.nombre || 'Mi Empresa',
