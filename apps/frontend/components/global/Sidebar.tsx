@@ -64,7 +64,7 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
   const CompanyLogo = () => {
     if (empresa?.logoUrl && !imageError) {
       return (
-        <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-700">
+        <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 ring-1 ring-gray-200 dark:ring-0">
           <Image
             src={empresa.logoUrl}
             alt={empresa.nombre || 'Logo'}
@@ -77,9 +77,9 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
       );
     }
 
-    // Fallback: logo de Facturo
+    // Fallback: logo de Facturo (el ticket lleva su propio color, no necesita fondo)
     return (
-      <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
+      <div className="w-8 h-8 rounded-lg flex items-center justify-center">
         <IconoFacturo tamano={28} />
       </div>
     );
@@ -103,7 +103,9 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex flex-col bg-gray-900 text-white',
+          'fixed inset-y-0 left-0 z-50 flex flex-col',
+          'bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800',
+          'text-gray-600 dark:text-gray-400',
           'transform transition-all duration-300 ease-in-out',
           // Mobile
           isOpen ? 'translate-x-0' : '-translate-x-full',
@@ -114,18 +116,19 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
         )}
       >
         {/* Header del Sidebar */}
-        <div className="flex items-center h-16 px-4 border-b border-gray-800 relative">
+        <div className="flex items-center h-16 px-4 border-b border-gray-200 dark:border-gray-800 relative">
           <div className="flex items-center gap-2 flex-1 min-w-0">
             {/* SIEMPRE COLAPSADO - Solo mostrar logo */}
             <Link href="/" className="flex items-left justify-left w-full">
               <CompanyLogo />
             </Link>
           </div>
-          
+
           {/* Botón cerrar en móvil */}
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-800 md:hidden shrink-0 ml-2"
+            aria-label="Cerrar menú"
+            className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 md:hidden shrink-0 ml-2"
           >
             <X className="w-5 h-5" />
           </button>
@@ -163,13 +166,17 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
                   <Link
                     href={item.href}
                     onClick={onClose}
+                    aria-current={isActive ? 'page' : undefined}
+                    title={t(item.labelKey)}
                     className={cn(
-                      'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
-                      'hover:bg-gray-800',
-                      isActive && 'bg-primary-600 hover:bg-primary-700',
+                      'relative flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
+                      'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100',
+                      isActive && 'bg-primary-50 text-primary-700 hover:bg-primary-50 hover:text-primary-700 dark:bg-primary-900/30 dark:text-primary-300 dark:hover:bg-primary-900/30 dark:hover:text-primary-300',
                       'md:justify-center md:px-2' // SIEMPRE centrado en desktop
                     )}
                   >
+                    {/* Acento berenjena a la izquierda del ítem activo */}
+                    {isActive && <span aria-hidden="true" className="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-primary-600" />}
                     <item.icon className="w-5 h-5 shrink-0" />
                     {/* Texto solo visible en móvil */}
                     <span className="md:hidden truncate">{t(item.labelKey)}</span>
@@ -184,10 +191,11 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
                 <Link
                   href="/admin"
                   onClick={onClose}
+                  title={t('admin')}
                   className={cn(
                     'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
-                    'hover:bg-gray-800',
-                    currentPath === '/admin' && 'bg-red-600 hover:bg-red-700',
+                    'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100',
+                    currentPath === '/admin' && 'bg-red-50 text-red-700 hover:bg-red-50 hover:text-red-700 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/30',
                     'md:justify-center md:px-2'
                   )}
                 >
@@ -200,12 +208,13 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
         </nav>
 
         {/* Footer del Sidebar */}
-        <div className="p-4 border-t border-gray-800">
+        <div className="p-4 border-t border-gray-200 dark:border-gray-800">
           <Link
             href="/ayuda"
+            title={t('help')}
             className={cn(
               'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
-              'hover:bg-gray-800 text-gray-400',
+              'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100 text-gray-500 dark:text-gray-400',
               'md:justify-center md:px-2' // SIEMPRE centrado en desktop
             )}
           >
