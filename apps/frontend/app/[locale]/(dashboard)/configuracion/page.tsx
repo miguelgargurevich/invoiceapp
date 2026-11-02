@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Button, Card, Input, Textarea, LoadingSpinner } from '@/components/common';
+import { Button, Card, Input, Textarea, LoadingSpinner, PageHeader } from '@/components/common';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import SignatureCanvas from '@/components/signature/SignatureCanvas';
@@ -378,20 +378,7 @@ export default function ConfiguracionPage({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <div className="p-3 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-lg">
-          <Settings className="w-7 h-7 text-white" />
-        </div>
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
-            {t('title')}
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mt-1">
-            {t('subtitle')}
-          </p>
-        </div>
-      </div>
+      <PageHeader title={t('title')} subtitle={t('subtitle')} icon={Settings} />
 
       {/* Success message */}
       {message && (

@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
-import { Card, LoadingPage, Badge, Button, Input, ConfirmDialog } from '@/components/common';
+import { Card, LoadingPage, Badge, Button, Input, ConfirmDialog, PageHeader } from '@/components/common';
 import api from '@/lib/api';
 import { formatDate } from '@/lib/utils';
 
@@ -192,18 +192,11 @@ export default function AdminPage({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <Shield className="w-8 h-8 text-red-600" />
-            {t('title') || 'Admin Panel'}
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
-            {t('subtitle') || 'Administración y gestión del sistema'}
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title={t('title') || 'Admin Panel'}
+        subtitle={t('subtitle') || 'Administración y gestión del sistema'}
+        icon={Shield}
+      />
 
       {/* Navigation Tabs */}
       <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">

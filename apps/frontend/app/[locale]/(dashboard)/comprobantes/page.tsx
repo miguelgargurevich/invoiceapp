@@ -3,8 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { FileText, Plus } from 'lucide-react';
-import { Button, Card, DataTable, EmptyState, Select, type Column } from '@/components/common';
+import { FileText, Plus, Receipt } from 'lucide-react';
+import { Button, Card, DataTable, EmptyState, PageHeader, Select, type Column } from '@/components/common';
 import { EstadoSunatBadge } from '@/components/sunat/EstadoSunatBadge';
 import { useToast } from '@/contexts/ToastContext';
 import { sunatApi } from '@/lib/sunat/api';
@@ -41,13 +41,12 @@ export default function ComprobantesPage({ params: { locale } }: { params: { loc
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('titulo')}</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">{t('subtitulo')}</p>
-        </div>
-        <Button icon={<Plus className="w-4 h-4" />} onClick={() => router.push(`/${locale}/comprobantes/nuevo`)}>{t('nuevo')}</Button>
-      </div>
+      <PageHeader
+        title={t('titulo')}
+        subtitle={t('subtitulo')}
+        icon={Receipt}
+        actions={<Button icon={<Plus className="w-4 h-4" />} onClick={() => router.push(`/${locale}/comprobantes/nuevo`)}>{t('nuevo')}</Button>}
+      />
       <Card>
         <div className="flex flex-wrap gap-4 mb-4">
           <Select

@@ -13,6 +13,7 @@ import {
   Card,
   ConfirmDialog,
   EmptyProducts,
+  PageHeader,
   type Column,
 } from '@/components/common';
 import { useCurrency } from '@/lib/hooks/useCurrency';
@@ -245,29 +246,20 @@ export default function ProductosPage({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
-            <Package className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {t('title')}
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
-              {t('subtitle')}
-            </p>
-          </div>
-        </div>
-        <Button
-          onClick={() => router.push(`/${locale}/productos/nuevo`)}
-          className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-        >
-          <Package className="w-5 h-5 mr-2" />
-          {t('addProduct')}
-        </Button>
-      </div>
+      <PageHeader
+        title={t('title')}
+        subtitle={t('subtitle')}
+        icon={Package}
+        actions={
+          <Button
+            onClick={() => router.push(`/${locale}/productos/nuevo`)}
+            className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+          >
+            <Package className="w-5 h-5 mr-2" />
+            {t('addProduct')}
+          </Button>
+        }
+      />
 
       {/* Search and filters */}
       <Card className="!p-4">

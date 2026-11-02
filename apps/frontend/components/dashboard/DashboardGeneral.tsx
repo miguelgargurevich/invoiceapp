@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { FileText, FilePlus2, Plus, UserPlus } from 'lucide-react';
-import { Badge, Button, Card, EmptyState, Skeleton } from '@/components/common';
+import { FileText, FilePlus2, LayoutDashboard, Plus, UserPlus } from 'lucide-react';
+import { Badge, Button, Card, EmptyState, PageHeader, Skeleton } from '@/components/common';
 import { useAuth } from '@/contexts/AuthContext';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import { getInvoiceStatusInfo, type InvoiceDocument } from '@/lib/hooks/useDocumentStatus';
@@ -63,22 +63,23 @@ export function DashboardGeneral({ locale }: { locale: string }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="!text-2xl font-bold text-gray-900 dark:text-gray-100 min-w-0 truncate">
-          {empresa?.nombre ? t('hola', { nombre: empresa.nombre }) : t('title')}
-        </h1>
-        <div className="flex flex-wrap gap-2">
-          <Button icon={<Plus className="w-4 h-4" />} onClick={() => router.push(`/${locale}/facturas/nueva`)}>
-            {t('nuevaFactura')}
-          </Button>
-          <Button variant="outline" size="sm" icon={<FilePlus2 className="w-4 h-4" />} onClick={() => router.push(`/${locale}/proformas/nueva`)}>
-            {t('nuevaProforma')}
-          </Button>
-          <Button variant="outline" size="sm" icon={<UserPlus className="w-4 h-4" />} onClick={() => router.push(`/${locale}/clientes/nuevo`)}>
-            {t('nuevoCliente')}
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title={empresa?.nombre ? t('hola', { nombre: empresa.nombre }) : t('title')}
+        icon={LayoutDashboard}
+        actions={
+          <>
+            <Button icon={<Plus className="w-4 h-4" />} onClick={() => router.push(`/${locale}/facturas/nueva`)}>
+              {t('nuevaFactura')}
+            </Button>
+            <Button variant="outline" size="sm" icon={<FilePlus2 className="w-4 h-4" />} onClick={() => router.push(`/${locale}/proformas/nueva`)}>
+              {t('nuevaProforma')}
+            </Button>
+            <Button variant="outline" size="sm" icon={<UserPlus className="w-4 h-4" />} onClick={() => router.push(`/${locale}/clientes/nuevo`)}>
+              {t('nuevoCliente')}
+            </Button>
+          </>
+        }
+      />
 
       <Card padding="none">
         <div className="flex items-center justify-between gap-4 px-4 md:px-6 py-4 border-b border-gray-200 dark:border-gray-800">

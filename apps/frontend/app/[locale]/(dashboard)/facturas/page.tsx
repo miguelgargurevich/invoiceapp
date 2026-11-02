@@ -12,6 +12,7 @@ import {
   Badge,
   Card,
   EmptyInvoices,
+  PageHeader,
   Skeleton,
   SkeletonMetricCard,
   type Column,
@@ -528,29 +529,20 @@ export default function FacturasPage({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-primary-100 dark:bg-primary-900/30 rounded-xl">
-            <Receipt className="w-6 h-6 text-primary-600 dark:text-primary-400" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {t('title')}
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
-              {t('subtitle')}
-            </p>
-          </div>
-        </div>
-        <Button 
-          onClick={handleCreateClick}
-          className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
-        >
-          <Receipt className="w-5 h-5 mr-2" />
-          {t('newInvoice')}
-        </Button>
-      </div>
+      <PageHeader
+        title={t('title')}
+        subtitle={t('subtitle')}
+        icon={Receipt}
+        actions={
+          <Button
+            onClick={handleCreateClick}
+            className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+          >
+            <Receipt className="w-5 h-5 mr-2" />
+            {t('newInvoice')}
+          </Button>
+        }
+      />
 
       {/* Usage limit warning */}
       <UsageLimitWarning 

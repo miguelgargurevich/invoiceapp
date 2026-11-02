@@ -12,7 +12,7 @@ import {
   Search,
   ChevronDown,
 } from 'lucide-react';
-import { Card, Input, Button, CorreoContacto } from '@/components/common';
+import { Card, Input, Button, CorreoContacto, PageHeader } from '@/components/common';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AyudaPage() {
@@ -59,15 +59,7 @@ export default function AyudaPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          {t('title')}
-        </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
-          {t('subtitle')}
-        </p>
-      </div>
+      <PageHeader title={t('title')} subtitle={t('subtitle')} icon={HelpCircle} />
 
       {/* Search */}
       <Card className="!p-4">

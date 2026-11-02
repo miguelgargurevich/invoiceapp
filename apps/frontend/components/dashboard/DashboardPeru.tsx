@@ -3,9 +3,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { FilePlus2, Plus, Receipt, UserPlus, FileText } from 'lucide-react';
+import { FilePlus2, LayoutDashboard, Plus, Receipt, UserPlus, FileText } from 'lucide-react';
 import { AlertasSunat } from '@/components/sunat/AlertasSunat';
-import { Button, Card } from '@/components/common';
+import { Button, Card, PageHeader } from '@/components/common';
 import { useAuth } from '@/contexts/AuthContext';
 import { calcularCupo, calcularIndicadores, fechaLarga, type Cupo, type Indicadores } from '@/lib/dashboard';
 import { getUsage } from '@/lib/subscriptions';
@@ -71,24 +71,23 @@ export function DashboardPeru({ locale }: { locale: string }) {
 
   return (
     <div className="space-y-6">
-      {/* Encabezado: saludo, fecha y los accesos secundarios */}
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="min-w-0">
-          {/* La fecha solo después de cargar: así el servidor y el cliente pintan lo mismo. */}
-          {datos && <p className="text-sm text-gray-500 dark:text-gray-400">{fechaLarga(datos.ahora)}</p>}
-          <h1 className="!text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1 truncate">
-            {empresa?.nombre ? t('hola', { nombre: empresa.nombre }) : t('title')}
-          </h1>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" icon={<FilePlus2 className="w-4 h-4" />} onClick={() => router.push(`/${locale}/proformas/nueva`)}>
-            {t('nuevaProforma')}
-          </Button>
-          <Button variant="outline" size="sm" icon={<UserPlus className="w-4 h-4" />} onClick={() => router.push(`/${locale}/clientes/nuevo`)}>
-            {t('nuevoCliente')}
-          </Button>
-        </div>
-      </div>
+      {/* Encabezado: saludo, fecha y los accesos secundarios.
+          La fecha solo después de cargar: así el servidor y el cliente pintan lo mismo. */}
+      <PageHeader
+        title={empresa?.nombre ? t('hola', { nombre: empresa.nombre }) : t('title')}
+        subtitle={datos ? fechaLarga(datos.ahora) : undefined}
+        icon={LayoutDashboard}
+        actions={
+          <>
+            <Button variant="outline" size="sm" icon={<FilePlus2 className="w-4 h-4" />} onClick={() => router.push(`/${locale}/proformas/nueva`)}>
+              {t('nuevaProforma')}
+            </Button>
+            <Button variant="outline" size="sm" icon={<UserPlus className="w-4 h-4" />} onClick={() => router.push(`/${locale}/clientes/nuevo`)}>
+              {t('nuevoCliente')}
+            </Button>
+          </>
+        }
+      />
 
       {/* Sin emisor no se puede emitir: el aviso va antes que nada */}
       {datos?.emisorConfigurado === false && (

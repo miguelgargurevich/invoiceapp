@@ -2,9 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import {
-  ArrowLeft,
   Download,
   TrendingUp,
   BarChart3,
@@ -24,7 +22,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
-import { Button, Card, MetricCard, DatePicker, LoadingSpinner, SkeletonReportPage } from '@/components/common';
+import { Button, Card, MetricCard, DatePicker, LoadingSpinner, PageHeader, SkeletonReportPage } from '@/components/common';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
 
@@ -54,7 +52,6 @@ export default function SalesReportPage({
   params: { locale: string };
 }) {
   const t = useTranslations('reports');
-  const router = useRouter();
   const { empresa } = useAuth();
   const { formatCurrency, currencySymbol } = useCurrency();
 
@@ -131,35 +128,24 @@ export default function SalesReportPage({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.push(`/${locale}/reportes`)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {t('salesReport')}
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
-              {t('salesReportDesc')}
-            </p>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Download className="w-4 h-4 mr-2" />
-            {t('exportPDF')}
-          </Button>
-          <Button variant="outline">
-            <Download className="w-4 h-4 mr-2" />
-            {t('exportExcel')}
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title={t('salesReport')}
+        subtitle={t('salesReportDesc')}
+        icon={BarChart3}
+        backHref={`/${locale}/reportes`}
+        actions={
+          <>
+            <Button variant="outline">
+              <Download className="w-4 h-4 mr-2" />
+              {t('exportPDF')}
+            </Button>
+            <Button variant="outline">
+              <Download className="w-4 h-4 mr-2" />
+              {t('exportExcel')}
+            </Button>
+          </>
+        }
+      />
 
       {/* Filters */}
       <Card className="!p-4">
