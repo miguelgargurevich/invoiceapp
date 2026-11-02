@@ -153,9 +153,8 @@ export default function ClienteDetailPage({
         backHref={`/${locale}/clientes`}
         actions={
           <Button
-            variant="outline"
+            variant="danger"
             onClick={() => setIsDeleteDialogOpen(true)}
-            className="text-red-600 border-red-200 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-900/20"
           >
             <Trash2 className="w-4 h-4 mr-2" />
             {t('delete')}
@@ -178,7 +177,7 @@ export default function ClienteDetailPage({
                     {t('clientDetails')}
                   </h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Update the client information
+                    {t('updateClientInfo')}
                   </p>
                 </div>
               </div>
@@ -244,7 +243,7 @@ export default function ClienteDetailPage({
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                       </svg>
-                      Open in Maps
+                      {t('openInMaps')}
                     </a>
                   </div>
                 )}
@@ -312,7 +311,7 @@ export default function ClienteDetailPage({
             
             {facturas.length === 0 ? (
               <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-8">
-                No invoices yet
+                {t('noInvoices')}
               </p>
             ) : (
               <div className="space-y-3">
@@ -346,7 +345,7 @@ export default function ClienteDetailPage({
                     onClick={() => router.push(`/${locale}/facturas?clienteId=${id}`)}
                     className="w-full text-sm text-primary-600 dark:text-primary-400 hover:underline py-2"
                   >
-                    View all {facturas.length} invoices
+                    {t('viewAllInvoices', { count: facturas.length })}
                   </button>
                 )}
               </div>

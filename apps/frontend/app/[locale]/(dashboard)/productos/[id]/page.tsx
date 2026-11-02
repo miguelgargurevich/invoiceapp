@@ -144,12 +144,11 @@ export default function ProductoDetailPage({
         backHref={`/${locale}/productos`}
         actions={
           <Button
-            variant="outline"
+            variant="danger"
             onClick={() => setIsDeleteDialogOpen(true)}
-            className="text-red-600 border-red-200 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-900/20"
           >
             <Trash2 className="w-4 h-4 mr-2" />
-            Delete
+            {t('delete')}
           </Button>
         }
       />
@@ -169,7 +168,7 @@ export default function ProductoDetailPage({
                     {t('productDetails')}
                   </h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Update the product or service information
+                    {t('updateProductInfo')}
                   </p>
                 </div>
               </div>
@@ -195,7 +194,7 @@ export default function ProductoDetailPage({
                     <span className={`text-sm font-medium ${
                       formData.tipo === 'PRODUCTO' ? 'text-primary-700 dark:text-primary-300' : 'text-gray-600 dark:text-gray-400'
                     }`}>
-                      Product
+                      {t('typeProduct')}
                     </span>
                   </button>
                   <button
@@ -215,7 +214,7 @@ export default function ProductoDetailPage({
                     <span className={`text-sm font-medium ${
                       formData.tipo === 'SERVICIO' ? 'text-primary-700 dark:text-primary-300' : 'text-gray-600 dark:text-gray-400'
                     }`}>
-                      Service
+                      {t('typeService')}
                     </span>
                   </button>
                 </div>
@@ -317,7 +316,7 @@ export default function ProductoDetailPage({
                   variant="outline" 
                   onClick={() => router.push(`/${locale}/productos`)}
                 >
-                  Cancel
+                  {t('cancel')}
                 </Button>
                 <Button type="submit" disabled={saving}>
                   <Save className="w-4 h-4 mr-2" />
@@ -369,8 +368,8 @@ export default function ProductoDetailPage({
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={handleDelete}
-        title="Eliminar producto"
-        message={`Are you sure you want to delete "${producto?.nombre}"? This action cannot be undone.`}
+        title={t('deleteTitle')}
+        message={t('deleteMessage', { name: producto?.nombre ?? '' })}
         variant="danger"
       />
     </div>

@@ -302,16 +302,14 @@ export default function NuevaProformaPage({
             <Button
               variant="outline"
               onClick={() => setIsTemplatePickerOpen(true)}
-              size="lg"
               className="border-dashed flex-shrink-0"
             >
               <FileText className="w-5 h-5 mr-2" />
-              {selectedTemplate ? selectedTemplate.name : t('useTemplate') || 'Use Template'}
+              {selectedTemplate ? selectedTemplate.name : t('useTemplate')}
             </Button>
             <Button
               variant="outline"
               onClick={() => router.back()}
-              size="lg"
               className="flex-shrink-0"
             >
               {t('cancel')}
@@ -454,12 +452,14 @@ export default function NuevaProformaPage({
                             {formatCurrency(linea.subtotal)}
                           </td>
                           <td className="py-2 text-center">
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => removeLinea(linea.id)}
                               className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
                             >
                               <Trash2 className="w-4 h-4" />
-                            </button>
+                            </Button>
                           </td>
                         </tr>
                       ))}
@@ -478,12 +478,14 @@ export default function NuevaProformaPage({
                         <span className="text-sm font-medium text-gray-500">
                           {t('item')} #{index + 1}
                         </span>
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => removeLinea(linea.id)}
                           className="p-1 text-red-500"
                         >
                           <Trash2 className="w-4 h-4" />
-                        </button>
+                        </Button>
                       </div>
                       <ProductSelect
                         products={productos}
@@ -672,7 +674,7 @@ export default function NuevaProformaPage({
 
           {/* Quick actions */}
           <Card className="!p-4">
-            <Button className="w-full bg-primary-600 hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700 text-white" size="lg" onClick={handleSave} disabled={saving || lineas.length === 0}>
+            <Button className="w-full" onClick={handleSave} disabled={saving || lineas.length === 0}>
               <Save className="w-5 h-5 mr-2" />
               {saving ? t('save') + '...' : t('saveQuote')}
             </Button>
@@ -768,7 +770,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
               </svg>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Basic Information</h3>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t('basicInformation')}</h3>
               <p className="text-xs text-gray-500 dark:text-gray-400">Datos de contacto obligatorios</p>
             </div>
           </div>
@@ -867,7 +869,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Document Information</h3>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t('documentInformation')}</h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Datos de identificación opcionales</p>
                 </div>
               </div>
@@ -910,14 +912,14 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
             variant="outline" 
             onClick={onClose}
             disabled={loading}
-            className="flex-1 h-11"
+            className="flex-1"
           >
             {t('cancel')}
           </Button>
           <Button 
             type="submit" 
             disabled={loading || !formData.nombre || !formData.telefono}
-            className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+            className="flex-1"
           >
             {loading ? (
               <>

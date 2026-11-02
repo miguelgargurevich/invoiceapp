@@ -362,16 +362,14 @@ export default function NuevaFacturaPage({
             <Button
               variant="outline"
               onClick={() => setIsTemplatePickerOpen(true)}
-              size="lg"
               className="flex-shrink-0"
             >
               <FileText className="w-5 h-5 mr-2" />
-              Templates
+              {t('templates')}
             </Button>
             <Button
               variant="outline"
               onClick={() => router.back()}
-              size="lg"
               className="flex-shrink-0"
             >
               {t('cancel')}
@@ -514,12 +512,14 @@ export default function NuevaFacturaPage({
                             {formatCurrency(linea.subtotal)}
                           </td>
                           <td className="py-2 text-center">
-                            <button
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => removeLinea(linea.id)}
                               className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
                             >
                               <Trash2 className="w-4 h-4" />
-                            </button>
+                            </Button>
                           </td>
                         </tr>
                       ))}
@@ -538,12 +538,14 @@ export default function NuevaFacturaPage({
                         <span className="text-sm font-medium text-gray-500">
                           {t('item')} #{index + 1}
                         </span>
-                        <button
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           onClick={() => removeLinea(linea.id)}
                           className="p-1 text-red-500"
                         >
                           <Trash2 className="w-4 h-4" />
-                        </button>
+                        </Button>
                       </div>
                       <ProductSelect
                         products={productos}
@@ -603,14 +605,14 @@ export default function NuevaFacturaPage({
             </h2>
             <div className="space-y-4">
               <Textarea
-                label="Work Description"
+                label={t('workDescription')}
                 value={workDescription}
                 onChange={(e) => setWorkDescription(e.target.value)}
                 placeholder="Descripción detallada del trabajo a realizar..."
                 rows={4}
               />
               <Textarea
-                label="Payment Terms"
+                label={t('paymentTerms')}
                 value={paymentTerms}
                 onChange={(e) => setPaymentTerms(e.target.value)}
                 placeholder="Calendario y condiciones de pago..."
@@ -640,7 +642,7 @@ export default function NuevaFacturaPage({
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
               <HardHat className="w-5 h-5 text-primary-600" />
-              Order Type
+              {t('orderType')}
             </h2>
             <div className="space-y-3">
               <label className="flex items-center gap-2 cursor-pointer">
@@ -650,7 +652,7 @@ export default function NuevaFacturaPage({
                   onChange={(e) => setOrderType(e.target.checked ? 'day_work' : '')}
                   className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                 />
-                <span className="text-sm text-gray-700 dark:text-gray-300">Day Work</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300">{t('dayWork')}</span>
               </label>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -698,12 +700,12 @@ export default function NuevaFacturaPage({
           <Card>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
               <DollarSign className="w-5 h-5 text-primary-600" />
-              Payment Summary
+              {t('paymentSummary')}
             </h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Total Materials
+                  {t('totalMaterials')}
                 </label>
                 <input
                   type="text"
@@ -716,7 +718,7 @@ export default function NuevaFacturaPage({
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Total Labor
+                  {t('totalLabor')}
                 </label>
                 <input
                   type="text"
@@ -734,7 +736,7 @@ export default function NuevaFacturaPage({
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500 dark:text-gray-400">
-                    Tax
+                    {t('tax')}
                     {empresa?.taxRate && Number(empresa.taxRate) > 0 ? ` (${empresa.taxRate}%)` : ''}
                   </span>
                   <span>{formatCurrency(finalTax)}</span>
@@ -742,7 +744,7 @@ export default function NuevaFacturaPage({
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-2">
                   <div className="flex justify-between">
                     <span className="font-semibold text-gray-900 dark:text-gray-100">
-                      Total Amount
+                      {t('totalAmount')}
                     </span>
                     <span className="text-xl font-bold text-primary-600">
                       {formatCurrency(finalTotal)}
@@ -757,7 +759,6 @@ export default function NuevaFacturaPage({
           <Card className="!p-4">
             <Button 
               className="w-full" 
-              size="lg"
               onClick={handleSave} 
               disabled={saving || (totalMaterials === 0 && totalLabor === 0 && lineas.length === 0)}
             >
@@ -856,7 +857,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
               </svg>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Basic Information</h3>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t('basicInformation')}</h3>
               <p className="text-xs text-gray-500 dark:text-gray-400">Datos de contacto obligatorios</p>
             </div>
           </div>
@@ -954,7 +955,7 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Document Information</h3>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">{t('documentInformation')}</h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Datos de identificación opcionales</p>
                 </div>
               </div>
@@ -997,14 +998,14 @@ function ClientModal({ isOpen, onClose, onSave }: ClientModalProps) {
             variant="outline" 
             onClick={onClose}
             disabled={loading}
-            className="flex-1 h-11"
+            className="flex-1"
           >
             {t('cancel')}
           </Button>
           <Button 
             type="submit" 
             disabled={loading || !formData.nombre || !formData.telefono}
-            className="flex-1 h-11 bg-gradient-to-r from-gray-800 to-gray-900 hover:from-gray-900 hover:to-black"
+            className="flex-1"
           >
             {loading ? (
               <>

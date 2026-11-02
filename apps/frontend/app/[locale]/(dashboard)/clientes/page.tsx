@@ -199,16 +199,18 @@ export default function ClientesPage() {
       className: 'w-12',
       render: (cliente) => (
         <div className="flex items-center justify-end">
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={(e) => {
               e.stopPropagation();
               handleDelete(cliente);
             }}
-            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20"
             title={t('delete')}
           >
             <Trash2 className="w-4 h-4 text-red-500" />
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -246,7 +248,6 @@ export default function ClientesPage() {
         actions={
           <Button
             onClick={handleCreateClick}
-            className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
           >
             <UserPlus className="w-5 h-5 mr-2" />
             {t('addClient')}

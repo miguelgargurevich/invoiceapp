@@ -536,7 +536,6 @@ export default function FacturasPage({
         actions={
           <Button
             onClick={handleCreateClick}
-            className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
           >
             <Receipt className="w-5 h-5 mr-2" />
             {t('newInvoice')}

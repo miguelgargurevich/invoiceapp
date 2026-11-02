@@ -205,16 +205,18 @@ export default function ProductosPage({
       className: 'w-12',
       render: (producto) => (
         <div className="flex items-center justify-end">
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={(e) => {
               e.stopPropagation();
               handleDelete(producto);
             }}
-            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-            title="Eliminar"
+            className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20"
+            title={t('delete')}
           >
             <Trash2 className="w-4 h-4 text-red-500" />
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -253,7 +255,6 @@ export default function ProductosPage({
         actions={
           <Button
             onClick={() => router.push(`/${locale}/productos/nuevo`)}
-            className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
           >
             <Package className="w-5 h-5 mr-2" />
             {t('addProduct')}
@@ -336,9 +337,9 @@ export default function ProductosPage({
         isOpen={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
         onConfirm={confirmDelete}
-        title="Eliminar producto"
-        message={`Are you sure you want to delete "${selectedProducto?.nombre}"? This action cannot be undone.`}
-        confirmLabel="Delete"
+        title={t('deleteTitle')}
+        message={t('deleteMessage', { name: selectedProducto?.nombre ?? '' })}
+        confirmLabel={t('delete')}
         variant="danger"
       />
     </div>

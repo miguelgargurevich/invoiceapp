@@ -195,6 +195,7 @@
     "sinFacturas": "Todavía no tienes facturas"
   },
   "invoices": {
+    "templates": "Plantillas",
     "jobName": "Nombre del Trabajo",
     "jobLocation": "Ubicación del Trabajo",
     "workDescription": "Descripción del Trabajo",
@@ -638,6 +639,12 @@
     }
   },
   "clients": {
+    "basicInformation": "Información Básica",
+    "documentInformation": "Información del Documento",
+    "updateClientInfo": "Actualiza la información del cliente",
+    "openInMaps": "Abrir en Mapas",
+    "noInvoices": "Aún no hay facturas",
+    "viewAllInvoices": "Ver las {count} facturas",
     "title": "Clientes",
     "subtitle": "Administra tu base de datos de clientes",
     "addClient": "Agregar Cliente",
@@ -691,6 +698,7 @@
     }
   },
   "products": {
+    "updateProductInfo": "Actualiza la información del producto o servicio",
     "title": "Productos y Servicios",
     "subtitle": "Administra tu catálogo de productos y servicios",
     "addProduct": "Agregar Producto",

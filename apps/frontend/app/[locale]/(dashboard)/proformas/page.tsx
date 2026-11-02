@@ -402,7 +402,6 @@ export default function ProformasPage({
         actions={
           <Button
             onClick={handleCreateClick}
-            className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 bg-primary-600 dark:bg-primary-600 hover:bg-primary-700 dark:hover:bg-primary-700 text-white"
           >
             <FileBarChart className="w-5 h-5 mr-2" />
             {t('create')}

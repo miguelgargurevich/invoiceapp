@@ -917,7 +917,7 @@ export default function FacturaDetailPage({
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">
-                  Tax
+                  {t('tax')}
                   {empresa?.taxRate && Number(empresa.taxRate) > 0 ? ` (${empresa.taxRate}%)` : ''}
                 </span>
                 <span>{formatCurrency(factura.igv)}</span>
@@ -1026,7 +1026,7 @@ export default function FacturaDetailPage({
               <div className="space-y-3">
                 {factura.saldoPendiente > 0 && (
                   <Button
-                    className="w-full h-12 text-base"
+                    className="w-full"
                     onClick={() => {
                       setPaymentData({ ...paymentData, monto: factura.saldoPendiente.toFixed(2) });
                       setIsPaymentModalOpen(true);
@@ -1037,8 +1037,8 @@ export default function FacturaDetailPage({
                   </Button>
                 )}
                 <Button
-                  variant="outline"
-                  className="w-full h-12 text-base text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  variant="danger"
+                  className="w-full"
                   onClick={() => setIsCancelDialogOpen(true)}
                 >
                   <XCircle className="w-5 h-5 mr-2" />

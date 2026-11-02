@@ -120,7 +120,7 @@ export default function NuevoProductoPage({
                 <span className={`text-sm font-medium ${
                   formData.tipo === 'PRODUCTO' ? 'text-primary-700 dark:text-primary-300' : 'text-gray-600 dark:text-gray-400'
                 }`}>
-                  Product
+                  {t('typeProduct')}
                 </span>
               </button>
               <button
@@ -140,7 +140,7 @@ export default function NuevoProductoPage({
                 <span className={`text-sm font-medium ${
                   formData.tipo === 'SERVICIO' ? 'text-primary-700 dark:text-primary-300' : 'text-gray-600 dark:text-gray-400'
                 }`}>
-                  Service
+                  {t('typeService')}
                 </span>
               </button>
             </div>
@@ -239,7 +239,7 @@ export default function NuevoProductoPage({
               variant="outline" 
               onClick={() => router.push(`/${locale}/productos`)}
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button type="submit" disabled={loading}>
               <Save className="w-4 h-4 mr-2" />
