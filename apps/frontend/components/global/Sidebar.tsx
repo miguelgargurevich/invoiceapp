@@ -128,8 +128,16 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
               className="flex items-center gap-2 w-full min-w-0 rounded-lg text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
             >
               <CompanyLogo />
-              <span className={cn('truncate text-sm font-semibold text-gray-900 dark:text-gray-100', isCollapsed && 'md:hidden')}>
-                {empresa?.nombre || 'Facturo'}
+              <span className={cn('flex flex-col min-w-0 leading-tight', isCollapsed && 'md:hidden')}>
+                <span className="truncate text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  {empresa?.nombre || 'Facturo'}
+                </span>
+                {/* Firma del producto: berenjena fijo, no el color de marca de la empresa */}
+                {empresa?.nombre && (
+                  <span className="truncate text-[11px] font-medium text-gray-400 dark:text-gray-500">
+                    por <span className="text-[#6B2C6E] dark:text-[#D7B3D9]">Facturo</span>
+                  </span>
+                )}
               </span>
             </button>
           </div>
