@@ -382,7 +382,7 @@ export default function ConfiguracionPage({
 
       {/* Success message */}
       {message && (
-        <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
+        <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             <p className="text-green-700 dark:text-green-400 font-medium">{message}</p>
@@ -402,7 +402,7 @@ export default function ConfiguracionPage({
                   className={cn(
                     'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200',
                     activeTab === tab.id
-                      ? 'bg-gradient-to-r from-primary-50 to-primary-50 dark:from-primary-900/20 dark:to-primary-900/20 text-primary-700 dark:text-primary-400 shadow-sm font-semibold'
+                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 shadow-sm font-semibold'
                       : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 font-medium'
                   )}
                 >
@@ -421,7 +421,7 @@ export default function ConfiguracionPage({
                   className={cn(
                     'w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200',
                     activeTab === 'suscripcion'
-                      ? 'bg-gradient-to-r from-primary-50 to-primary-50 dark:from-primary-900/20 dark:to-primary-900/20 text-primary-700 dark:text-primary-400 shadow-sm font-semibold'
+                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 shadow-sm font-semibold'
                       : 'text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50 font-medium'
                   )}
                 >
@@ -442,8 +442,8 @@ export default function ConfiguracionPage({
           {activeTab === 'empresa' && (
             <Card className="shadow-sm">
               <div className="flex items-center gap-3 pb-6 border-b border-gray-200 dark:border-gray-700">
-                <div className="p-3 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl shadow-md">
-                  <Building2 className="w-6 h-6 text-white" />
+                <div className="p-3 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 rounded-xl">
+                  <Building2 className="w-6 h-6" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('companySettings')}</h2>
@@ -546,13 +546,15 @@ export default function ConfiguracionPage({
                           unoptimized
                         />
                       </div>
-                      <button
+                      <Button
                         type="button"
+                        variant="danger"
+                        size="sm"
                         onClick={handleRemoveLogo}
-                        className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                        className="absolute -top-2 -right-2 p-1 rounded-full"
                       >
                         <X className="w-4 h-4" />
-                      </button>
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
@@ -591,30 +593,31 @@ export default function ConfiguracionPage({
                 {/* Company Signature */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Company Signature
+                    {t('companySignature')}
                   </label>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-                    This signature will appear on your proposals in the "Authorized Signature" section
+                    {t('companySignatureDesc')}
                   </p>
                   
                   {companySignature ? (
                     <div className="space-y-3">
                       <div className="border-2 border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-white dark:bg-gray-800">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Current Signature:</span>
-                          <button
+                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('currentSignature')}</span>
+                          <Button
                             type="button"
+                            variant="danger"
+                            size="sm"
                             onClick={handleDeleteSignature}
                             disabled={uploadingSignature}
-                            className="text-sm text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 disabled:opacity-50"
                           >
-                            Delete
-                          </button>
+                            {t('delete')}
+                          </Button>
                         </div>
                         <div className="bg-gray-50 dark:bg-gray-200 rounded border border-gray-200 dark:border-gray-700 p-3 flex items-center justify-center min-h-[100px]">
                           <Image
                             src={companySignature}
-                            alt="Company Signature"
+                            alt={t('companySignature')}
                             width={200}
                             height={80}
                             className="max-h-20 w-auto object-contain"
@@ -633,7 +636,7 @@ export default function ConfiguracionPage({
                         disabled={uploadingSignature}
                         className="w-full"
                       >
-                        Create New Signature
+                        {t('createNewSignature')}
                       </Button>
                     </div>
                   ) : (
@@ -646,44 +649,28 @@ export default function ConfiguracionPage({
                         />
                       </div>
                       <Button
+                        variant="outline"
                         onClick={saveSignature}
                         disabled={!pendingSignature || uploadingSignature}
                         className="w-full"
+                        loading={uploadingSignature}
+                        icon={<Save className="w-4 h-4" />}
                       >
-                        {uploadingSignature ? (
-                          <>
-                            <LoadingSpinner size="sm" className="mr-2" />
-                            Saving...
-                          </>
-                        ) : (
-                          <>
-                            <Save className="w-4 h-4 mr-2" />
-                            Save Signature
-                          </>
-                        )}
+                        {uploadingSignature ? t('saving') : t('saveSignature')}
                       </Button>
                     </div>
                   )}
                 </div>
 
                 <div className="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
-                  <button
+                  <Button
                     onClick={handleSaveEmpresa}
                     disabled={saving}
-                    className="h-11 px-6 bg-gradient-to-r from-primary-500 to-primary-600 dark:from-primary-600 dark:to-primary-700 text-white text-base font-semibold rounded-lg hover:from-primary-600 hover:to-primary-700 dark:hover:from-primary-700 dark:hover:to-primary-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
+                    loading={saving}
+                    icon={<Save className="w-4 h-4" />}
                   >
-                    {saving ? (
-                      <>
-                        <LoadingSpinner size="sm" />
-                        {t('saving')}
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-5 h-5" />
-                        {t('save')}
-                      </>
-                    )}
-                  </button>
+                    {saving ? t('saving') : t('save')}
+                  </Button>
                 </div>
               </div>
             </Card>
@@ -693,8 +680,8 @@ export default function ConfiguracionPage({
           {activeTab === 'usuario' && (
             <Card className="shadow-sm">
               <div className="flex items-center gap-3 pb-6 border-b border-gray-200 dark:border-gray-700">
-                <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-md">
-                  <User className="w-6 h-6 text-white" />
+                <div className="p-3 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 rounded-xl">
+                  <User className="w-6 h-6" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('userSettings')}</h2>
@@ -786,23 +773,14 @@ export default function ConfiguracionPage({
                 )}
 
                 <div className="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
-                  <button
+                  <Button
                     onClick={handleSaveUser}
                     disabled={saving}
-                    className="h-11 px-6 bg-gradient-to-r from-purple-500 to-pink-600 text-white text-base font-semibold rounded-lg hover:from-purple-600 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
+                    loading={saving}
+                    icon={<Save className="w-4 h-4" />}
                   >
-                    {saving ? (
-                      <>
-                        <LoadingSpinner size="sm" />
-                        {t('saving')}
-                      </>
-                    ) : (
-                      <>
-                        <Save className="w-5 h-5" />
-                        {t('save')}
-                      </>
-                    )}
-                  </button>
+                    {saving ? t('saving') : t('save')}
+                  </Button>
                 </div>
               </div>
             </Card>
@@ -812,8 +790,8 @@ export default function ConfiguracionPage({
           {activeTab === 'apariencia' && (
             <Card className="shadow-sm">
               <div className="flex items-center gap-3 pb-6 border-b border-gray-200 dark:border-gray-700">
-                <div className="p-3 bg-gradient-to-br from-orange-500 to-pink-600 rounded-xl shadow-md">
-                  <Palette className="w-6 h-6 text-white" />
+                <div className="p-3 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 rounded-xl">
+                  <Palette className="w-6 h-6" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('appearanceSettings')}</h2>
@@ -840,12 +818,17 @@ export default function ConfiguracionPage({
                             : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
                         )}
                       >
-                        <div className={cn(
-                          'w-full h-20 rounded mb-2',
-                          themeOption === 'light' ? 'bg-white border' :
-                          themeOption === 'dark' ? 'bg-gray-800' :
-                          'bg-gradient-to-r from-white to-gray-800'
-                        )} />
+                        {themeOption === 'system' ? (
+                          <div className="w-full h-20 rounded mb-2 flex overflow-hidden border">
+                            <div className="w-1/2 bg-white" />
+                            <div className="w-1/2 bg-gray-800" />
+                          </div>
+                        ) : (
+                          <div className={cn(
+                            'w-full h-20 rounded mb-2',
+                            themeOption === 'light' ? 'bg-white border' : 'bg-gray-800'
+                          )} />
+                        )}
                         <span className="text-sm font-medium capitalize">{t(themeOption)}</span>
                       </button>
                     ))}
@@ -893,8 +876,8 @@ export default function ConfiguracionPage({
           {activeTab === 'facturacion' && (
             <Card className="shadow-sm">
               <div className="flex items-center gap-3 pb-6 border-b border-gray-200 dark:border-gray-700">
-                <div className="p-3 bg-gradient-to-br from-slate-500 to-slate-700 rounded-xl shadow-md">
-                  <FileText className="w-6 h-6 text-white" />
+                <div className="p-3 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 rounded-xl">
+                  <FileText className="w-6 h-6" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('invoiceSettings')}</h2>
@@ -983,13 +966,14 @@ export default function ConfiguracionPage({
             </div>
 
               <div className="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
-                <button
+                <Button
                   onClick={handleSaveInvoiceConfig}
                   disabled={saving}
-                  className="h-11 px-6 bg-gradient-to-r from-primary-600 to-primary-700 text-white text-base font-semibold rounded-lg hover:from-primary-700 hover:to-primary-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all duration-200"
+                  loading={saving}
+                  icon={<Save className="w-4 h-4" />}
                 >
                   {saving ? t('saving') : t('save')}
-                </button>
+                </Button>
               </div>
             </Card>
           )}
@@ -998,8 +982,8 @@ export default function ConfiguracionPage({
           {activeTab === 'notificaciones' && (
             <Card className="shadow-sm">
               <div className="flex items-center gap-3 pb-6 border-b border-gray-200 dark:border-gray-700">
-                <div className="p-3 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl shadow-md">
-                  <Bell className="w-6 h-6 text-white" />
+                <div className="p-3 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 rounded-xl">
+                  <Bell className="w-6 h-6" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('notificationSettings')}</h2>
@@ -1015,7 +999,7 @@ export default function ConfiguracionPage({
                     {t('emailNotifications') || 'Email Notifications'}
                   </h3>
                   <div className="space-y-3">
-                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
                       <div>
                         <p className="font-medium text-gray-900 dark:text-gray-100">{t('emailOnInvoice')}</p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">{t('emailOnInvoiceDesc')}</p>
@@ -1031,7 +1015,7 @@ export default function ConfiguracionPage({
                       </label>
                     </div>
 
-                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
                       <div>
                         <p className="font-medium text-gray-900 dark:text-gray-100">{t('emailOnDue')}</p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">{t('emailOnDueDesc')}</p>
@@ -1047,7 +1031,7 @@ export default function ConfiguracionPage({
                       </label>
                     </div>
 
-                    <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
                       <div>
                         <p className="font-medium text-gray-900 dark:text-gray-100">{t('emailOnPayment')}</p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">{t('emailOnPaymentDesc')}</p>
@@ -1071,7 +1055,7 @@ export default function ConfiguracionPage({
                     <div className="w-1 h-5 bg-yellow-500 rounded-full"></div>
                     {t('reminderSettings') || 'Reminder Settings'}
                   </h3>
-                  <div className="p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                  <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
                     <label className="block font-medium text-gray-900 dark:text-gray-100 mb-2">{t('daysBeforeDue')}</label>
                     <Input
                       type="number"
@@ -1086,13 +1070,14 @@ export default function ConfiguracionPage({
               </div>
 
               <div className="flex justify-end pt-6 border-t border-gray-200 dark:border-gray-700">
-                <button
+                <Button
                   onClick={handleSaveNotifications}
                   disabled={saving}
-                  className="h-11 px-6 bg-gradient-to-r from-yellow-500 to-orange-600 text-white text-base font-semibold rounded-lg hover:from-yellow-600 hover:to-orange-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all duration-200"
+                  loading={saving}
+                  icon={<Save className="w-4 h-4" />}
                 >
                   {saving ? t('saving') : t('save')}
-                </button>
+                </Button>
               </div>
             </Card>
           )}
