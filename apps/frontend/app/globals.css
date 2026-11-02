@@ -3,17 +3,18 @@
 @tailwind utilities;
 
 :root {
-  /* Primary colors */
-  --primary-50: #F5E9F5;
-  --primary-100: #EBD3EC;
-  --primary-200: #DDB8DE;
-  --primary-300: #C48FC6;
-  --primary-400: #A866AB;
-  --primary-500: #8A3D8D;
-  --primary-600: #6B2C6E;
-  --primary-700: #5A2560;
-  --primary-800: #461C48;
-  --primary-900: #2E1230;
+  /* Primary colors: tripletas "R G B" (tailwind.config.ts las usa con rgb(var(...) / <alpha-value>)).
+     Por defecto, el berenjena de Facturo. Con color propio, components/global/TemaMarca.tsx las reemplaza. */
+  --primary-50: 245 233 245;
+  --primary-100: 235 211 236;
+  --primary-200: 221 184 222;
+  --primary-300: 196 143 198;
+  --primary-400: 168 102 171;
+  --primary-500: 138 61 141;
+  --primary-600: 107 44 110;
+  --primary-700: 90 37 96;
+  --primary-800: 70 28 72;
+  --primary-900: 46 18 48;
   
   /* Tooltip */
   --tooltip-bg: #ffffff;
@@ -96,19 +97,19 @@ body {
 
 /* Focus styles */
 *:focus-visible {
-  outline: 2px solid var(--primary-500);
+  outline: 2px solid rgb(var(--primary-500));
   outline-offset: 2px;
 }
 
 /* Selection */
 ::selection {
-  background: var(--primary-200);
-  color: var(--primary-900);
+  background: rgb(var(--primary-200));
+  color: rgb(var(--primary-900));
 }
 
 .dark ::selection {
-  background: var(--primary-800);
-  color: var(--primary-100);
+  background: rgb(var(--primary-800));
+  color: rgb(var(--primary-100));
 }
 
 @layer utilities {

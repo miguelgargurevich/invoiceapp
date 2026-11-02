@@ -12,17 +12,18 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        // Tripletas RGB en variables CSS (ver globals.css): así funcionan las opacidades, p. ej. bg-primary-900/30.
         primary: {
-          50: '#F5E9F5',
-          100: '#EBD3EC',
-          200: '#DDB8DE',
-          300: '#C48FC6',
-          400: '#A866AB',
-          500: '#8A3D8D',
-          600: '#6B2C6E',
-          700: '#5A2560',
-          800: '#461C48',
-          900: '#2E1230',
+          50: 'rgb(var(--primary-50) / <alpha-value>)',
+          100: 'rgb(var(--primary-100) / <alpha-value>)',
+          200: 'rgb(var(--primary-200) / <alpha-value>)',
+          300: 'rgb(var(--primary-300) / <alpha-value>)',
+          400: 'rgb(var(--primary-400) / <alpha-value>)',
+          500: 'rgb(var(--primary-500) / <alpha-value>)',
+          600: 'rgb(var(--primary-600) / <alpha-value>)',
+          700: 'rgb(var(--primary-700) / <alpha-value>)',
+          800: 'rgb(var(--primary-800) / <alpha-value>)',
+          900: 'rgb(var(--primary-900) / <alpha-value>)',
         },
       },
       fontFamily: {
