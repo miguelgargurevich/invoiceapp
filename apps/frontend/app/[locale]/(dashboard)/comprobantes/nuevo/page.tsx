@@ -3,7 +3,8 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { SkeletonFormPage } from '@/components/common';
+import { Receipt } from 'lucide-react';
+import { PageHeader, SkeletonFormPage } from '@/components/common';
 import { ComprobanteForm } from '@/components/sunat/ComprobanteForm';
 import { useToast } from '@/contexts/ToastContext';
 import { sunatApi } from '@/lib/sunat/api';
@@ -31,7 +32,12 @@ function NuevoComprobante({ locale }: { locale: string }) {
   if (!inicial) return <SkeletonFormPage />;
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{afecta ? t('nuevaNota') : t('nuevo')}</h1>
+      <PageHeader
+        title={afecta ? t('nuevaNota') : t('nuevo')}
+        subtitle={afecta ? t('notaSubtitulo') : t('nuevoSubtitulo')}
+        icon={Receipt}
+        backHref={`/${locale}/comprobantes`}
+      />
       <ComprobanteForm locale={locale} inicial={inicial} documentoAfectado={afectado} />
     </div>
   );

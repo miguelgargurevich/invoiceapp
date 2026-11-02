@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save, Package } from 'lucide-react';
+import { Save, Package } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
-import { Button, Card, Input, Textarea } from '@/components/common';
+import { Button, Card, Input, PageHeader, Textarea } from '@/components/common';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
 
@@ -74,23 +74,12 @@ export default function NuevoProductoPage({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <button
-          onClick={() => router.push(`/${locale}/productos`)}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5 text-gray-500" />
-        </button>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {t('newProduct')}
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
-            {t('subtitle')}
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title={t('newProduct')}
+        subtitle={t('newProductSubtitle')}
+        icon={Package}
+        backHref={`/${locale}/productos`}
+      />
 
       {/* Form */}
       <Card>

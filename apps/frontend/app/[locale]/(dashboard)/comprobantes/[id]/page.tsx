@@ -1,10 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { ArrowLeft, RefreshCw } from 'lucide-react';
-import { Button, Card, EmptyState, LoadingSpinner, SkeletonDetailPage } from '@/components/common';
+import { RefreshCw, Receipt } from 'lucide-react';
+import { Button, Card, EmptyState, LoadingSpinner, PageHeader, SkeletonDetailPage } from '@/components/common';
 import { AccionesComprobante } from '@/components/sunat/AccionesComprobante';
 import { EstadoSunatBadge } from '@/components/sunat/EstadoSunatBadge';
 import { HistorialEnvios } from '@/components/sunat/HistorialEnvios';
@@ -50,18 +49,13 @@ export default function DetalleComprobantePage({ params: { locale, id } }: { par
 
   return (
     <div className="space-y-6">
-      <Link href={`/${locale}/comprobantes`} className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
-        <ArrowLeft className="w-4 h-4" />{t('volver')}
-      </Link>
-
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{t(`tipos.${c.tipoComprobante}`)}</p>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{numeroComprobante(c) ?? t('borrador')}</h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">{c.cliente?.razonSocial} · {fechaCorta(c.fechaEmision)}</p>
-        </div>
-        <EstadoSunatBadge estado={c.estadoSunat} />
-      </div>
+      <PageHeader
+        title={numeroComprobante(c) ?? t('borrador')}
+        subtitle={`${t(`tipos.${c.tipoComprobante}`)} · ${c.cliente?.razonSocial ?? ''} · ${fechaCorta(c.fechaEmision)}`}
+        icon={Receipt}
+        backHref={`/${locale}/comprobantes`}
+        badge={<EstadoSunatBadge estado={c.estadoSunat} />}
+      />
 
       {enProceso && (
         <Card className="border-blue-300 dark:border-blue-700">

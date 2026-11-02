@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save, Package, Trash2, Calendar } from 'lucide-react';
+import { Save, Package, Trash2, Calendar } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
-import { Button, Card, Input, Textarea, Badge, ConfirmDialog, SkeletonDetailPage } from '@/components/common';
+import { Button, Card, Input, Textarea, Badge, ConfirmDialog, PageHeader, SkeletonDetailPage } from '@/components/common';
 import { formatDate } from '@/lib/utils';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
@@ -137,32 +137,22 @@ export default function ProductoDetailPage({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.push(`/${locale}/productos`)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+      <PageHeader
+        title={t('editProduct')}
+        subtitle={t('editProductSubtitle')}
+        icon={Package}
+        backHref={`/${locale}/productos`}
+        actions={
+          <Button
+            variant="outline"
+            onClick={() => setIsDeleteDialogOpen(true)}
+            className="text-red-600 border-red-200 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-900/20"
           >
-            <ArrowLeft className="w-5 h-5 text-gray-500" />
-          </button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {t('editProduct')}
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
-              {producto?.nombre}
-            </p>
-          </div>
-        </div>
-        <Button
-          variant="outline"
-          onClick={() => setIsDeleteDialogOpen(true)}
-          className="text-red-600 border-red-200 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-900/20"
-        >
-          <Trash2 className="w-4 h-4 mr-2" />
-          Delete
-        </Button>
-      </div>
+            <Trash2 className="w-4 h-4 mr-2" />
+            Delete
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Form */}

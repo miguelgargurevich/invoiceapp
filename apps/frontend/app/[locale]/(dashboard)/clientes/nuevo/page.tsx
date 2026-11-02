@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save, User } from 'lucide-react';
+import { Save, User, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
-import { Button, Card, Input } from '@/components/common';
+import { Button, Card, Input, PageHeader } from '@/components/common';
 import api from '@/lib/api';
 import { SelectTipoDocumento } from '@/components/common/SelectTipoDocumento';
 
@@ -55,23 +55,12 @@ export default function NuevoClientePage({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <button
-          onClick={() => router.push(`/${locale}/clientes`)}
-          className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-        >
-          <ArrowLeft className="w-5 h-5 text-gray-500" />
-        </button>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {t('newClient')}
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
-            {t('subtitle')}
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title={t('newClient')}
+        subtitle={t('addClientSubtitle')}
+        icon={Users}
+        backHref={`/${locale}/clientes`}
+      />
 
       {/* Form */}
       <Card>

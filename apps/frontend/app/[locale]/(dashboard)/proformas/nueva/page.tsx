@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import {
-  ArrowLeft,
   Save,
   Plus,
   Trash2,
@@ -33,6 +32,7 @@ import {
   ProductSelect,
   SkeletonFormPage,
   Modal,
+  PageHeader,
 } from '@/components/common';
 import { TemplatePicker, type ProposalTemplate } from '@/components/proforma';
 import { useCurrency } from '@/lib/hooks/useCurrency';
@@ -292,47 +292,33 @@ export default function NuevaProformaPage({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-          <button
-            onClick={() => router.back()}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div className="p-2 sm:p-3 bg-slate-100 dark:bg-slate-800 rounded-xl flex-shrink-0">
-            <FileBarChart className="w-5 h-5 sm:w-6 sm:h-6 text-slate-600 dark:text-slate-300" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">
-              {t('newQuote')}
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
-              {t('newQuoteDescription')}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-          <Button 
-            variant="outline" 
-            onClick={() => setIsTemplatePickerOpen(true)} 
-            size="lg"
-            className="border-dashed flex-shrink-0"
-          >
-            <FileText className="w-5 h-5 mr-2" />
-            {selectedTemplate ? selectedTemplate.name : t('useTemplate') || 'Use Template'}
-          </Button>
-          <Button 
-            variant="outline" 
-            onClick={() => router.back()} 
-            size="lg"
-            className="flex-shrink-0"
-          >
-            {t('cancel')}
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title={t('newQuote')}
+        subtitle={t('newQuoteDescription')}
+        icon={FileBarChart}
+        backHref={`/${locale}/proformas`}
+        actions={
+          <>
+            <Button
+              variant="outline"
+              onClick={() => setIsTemplatePickerOpen(true)}
+              size="lg"
+              className="border-dashed flex-shrink-0"
+            >
+              <FileText className="w-5 h-5 mr-2" />
+              {selectedTemplate ? selectedTemplate.name : t('useTemplate') || 'Use Template'}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => router.back()}
+              size="lg"
+              className="flex-shrink-0"
+            >
+              {t('cancel')}
+            </Button>
+          </>
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main content */}

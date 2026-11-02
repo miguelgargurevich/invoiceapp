@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save, User, Trash2, FileText, Calendar } from 'lucide-react';
+import { Save, User, Users, Trash2, FileText, Calendar } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
-import { Button, Card, Input, Badge, ConfirmDialog, SkeletonDetailPage } from '@/components/common';
+import { Button, Card, Input, Badge, ConfirmDialog, SkeletonDetailPage, PageHeader } from '@/components/common';
 import { formatDate } from '@/lib/utils';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
@@ -146,33 +146,22 @@ export default function ClienteDetailPage({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.push(`/${locale}/clientes`)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+      <PageHeader
+        title={t('editClient')}
+        subtitle={t('editClientSubtitle')}
+        icon={Users}
+        backHref={`/${locale}/clientes`}
+        actions={
+          <Button
+            variant="outline"
+            onClick={() => setIsDeleteDialogOpen(true)}
+            className="text-red-600 border-red-200 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-900/20"
           >
-            <ArrowLeft className="w-5 h-5 text-gray-500" />
-          </button>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-              {t('editClient')}
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
-              {cliente?.nombre}
-            </p>
-          </div>
-        </div>
-        <Button
-          variant="outline"
-          onClick={() => setIsDeleteDialogOpen(true)}
-          className="text-red-600 border-red-200 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-900/20"
-        >
-          <Trash2 className="w-4 h-4 mr-2" />
-          {t('delete')}
-        </Button>
-      </div>
+            <Trash2 className="w-4 h-4 mr-2" />
+            {t('delete')}
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Form */}

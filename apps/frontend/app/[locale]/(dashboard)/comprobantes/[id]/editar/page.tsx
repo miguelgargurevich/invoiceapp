@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { SkeletonFormPage } from '@/components/common';
+import { Receipt } from 'lucide-react';
+import { PageHeader, SkeletonFormPage } from '@/components/common';
 import { ComprobanteForm } from '@/components/sunat/ComprobanteForm';
 import { useToast } from '@/contexts/ToastContext';
 import { sunatApi } from '@/lib/sunat/api';
@@ -37,7 +38,12 @@ export default function EditarComprobantePage({ params: { locale, id } }: { para
   if (!inicial) return <SkeletonFormPage />;
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t('editar')}</h1>
+      <PageHeader
+        title={t('editar')}
+        subtitle={t('editarSubtitulo')}
+        icon={Receipt}
+        backHref={`/${locale}/comprobantes/${id}`}
+      />
       <ComprobanteForm locale={locale} inicial={inicial} comprobanteId={id} documentoAfectado={afectado} />
     </div>
   );

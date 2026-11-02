@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import {
-  ArrowLeft,
   Printer,
   Download,
   Mail,
@@ -25,7 +24,7 @@ import {
   HardHat,
   DollarSign,
   Calendar,
-  Receipt,
+  FileBarChart,
   Edit2,
   MessageSquare,
   MapPin,
@@ -45,6 +44,7 @@ import {
   Modal,
   DatePicker,
   ActivityTimeline,
+  PageHeader,
 } from '@/components/common';
 import { createTimelineFromDocument } from '@/components/common/ActivityTimeline';
 import {
@@ -138,7 +138,6 @@ export default function ProformaDetailPage({
 }) {
   const t = useTranslations('quotes');
   const tCommon = useTranslations('common');
-  const tJobSummary = useTranslations('jobSummary');
   const router = useRouter();
   const { empresa } = useAuth();
   const { formatCurrency } = useCurrency();
@@ -678,79 +677,64 @@ export default function ProformaDetailPage({
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.push(`/${locale}/proformas`)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Receipt className="w-5 h-5 text-primary-600" />
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">{tJobSummary('proposal')}</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {proforma.serie}-{proforma.numero}
-              </h1>
-              <Badge variant={statusConfig.variant}>
-                <span className="flex items-center gap-1">
-                  {statusConfig.icon}
-                  {statusLabel}
-                </span>
-              </Badge>
-            </div>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
-              {t('issuedOn', { date: formatDate(proforma.fechaEmision, locale) })}
-            </p>
-          </div>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={() => setIsPrintPreviewOpen(true)}>
-            <Printer className="w-4 h-4 mr-1" />
-            {t('print')}
-          </Button>
-          <Button 
-            variant="outline" 
-            className="h-12 text-base"
-            onClick={() => setShowPhotosGallery(true)}
-          >
-            <Camera className="w-5 h-5 mr-2" />
-            {t('jobPhotos')} ({photos.length})
-          </Button>
-          {proforma.estado !== 'ANULADA' && proforma.signatureStatus !== 'SIGNED' && (
-            <Button 
-              size="sm" 
-              onClick={handleRequestSignature}
-              disabled={requestingSignature}
+      <PageHeader
+        title={`${proforma.serie}-${proforma.numero}`}
+        subtitle={t('issuedOn', { date: formatDate(proforma.fechaEmision, locale) })}
+        icon={FileBarChart}
+        backHref={`/${locale}/proformas`}
+        badge={
+          <Badge variant={statusConfig.variant}>
+            <span className="flex items-center gap-1">
+              {statusConfig.icon}
+              {statusLabel}
+            </span>
+          </Badge>
+        }
+        actions={
+          <>
+            <Button variant="outline" size="sm" onClick={() => setIsPrintPreviewOpen(true)}>
+              <Printer className="w-4 h-4 mr-1" />
+              {t('print')}
+            </Button>
+            <Button
               variant="outline"
+              className="h-12 text-base"
+              onClick={() => setShowPhotosGallery(true)}
             >
-              <PenLine className="w-4 h-4 mr-1" />
-              {requestingSignature 
-                ? t('requestingSignature') 
-                : proforma.signatureStatus === 'PENDING' 
-                  ? t('resendSignature')
-                  : t('requestSignature')
-              }
+              <Camera className="w-5 h-5 mr-2" />
+              {t('jobPhotos')} ({photos.length})
             </Button>
-          )}
-          {canConvert && (
-            <Button size="sm" onClick={() => setIsConvertDialogOpen(true)}>
-              <FileText className="w-4 h-4 mr-1" />
-              {t('convertToInvoice')}
-            </Button>
-          )}
-          {proforma.estado === 'facturada' && proforma.facturasGeneradas && proforma.facturasGeneradas.length > 0 && (
-            <Button size="sm" onClick={() => router.push(`/${locale}/facturas/${proforma.facturasGeneradas![0].id}`)}>
-              <FileText className="w-4 h-4 mr-1" />
-              {t('viewInvoice')}
-            </Button>
-          )}
-        </div>
-      </div>
+            {proforma.estado !== 'ANULADA' && proforma.signatureStatus !== 'SIGNED' && (
+              <Button
+                size="sm"
+                onClick={handleRequestSignature}
+                disabled={requestingSignature}
+                variant="outline"
+              >
+                <PenLine className="w-4 h-4 mr-1" />
+                {requestingSignature
+                  ? t('requestingSignature')
+                  : proforma.signatureStatus === 'PENDING'
+                    ? t('resendSignature')
+                    : t('requestSignature')
+                }
+              </Button>
+            )}
+            {canConvert && (
+              <Button size="sm" onClick={() => setIsConvertDialogOpen(true)}>
+                <FileText className="w-4 h-4 mr-1" />
+                {t('convertToInvoice')}
+              </Button>
+            )}
+            {proforma.estado === 'facturada' && proforma.facturasGeneradas && proforma.facturasGeneradas.length > 0 && (
+              <Button size="sm" onClick={() => router.push(`/${locale}/facturas/${proforma.facturasGeneradas![0].id}`)}>
+                <FileText className="w-4 h-4 mr-1" />
+                {t('viewInvoice')}
+              </Button>
+            )}
+          </>
+        }
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main content */}
