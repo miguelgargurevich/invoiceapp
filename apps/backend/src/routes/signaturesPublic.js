@@ -5,6 +5,21 @@ const { uploadFile } = require('../utils/storage');
 
 console.log('🔐 signaturesPublic.js loaded - version 2');
 
+/**
+ * Arma lo que necesita sendSignatureConfirmationEmail a partir de la solicitud
+ * (con factura o proforma y la empresa incluidas) y de la firma recién creada.
+ */
+function datosConfirmacionFirma(signatureRequest, signature) {
+  return {
+    signerEmail: signatureRequest.signerEmail,
+    signerName: signatureRequest.signerName,
+    document: signatureRequest.documentType === 'INVOICE' ? signatureRequest.factura : signatureRequest.proforma,
+    empresa: signatureRequest.empresa,
+    signedPdfUrl: null,
+    signedAt: signature.signedAt,
+  };
+}
+
 // Cliente compartido (un solo pool para toda la app; ver utils/prisma.js).
 const prisma = require('../utils/prisma');
 
@@ -84,7 +99,9 @@ router.post('/submit', async (req, res) => {
         empresa: {
           select: {
             nombre: true,
-            email: true
+            email: true,
+            logoUrl: true,
+            colorPrimario: true
           }
         }
       }
@@ -220,13 +237,7 @@ router.post('/submit', async (req, res) => {
 
     // Send confirmation email
     try {
-      await sendSignatureConfirmationEmail({
-        to: signatureRequest.signerEmail,
-        signerName: signatureRequest.signerName,
-        documentType: signatureRequest.documentType,
-        documentNumber: signatureRequest.factura?.numero || signatureRequest.proforma?.numero,
-        companyName: signatureRequest.empresa.nombre
-      });
+      await sendSignatureConfirmationEmail(datosConfirmacionFirma(signatureRequest, signature));
     } catch (emailError) {
       console.error('Error sending confirmation email:', emailError);
       // Don't fail the request if email fails
@@ -278,3 +289,4 @@ router.get('/status/:token', async (req, res) => {
 });
 
 module.exports = router;
+module.exports.datosConfirmacionFirma = datosConfirmacionFirma;

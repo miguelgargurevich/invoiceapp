@@ -16,6 +16,7 @@
 
 ## Última sesión
 
+- 2026-11-02 (Claude Code con Opus 5.5): la **firma pública** (`routes/signaturesPublic.js`, POST de envío de firma) llamaba a `sendSignatureConfirmationEmail` con parámetros viejos (`to`, `companyName`…) y sin empresa, así que la confirmación fallaba en silencio. Ahora usa `datosConfirmacionFirma(signatureRequest, signature)` (exportada para pruebas): firmante, documento (factura o proforma), empresa (con `logoUrl` y `colorPrimario` en el `select`) y la fecha de firma. Prueba en `test/unit/firma-publica-confirmacion.test.js`. `npm test` 148/148; mutación (sin empresa) en rojo.
 - 2026-11-02 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/correos-firma`, rama `fix/correos-firma` sobre `main` 7f42609): **correos de firma en español y para Perú** (pedido de Miguel: «Sí, tradúcelos»). Sin push.
   - `src/services/emailService.js`: la solicitud (`sendSignatureRequestEmail`) y la confirmación (`sendSignatureConfirmationEmail`) pasan a español neutro con tuteo. Asuntos: «Firma requerida: Proforma P001-3», «Confirmación: firmaste la Proforma P001-3», «Firmado: Proforma P001-3 por <nombre>». Tipo «Factura» o «Proforma». Fechas `es-PE` en `America/Lima`. Plantilla común (`plantillaFirma`, `estilosFirma`). El aviso al dueño arma su propio texto (ya no hace `replace` de frases en inglés).
   - Quitado: ESIGN, UETA, «U.S.» y toda frase de validez legal. El pie dice lo que la ruta sí guarda: fecha, hora e IP (`ipAddress` en `routes/signatures.js` y `signaturesPublic.js`).
