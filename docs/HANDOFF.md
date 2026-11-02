@@ -1,6 +1,6 @@
 # Handoff — InvoiceApp
 
-> Actualizado: 2026-11-01 por claude-code
+> Actualizado: 2026-11-02 por claude-code (Haiku 5.5)
 
 ## Estado actual
 
@@ -14,6 +14,15 @@
   Suites: backend 104/104 y 47/47; frontend 35/35, `tsc` y `next build` en verde. Falta: despliegue y verificar parámetros contra la norma.
 
 ## Última sesión
+
+- 2026-11-02 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/dashboard-peru`, rama `feat/dashboard-peru` sobre `main` 700dd41): **menú claro y dashboard nuevo para Perú** (pedido textual de Miguel: «la barra de menú de color claro como el header, el foco es hacer facturas, las proformas son secundarias»; sin emojis).
+  - Menú (`components/global/Sidebar.tsx`): fondo blanco con borde `gray-200` (modo oscuro como antes); activo en `primary-50` con texto `primary-700` y acento berenjena a la izquierda; `title` y `aria-current`.
+  - Dashboard: `app/[locale]/(dashboard)/dashboard/page.tsx` solo elige versión. Perú → `components/dashboard/DashboardPeru.tsx`: saludo y fecha en es-PE; acción principal berenjena «Emitir comprobante» (`/comprobantes/nuevo`) con «Factura» (`?tipo=01`) y «Boleta» (`?tipo=03`); «Nueva proforma» y «Nuevo cliente» en botones grises; indicadores (cupo del mes, ventas del mes en S/, requieren atención); aviso si falta el emisor SUNAT; `AlertasSunat`; últimos 6 comprobantes; 3 proformas en un bloque neutro. Resto de empresas → `DashboardGeneral.tsx` (facturas recientes, sin tarjetas).
+  - `lib/dashboard.ts` (lógica pura: mes de Lima, cupo, ventas, atención) con `lib/dashboard.test.ts` (10 pruebas). `messages/es.json`: 34 claves nuevas en `dashboard`.
+  - Decisiones: el cupo cuenta comprobantes emitidos (no borradores) del mes calendario de Lima, igual que `planes/cupo.js`; no usa `invoicesUsed` ni `/subscriptions/usage` (cuenta por periodo y con borradores), solo toma `limits.maxInvoices` (null o ausente = ilimitado). Ventas = facturas, boletas y notas de débito aceptadas menos notas de crédito, solo PEN, en céntimos. «Requieren atención» = todo el listado (rechazados, observados, error de envío).
+  - Verificado: `npm test` 75/75; `npx tsc --noEmit` exit 0; `npx next build` exit 0 (63 páginas). Mutaciones en `lib/dashboard.ts`, restauradas con `cp` + `cmp`: contar borradores → 2 en rojo; mes en UTC en vez de Lima → 2 en rojo.
+  - NO verificado: el render en el navegador (modo claro y oscuro, menú móvil, layout en 375 px); el cupo con más de 100 comprobantes en el mes (se marca «+», pero `GET /api/comprobantes` no pagina).
+  - Gotchas: (a) las claves nuevas de `dashboard` están solo en `es.json` (como se pidió no tocar `en.json`): en `/en` saldrían sin traducir. (b) El menú usa el namespace `navigation`; no existe `sidebar`. (c) El selector de empresa no está en el menú (vive en el header): no se tocó.
 
 - 2026-11-01 (Claude Code con Sonnet 5.5, delegado en worktree `.claude/worktrees/fix-stripe-pais`, rama `feat/fix-stripe-pais` sobre `main` 2552ec5): **cancelar la suscripción de Stripe cuando una empresa cambia a Perú** (pedido de Miguel: «corrige lo que falta»; era el gotcha 4 de «seguridad de planes»).
   - Hecho: en `getOrCreateSubscription` (`middleware/subscription.js`), si el plan es de otro país y la fila trae `stripeSubscriptionId`, se cancela en Stripe (`subscriptions.cancel`, inmediato) ANTES de bajar a gratis. Si Stripe falla (red, id inexistente, `STRIPE_SECRET_KEY` apagada o ausente) se registra `console.error` solo con id de empresa y mensaje (claves `sk_…` tachadas) y la baja se hace igual. `pasarAGratis` acepta `limpiarStripe` (deja `stripeSubscriptionId` null; Culqi no lo usa). Cliente de Stripe nuevo en `src/planes/stripe.js` (`cancelarStripe`, `mensajeSeguro`; sin reintentos, tope de 8 s).
