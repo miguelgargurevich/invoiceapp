@@ -16,6 +16,14 @@
 
 ## Última sesión
 
+- 2026-11-02 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/marca-frontend`, rama `feat/marca-frontend` sobre `main` cdd6c5f): **color de marca de la empresa** (pedido de Miguel: «sentido de pertenencia»). Sin push. Decidido con Opus: un color principal por empresa; la escala se genera sola.
+  - Escala `primary` en tripletas RGB (`globals.css`, `tailwind.config.ts`) para que funcionen las opacidades. `lib/paleta.ts`: `generarEscala` (el color elegido es el paso 600), `ajustarParaTextoBlanco` (oscurece hasta 4.5:1 con texto blanco), `esHexValido`.
+  - Se aplica solo en el panel: `components/global/TemaMarca.tsx` (montado en `app/[locale]/(dashboard)/layout.tsx`) escribe las `--primary-*` en `<html>` y las quita al desmontar. Landing, login, registro, asistente y firma no leen `colorPrimario`.
+  - Selector en Configuración › Empresa (`components/settings/ColorMarca.tsx`): 8 colores sugeridos, selector y campo hex, vista previa en vivo, aviso de ajuste, «Restablecer» (null). Sin plan `hasCustomBranding`: bloque deshabilitado con «Disponible desde el plan Negocio».
+  - Commits: `2adc94a`, `db9f846`, `648d185` (y esta entrada).
+  - Verificado: `npm test` 93/93; `npx tsc --noEmit` exit 0; `npx next build` exit 0 (35 páginas, sin avisos). Mutación de `ajustarParaTextoBlanco` (bucle desactivado): 1 prueba en rojo, restaurado con `cp` + `cmp`.
+  - NO verificado: el aspecto en el navegador (modo claro y oscuro, el selector con plan y sin plan, el 403 real); el backend (`colorPrimario`) lo agrega la otra sesión.
+  - Gotchas: (a) `colorPrimario` va en el PUT solo si cambió (un 403 bloquearía todo el guardado de una empresa sin plan que conserva color). (b) «Predeterminado» guarda `null`, no `#6B2C6E`. (c) El color se ajusta para el texto blanco; esa misma escala sirve para texto `primary-600` sobre blanco. (d) `lib/culqi.ts` sigue con el berenjena en el widget de cobro: pendiente de decisión. (e) `settings.errorSaving` no existe en `es.json` (ya estaba así). (f) El PDF del comprobante y los correos no usan el color todavía: lo hace el backend en la otra sesión.
 - 2026-11-02 (Claude Code con Opus 5.5): **guardar Configuración › Empresa ya no pisa datos**. `PUT /api/empresas/mi-empresa` solo escribe los campos enviados; los valores por defecto (de Perú: PEN, es, IGV 18 %, pais PE) son solo para crear. Antes un guardado parcial ponía `setupCompleted=false`, USD, `en`, IGV 0 y «Tax» (por eso el dashboard mandaba al asistente). Pruebas en `test/db/empresa.test.js`. Además: el logo del menú expande o colapsa el menú (se recuerda en `localStorage.menuExpandido`) y no lleva al landing; «Comprobantes» va antes que «Proformas»; el asistente redirige a `/{locale}/dashboard`.
 
 - 2026-11-02 (Claude Code con Opus 5.5): **series y logo en producción**.
