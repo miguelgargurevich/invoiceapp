@@ -216,34 +216,28 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
           </ul>
         </nav>
 
-        {/* Footer del Sidebar: firma del producto y, debajo, Ayuda, ambos en tamaño pequeño */}
-        <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-800 space-y-1 text-xs">
-          {/* Firma del producto: berenjena fijo, no el color de marca de la empresa */}
+        {/* Footer del Sidebar: logo y nombre de Facturo con el acceso a Ayuda al lado */}
+        <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-800 text-xs">
           <div
-            title="Facturo"
             className={cn(
-              'flex items-center gap-3 px-3 py-1.5 text-gray-400 dark:text-gray-500',
-              isCollapsed && 'md:justify-center md:px-0'
+              'flex items-center gap-2 px-3 py-1.5',
+              isCollapsed && 'md:flex-col md:gap-3 md:px-0'
             )}
           >
-            <span className="flex w-5 shrink-0 justify-center"><IconoFacturo tamano={18} /></span>
-            <span className={cn(isCollapsed && 'md:hidden')}>
-              por <span className="font-semibold text-[#6B2C6E] dark:text-[#D7B3D9]">Facturo</span>
+            <span title="Facturo" className="flex w-5 shrink-0 justify-center"><IconoFacturo tamano={18} /></span>
+            {/* Berenjena fijo: es la marca del producto, no el color de la empresa */}
+            <span className={cn('font-semibold text-[#6B2C6E] dark:text-[#D7B3D9]', isCollapsed && 'md:hidden')}>
+              Facturo
             </span>
+            <Link
+              href="/ayuda"
+              title={t('help')}
+              aria-label={t('help')}
+              className="p-1 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-500 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition-colors"
+            >
+              <HelpCircle className="w-4 h-4" />
+            </Link>
           </div>
-
-          <Link
-            href="/ayuda"
-            title={t('help')}
-            className={cn(
-              'flex items-center gap-3 px-3 py-1.5 rounded-lg transition-colors',
-              'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100 text-gray-500 dark:text-gray-400',
-              isCollapsed && 'md:justify-center md:px-0'
-            )}
-          >
-            <span className="flex w-5 shrink-0 justify-center"><HelpCircle className="w-4 h-4" /></span>
-            <span className={cn(isCollapsed && 'md:hidden')}>{t('help')}</span>
-          </Link>
         </div>
       </aside>
     </>
