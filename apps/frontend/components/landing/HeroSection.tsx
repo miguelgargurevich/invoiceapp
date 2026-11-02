@@ -36,7 +36,7 @@ export function HeroSection() {
     { icon: Send, gradient: 'from-primary-500 to-primary-600', bg: 'bg-primary-500' },
     { icon: ShieldCheck, gradient: 'from-violet-500 to-violet-600', bg: 'bg-violet-500' },
     { icon: Receipt, gradient: 'from-amber-500 to-amber-600', bg: 'bg-amber-500' },
-    { icon: Wallet, gradient: 'from-emerald-500 to-emerald-600', bg: 'bg-emerald-500' },
+    { icon: Wallet, gradient: 'from-slate-500 to-slate-600', bg: 'bg-slate-500' },
   ];
 
   return (
@@ -239,7 +239,7 @@ export function HeroSection() {
                             <div className="h-3 w-16 bg-slate-50 dark:bg-slate-800 rounded mt-1" />
                           </div>
                         </div>
-                        <div className="h-6 w-16 bg-green-100 dark:bg-green-900/30 rounded-full" />
+                        <div className="h-6 w-16 bg-slate-100 dark:bg-slate-800 rounded-full" />
                       </div>
                     ))}
                   </div>

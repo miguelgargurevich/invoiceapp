@@ -103,8 +103,8 @@ export default function AyudaPage() {
 
         <Card className="!p-5 hover:shadow-lg transition-shadow cursor-pointer group">
           <div className="flex items-start gap-4">
-            <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg group-hover:scale-110 transition-transform">
-              <FileText className="w-6 h-6 text-green-600 dark:text-green-400" />
+            <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg group-hover:scale-110 transition-transform">
+              <FileText className="w-6 h-6 text-slate-600 dark:text-slate-300" />
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 dark:text-gray-100">
@@ -227,8 +227,8 @@ export default function AyudaPage() {
             </div>
 
             <div className="flex flex-col items-center text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-lg">
-              <div className="p-4 bg-green-100 dark:bg-green-900/30 rounded-full mb-4">
-                <Phone className="w-6 h-6 text-green-600 dark:text-green-400" />
+              <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-full mb-4">
+                <Phone className="w-6 h-6 text-slate-600 dark:text-slate-300" />
               </div>
               <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
                 {t('phone')}

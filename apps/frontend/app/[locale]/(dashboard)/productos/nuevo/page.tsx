@@ -97,8 +97,8 @@ export default function NuevoProductoPage({
         <form onSubmit={handleSubmit} className="space-y-6 p-6">
           {/* Icon Header */}
           <div className="flex items-center gap-4 pb-6 border-b border-gray-200 dark:border-gray-700">
-            <div className="p-4 bg-emerald-100 dark:bg-emerald-900/30 rounded-2xl">
-              <Package className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+            <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl">
+              <Package className="w-8 h-8 text-slate-600 dark:text-slate-300" />
             </div>
             <div>
               <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">

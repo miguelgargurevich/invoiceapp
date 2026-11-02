@@ -115,8 +115,8 @@ export default function RegisterPage({
         {/* Animated Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl" />
-          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-teal-400/20 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-emerald-400/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl" />
+          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-primary-400/20 rounded-full translate-x-1/3 translate-y-1/3 blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] bg-primary-300/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-2xl" />
         </div>
 
         {/* Grid Pattern */}
@@ -135,7 +135,7 @@ export default function RegisterPage({
                 <h1 className="text-3xl font-bold text-white">
                   Facturo
                 </h1>
-                <p className="text-emerald-200 text-sm">
+                <p className="text-primary-200 text-sm">
                   {t('tagline')}
                 </p>
               </div>
@@ -154,7 +154,7 @@ export default function RegisterPage({
               <h2 className="text-2xl font-semibold text-white mb-2">
                 Empieza gratis hoy
               </h2>
-              <p className="text-emerald-200">
+              <p className="text-primary-200">
                 Sin tarjeta de crédito requerida. Cancela en cualquier momento.
               </p>
             </div>
@@ -188,7 +188,7 @@ export default function RegisterPage({
           </div>
 
           {/* Footer */}
-          <div className="text-emerald-200 text-sm">
+          <div className="text-primary-200 text-sm">
             © {new Date().getFullYear()} Facturo. {t('allRightsReserved')}
           </div>
         </div>
@@ -308,7 +308,7 @@ export default function RegisterPage({
                             'placeholder-slate-400 dark:placeholder-slate-500',
                             errors.name
                               ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                              : 'border-slate-200 dark:border-slate-700 focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-emerald-500/20',
+                              : 'border-slate-200 dark:border-slate-700 focus:border-primary-500 dark:focus:border-primary-500 focus:ring-primary-500/20',
                             'focus:outline-none focus:ring-4'
                           )}
                         />
@@ -338,7 +338,7 @@ export default function RegisterPage({
                             'placeholder-slate-400 dark:placeholder-slate-500',
                             errors.email
                               ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                              : 'border-slate-200 dark:border-slate-700 focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-emerald-500/20',
+                              : 'border-slate-200 dark:border-slate-700 focus:border-primary-500 dark:focus:border-primary-500 focus:ring-primary-500/20',
                             'focus:outline-none focus:ring-4'
                           )}
                         />
@@ -368,7 +368,7 @@ export default function RegisterPage({
                             'placeholder-slate-400 dark:placeholder-slate-500',
                             errors.password
                               ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                              : 'border-slate-200 dark:border-slate-700 focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-emerald-500/20',
+                              : 'border-slate-200 dark:border-slate-700 focus:border-primary-500 dark:focus:border-primary-500 focus:ring-primary-500/20',
                             'focus:outline-none focus:ring-4'
                           )}
                         />
@@ -405,7 +405,7 @@ export default function RegisterPage({
                             'placeholder-slate-400 dark:placeholder-slate-500',
                             errors.confirmPassword
                               ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                              : 'border-slate-200 dark:border-slate-700 focus:border-emerald-500 dark:focus:border-emerald-500 focus:ring-emerald-500/20',
+                              : 'border-slate-200 dark:border-slate-700 focus:border-primary-500 dark:focus:border-primary-500 focus:ring-primary-500/20',
                             'focus:outline-none focus:ring-4'
                           )}
                         />
@@ -427,7 +427,7 @@ export default function RegisterPage({
 
                     <Button
                       type="submit"
-                      className="w-full py-3.5 text-base font-semibold rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all"
+                      className="w-full py-3.5 text-base font-semibold rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all"
                       disabled={isLoading}
                     >
                       {isLoading ? (
@@ -449,7 +449,7 @@ export default function RegisterPage({
                       {t('alreadyHaveAccount')}{' '}
                       <Link
                         href={`/${locale}/login`}
-                        className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-semibold transition-colors"
+                        className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-semibold transition-colors"
                       >
                         {t('signIn')}
                       </Link>

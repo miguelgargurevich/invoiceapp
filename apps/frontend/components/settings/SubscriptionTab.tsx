@@ -341,7 +341,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
       return 'bg-gradient-to-br from-primary-500 to-cyan-600';
     }
     if (name.includes('free') || name.includes('gratis')) {
-      return 'bg-gradient-to-br from-green-500 to-emerald-600';
+      return 'bg-gradient-to-br from-slate-500 to-slate-700';
     }
     return 'bg-gray-100 dark:bg-gray-700';
   };
@@ -508,7 +508,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                     onClick={handleReactivate}
                     disabled={loadingReactivate}
                     size="sm"
-                    className="bg-green-600 hover:bg-green-700"
+                    className="bg-primary-600 hover:bg-primary-700"
                   >
                     {loadingReactivate && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                     <RefreshCw className="h-4 w-4 mr-2" />
@@ -611,12 +611,12 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                 <div
                   className={cn(
                     'h-full rounded-full transition-all duration-500',
-                    usage.limits.maxClients === -1 ? 'bg-emerald-500' :
+                    usage.limits.maxClients === -1 ? 'bg-primary-600' :
                     (usage.percentages.clients ?? 0) > 90
                       ? 'bg-red-500'
                       : (usage.percentages.clients ?? 0) > 70
                       ? 'bg-yellow-500'
-                      : 'bg-emerald-500'
+                      : 'bg-primary-600'
                   )}
                   style={{ width: usage.limits.maxClients === -1 ? '10%' : `${Math.min(usage.percentages.clients ?? 0, 100)}%` }}
                 />
@@ -675,7 +675,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
             )}
           >
             {t('yearly')}
-            <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+            <span className="bg-primary-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">
               -20%
             </span>
           </button>
@@ -750,7 +750,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                   <p className="mt-1 text-xs text-gray-600 dark:text-gray-400">{t('culqi.igvIncluido')}</p>
                 )}
                 {billingInterval === 'yearly' && savings > 0 && (
-                  <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded text-xs font-semibold">
+                  <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-400 rounded text-xs font-semibold">
                     <Zap className="h-3 w-3" />
                     Save {savings}%
                   </div>
@@ -840,8 +840,8 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
               className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-100 dark:bg-green-900/40 rounded-lg">
-                  <RefreshCw className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+                  <RefreshCw className="h-4 w-4 text-slate-600 dark:text-slate-300" />
                 </div>
                 <h4 className="font-semibold text-sm text-left">{t('faqQ2')}</h4>
               </div>

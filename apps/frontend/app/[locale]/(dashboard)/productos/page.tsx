@@ -256,7 +256,7 @@ export default function ProductosPage({
               {t('title')}
             </h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
-              {t('description')}
+              {t('subtitle')}
             </p>
           </div>
         </div>

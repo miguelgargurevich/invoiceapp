@@ -1210,7 +1210,7 @@ export default function FacturaDetailPage({
               <Button 
                 onClick={handleRegisterPayment} 
                 disabled={savingPayment}
-                className="flex-1 h-11 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                className="flex-1 h-11 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
               >
                 {savingPayment ? (
                   <>
@@ -1815,7 +1815,7 @@ export default function FacturaDetailPage({
           </div>
 
           {/* Totals Summary */}
-          <div className="bg-gradient-to-br from-emerald-50 to-green-50/50 dark:from-emerald-900/20 dark:to-green-900/10 rounded-xl p-5 border border-emerald-100 dark:border-emerald-900/30">
+          <div className="bg-gradient-to-br from-primary-50 to-primary-50/50 dark:from-primary-900/20 dark:to-primary-900/10 rounded-xl p-5 border border-primary-100 dark:border-primary-900/30">
             <div className="space-y-3">
               <div className="flex justify-between items-center text-sm">
                 <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
@@ -1829,9 +1829,9 @@ export default function FacturaDetailPage({
                   {formatCurrency((Number(totalMaterialsEdit) + Number(totalLaborEdit)) * (empresa?.taxRate ? parseFloat(empresa.taxRate.toString()) / 100 : 0))}
                 </span>
               </div>
-              <div className="pt-3 border-t border-emerald-200 dark:border-emerald-800/50 flex justify-between items-center">
+              <div className="pt-3 border-t border-primary-200 dark:border-primary-800/50 flex justify-between items-center">
                 <span className="font-semibold text-gray-900 dark:text-gray-100">Total Amount</span>
-                <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                <span className="text-lg font-bold text-primary-700 dark:text-primary-400">
                   {formatCurrency(
                     (Number(totalMaterialsEdit) + Number(totalLaborEdit)) * 
                     (1 + (empresa?.taxRate ? parseFloat(empresa.taxRate.toString()) / 100 : 0))

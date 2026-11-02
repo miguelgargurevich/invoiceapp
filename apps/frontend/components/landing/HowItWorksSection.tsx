@@ -25,7 +25,7 @@ export function HowItWorksSection() {
     { icon: KeyRound, color: 'indigo', gradient: 'from-primary-500 to-primary-700', shadow: 'shadow-primary-500/30' },
     { icon: FilePlus, color: 'violet', gradient: 'from-violet-500 to-violet-700', shadow: 'shadow-violet-500/30' },
     { icon: ShieldCheck, color: 'amber', gradient: 'from-amber-500 to-amber-700', shadow: 'shadow-amber-500/30' },
-    { icon: Wallet, color: 'emerald', gradient: 'from-emerald-500 to-emerald-700', shadow: 'shadow-emerald-500/30' },
+    { icon: Wallet, color: 'slate', gradient: 'from-slate-500 to-slate-700', shadow: 'shadow-slate-500/30' },
   ];
 
   const steps = stepsEs;
@@ -58,7 +58,7 @@ export function HowItWorksSection() {
         {/* Steps Timeline */}
         <div className="relative">
           {/* Connection Line */}
-          <div className="hidden lg:block absolute top-12 left-[10%] right-[10%] h-0.5 bg-gradient-to-r from-primary-500 via-violet-500 to-emerald-500 -translate-y-1/2" />
+          <div className="hidden lg:block absolute top-12 left-[10%] right-[10%] h-0.5 bg-gradient-to-r from-primary-500 via-violet-500 to-slate-400 -translate-y-1/2" />
 
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-4">
             {steps.map((step, index) => {

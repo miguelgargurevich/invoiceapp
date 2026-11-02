@@ -295,8 +295,8 @@ export default function AdminPage({
                     {stats.totalFacturas}
                   </div>
                 </div>
-                <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                  <FileText className="w-5 h-5 text-green-600 dark:text-green-400" />
+                <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+                  <FileText className="w-5 h-5 text-slate-600 dark:text-slate-300" />
                 </div>
               </div>
             </Card>

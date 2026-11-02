@@ -123,7 +123,7 @@ const PROPOSAL_TEMPLATES: ProposalTemplate[] = [
     name: 'Consultor',
     description: 'Negocios, TI, gestión, estrategia',
     icon: Briefcase,
-    color: 'from-emerald-500 to-teal-500',
+    color: 'from-slate-500 to-slate-700',
     defaultTerms:
 `1. El consultor mantendrá la confidencialidad de la información del cliente.
 2. Los entregables son para uso interno del cliente, salvo que se acuerde otra cosa.

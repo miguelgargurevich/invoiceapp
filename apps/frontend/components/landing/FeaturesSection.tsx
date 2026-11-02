@@ -38,13 +38,13 @@ interface ItemLanding {
 const ITEMS_ES: ItemLanding[] = [
   { icon: FileText, color: 'primary', key: 'comprobantes' },
   { icon: FilePen, color: 'purple', key: 'notas' },
-  { icon: ShieldCheck, color: 'green', key: 'envio' },
+  { icon: ShieldCheck, color: 'slate', key: 'envio' },
   { icon: Calculator, color: 'orange', key: 'igv' },
   { icon: Percent, color: 'pink', key: 'regimenes' },
   { icon: IdCard, color: 'cyan', key: 'clientes' },
   { icon: FileDown, color: 'primary', key: 'pdf' },
   { icon: XCircle, color: 'red', key: 'anulaciones' },
-  { icon: ClipboardList, color: 'teal', key: 'proformas' },
+  { icon: ClipboardList, color: 'slate', key: 'proformas' },
   { icon: BarChart3, color: 'blue', key: 'reportes' },
   { icon: AlertTriangle, color: 'amber', key: 'rechazos' },
   { icon: Lock, color: 'violet', key: 'claves' },
@@ -70,10 +70,10 @@ export function FeaturesSection() {
       icon: 'text-cyan-600 dark:text-cyan-400',
       glow: 'group-hover:shadow-cyan-500/25',
     },
-    green: {
-      bg: 'bg-green-100 dark:bg-green-900/30',
-      icon: 'text-green-600 dark:text-green-400',
-      glow: 'group-hover:shadow-green-500/25',
+    slate: {
+      bg: 'bg-slate-100 dark:bg-slate-800',
+      icon: 'text-slate-600 dark:text-slate-300',
+      glow: 'group-hover:shadow-slate-500/25',
     },
     orange: {
       bg: 'bg-orange-100 dark:bg-orange-900/30',
@@ -99,11 +99,6 @@ export function FeaturesSection() {
       bg: 'bg-primary-100 dark:bg-primary-900/30',
       icon: 'text-primary-600 dark:text-primary-400',
       glow: 'group-hover:shadow-primary-500/25',
-    },
-    teal: {
-      bg: 'bg-teal-100 dark:bg-teal-900/30',
-      icon: 'text-teal-600 dark:text-teal-400',
-      glow: 'group-hover:shadow-teal-500/25',
     },
     violet: {
       bg: 'bg-violet-100 dark:bg-violet-900/30',

@@ -200,7 +200,7 @@ export function PricingSection() {
           transition={{ duration: 0.5 }}
           className="text-center max-w-3xl mx-auto mb-12"
         >
-          <span className="inline-block px-4 py-1.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-sm font-medium mb-4">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-medium mb-4">
             {t('pricing.badge')}
           </span>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white">
@@ -238,7 +238,7 @@ export function PricingSection() {
             {t('pricing.yearly')}
           </span>
           {isYearly && (
-            <span className="px-2 py-1 text-xs font-semibold text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/30 rounded-full">
+            <span className="px-2 py-1 text-xs font-semibold text-primary-700 dark:text-primary-300 bg-primary-100 dark:bg-primary-900/30 rounded-full">
               {t('pricing.save')}
             </span>
           )}
@@ -322,7 +322,7 @@ export function PricingSection() {
                       </p>
                     )}
                     {isYearly && savings > 0 && (
-                      <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded text-xs font-semibold">
+                      <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-400 rounded text-xs font-semibold">
                         <Zap className="h-3 w-3" />
                         {t('pricing.save').replace(/\d+%/, `${savings}%`)}
                       </div>

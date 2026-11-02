@@ -580,8 +580,8 @@ export default function FacturasPage({
                 {formatCurrency(totals.total)}
               </div>
             </div>
-            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-              <Receipt className="w-5 h-5 text-green-600 dark:text-green-400" />
+            <div className="p-2 bg-primary-50 dark:bg-primary-900/30 rounded-lg">
+              <Receipt className="w-5 h-5 text-primary-700 dark:text-primary-400" />
             </div>
           </div>
         </Card>

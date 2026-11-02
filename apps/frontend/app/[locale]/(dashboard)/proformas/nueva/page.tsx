@@ -301,15 +301,15 @@ export default function NuevaProformaPage({
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <div className="p-2 sm:p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex-shrink-0">
-            <FileBarChart className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 dark:text-emerald-400" />
+          <div className="p-2 sm:p-3 bg-slate-100 dark:bg-slate-800 rounded-xl flex-shrink-0">
+            <FileBarChart className="w-5 h-5 sm:w-6 sm:h-6 text-slate-600 dark:text-slate-300" />
           </div>
           <div className="min-w-0 flex-1">
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">
               {t('newQuote')}
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
-              {t('description')}
+              {t('newQuoteDescription')}
             </p>
           </div>
         </div>
@@ -686,7 +686,7 @@ export default function NuevaProformaPage({
 
           {/* Quick actions */}
           <Card className="!p-4">
-            <Button className="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white" size="lg" onClick={handleSave} disabled={saving || lineas.length === 0}>
+            <Button className="w-full bg-primary-600 hover:bg-primary-700 dark:bg-primary-600 dark:hover:bg-primary-700 text-white" size="lg" onClick={handleSave} disabled={saving || lineas.length === 0}>
               <Save className="w-5 h-5 mr-2" />
               {saving ? t('save') + '...' : t('saveQuote')}
             </Button>

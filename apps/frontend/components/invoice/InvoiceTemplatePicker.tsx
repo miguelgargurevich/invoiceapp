@@ -104,7 +104,7 @@ const INVOICE_TEMPLATES: InvoiceTemplate[] = [
     name: 'Consultor',
     description: 'Negocios, TI, gestión, estrategia',
     icon: Briefcase,
-    color: 'from-emerald-500 to-teal-500',
+    color: 'from-slate-500 to-slate-700',
     defaultWorkDescription:
 `Servicios de consultoría prestados:
 • Sesiones de diagnóstico y evaluación

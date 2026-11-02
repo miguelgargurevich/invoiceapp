@@ -397,21 +397,21 @@ export default function ProformasPage({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl">
-            <FileBarChart className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+          <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl">
+            <FileBarChart className="w-6 h-6 text-slate-600 dark:text-slate-300" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {t('title')}
             </h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
-              {t('description')}
+              {t('pageDescription')}
             </p>
           </div>
         </div>
         <Button 
           onClick={handleCreateClick}
-          className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 bg-emerald-600 dark:bg-emerald-500 hover:bg-emerald-700 dark:hover:bg-emerald-600 text-white"
+          className="px-6 py-3 text-base font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105 bg-primary-600 dark:bg-primary-600 hover:bg-primary-700 dark:hover:bg-primary-700 text-white"
         >
           <FileBarChart className="w-5 h-5 mr-2" />
           {t('create')}
@@ -449,8 +449,8 @@ export default function ProformasPage({
                 {formatCurrency(totals.total)}
               </div>
             </div>
-            <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
-              <FileBarChart className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+              <FileBarChart className="w-5 h-5 text-slate-600 dark:text-slate-300" />
             </div>
           </div>
         </Card>

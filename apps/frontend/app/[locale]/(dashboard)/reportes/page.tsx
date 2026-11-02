@@ -44,7 +44,7 @@ export default function ReportesPage({
       descriptionKey: 'clientsReportDesc',
       icon: <Users className="w-8 h-8" />,
       href: `/${locale}/reportes/clientes`,
-      color: 'green',
+      color: 'slate',
     },
     {
       id: 'products',
@@ -70,10 +70,10 @@ export default function ReportesPage({
       icon: 'text-primary-600 dark:text-primary-400',
       hover: 'hover:border-primary-300 dark:hover:border-primary-600',
     },
-    green: {
-      bg: 'bg-green-50 dark:bg-green-900/20',
-      icon: 'text-green-600 dark:text-green-400',
-      hover: 'hover:border-green-300 dark:hover:border-green-600',
+    slate: {
+      bg: 'bg-slate-50 dark:bg-slate-800/50',
+      icon: 'text-slate-600 dark:text-slate-300',
+      hover: 'hover:border-slate-300 dark:hover:border-slate-600',
     },
     purple: {
       bg: 'bg-purple-50 dark:bg-purple-900/20',

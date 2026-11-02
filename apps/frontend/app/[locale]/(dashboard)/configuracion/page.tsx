@@ -906,7 +906,7 @@ export default function ConfiguracionPage({
           {activeTab === 'facturacion' && (
             <Card className="shadow-sm">
               <div className="flex items-center gap-3 pb-6 border-b border-gray-200 dark:border-gray-700">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-md">
+                <div className="p-3 bg-gradient-to-br from-slate-500 to-slate-700 rounded-xl shadow-md">
                   <FileText className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -919,7 +919,7 @@ export default function ConfiguracionPage({
                 {/* Series Configuration */}
                 <div>
                   <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                    <div className="w-1 h-5 bg-green-500 rounded-full"></div>
+                    <div className="w-1 h-5 bg-primary-500 rounded-full"></div>
                     {t('seriesConfiguration') || 'Series Configuration'}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -927,13 +927,13 @@ export default function ConfiguracionPage({
                       label={t('invoiceSeries')}
                       value={invoiceConfig.serieFactura}
                       onChange={(e) => setInvoiceConfig({ ...invoiceConfig, serieFactura: e.target.value })}
-                      className="focus:ring-green-500"
+                      className="focus:ring-primary-500"
                     />
                     <Input
                       label={t('receiptSeries')}
                       value={invoiceConfig.serieBoleta}
                       onChange={(e) => setInvoiceConfig({ ...invoiceConfig, serieBoleta: e.target.value })}
-                      className="focus:ring-green-500"
+                      className="focus:ring-primary-500"
                     />
                   </div>
                 </div>
@@ -941,7 +941,7 @@ export default function ConfiguracionPage({
                 {/* Tax Configuration */}
                 <div>
                   <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                    <div className="w-1 h-5 bg-green-500 rounded-full"></div>
+                    <div className="w-1 h-5 bg-primary-500 rounded-full"></div>
                     {t('taxConfiguration') || 'Tax Configuration'}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -960,7 +960,7 @@ export default function ConfiguracionPage({
                           setInvoiceConfig({ ...invoiceConfig, igv: value === '' ? 0 : parseFloat(value) || 0 });
                         }
                       }}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                       placeholder="0"
                     />
                   </div>
@@ -971,7 +971,7 @@ export default function ConfiguracionPage({
                     <select
                       value={invoiceConfig.moneda}
                       onChange={(e) => setInvoiceConfig({ ...invoiceConfig, moneda: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                     >
                       <option value="PEN">PEN - {t('currencies.PEN')}</option>
                       <option value="USD">USD - {t('currencies.USD')}</option>
@@ -983,14 +983,14 @@ export default function ConfiguracionPage({
               {/* Payment Terms */}
               <div>
                 <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-                  <div className="w-1 h-5 bg-green-500 rounded-full"></div>
+                  <div className="w-1 h-5 bg-primary-500 rounded-full"></div>
                   {t('paymentTerms') || 'Payment Terms'}
                 </h3>
                 <Input
                   label={t('paymentTerms')}
                   value={invoiceConfig.condicionesPago}
                   onChange={(e) => setInvoiceConfig({ ...invoiceConfig, condicionesPago: e.target.value })}
-                  className="focus:ring-green-500"
+                  className="focus:ring-primary-500"
                 />
               </div>
             </div>
@@ -999,7 +999,7 @@ export default function ConfiguracionPage({
                 <button
                   onClick={handleSaveInvoiceConfig}
                   disabled={saving}
-                  className="h-11 px-6 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-base font-semibold rounded-lg hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all duration-200"
+                  className="h-11 px-6 bg-gradient-to-r from-primary-600 to-primary-700 text-white text-base font-semibold rounded-lg hover:from-primary-700 hover:to-primary-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transition-all duration-200"
                 >
                   {saving ? t('saving') : t('save')}
                 </button>
