@@ -64,7 +64,7 @@ export function DashboardGeneral({ locale }: { locale: string }) {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 min-w-0 truncate">
+        <h1 className="!text-2xl font-bold text-gray-900 dark:text-gray-100 min-w-0 truncate">
           {empresa?.nombre ? t('hola', { nombre: empresa.nombre }) : t('title')}
         </h1>
         <div className="flex flex-wrap gap-2">
@@ -82,7 +82,7 @@ export function DashboardGeneral({ locale }: { locale: string }) {
 
       <Card padding="none">
         <div className="flex items-center justify-between gap-4 px-4 md:px-6 py-4 border-b border-gray-200 dark:border-gray-800">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">{t('recentInvoices')}</h2>
+          <h2 className="!text-base font-semibold text-gray-900 dark:text-gray-100">{t('recentInvoices')}</h2>
           <Link href={`/${locale}/facturas`} className="text-sm text-primary-700 dark:text-primary-300 hover:underline">
             {t('viewAll')}
           </Link>

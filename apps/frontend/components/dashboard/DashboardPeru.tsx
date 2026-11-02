@@ -76,7 +76,7 @@ export function DashboardPeru({ locale }: { locale: string }) {
         <div className="min-w-0">
           {/* La fecha solo después de cargar: así el servidor y el cliente pintan lo mismo. */}
           {datos && <p className="text-sm text-gray-500 dark:text-gray-400">{fechaLarga(datos.ahora)}</p>}
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1 truncate">
+          <h1 className="!text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1 truncate">
             {empresa?.nombre ? t('hola', { nombre: empresa.nombre }) : t('title')}
           </h1>
         </div>

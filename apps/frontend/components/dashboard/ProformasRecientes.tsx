@@ -27,7 +27,7 @@ export function ProformasRecientes({ locale, cargando, proformas }: Props) {
   return (
     <Card className="p-4 md:p-5">
       <div className="flex items-center justify-between gap-4 mb-2">
-        <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300">{t('proformasTitulo')}</h2>
+        <h2 className="!text-sm font-semibold text-gray-700 dark:text-gray-300">{t('proformasTitulo')}</h2>
         <Link href={`/${locale}/proformas`} className="text-xs text-gray-500 dark:text-gray-400 hover:underline">
           {t('proformasVer')}
         </Link>
