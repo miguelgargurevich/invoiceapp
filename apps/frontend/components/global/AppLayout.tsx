@@ -20,7 +20,15 @@ export function AppLayout({ children }: AppLayoutProps) {
   const t = useTranslations('common');
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(true); // Always collapsed by default
+  // Menú colapsado por defecto; el logo lo alterna y la elección se recuerda en este navegador.
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  useEffect(() => {
+    try { if (localStorage.getItem('menuExpandido') === '1') setSidebarCollapsed(false); } catch { /* sin almacenamiento */ }
+  }, []);
+  const alternarMenu = () => setSidebarCollapsed((colapsado) => {
+    try { localStorage.setItem('menuExpandido', colapsado ? '1' : '0'); } catch { /* sin almacenamiento */ }
+    return !colapsado;
+  });
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
 
   // Redirigir si no está autenticado
@@ -68,14 +76,14 @@ export function AppLayout({ children }: AppLayoutProps) {
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
         isCollapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        onToggleCollapse={alternarMenu}
       />
 
       {/* Contenido principal */}
       <div
         className={cn(
           'flex flex-col min-h-screen transition-all duration-300',
-          'md:ml-16' // SIEMPRE 16 (sidebar colapsado)
+          sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'
         )}
       >
         {/* Header */}

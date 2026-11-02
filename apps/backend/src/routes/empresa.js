@@ -54,29 +54,50 @@ router.put('/mi-empresa', authenticateToken, async (req, res) => {
       where: { userId: req.user.id }
     });
 
-    // Map frontend fields to backend schema
+    // Campos que vienen en el cuerpo (frontend → esquema). Solo lo enviado se escribe: un formulario parcial
+    // (p. ej. Configuración › Empresa) no debe pisar el resto con valores por defecto.
+    const b = req.body;
+    const moneda = b.currency || b.moneda;
     const empresaData = {
-      nombre: req.body.nombre || req.body.razonSocial || 'Mi Empresa',
-      razonSocial: req.body.razonSocial || req.body.nombre,
-      nombreComercial: req.body.nombreComercial,
-      ruc: req.body.ruc || 'TEMP-' + Date.now(), // Temporal RUC if not provided
-      direccion: req.body.direccion,
-      telefono: req.body.telefono,
-      email: req.body.email,
-      web: req.body.web,
-      logoUrl: req.body.logoUrl,
-      moneda: req.body.currency || req.body.moneda || 'USD',
-      currency: req.body.currency || req.body.moneda || 'USD',
-      locale: req.body.locale || 'en',
-      taxRate: req.body.taxRate !== undefined ? parseFloat(req.body.taxRate) : 0,
-      taxName: req.body.taxName || 'Tax',
-      serieFactura: req.body.serieFactura || 'F001',
-      serieProforma: req.body.serieProforma || 'P001',
-      licencia: req.body.licencia,
-      setupCompleted: req.body.setupCompleted || false,
-      pais: ['US', 'PE'].includes(req.body.pais) ? req.body.pais : undefined,
-      userId: req.user.id
+      nombre: b.nombre || b.razonSocial,
+      razonSocial: b.razonSocial || b.nombre,
+      nombreComercial: b.nombreComercial,
+      ruc: b.ruc || undefined,
+      direccion: b.direccion,
+      telefono: b.telefono,
+      email: b.email,
+      web: b.web,
+      logoUrl: b.logoUrl,
+      moneda: moneda || undefined,
+      currency: moneda || undefined,
+      locale: b.locale || undefined,
+      taxRate: b.taxRate !== undefined && b.taxRate !== null && b.taxRate !== '' ? parseFloat(b.taxRate) : undefined,
+      taxName: b.taxName || undefined,
+      serieFactura: b.serieFactura || undefined,
+      serieProforma: b.serieProforma || undefined,
+      licencia: b.licencia,
+      setupCompleted: typeof b.setupCompleted === 'boolean' ? b.setupCompleted : undefined,
+      pais: ['US', 'PE'].includes(b.pais) ? b.pais : undefined,
     };
+
+    // Empresa nueva: valores por defecto de Perú (la app es para Perú) para lo que no venga.
+    if (!existingEmpresa) {
+      Object.assign(empresaData, {
+        nombre: empresaData.nombre || 'Mi Empresa',
+        razonSocial: empresaData.razonSocial || empresaData.nombre || 'Mi Empresa',
+        ruc: empresaData.ruc || 'TEMP-' + Date.now(), // RUC temporal si no se indica
+        moneda: empresaData.moneda || 'PEN',
+        currency: empresaData.currency || 'PEN',
+        locale: empresaData.locale || 'es',
+        taxRate: empresaData.taxRate ?? 18,
+        taxName: empresaData.taxName || 'IGV',
+        serieFactura: empresaData.serieFactura || 'F001',
+        serieProforma: empresaData.serieProforma || 'P001',
+        setupCompleted: empresaData.setupCompleted ?? false,
+        pais: empresaData.pais || 'PE',
+        userId: req.user.id,
+      });
+    }
 
     // Remove undefined values
     Object.keys(empresaData).forEach(key => 

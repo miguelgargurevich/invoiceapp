@@ -147,7 +147,7 @@ export default function SetupWizardPage({
         const response = await api.get<EmpresaResponse>('/empresas/mi-empresa');
         if (response.setupCompleted) {
           // Already completed setup, redirect to dashboard
-          router.push('/dashboard');
+          router.push(`/${locale}/dashboard`);
           return;
         }
         

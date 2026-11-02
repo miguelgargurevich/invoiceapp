@@ -50,3 +50,30 @@ test('sin RUC queda uno provisional TEMP-', async () => {
   assert.equal(r.status, 200);
   assert.match(r.json.ruc, /^TEMP-/);
 });
+
+test('guardar solo algunos campos no pisa el resto (setup, moneda, IGV, idioma)', async () => {
+  const u = await usuario('parcial@test.pe');
+  const creada = await guardar(u, { nombre: 'Parcial SAC', ruc: '20100047218', currency: 'PEN', locale: 'es', taxRate: 18, taxName: 'IGV', setupCompleted: true });
+  assert.equal(creada.status, 200);
+  // Configuración › Empresa manda solo datos de contacto
+  const r = await guardar(u, { nombre: 'Parcial SAC', direccion: 'Av. Nueva 123', telefono: '+51 999 999 999' });
+  assert.equal(r.status, 200);
+  assert.equal(r.json.direccion, 'Av. Nueva 123');
+  assert.equal(r.json.setupCompleted, true);
+  assert.equal(r.json.currency, 'PEN');
+  assert.equal(r.json.locale, 'es');
+  assert.equal(Number(r.json.taxRate), 18);
+  assert.equal(r.json.taxName, 'IGV');
+  assert.equal(r.json.ruc, '20100047218');
+});
+
+test('una empresa nueva sin datos de impuesto arranca con los de Perú', async () => {
+  const u = await usuario('nueva-pe@test.pe');
+  const r = await guardar(u, { nombre: 'Nueva SAC' });
+  assert.equal(r.status, 200);
+  assert.equal(r.json.currency, 'PEN');
+  assert.equal(Number(r.json.taxRate), 18);
+  assert.equal(r.json.taxName, 'IGV');
+  assert.equal(r.json.pais, 'PE');
+  assert.equal(r.json.setupCompleted, false);
+});

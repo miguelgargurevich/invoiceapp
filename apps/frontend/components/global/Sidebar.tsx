@@ -33,8 +33,8 @@ interface SidebarProps {
 
 const menuItems = [
   { href: '/dashboard', icon: LayoutDashboard, labelKey: 'dashboard' },
-  { href: '/proformas', icon: FileBarChart, labelKey: 'quotes' },
   { href: '/facturas', icon: Receipt, labelKey: 'invoices' },
+  { href: '/proformas', icon: FileBarChart, labelKey: 'quotes' },
   { href: '/clientes', icon: Users, labelKey: 'clients' },
   { href: '/productos', icon: Package, labelKey: 'products' },
   { href: '/reportes', icon: BarChart3, labelKey: 'reports' },
@@ -109,19 +109,29 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
           'transform transition-all duration-300 ease-in-out',
           // Mobile
           isOpen ? 'translate-x-0' : '-translate-x-full',
-          // Desktop - SIEMPRE COLAPSADO
+          // Escritorio: colapsado (solo íconos) o expandido (íconos y nombres); el logo lo alterna
           'md:translate-x-0',
-          'md:w-16', // Siempre 16 (colapsado) en desktop
+          isCollapsed ? 'md:w-16' : 'md:w-64',
           'w-64' // Ancho completo en móvil cuando está abierto
         )}
       >
         {/* Header del Sidebar */}
         <div className="flex items-center h-16 px-4 border-b border-gray-200 dark:border-gray-800 relative">
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            {/* SIEMPRE COLAPSADO - Solo mostrar logo */}
-            <Link href="/" className="flex items-left justify-left w-full">
+            {/* El logo expande o colapsa el menú (no lleva al landing) */}
+            <button
+              type="button"
+              onClick={onToggleCollapse}
+              aria-label={isCollapsed ? 'Expandir menú' : 'Colapsar menú'}
+              aria-expanded={!isCollapsed}
+              title={isCollapsed ? 'Expandir menú' : 'Colapsar menú'}
+              className="flex items-center gap-2 w-full min-w-0 rounded-lg text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+            >
               <CompanyLogo />
-            </Link>
+              <span className={cn('truncate text-sm font-semibold text-gray-900 dark:text-gray-100', isCollapsed && 'md:hidden')}>
+                {empresa?.nombre || 'Facturo'}
+              </span>
+            </button>
           </div>
 
           {/* Botón cerrar en móvil */}
@@ -172,14 +182,13 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
                       'relative flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
                       'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100',
                       isActive && 'bg-primary-50 text-primary-700 hover:bg-primary-50 hover:text-primary-700 dark:bg-primary-900/30 dark:text-primary-300 dark:hover:bg-primary-900/30 dark:hover:text-primary-300',
-                      'md:justify-center md:px-2' // SIEMPRE centrado en desktop
+                      isCollapsed && 'md:justify-center md:px-2'
                     )}
                   >
                     {/* Acento berenjena a la izquierda del ítem activo */}
                     {isActive && <span aria-hidden="true" className="absolute left-0 top-2 bottom-2 w-1 rounded-r bg-primary-600" />}
                     <item.icon className="w-5 h-5 shrink-0" />
-                    {/* Texto solo visible en móvil */}
-                    <span className="md:hidden truncate">{t(item.labelKey)}</span>
+                    <span className={cn('truncate', isCollapsed && 'md:hidden')}>{t(item.labelKey)}</span>
                   </Link>
                 </li>
               );
@@ -196,11 +205,11 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
                     'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
                     'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100',
                     currentPath === '/admin' && 'bg-red-50 text-red-700 hover:bg-red-50 hover:text-red-700 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/30',
-                    'md:justify-center md:px-2'
+                    isCollapsed && 'md:justify-center md:px-2'
                   )}
                 >
                   <Shield className="w-5 h-5 shrink-0" />
-                  <span className="md:hidden truncate">{t('admin')}</span>
+                  <span className={cn('truncate', isCollapsed && 'md:hidden')}>{t('admin')}</span>
                 </Link>
               </li>
             )}
@@ -215,12 +224,11 @@ export function Sidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: Side
             className={cn(
               'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors',
               'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-gray-100 text-gray-500 dark:text-gray-400',
-              'md:justify-center md:px-2' // SIEMPRE centrado en desktop
+              isCollapsed && 'md:justify-center md:px-2'
             )}
           >
             <HelpCircle className="w-5 h-5 shrink-0" />
-            {/* Texto solo visible en móvil */}
-            <span className="md:hidden">{t('help')}</span>
+            <span className={cn(isCollapsed && 'md:hidden')}>{t('help')}</span>
           </Link>
         </div>
       </aside>

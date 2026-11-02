@@ -16,6 +16,8 @@
 
 ## Última sesión
 
+- 2026-11-02 (Claude Code con Opus 5.5): **guardar Configuración › Empresa ya no pisa datos**. `PUT /api/empresas/mi-empresa` solo escribe los campos enviados; los valores por defecto (de Perú: PEN, es, IGV 18 %, pais PE) son solo para crear. Antes un guardado parcial ponía `setupCompleted=false`, USD, `en`, IGV 0 y «Tax» (por eso el dashboard mandaba al asistente). Pruebas en `test/db/empresa.test.js`. Además: el logo del menú expande o colapsa el menú (se recuerda en `localStorage.menuExpandido`) y no lleva al landing; «Comprobantes» va antes que «Proformas»; el asistente redirige a `/{locale}/dashboard`.
+
 - 2026-11-02 (Claude Code con Opus 5.5): **series y logo en producción**.
   - Las series no «cargaban» porque la empresa de producción no tenía ninguna (emisor sin configurar). Ahora `PUT /api/sunat/emisor` crea F001, B001, FC01, FD01 y BC01 si la empresa no tiene series (una sola vez; prueba en `test/db/rutas.test.js`), y «Nuevo comprobante» avisa con enlace a Configuración › SUNAT cuando no hay series del tipo.
   - El logo no se veía en producción: helmet manda `Cross-Origin-Resource-Policy: same-origin` y la web (facturo.…) y la API (api.facturo.…) son orígenes distintos. `/uploads` ahora responde `cross-origin` (solo esa ruta).
