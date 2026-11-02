@@ -249,9 +249,15 @@ export default function ContratarCulqiModal({ plan, intervalo, modo, email, inic
         {etapa === 'tarjeta' && (
           <p className="text-xs text-gray-600 dark:text-gray-400">
             {t('ventanaAbierta')}{' '}
-            <button type="button" onClick={reintentar} className="underline text-primary-700 dark:text-primary-400">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={reintentar}
+              className="h-auto px-1 py-0 underline text-primary-700 hover:bg-transparent dark:text-primary-400"
+            >
               {t('yaCerreVentana')}
-            </button>
+            </Button>
           </p>
         )}
 

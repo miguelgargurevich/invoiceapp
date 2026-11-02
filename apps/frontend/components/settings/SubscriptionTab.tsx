@@ -332,16 +332,16 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
     //if (isPopular) return 'bg-primary';
     const name = planName.toLowerCase();
     if (name.includes('business') || name.includes('enterprise') || name.includes('empresa')) {
-      return 'bg-gradient-to-br from-purple-500 to-primary-600';
+      return 'bg-purple-600';
     }
     if (name.includes('pro') || name.includes('negocio')) {
-      return 'bg-gradient-to-br from-yellow-500 to-orange-600';
+      return 'bg-orange-500';
     }
     if (name.includes('starter') || name.includes('emprendedor')) {
-      return 'bg-gradient-to-br from-primary-500 to-cyan-600';
+      return 'bg-primary-600';
     }
     if (name.includes('free') || name.includes('gratis')) {
-      return 'bg-gradient-to-br from-slate-500 to-slate-700';
+      return 'bg-slate-600';
     }
     return 'bg-gray-100 dark:bg-gray-700';
   };
@@ -387,20 +387,23 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
       {/* Header */}
       <Card className="shadow-sm">
         <div className="flex items-center gap-3 pb-6 border-b border-gray-200 dark:border-gray-700">
-          <div className="p-3 bg-gradient-to-br from-purple-500 to-primary-600 rounded-xl shadow-md">
+          <div className="p-3 bg-primary-600 rounded-xl shadow-md">
             <CreditCard className="w-6 h-6 text-white" />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t('title')}</h2>
               {isDeveloperMode && (
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
                   onClick={() => setShowTestModeModal(true)}
-                  className="p-1.5 rounded-lg hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors"
+                  className="p-1.5 hover:bg-yellow-100 dark:hover:bg-yellow-900/30"
                   title="Información del modo de prueba"
+                  aria-label="Información del modo de prueba"
                 >
                   <Info className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
-                </button>
+                </Button>
               )}
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">{t('subtitle')}</p>
@@ -508,7 +511,6 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                     onClick={handleReactivate}
                     disabled={loadingReactivate}
                     size="sm"
-                    className="bg-primary-600 hover:bg-primary-700"
                   >
                     {loadingReactivate && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                     <RefreshCw className="h-4 w-4 mr-2" />
@@ -516,10 +518,9 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                   </Button>
                 ) : (
                   <Button
-                    variant="outline"
+                    variant="danger"
                     onClick={() => setShowCancelModal(true)}
                     size="sm"
-                    className="text-red-600 hover:text-red-700 hover:border-red-400"
                   >
                     <X className="h-4 w-4 mr-2" />
                     {t('cancelSubscription')}
@@ -554,7 +555,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                   {t('cobroFallido', { plan: vigente.plan.name })}
                 </p>
                 {esCulqi && (
-                  <Button size="sm" onClick={abrirCambioTarjeta} className="bg-yellow-600 hover:bg-yellow-700">
+                  <Button size="sm" variant="warning" onClick={abrirCambioTarjeta}>
                     <CreditCard className="h-4 w-4 mr-2" />
                     {t('cobroFallidoBoton')}
                   </Button>
@@ -697,14 +698,14 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
               key={plan.id}
               className={cn(
                 'relative p-6 flex flex-col transition-all hover:shadow-md border-2',
-                isPopular && 'bg-gradient-to-b from-purple-50 to-white dark:from-purple-950/50 dark:to-slate-900 border-purple-300 dark:border-purple-700 shadow-xl shadow-purple-500/10',
+                isPopular && 'border-primary-300 dark:border-primary-700 shadow-xl shadow-primary-500/10',
                 isCurrent && !isPopular && 'bg-green-50 dark:bg-green-900/20 border-green-400 dark:border-green-600',
                 !isCurrent && !isPopular && 'border-gray-300 dark:border-gray-700'
               )}
             >
               {isPopular && (
                 <div className="absolute -top-2.5 left-1/2 -translate-x-1/2">
-                  <span className="bg-gradient-to-r from-purple-500 to-purple-700 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-lg flex items-center gap-1">
+                  <span className="bg-primary-600 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
                     <Star className="h-2.5 w-2.5 fill-current" />
                     {t('mostPopular')}
                   </span>
@@ -752,7 +753,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                 {billingInterval === 'yearly' && savings > 0 && (
                   <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-400 rounded text-xs font-semibold">
                     <Zap className="h-3 w-3" />
-                    Save {savings}%
+                    {t('yearlyDiscount', { percent: savings })}
                   </div>
                 )}
               </div>
@@ -973,7 +974,7 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
             <div className="space-y-3 mb-6">
               <p className="text-sm text-gray-700 dark:text-gray-300">
                 {t('confirmChangePlanDesc', { 
-                  currentPlan: vigente?.plan.name || 'Current',
+                  currentPlan: vigente?.plan.name || t('currentPlan'),
                   newPlan: selectedPlan.name 
                 })}
               </p>
@@ -1003,7 +1004,6 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                 onClick={() => proceedWithSubscription(selectedPlan.id)}
                 disabled={loadingCheckout === selectedPlan.id}
                 size="sm"
-                className="bg-primary-600 hover:bg-primary-700"
               >
                 {loadingCheckout === selectedPlan.id && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 {t('confirmChangePlanButton')}
@@ -1053,12 +1053,12 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
               </button>
             </div>
             <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mt-4">
-              <p className="text-sm font-medium text-yellow-900 dark:text-yellow-400 mb-2">Test Card Number:</p>
+              <p className="text-sm font-medium text-yellow-900 dark:text-yellow-400 mb-2">{t('testCardLabel')}</p>
               <code className="block text-center text-base font-mono px-4 py-3 bg-white dark:bg-gray-800 rounded border border-yellow-200 dark:border-yellow-800 text-gray-900 dark:text-white">
                 4242 4242 4242 4242
               </code>
               <p className="text-xs text-yellow-800 dark:text-yellow-500 mt-3">
-                Use any future expiry date and any 3-digit CVC code.
+                {t('testCardHint')}
               </p>
             </div>
             </Card>
@@ -1084,10 +1084,10 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
                 {t('keepSubscription')}
               </Button>
               <Button
+                variant="danger"
                 onClick={handleCancelSubscription}
                 disabled={loadingCancel}
                 size="sm"
-                className="bg-red-600 hover:bg-red-700"
               >
                 {loadingCancel && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                 {t('confirmCancelButton')}

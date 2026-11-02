@@ -187,7 +187,7 @@ export default function JobPhotosGallery({
 
         {/* Client & Invoice Info Header - Simplified */}
         {(clientInfo || invoiceInfo) && (
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
               {clientInfo && (
                 <div className="flex items-center gap-2">
@@ -287,29 +287,35 @@ export default function JobPhotosGallery({
                         
                         {/* Overlay with actions */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/50 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => {
                               setCurrentPhotoIndex(photoIndex);
                               openViewer(photoIndex);
                             }}
-                            className="p-2.5 bg-white/95 rounded-full mx-1 hover:bg-white hover:scale-110 transition-all shadow-lg"
+                            className="p-2.5 bg-white/95 rounded-full mx-1 text-gray-700 hover:bg-white shadow-lg"
                             title={t('viewPhoto')}
+                            aria-label={t('viewPhoto')}
                           >
-                            <Maximize2 className="w-5 h-5 text-gray-700" />
-                          </button>
+                            <Maximize2 className="w-5 h-5" />
+                          </Button>
                           {!readOnly && (
-                            <button
+                            <Button
+                              variant="danger"
+                              size="sm"
                               onClick={() => handleDeletePhoto(photo.id)}
                               disabled={deleting === photo.id}
-                              className="p-2.5 bg-red-500/95 rounded-full mx-1 hover:bg-red-600 hover:scale-110 transition-all shadow-lg"
+                              className="p-2.5 rounded-full mx-1 shadow-lg"
                               title={t('deletePhoto')}
+                              aria-label={t('deletePhoto')}
                             >
                               {deleting === photo.id ? (
                                 <LoadingSpinner size="sm" className="text-white" />
                               ) : (
-                                <Trash2 className="w-5 h-5 text-white" />
+                                <Trash2 className="w-5 h-5" />
                               )}
-                            </button>
+                            </Button>
                           )}
                         </div>
                         
