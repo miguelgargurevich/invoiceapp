@@ -13,7 +13,7 @@ router.get('/', authenticateToken, async (req, res) => {
       console.log('[PREFERENCES] No user ID found in request');
       return res.json({
         theme: 'system',
-        fontSize: 'large',
+        fontSize: 'small',
         locale: 'en',
         emailFactura: true,
         emailVencimiento: true,
@@ -33,7 +33,7 @@ router.get('/', authenticateToken, async (req, res) => {
         data: {
           userId,
           theme: 'system',
-          fontSize: 'large',
+          fontSize: 'small',
           locale: 'en',
           emailFactura: true,
           emailVencimiento: true,
@@ -53,7 +53,7 @@ router.get('/', authenticateToken, async (req, res) => {
       console.log('[PREFERENCES] Table does not exist, returning defaults');
       return res.json({
         theme: 'system',
-        fontSize: 'large',
+        fontSize: 'small',
         locale: 'en',
         emailFactura: true,
         emailVencimiento: true,
@@ -102,7 +102,7 @@ router.put('/', authenticateToken, async (req, res) => {
       create: {
         userId,
         theme: theme || 'system',
-        fontSize: fontSize || 'large',
+        fontSize: fontSize || 'small',
         locale: locale || 'en',
         emailFactura: emailFactura !== undefined ? emailFactura : true,
         emailVencimiento: emailVencimiento !== undefined ? emailVencimiento : true,
@@ -121,7 +121,7 @@ router.put('/', authenticateToken, async (req, res) => {
       console.log('[PREFERENCES] Table does not exist, returning sent data');
       return res.json({
         theme: req.body.theme || 'system',
-        fontSize: req.body.fontSize || 'large',
+        fontSize: req.body.fontSize || 'small',
         locale: req.body.locale || 'en',
         emailFactura: req.body.emailFactura !== undefined ? req.body.emailFactura : true,
         emailVencimiento: req.body.emailVencimiento !== undefined ? req.body.emailVencimiento : true,

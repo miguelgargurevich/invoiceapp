@@ -552,7 +552,7 @@ model UserPreferences {
   
   // Appearance settings
   theme       String   @default("light") // light, dark
-  fontSize    String   @default("medium") @map("font_size") // small, medium, large
+  fontSize    String   @default("small") @map("font_size") // small, medium, large
   locale      String   @default("en") // es, en
   
   // Notification settings

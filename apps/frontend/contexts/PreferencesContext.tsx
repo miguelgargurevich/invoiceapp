@@ -22,7 +22,7 @@ export interface UserPreferences {
 
 const defaultPreferences: UserPreferences = {
   theme: 'system',
-  fontSize: 'large',
+  fontSize: 'small',
   locale: 'en',
   emailFactura: true,
   emailVencimiento: true,
