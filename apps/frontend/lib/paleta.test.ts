@@ -8,7 +8,9 @@ import {
   escalaParaMarca,
   esHexValido,
   generarEscala,
+  hexAHsv,
   hexATripla,
+  hsvAHex,
   necesitaAjuste,
   normalizarHex,
   triplaAHex,
@@ -80,4 +82,24 @@ test('esHexValido acepta #RRGGBB y rechaza lo demás', () => {
 
 test('normalizarHex deja #RRGGBB en mayúsculas', () => {
   assert.equal(normalizarHex('#1e40af'), '#1E40AF');
+});
+
+test('hexAHsv y hsvAHex convierten colores conocidos', () => {
+  assert.deepEqual(hexAHsv('#FF0000'), { h: 0, s: 1, v: 1 });
+  assert.deepEqual(hexAHsv('#000000'), { h: 0, s: 0, v: 0 });
+  assert.deepEqual(hexAHsv('#FFFFFF'), { h: 0, s: 0, v: 1 });
+  assert.equal(hsvAHex({ h: 120, s: 1, v: 1 }), '#00FF00');
+  assert.equal(hsvAHex({ h: 240, s: 1, v: 0.5 }), '#000080');
+  assert.equal(hsvAHex({ h: 360, s: 1, v: 1 }), '#FF0000');
+});
+
+test('hsvAHex(hexAHsv(x)) devuelve el mismo color', () => {
+  for (const hex of ['#6B2C6E', '#1E40AF', '#B91C1C', '#15803D', '#C2410C', '#0F766E', '#A16207', '#808080']) {
+    assert.equal(hsvAHex(hexAHsv(hex)), hex);
+  }
+});
+
+test('hsvAHex recorta s y v fuera de rango', () => {
+  assert.equal(hsvAHex({ h: 0, s: 2, v: -1 }), '#000000');
+  assert.equal(hsvAHex({ h: 0, s: -1, v: 2 }), '#FFFFFF');
 });

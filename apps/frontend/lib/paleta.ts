@@ -158,3 +158,39 @@ export function necesitaAjuste(hex: string): boolean {
 export function escalaParaMarca(hex: string): Escala {
   return generarEscala(ajustarParaTextoBlanco(hex));
 }
+
+/** Color en HSV para el selector visual: h en grados (0–360), s y v entre 0 y 1. */
+export interface Hsv {
+  h: number;
+  s: number;
+  v: number;
+}
+
+/** `#FF0000` → `{ h: 0, s: 1, v: 1 }`. Lanza si no es #RRGGBB. */
+export function hexAHsv(hex: string): Hsv {
+  const [r, g, b] = hexARgb(hex).map((c) => c / 255);
+  const max = Math.max(r, g, b);
+  const d = max - Math.min(r, g, b);
+  let h = 0;
+  if (d > 0) {
+    if (max === r) h = ((g - b) / d) % 6;
+    else if (max === g) h = (b - r) / d + 2;
+    else h = (r - g) / d + 4;
+    h *= 60;
+    if (h < 0) h += 360;
+  }
+  return { h, s: max === 0 ? 0 : d / max, v: max };
+}
+
+/** `{ h: 0, s: 1, v: 1 }` → `#FF0000`. Recorta los valores fuera de rango. */
+export function hsvAHex({ h, s, v }: Hsv): string {
+  const hh = (((h % 360) + 360) % 360) / 60;
+  const ss = Math.min(1, Math.max(0, s));
+  const vv = Math.min(1, Math.max(0, v));
+  const c = vv * ss;
+  const x = c * (1 - Math.abs((hh % 2) - 1));
+  const [r, g, b] =
+    hh < 1 ? [c, x, 0] : hh < 2 ? [x, c, 0] : hh < 3 ? [0, c, x] : hh < 4 ? [0, x, c] : hh < 5 ? [x, 0, c] : [c, 0, x];
+  const m = vv - c;
+  return rgbAHex([r, g, b].map((k) => Math.round((k + m) * 255)) as Rgb);
+}

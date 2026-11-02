@@ -873,6 +873,8 @@
       "descripcion": "Se aplica a los botones, el menú y los acentos del panel. Elige uno de la lista o uno propio.",
       "sugeridos": "Colores sugeridos",
       "otroColor": "Otro color",
+      "selectorArea": "Saturación y brillo",
+      "selectorMatiz": "Tono",
       "codigoHex": "Código hexadecimal",
       "codigoInvalido": "Usa un código como #1E40AF",
       "vistaPrevia": "Vista previa",

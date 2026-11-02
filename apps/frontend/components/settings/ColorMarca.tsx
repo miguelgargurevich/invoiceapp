@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Lock, LayoutDashboard, RotateCcw } from 'lucide-react';
 import { Button, Input } from '@/components/common';
 import { variablesDeEscala } from '@/components/global/TemaMarca';
+import { SelectorColor } from '@/components/settings/SelectorColor';
 import { cn } from '@/lib/utils';
 import {
   PASOS,
@@ -123,30 +124,33 @@ export function ColorMarca({ valor, onChange, puedeCambiar, cargando, locale, er
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
-          <div>
-            <label htmlFor="color-marca-selector" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t('otroColor')}
-            </label>
-            <input
-              id="color-marca-selector"
-              type="color"
-              value={efectivo.toLowerCase()}
-              onChange={(e) => onChange(normalizarHex(e.target.value))}
-              className="h-10 w-16 cursor-pointer rounded-md border border-gray-300 bg-white p-1 dark:border-gray-600 dark:bg-gray-800"
+        <div>
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('otroColor')}</p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+            <SelectorColor
+              valor={efectivo}
+              onChange={(hex) => onChange(hex)}
+              disabled={bloqueado || cargando}
+              etiquetaArea={t('selectorArea')}
+              etiquetaMatiz={t('selectorMatiz')}
             />
-          </div>
-          <div className="w-full max-w-xs">
-            <Input
-              label={t('codigoHex')}
-              value={texto}
-              onChange={(e) => alEscribirHex(e.target.value)}
-              error={textoInvalido ? t('codigoInvalido') : undefined}
-              maxLength={7}
-              autoComplete="off"
-              spellCheck={false}
-              className="focus:ring-primary-500"
-            />
+            <div className="flex w-full max-w-[12rem] items-start gap-3">
+              <div
+                aria-hidden
+                className="mt-6 h-10 w-10 shrink-0 rounded-md border border-gray-200 dark:border-gray-700"
+                style={{ backgroundColor: efectivo }}
+              />
+              <Input
+                label={t('codigoHex')}
+                value={texto}
+                onChange={(e) => alEscribirHex(e.target.value)}
+                error={textoInvalido ? t('codigoInvalido') : undefined}
+                maxLength={7}
+                autoComplete="off"
+                spellCheck={false}
+                className="focus:ring-primary-500"
+              />
+            </div>
           </div>
         </div>
 
