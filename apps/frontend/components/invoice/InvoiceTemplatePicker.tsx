@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { 
-  HardHat, 
-  Laptop, 
-  Building2, 
-  Briefcase, 
-  Check, 
+import {
+  HardHat,
+  Laptop,
+  Building2,
+  Briefcase,
+  Check,
   ChevronRight,
   FileText,
   X
@@ -24,57 +24,55 @@ export interface InvoiceTemplate {
   defaultWorkDescription: string;
   defaultPaymentTerms: string;
   defaultNotes?: string;
-  defaultTerms?: string;
   suggestedItems: { description: string; isLabor: boolean }[];
 }
 
+// Textos neutros para Perú. Los valores entre corchetes (días, porcentajes) hay que completarlos antes de emitir.
 const INVOICE_TEMPLATES: InvoiceTemplate[] = [
   {
     id: 'contractor',
     industry: 'contractor',
-    name: 'Contractor',
-    description: 'Construction, renovation, electrical, plumbing',
+    name: 'Contratista',
+    description: 'Construcción, renovación, electricidad, plomería',
     icon: HardHat,
     color: 'from-orange-500 to-amber-500',
-    defaultWorkDescription: 
-`Work completed as per agreement:
-• Site preparation and cleanup
-• Material installation as specified
-• Quality inspection completed
-• All work performed to code standards`,
-    defaultPaymentTerms: `Payment due upon receipt. Late payments subject to 1.5% monthly interest.`,
-    defaultNotes: `If an attorney is used to enforce or collect any obligations due on this obligation, then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.`,
-    defaultTerms: `All material is guaranteed to be as specified. All work to be completed in a workmanlike manner according to standard practices. Any alteration or deviation from above specifications involving extra costs will be executed only upon written orders, and will become an extra charge over and above the estimate.
-All agreements contingent upon strikes, accidents or delays beyond our control. Owner to carry fire, windstorm and other necessary insurance.`,
+    defaultWorkDescription:
+`Trabajo realizado según lo acordado:
+• Preparación y limpieza del lugar
+• Instalación del material especificado
+• Inspección de calidad completada
+• Trabajo ejecutado según las normas técnicas aplicables`,
+    defaultPaymentTerms: `Pago al recibir la factura. Los pagos atrasados generan interés de [1.5] % mensual.`,
+    defaultNotes: `Gracias por su preferencia.`,
     suggestedItems: [
-      { description: 'Labor - Installation', isLabor: true },
-      { description: 'Labor - Site Preparation', isLabor: true },
-      { description: 'Materials', isLabor: false },
-      { description: 'Equipment Rental', isLabor: false },
-      { description: 'Permits & Fees', isLabor: false },
+      { description: 'Mano de obra - instalación', isLabor: true },
+      { description: 'Mano de obra - preparación del lugar', isLabor: true },
+      { description: 'Materiales', isLabor: false },
+      { description: 'Alquiler de equipos', isLabor: false },
+      { description: 'Permisos y tasas', isLabor: false },
     ]
   },
   {
     id: 'freelancer',
     industry: 'freelancer',
     name: 'Freelancer',
-    description: 'Design, development, writing, marketing',
+    description: 'Diseño, desarrollo, redacción, marketing',
     icon: Laptop,
     color: 'from-purple-500 to-pink-500',
-    defaultWorkDescription: 
-`Services rendered:
-• Project completed as per specifications
-• All deliverables provided in required formats
-• Revision rounds completed
-• Final files delivered`,
-    defaultPaymentTerms: `Payment due within 14 days. Accepted: Bank transfer, PayPal, Credit card.`,
-    defaultNotes: `Thank you for the opportunity to work on this project. Looking forward to future collaborations.`,
+    defaultWorkDescription:
+`Servicios prestados:
+• Proyecto completado según las especificaciones
+• Entregables enviados en los formatos acordados
+• Rondas de revisión completadas
+• Archivos finales entregados`,
+    defaultPaymentTerms: `Pago dentro de [14] días desde la emisión. Medio de pago: transferencia bancaria.`,
+    defaultNotes: `Gracias por la oportunidad de trabajar en este proyecto. Quedamos a su disposición para futuros trabajos.`,
     suggestedItems: [
-      { description: 'Design Services', isLabor: true },
-      { description: 'Development Hours', isLabor: true },
-      { description: 'Project Management', isLabor: true },
-      { description: 'Stock Assets / Licenses', isLabor: false },
-      { description: 'Hosting / Domain', isLabor: false },
+      { description: 'Servicios de diseño', isLabor: true },
+      { description: 'Horas de desarrollo', isLabor: true },
+      { description: 'Gestión del proyecto', isLabor: true },
+      { description: 'Licencias de recursos (imágenes, fuentes)', isLabor: false },
+      { description: 'Hosting / dominio', isLabor: false },
     ]
   },
   {
@@ -84,43 +82,43 @@ All agreements contingent upon strikes, accidents or delays beyond our control. 
     description: 'Servicios completos de marketing, creatividad y medios digitales',
     icon: Building2,
     color: 'from-primary-500 to-cyan-500',
-    defaultWorkDescription: 
-`Services provided this billing period:
-• Strategic planning and consultation
-• Creative development and production
-• Campaign management
-• Performance reporting`,
-    defaultPaymentTerms: `Net 30 payment terms. Third-party costs billed separately.`,
-    defaultNotes: `Monthly performance report attached. Contact your account manager for any questions.`,
+    defaultWorkDescription:
+`Servicios prestados en este período:
+• Planificación y asesoría estratégica
+• Desarrollo y producción creativa
+• Gestión de campañas
+• Reporte de resultados`,
+    defaultPaymentTerms: `Pago a [30] días. Los costos de terceros se facturan aparte.`,
+    defaultNotes: `Se adjunta el reporte mensual de resultados. Consulte a su ejecutivo de cuenta ante cualquier duda.`,
     suggestedItems: [
-      { description: 'Monthly Retainer', isLabor: true },
-      { description: 'Creative Services', isLabor: true },
-      { description: 'Media Management', isLabor: true },
-      { description: 'Ad Spend (pass-through)', isLabor: false },
-      { description: 'Production Costs', isLabor: false },
+      { description: 'Retainer mensual', isLabor: true },
+      { description: 'Servicios creativos', isLabor: true },
+      { description: 'Gestión de medios', isLabor: true },
+      { description: 'Inversión publicitaria (a cuenta del cliente)', isLabor: false },
+      { description: 'Costos de producción', isLabor: false },
     ]
   },
   {
     id: 'consultant',
     industry: 'consultant',
-    name: 'Consultant',
-    description: 'Business, IT, management, strategy',
+    name: 'Consultor',
+    description: 'Negocios, TI, gestión, estrategia',
     icon: Briefcase,
     color: 'from-emerald-500 to-teal-500',
-    defaultWorkDescription: 
-`Consulting services provided:
-• Discovery and assessment sessions
-• Analysis and research
-• Recommendations developed
-• Presentation to stakeholders`,
-    defaultPaymentTerms: `Payment due within 15 days of invoice date. Travel expenses billed at cost.`,
-    defaultNotes: `Summary report attached. Follow-up session available upon request.`,
+    defaultWorkDescription:
+`Servicios de consultoría prestados:
+• Sesiones de diagnóstico y evaluación
+• Análisis e investigación
+• Recomendaciones elaboradas
+• Presentación a los responsables`,
+    defaultPaymentTerms: `Pago dentro de [15] días desde la fecha de la factura. Los gastos de viaje se facturan al costo.`,
+    defaultNotes: `Se adjunta el informe resumen. Sesión de seguimiento disponible a solicitud.`,
     suggestedItems: [
-      { description: 'Consulting Hours', isLabor: true },
-      { description: 'Assessment & Analysis', isLabor: true },
-      { description: 'Report Preparation', isLabor: true },
-      { description: 'Travel Expenses', isLabor: false },
-      { description: 'Software / Tools', isLabor: false },
+      { description: 'Horas de consultoría', isLabor: true },
+      { description: 'Diagnóstico y análisis', isLabor: true },
+      { description: 'Elaboración de informe', isLabor: true },
+      { description: 'Gastos de viaje', isLabor: false },
+      { description: 'Software / herramientas', isLabor: false },
     ]
   }
 ];
@@ -220,7 +218,7 @@ export function InvoiceTemplatePicker({ isOpen, onClose, onSelect, selectedTempl
                         </pre>
                       </div>
                     </div>
-                    
+
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
                         {t('paymentTerms')}
@@ -243,11 +241,11 @@ export function InvoiceTemplatePicker({ isOpen, onClose, onSelect, selectedTempl
                           {previewTemplate.suggestedItems.map((item, index) => (
                             <li key={index} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
                               <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                                item.isLabor 
-                                  ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400' 
+                                item.isLabor
+                                  ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400'
                                   : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
                               }`}>
-                                {item.isLabor ? 'Labor' : 'Material'}
+                                {item.isLabor ? 'Mano de obra' : 'Material'}
                               </span>
                               {item.description}
                             </li>
@@ -302,7 +300,7 @@ export function InvoiceTemplatePicker({ isOpen, onClose, onSelect, selectedTempl
                         </div>
                       </div>
                     )}
-                    
+
                     <div className="flex items-start gap-4">
                       <div className={`p-3 rounded-xl bg-gradient-to-r ${template.color}`}>
                         <template.icon className="w-6 h-6 text-white" />

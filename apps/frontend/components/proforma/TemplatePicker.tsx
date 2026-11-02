@@ -3,12 +3,12 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { 
-  HardHat, 
-  Laptop, 
-  Building2, 
-  Briefcase, 
-  Check, 
+import {
+  HardHat,
+  Laptop,
+  Building2,
+  Briefcase,
+  Check,
   ChevronRight,
   FileText,
   X
@@ -21,64 +21,73 @@ export interface ProposalTemplate {
   description: string;
   icon: React.ElementType;
   color: string;
+  // Condiciones: se copian al campo «Condiciones» de la proforma.
   defaultTerms: string;
   defaultPaymentTerms: string;
-  defaultWarranty?: string;
   defaultScope?: string;
   defaultNotes?: string;
   suggestedSections: string[];
 }
 
+// Textos neutros para Perú. Lo que va entre corchetes (montos, días) hay que completarlo antes de enviar.
+// Precios: el IGV (18 %) se marca como incluido o no, según el caso.
 const PROPOSAL_TEMPLATES: ProposalTemplate[] = [
   {
     id: 'contractor',
     industry: 'contractor',
-    name: 'Contractor',
-    description: 'Construction, renovation, electrical, plumbing',
+    name: 'Contratista',
+    description: 'Construcción, renovación, electricidad, plomería',
     icon: HardHat,
     color: 'from-orange-500 to-amber-500',
-    defaultTerms: 
-`All material is guaranteed to be as specified. All work to be completed in a workmanlike manner according to standard practices. Any alteration or deviation from above specifications involving extra costs will be executed only upon written orders, and will become an extra charge over and above the estimate.
-All agreements contingent upon strikes, accidents or delays beyond our control. Owner to carry fire, windstorm and other necessary insurance.`,
-    defaultPaymentTerms: `PAYMENT TERMS:
-• 50% deposit required to schedule work
-• 25% upon substantial completion
-• 25% final payment upon project completion
-• Late payments subject to 1.5% monthly interest`,
-    defaultWarranty: `If an attorney is used to enforce or collect any obligations due on this obligation, then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.`,
-    defaultScope: `SCOPE OF WORK:
-• Remove and dispose of existing materials
-• Supply and install new materials as specified
-• Clean up work area upon completion
-• Final walkthrough with client`,
-    defaultNotes: `If an attorney is used to enforce or collect any obligations due on this obligation, then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.`,
-    suggestedSections: ['Materials', 'Labor', 'Timeline', 'Permits', 'Warranty']
+    defaultTerms:
+`1. Todo el material será el especificado en esta proforma.
+2. Los trabajos se realizarán de forma profesional y según las prácticas habituales del oficio.
+3. Los cambios o trabajos adicionales con costo extra se ejecutarán solo con orden escrita y se cobrarán aparte.
+4. Los plazos pueden variar por huelgas, accidentes u otras causas fuera de nuestro control.
+5. Garantía: [30] días desde la entrega, por defectos de nuestra mano de obra.
+6. La validez de esta proforma es la indicada al pie del documento.`,
+    defaultPaymentTerms: `FORMA DE PAGO:
+• [50] % de adelanto para programar el trabajo
+• [25] % al avance de la obra
+• [25] % al terminar el trabajo
+• Precios en soles: [IGV incluido] (o [más IGV 18 %] si corresponde)`,
+    defaultScope: `ALCANCE DEL TRABAJO:
+• Retiro y disposición del material existente
+• Suministro e instalación del material especificado
+• Limpieza del área de trabajo al terminar
+• Revisión final con el cliente
+• Plazo de ejecución: [X] días calendario desde la aceptación`,
+    defaultNotes: `Gracias por la oportunidad. Quedamos a su disposición para cualquier consulta.`,
+    suggestedSections: ['Materiales', 'Mano de obra', 'Plazos', 'Permisos', 'Garantía']
   },
   {
     id: 'freelancer',
     industry: 'freelancer',
     name: 'Freelancer',
-    description: 'Design, development, writing, marketing',
+    description: 'Diseño, desarrollo, redacción, marketing',
     icon: Laptop,
     color: 'from-purple-500 to-pink-500',
-    defaultTerms: 
-`1. All deliverables remain property of client upon final payment.
-2. Client will provide timely feedback within 5 business days.
-3. Revisions limited to 2 rounds per deliverable unless otherwise specified.
-4. Additional revisions billed at hourly rate.
-5. Rush delivery available at 50% premium.`,
-    defaultPaymentTerms: `PAYMENT TERMS:
-• 50% deposit required to begin work
-• 50% due upon project completion
-• Payment due within 14 days of invoice
-• Accepted: Bank transfer, PayPal, Credit card`,
-    defaultScope: `PROJECT SCOPE:
-• Initial discovery and requirements gathering
-• Design concepts and revisions
-• Final deliverables in specified formats
-• 30 days of post-delivery support`,
-    defaultNotes: `If an attorney is used to enforce or collect any obligations due on this obligation, then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.`,
-    suggestedSections: ['Deliverables', 'Timeline', 'Revisions', 'Licensing']
+    defaultTerms:
+`1. Los entregables pasan a ser del cliente al completar el pago final.
+2. El cliente enviará sus comentarios dentro de [5] días hábiles.
+3. Incluye [2] rondas de revisión por entregable; las adicionales se cotizan aparte.
+4. Entrega urgente disponible con recargo de [50] %.
+5. Garantía: [30] días desde la entrega para corregir errores de nuestro trabajo.
+6. La validez de esta proforma es la indicada al pie del documento.`,
+    defaultPaymentTerms: `FORMA DE PAGO:
+• [50] % de adelanto para iniciar el trabajo
+• [50] % al entregar el proyecto
+• Pago dentro de [14] días desde la factura
+• Medio de pago: transferencia bancaria
+• Precios en soles: [IGV incluido] (o [más IGV 18 %] si corresponde)`,
+    defaultScope: `ALCANCE DEL PROYECTO:
+• Levantamiento de requerimientos
+• Propuestas de diseño y sus revisiones
+• Entregables en los formatos acordados
+• [30] días de soporte después de la entrega
+• Plazo de ejecución: [X] días calendario desde la aceptación`,
+    defaultNotes: `Gracias por confiar en nuestro trabajo. Quedamos a su disposición para cualquier consulta.`,
+    suggestedSections: ['Entregables', 'Plazos', 'Revisiones', 'Licencias']
   },
   {
     id: 'agency',
@@ -87,52 +96,56 @@ All agreements contingent upon strikes, accidents or delays beyond our control. 
     description: 'Servicios completos de marketing, creatividad y medios digitales',
     icon: Building2,
     color: 'from-primary-500 to-cyan-500',
-    defaultTerms: 
-`1. Client retains ownership of all final approved work upon full payment.
-2. Agency retains right to use work in portfolio with client permission.
-3. Client provides brand guidelines and assets within 5 business days of kickoff.
-4. Third-party costs (stock photos, fonts, hosting) billed separately.
-5. Campaign performance metrics provided monthly.`,
-    defaultPaymentTerms: `PAYMENT TERMS:
-• Monthly retainer: Due 1st of each month
-• Project work: 30% deposit, 40% midpoint, 30% completion
-• Net 30 payment terms for established clients
-• Setup fees and third-party costs due upfront`,
-    defaultScope: `SCOPE OF SERVICES:
-• Strategic planning and consultation
-• Creative development and production
-• Campaign management and optimization
-• Monthly reporting and analytics
-• Dedicated account manager`,
-    defaultNotes: `If an attorney is used to enforce or collect any obligations due on this obligation, then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.`,
-    suggestedSections: ['Strategy', 'Creative', 'Media', 'Reporting', 'Timeline']
+    defaultTerms:
+`1. El cliente conserva los derechos del trabajo final aprobado una vez pagado por completo.
+2. La agencia puede mostrar el trabajo en su portafolio con permiso del cliente.
+3. El cliente entregará la marca y sus materiales dentro de [5] días hábiles desde el inicio.
+4. Los costos de terceros (fotos, tipografías, hosting) se facturan aparte.
+5. Garantía: corregimos sin costo los errores de ejecución reportados dentro de [15] días desde la entrega.
+6. La validez de esta proforma es la indicada al pie del documento.`,
+    defaultPaymentTerms: `FORMA DE PAGO:
+• Servicio mensual (retainer): pago el día 1 de cada mes
+• Proyectos: [30] % de adelanto, [40] % a mitad de avance y [30] % al completar
+• Costos de configuración y de terceros: pago por adelantado
+• Precios en soles: [IGV incluido] (o [más IGV 18 %] si corresponde)`,
+    defaultScope: `ALCANCE DEL SERVICIO:
+• Planificación y asesoría estratégica
+• Desarrollo y producción creativa
+• Gestión y optimización de campañas
+• Reporte mensual de resultados
+• Ejecutivo de cuenta asignado`,
+    defaultNotes: `Gracias por confiar en nosotros. Le enviaremos el reporte mensual de resultados.`,
+    suggestedSections: ['Estrategia', 'Creatividad', 'Medios', 'Reportes', 'Plazos']
   },
   {
     id: 'consultant',
     industry: 'consultant',
-    name: 'Consultant',
-    description: 'Business, IT, management, strategy',
+    name: 'Consultor',
+    description: 'Negocios, TI, gestión, estrategia',
     icon: Briefcase,
     color: 'from-emerald-500 to-teal-500',
-    defaultTerms: 
-`1. Consultant maintains confidentiality of all client information.
-2. Deliverables are for client's internal use only unless otherwise specified.
-3. Client provides access to necessary personnel and information.
-4. Recommendations are advisory; implementation decisions rest with client.
-5. Travel expenses billed at cost plus 15% administration fee.`,
-    defaultPaymentTerms: `PAYMENT TERMS:
-• Hourly engagements: Invoiced weekly, Net 15
-• Project engagements: 25% deposit, monthly progress billing
-• Retainer: Monthly fee due in advance
-• Expenses: Invoiced monthly with receipts`,
-    defaultScope: `ENGAGEMENT SCOPE:
-• Initial assessment and discovery phase
-• Analysis and recommendations development
-• Presentation of findings to stakeholders
-• Implementation support and guidance
-• Follow-up review session`,
-    defaultNotes: `If an attorney is used to enforce or collect any obligations due on this obligation, then the purchaser agrees to pay reasonable attorney's fees in addition to any sums then due & owing.`,
-    suggestedSections: ['Assessment', 'Analysis', 'Recommendations', 'Implementation', 'Follow-up']
+    defaultTerms:
+`1. El consultor mantendrá la confidencialidad de la información del cliente.
+2. Los entregables son para uso interno del cliente, salvo que se acuerde otra cosa.
+3. El cliente dará acceso al personal y a la información necesarios.
+4. Las recomendaciones son de carácter asesor; la decisión de implementarlas es del cliente.
+5. Los gastos de viaje se facturan al costo más [15] % de gestión.
+6. Garantía: [30] días de soporte para aclarar dudas sobre los entregables.
+7. La validez de esta proforma es la indicada al pie del documento.`,
+    defaultPaymentTerms: `FORMA DE PAGO:
+• Por horas: facturación semanal, pago a [15] días
+• Por proyecto: [25] % de adelanto y facturación mensual del avance
+• Retainer: cuota mensual por adelantado
+• Gastos: facturados cada mes con sustento
+• Precios en soles: [IGV incluido] (o [más IGV 18 %] si corresponde)`,
+    defaultScope: `ALCANCE DEL ENCARGO:
+• Evaluación inicial y diagnóstico
+• Análisis y desarrollo de recomendaciones
+• Presentación de resultados a los responsables
+• Apoyo en la implementación
+• Sesión de seguimiento final`,
+    defaultNotes: `Gracias por confiar en nosotros. Quedamos a su disposición para cualquier consulta.`,
+    suggestedSections: ['Diagnóstico', 'Análisis', 'Recomendaciones', 'Implementación', 'Seguimiento']
   }
 ];
 
@@ -226,7 +239,7 @@ export function TemplatePicker({ isOpen, onClose, onSelect, selectedTemplate }: 
                         </pre>
                       </div>
                     </div>
-                    
+
                     <div>
                       <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
                         {t('preview.paymentTerms')}
@@ -248,19 +261,6 @@ export function TemplatePicker({ isOpen, onClose, onSelect, selectedTemplate }: 
                         <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
                           <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans">
                             {previewTemplate.defaultScope}
-                          </pre>
-                        </div>
-                      </div>
-                    )}
-
-                    {previewTemplate.defaultWarranty && (
-                      <div>
-                        <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                          {t('preview.attorneyFees')}
-                        </h4>
-                        <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
-                          <pre className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-sans">
-                            {previewTemplate.defaultWarranty}
                           </pre>
                         </div>
                       </div>
@@ -319,7 +319,7 @@ export function TemplatePicker({ isOpen, onClose, onSelect, selectedTemplate }: 
                         </div>
                       </div>
                     )}
-                    
+
                     <div className="flex items-start gap-4">
                       <div className={`p-3 rounded-xl bg-gradient-to-r ${template.color}`}>
                         <template.icon className="w-6 h-6 text-white" />

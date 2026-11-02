@@ -343,7 +343,7 @@ export default function NuevaFacturaPage({
     if (template.defaultNotes) {
       setObservaciones(template.defaultNotes);
     }
-    showSuccess(`Template "${template.name}" applied!`);
+    showSuccess(`Plantilla «${template.name}» aplicada`);
   };
 
   if (loading) {

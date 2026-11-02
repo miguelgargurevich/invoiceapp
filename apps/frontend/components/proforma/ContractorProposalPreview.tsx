@@ -55,14 +55,14 @@ interface Proforma {
   estado: string;
   observaciones?: string;
   condiciones?: string;
-  
+
   // Job fields
   jobName?: string;
   jobLocation?: string;
   workDescription?: string;
   paymentTerms?: string;
-  
-  // New contractor fields
+
+  // Campos de obra
   arquitectoNombre?: string;
   fechaPlanos?: string;
   telefonoTrabajo?: string;
@@ -70,7 +70,7 @@ interface Proforma {
   diasValidez?: number;
   firmaAceptacion?: string;
   fechaAceptacion?: string;
-  
+
   detalles: DetalleProforma[];
 }
 
@@ -83,121 +83,112 @@ interface ContractorProposalPreviewProps {
 
 const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalPreviewProps>(
   ({ proforma, empresa, pageNumber = 1, totalPages = 1 }, ref) => {
-    const isInsured = !!empresa?.licencia;
-    
+    const tieneLicencia = !!empresa?.licencia;
+
     return (
       <div
         ref={ref}
         className="bg-white text-black p-6 max-w-[8.5in] mx-auto text-[10pt]"
         style={{ fontFamily: 'Arial, sans-serif', minHeight: '11in' }}
       >
-        {/* HEADER - Row 1-3 */}
+        {/* ENCABEZADO */}
         <div className="text-center mb-4 border-b-2 border-black pb-3">
-          {/* Row 1: Title */}
-          <h1 className="text-2xl font-bold mb-1">PROPOSAL</h1>
-          
-          {/* Row 2: Licensed/Insured */}
+          <h1 className="text-2xl font-bold mb-1">PROFORMA</h1>
+
           <div className="text-sm mb-2">
-            {isInsured && <span className="font-semibold">Con licencia</span>}
+            {tieneLicencia && <span className="font-semibold">Con licencia</span>}
           </div>
-          
-          {/* Row 3: Company Info */}
+
           <div className="text-sm space-y-0.5">
-            <div className="font-bold text-base">{empresa?.nombre || 'Company Name'}</div>
+            <div className="font-bold text-base">{empresa?.nombre || 'Nombre de la empresa'}</div>
             {empresa?.tituloProfesional && (
               <div className="font-semibold uppercase">{empresa.tituloProfesional}</div>
             )}
-            <div>{empresa?.telefono || 'Phone'}</div>
-            <div>{empresa?.direccion || 'Address'}</div>
+            <div>{empresa?.telefono || 'Teléfono'}</div>
+            <div>{empresa?.direccion || 'Dirección'}</div>
           </div>
         </div>
 
-        {/* METADATA - Row 4 */}
+        {/* PAGINACIÓN */}
         <div className="flex justify-end text-xs mb-4">
           <div className="text-right space-x-2">
-            <span>Page No. <strong>{pageNumber}</strong></span>
-            <span>of <strong>{totalPages}</strong> Pages</span>
-            {isInsured && <span className="ml-4"><strong>Asegurado</strong></span>}
+            <span>Página <strong>{pageNumber}</strong></span>
+            <span>de <strong>{totalPages}</strong></span>
           </div>
         </div>
 
-        {/* CLIENT/JOB INFO - Rows 5-9 */}
+        {/* CLIENTE Y OBRA */}
         <div className="grid grid-cols-2 gap-x-6 gap-y-2 mb-4 text-sm border border-black p-3">
-          {/* Row 5 */}
           <div>
-            <span className="font-semibold">Proposal Submitted To:</span>
+            <span className="font-semibold">Proforma dirigida a:</span>
             <div className="border-b border-black mt-1 min-h-[20px]">
               {proforma.cliente.razonSocial}
             </div>
           </div>
           <div>
-            <span className="font-semibold">Phone:</span>
+            <span className="font-semibold">Teléfono:</span>
             <div className="border-b border-black mt-1 min-h-[20px]">
               {proforma.cliente.telefono || '___________'}
             </div>
           </div>
-          
-          {/* Row 6 */}
+
           <div className="col-span-2">
-            <span className="font-semibold">Date:</span>
+            <span className="font-semibold">Fecha:</span>
             <span className="ml-2">{formatDate(proforma.fechaEmision)}</span>
           </div>
-          
-          {/* Row 7 */}
+
           <div>
-            <span className="font-semibold">Street:</span>
+            <span className="font-semibold">Dirección:</span>
             <div className="border-b border-black mt-1 min-h-[20px]">
               {proforma.cliente.direccion || '___________'}
             </div>
           </div>
           <div>
-            <span className="font-semibold">Job Name:</span>
+            <span className="font-semibold">Nombre de la obra:</span>
             <div className="border-b border-black mt-1 min-h-[20px]">
               {proforma.jobName || '___________'}
             </div>
           </div>
-          
-          {/* Row 8 */}
+
           <div>
             <span className="font-semibold">Ciudad / Distrito:</span>
             <div className="border-b border-black mt-1 min-h-[20px]">
-              {/* Extract city/state/zip if available in address */}
+              {/* Se completa a mano: la dirección del cliente no separa ciudad ni distrito */}
               ___________
             </div>
           </div>
           <div>
-            <span className="font-semibold">Job Location:</span>
+            <span className="font-semibold">Ubicación de la obra:</span>
             <div className="border-b border-black mt-1 min-h-[20px]">
               {proforma.jobLocation || '___________'}
             </div>
           </div>
-          
-          {/* Row 9 */}
+
           <div>
-            <span className="font-semibold">Architect:</span>
+            <span className="font-semibold">Arquitecto o ingeniero:</span>
             <div className="border-b border-black mt-1 min-h-[20px]">
               {proforma.arquitectoNombre || '___________'}
             </div>
           </div>
           <div>
-            <span className="font-semibold">Date of Plans:</span>
+            <span className="font-semibold">Fecha de los planos:</span>
             <div className="border-b border-black mt-1 min-h-[20px]">
               {proforma.fechaPlanos ? formatDate(proforma.fechaPlanos) : '___________'}
             </div>
           </div>
-          
+
           <div className="col-span-2">
-            <span className="font-semibold">Job Phone:</span>
+            <span className="font-semibold">Teléfono de la obra:</span>
             <div className="border-b border-black mt-1 min-h-[20px]">
               {proforma.telefonoTrabajo || '___________'}
             </div>
           </div>
         </div>
 
-        {/* WORK DESCRIPTION - Rows 10-18 */}
+        {/* ALCANCE */}
         <div className="mb-4">
           <p className="font-semibold text-sm mb-2">
-            We hereby submit specifications and estimates for:
+            Presentamos las especificaciones y el presupuesto para:
           </p>
           <div className="min-h-[200px] border border-black p-2">
             <div className="whitespace-pre-wrap text-sm leading-6">
@@ -212,27 +203,26 @@ const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalP
           </div>
         </div>
 
-        {/* LEGAL CLAUSE */}
+        {/* CLÁUSULA GENERAL */}
         <div className="text-xs italic mb-3 text-justify">
-          All material is guaranteed to be as specified. All work to be completed in a 
-          workmanlike manner according to standard practices. Any alteration or deviation 
-          from above specifications involving extra costs will be executed only upon written 
-          orders, and will become an extra charge over and above the estimate. All agreements 
-          contingent upon strikes, accidents or delays beyond our control.
+          Todo el material se entregará según lo especificado. Los trabajos se realizarán de forma
+          profesional y según las prácticas habituales del oficio. Cualquier cambio o trabajo
+          adicional con costo extra se ejecutará solo con orden escrita y se cobrará aparte del
+          presupuesto. Los acuerdos están sujetos a huelgas, accidentes o demoras fuera de nuestro control.
         </div>
 
-        {/* TOTAL AMOUNT - Row 19 */}
+        {/* MONTO TOTAL */}
         <div className="mb-4 border border-black p-3">
           <p className="text-sm">
-            The Proposer hereby agrees to furnish material and labor - complete in accordance 
-            with the above specifications, for the sum of:
+            Nos comprometemos a suministrar el material y la mano de obra, completos y según las
+            especificaciones anteriores, por el monto de:
           </p>
           <div className="text-center text-lg font-bold my-2">
             {formatCurrency(proforma.total)}
           </div>
         </div>
 
-        {/* PAYMENT TERMS - Row 20 */}
+        {/* FORMA DE PAGO */}
         <div className="mb-4">
           <p className="font-semibold text-sm mb-1">El pago se realizará de la siguiente manera:</p>
           <div className="border border-black p-2 min-h-[60px]">
@@ -242,10 +232,10 @@ const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalP
           </div>
         </div>
 
-        {/* CONTRACT TERMS AND CONDITIONS (if provided) */}
+        {/* CONDICIONES (si se indicaron) */}
         {proforma.condiciones && (
           <div className="mb-4">
-            <p className="font-semibold text-sm mb-1">TERMS AND CONDITIONS</p>
+            <p className="font-semibold text-sm mb-1">CONDICIONES</p>
             <div className="border border-black p-2 bg-primary-50">
               <div className="whitespace-pre-wrap text-xs">
                 {proforma.condiciones}
@@ -254,7 +244,7 @@ const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalP
           </div>
         )}
 
-        {/* Notes */}
+        {/* Observaciones */}
         {proforma.observaciones && (
           <div className="mb-4">
             <div className="border border-black p-2 bg-yellow-50 text-center">
@@ -265,23 +255,17 @@ const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalP
           </div>
         )}
 
-        {/* GENERAL CONDITIONS */}
+        {/* GARANTÍA GENERAL */}
         <div className="text-xs mb-4 space-y-1 text-justify">
           <p><strong>Todo el trabajo está garantizado por un año desde la fecha de finalización.</strong></p>
-          <p>
-            Owner to carry fire, tornado, and other necessary insurance upon above work. 
-            Proposer is not responsible for damage from other trades. Proposer shall not be 
-            held responsible for accidents happening on the work.
-          </p>
         </div>
 
-        {/* SIGNATURES - Rows 21-23 */}
+        {/* FIRMAS Y ACEPTACIÓN */}
         <div className="border-t-2 border-black pt-3">
-          {/* Row 21: Authorized Signature */}
           <div className="mb-4">
             <div className="flex justify-between items-end">
               <div className="flex-1">
-                <span className="text-sm">Authorized Signature:</span>
+                <span className="text-sm">Firma autorizada:</span>
                 <div className="border-b border-black mt-6 w-64">
                   {proforma.firmaAutorizada && (
                     <div className="text-center font-signature text-2xl">
@@ -293,23 +277,22 @@ const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalP
             </div>
           </div>
 
-          {/* Row 22: Validity */}
+          {/* Validez */}
           <div className="text-xs mb-4">
-            <strong>Note:</strong> This proposal may be withdrawn by us if not accepted within{' '}
-            <strong className="underline">{proforma.diasValidez || '___'}</strong> days.
+            <strong>Nota:</strong> esta proforma puede retirarse si no se acepta dentro de{' '}
+            <strong className="underline">{proforma.diasValidez || '___'}</strong> días.
           </div>
 
-          {/* Row 23: Acceptance */}
           <div className="border border-black p-3">
-            <p className="text-sm font-semibold mb-2">ACCEPTANCE OF PROPOSAL</p>
+            <p className="text-sm font-semibold mb-2">ACEPTACIÓN DE LA PROFORMA</p>
             <p className="text-xs mb-3">
-              The above prices, specifications and conditions are satisfactory and are hereby 
-              accepted. You are authorized to do the work as specified. Payment will be made 
-              as outlined above.
+              Los precios, especificaciones y condiciones anteriores están conformes y quedan
+              aceptados. Se autoriza a realizar el trabajo según lo especificado. El pago se hará
+              según lo indicado arriba.
             </p>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <span className="text-sm">Signature:</span>
+                <span className="text-sm">Firma:</span>
                 <div className="border-b border-black mt-6">
                   {proforma.firmaAceptacion && (
                     <div className="text-center font-signature text-2xl">
@@ -319,7 +302,7 @@ const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalP
                 </div>
               </div>
               <div>
-                <span className="text-sm">Date of Acceptance:</span>
+                <span className="text-sm">Fecha de aceptación:</span>
                 <div className="border-b border-black mt-6">
                   {proforma.fechaAceptacion ? formatDate(proforma.fechaAceptacion) : ''}
                 </div>
