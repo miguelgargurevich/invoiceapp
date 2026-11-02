@@ -1250,7 +1250,7 @@
       "name": "Nombre de la Empresa",
       "namePlaceholder": "Ingresa el nombre de tu empresa o negocio",
       "address": "Dirección",
-      "addressPlaceholder": "Calle, ciudad, estado, código postal",
+      "addressPlaceholder": "Av. o calle, número, distrito, provincia",
       "phone": "Teléfono",
       "phonePlaceholder": "+51 999 123 456",
       "email": "Correo",
@@ -1450,7 +1450,7 @@
       },
       "governing": {
         "title": "11. Ley Aplicable",
-        "content": "Estos Términos se regirán e interpretarán de acuerdo con las leyes del Estado de Delaware, Estados Unidos, sin tener en cuenta sus disposiciones sobre conflictos de leyes."
+        "content": "Estos Términos se rigen e interpretan de acuerdo con las leyes de la República del Perú."
       },
       "changes": {
         "title": "12. Cambios a los Términos",
@@ -1566,12 +1566,12 @@
     "contactPage": {
       "title": "Contáctenos",
       "subtitle": "Estamos aquí para ayudar. Comuníquese con nosotros a través de cualquiera de los canales a continuación.",
-      "companyName": "Gargurevich Digital LLC",
-      "companyType": "Sociedad de Responsabilidad Limitada",
+      "companyName": "Miguel F. Gargurevich",
+      "companyType": "RUC 10409241862",
       "address": {
         "label": "Dirección Registrada",
-        "line1": "1234 Business Ave, Suite 100",
-        "line2": "Wilmington, DE 19801, Estados Unidos"
+        "line1": "Av. Las Gaviotas 2121",
+        "line2": "Santiago de Surco, Lima, Perú"
       },
       "email": {
         "label": "Correos Electrónicos",
