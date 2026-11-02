@@ -16,7 +16,7 @@ import {
 import { getPlans, esPlanGratis, formatPrice, type Plan } from '@/lib/subscriptions';
 
 interface SetupData {
-  pais?: 'US' | 'PE';
+  pais?: 'PE';
   companyName: string;
   direccion: string;
   telefono: string;
@@ -72,7 +72,7 @@ export default function PlanStep({ data, onUpdate, onNext, onPrev }: PlanStepPro
   useEffect(() => {
     const loadPlans = async () => {
       try {
-        const plansData = await getPlans(data.pais || 'US');
+        const plansData = await getPlans(data.pais || 'PE');
         setPlans(plansData);
 
         // Elige el plan gratis si no hay plan o el elegido no es de este país (p. ej. 'free' en Perú)

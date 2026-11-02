@@ -80,7 +80,7 @@ export interface UsageResponse {
 }
 
 // API Functions
-export async function getPlans(pais: 'US' | 'PE' = 'US'): Promise<Plan[]> {
+export async function getPlans(pais: 'US' | 'PE' = 'PE'): Promise<Plan[]> {
   // Use direct fetch for this public endpoint to avoid auth issues
   const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
   const apiUrl = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;

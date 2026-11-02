@@ -1227,8 +1227,6 @@
       "auth": { "label": "Crear Cuenta" },
       "company": { "label": "Info Empresa" },
       "logo": { "label": "Logo" },
-      "currency": { "label": "Moneda" },
-      "tax": { "label": "Impuestos" },
       "plan": { "label": "Elige Plan" },
       "complete": { "label": "¡Listo!" }
     },
@@ -1260,9 +1258,6 @@
       "website": "Sitio Web",
       "showOptionalFields": "Mostrar más detalles",
       "hideOptionalFields": "Ocultar campos opcionales",
-      "pais": "País",
-      "paisPeru": "Perú",
-      "paisUsa": "Estados Unidos",
       "taxId": "RUC o identificación fiscal",
       "taxIdPlaceholder": "20123456789",
       "taxIdHint": "Necesario para emitir comprobantes electrónicos en Perú. Puedes agregarlo después en Configuración.",
@@ -1282,25 +1277,8 @@
       "uploading": "Subiendo...",
       "skipNotice": "Siempre puedes agregar o cambiar tu logo después en Configuración"
     },
-    "currency": {
-      "title": "Selecciona tu moneda",
-      "subtitle": "Elige tu moneda e idioma predeterminados",
-      "language": "Idioma",
-      "select": "Moneda",
-      "preview": "Vista previa del monto:"
-    },
     "plan": {
       "igvIncluido": "Precio incluye IGV"
-    },
-    "tax": {
-      "title": "Configura tus impuestos",
-      "subtitle": "Configura las tasas de impuestos para tus facturas",
-      "enableTax": "Habilitar Impuestos",
-      "enableTaxDesc": "Agregar cálculo de impuestos a las facturas",
-      "presets": "Tasas de impuestos comunes",
-      "name": "Nombre del Impuesto",
-      "rate": "Tasa de Impuesto",
-      "preview": "Vista previa de factura:"
     },
     "complete": {
       "title": "¡Todo listo!",

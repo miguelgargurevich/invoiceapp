@@ -6,10 +6,8 @@ import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Building2, 
-  Image as ImageIcon, 
-  DollarSign, 
-  Percent, 
-  FileText, 
+  Image as ImageIcon,
+  FileText,
   ChevronRight, 
   ChevronLeft,
   Check,
@@ -24,9 +22,7 @@ import api from '@/lib/api';
 import { 
   WelcomeStep, 
   AuthStep,
-  CompanyStep, 
-  CurrencyStep, 
-  TaxStep, 
+  CompanyStep,
   PlanStep,
   CompleteStep 
 } from '@/components/setup';
@@ -37,7 +33,7 @@ interface SetupData {
   email: string;
   password: string;
   // Company fields
-  pais: 'US' | 'PE';
+  pais: 'PE';
   companyName: string;
   ruc: string;
   direccion: string;
@@ -76,11 +72,14 @@ const STEPS = [
   { id: 'welcome', icon: Sparkles, color: 'from-primary-500 to-primary-700' },
   { id: 'auth', icon: UserPlus, color: 'from-primary-500 to-primary-700' },
   { id: 'company', icon: Building2, color: 'from-primary-500 to-primary-700' },
-  { id: 'currency', icon: DollarSign, color: 'from-primary-500 to-primary-700' },
-  { id: 'tax', icon: Percent, color: 'from-primary-500 to-primary-700' },
   { id: 'plan', icon: Check, color: 'from-primary-500 to-primary-700' },
   { id: 'complete', icon: Rocket, color: 'from-primary-500 to-primary-700' },
 ];
+
+// Facturo es solo para Perú: la moneda (PEN) y el IGV (18 %) ya vienen fijos, así que no hay pasos de moneda ni de impuesto.
+// Los índices de los pasos con pantalla propia se buscan por id, para no depender de su posición.
+const PASO_PLAN = STEPS.findIndex((s) => s.id === 'plan');
+const PASO_COMPLETAR = STEPS.findIndex((s) => s.id === 'complete');
 
 export default function SetupWizardPage({
   params: { locale },
@@ -165,12 +164,13 @@ export default function SetupWizardPage({
             emailEmpresa: response.email || '',
             website: response.web || '',
             logo: response.logoUrl || null,
-            currency: response.currency || 'PEN',
-            pais: response.pais === 'PE' || response.pais === 'US' ? response.pais : prev.pais,
+            currency: 'PEN',
+            // Empresa siempre de Perú: PEN e IGV 18 % (ya no se preguntan en el asistente).
+            pais: 'PE',
             locale: 'es',
-            taxRate: response.taxRate || 0,
-            taxName: response.taxName || 'IGV',
-            taxEnabled: (response.taxRate || 0) > 0,
+            taxRate: 18,
+            taxName: 'IGV',
+            taxEnabled: true,
           }));
         }
       } catch (error) {
@@ -310,7 +310,7 @@ export default function SetupWizardPage({
       }
 
       if (isPaidPlan) {
-        // Plan de pago en Estados Unidos: create Stripe checkout session now that we have a token
+        // Plan de pago fuera de Perú (ya no se alcanza: el asistente siempre crea empresas PE): checkout de Stripe
         try {
           console.log('[SETUP] Creating Stripe checkout session...');
           const response = await api.post<{ url: string }>('/subscriptions/create-checkout-session', {
@@ -426,7 +426,7 @@ export default function SetupWizardPage({
 
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center px-4 py-8">
-        <div className={`w-full ${currentStep === 5 ? 'max-w-7xl' : 'max-w-2xl'}`}>
+        <div className={`w-full ${currentStep === PASO_PLAN ? 'max-w-7xl' : 'max-w-2xl'}`}>
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
@@ -452,23 +452,7 @@ export default function SetupWizardPage({
                   onPrev={prevStep}
                 />
               )}
-              {currentStep === 3 && (
-                <CurrencyStep 
-                  data={setupData} 
-                  onUpdate={updateSetupData} 
-                  onNext={nextStep}
-                  onPrev={prevStep}
-                />
-              )}
-              {currentStep === 4 && (
-                <TaxStep 
-                  data={setupData} 
-                  onUpdate={updateSetupData} 
-                  onNext={nextStep}
-                  onPrev={prevStep}
-                />
-              )}
-              {currentStep === 5 && (
+              {currentStep === PASO_PLAN && (
                 <PlanStep 
                   data={setupData} 
                   onUpdate={updateSetupData} 
@@ -476,7 +460,7 @@ export default function SetupWizardPage({
                   onPrev={prevStep}
                 />
               )}
-              {currentStep === 6 && (
+              {currentStep === PASO_COMPLETAR && (
                 <CompleteStep 
                   data={setupData} 
                   onComplete={completeSetup}
