@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Lock, Sparkles, ArrowRight, Crown, X, Zap } from 'lucide-react';
 import { Button } from '@/components/common';
 import { Modal } from './Modal';
@@ -21,10 +21,11 @@ export function UpgradePrompt({
   className = '' 
 }: UpgradePromptProps) {
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations('subscriptionFeatures');
 
   const handleUpgrade = () => {
-    router.push('/en/configuracion?tab=subscription');
+    router.push(`/${locale}/configuracion?tab=suscripcion`);
   };
 
   if (variant === 'banner') {
@@ -108,23 +109,22 @@ export function UpgradeModal({
   requiredPlan = 'pro' 
 }: UpgradeModalProps) {
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations('subscriptionFeatures');
 
   const handleUpgrade = () => {
     onClose();
-    router.push('/en/configuracion?tab=subscription');
+    router.push(`/${locale}/configuracion?tab=suscripcion`);
   };
 
   const planInfo = {
     pro: {
       name: 'Pro',
-      price: '$29',
       color: 'from-primary-500 to-primary-600',
       features: ['Proformas', 'Firmas digitales', 'Marca personalizada', 'Seguimiento de trabajos']
     },
     business: {
       name: 'Negocio',
-      price: '$49',
       color: 'from-purple-500 to-pink-600',
       features: ['Multimoneda', 'Reportes avanzados', 'Soporte prioritario', 'Acceso a API']
     }
@@ -154,9 +154,6 @@ export function UpgradeModal({
           <div className="bg-white dark:bg-gray-900 rounded-lg p-4">
             <div className="flex items-center justify-between mb-3">
               <span className="font-bold text-lg text-gray-900 dark:text-white">{plan.name}</span>
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                {plan.price}<span className="text-sm font-normal text-gray-500">/mo</span>
-              </span>
             </div>
             <ul className="space-y-2 text-left">
               {plan.features.map((f, i) => (
@@ -200,6 +197,7 @@ interface UsageLimitWarningProps {
 export function UsageLimitWarning({ resource, used, limit, className = '' }: UsageLimitWarningProps) {
   const t = useTranslations('subscriptionFeatures');
   const router = useRouter();
+  const locale = useLocale();
   const percentage = limit > 0 ? (used / limit) * 100 : 0;
   const isNearLimit = percentage >= 80;
   const isAtLimit = used >= limit;
@@ -215,7 +213,7 @@ export function UsageLimitWarning({ resource, used, limit, className = '' }: Usa
             : t('nearLimit', { resource, used, limit })}
         </span>
         <button 
-          onClick={() => router.push('/en/configuracion?tab=subscription')}
+          onClick={() => router.push(`/${locale}/configuracion?tab=suscripcion`)}
           className={`font-medium whitespace-nowrap ${isAtLimit ? 'text-red-600 dark:text-red-400 hover:text-red-800' : 'text-amber-600 dark:text-amber-400 hover:text-amber-800'}`}
         >
           {t('upgrade')} →
@@ -243,11 +241,12 @@ interface UsageLimitModalProps {
 
 export function UsageLimitModal({ isOpen, onClose, resource, used, limit }: UsageLimitModalProps) {
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations('subscriptionFeatures');
 
   const handleUpgrade = () => {
     onClose();
-    router.push('/en/configuracion?tab=subscription');
+    router.push(`/${locale}/configuracion?tab=suscripcion`);
   };
 
   return (

@@ -39,8 +39,7 @@ const PROPOSAL_TEMPLATES: ProposalTemplate[] = [
     color: 'from-orange-500 to-amber-500',
     defaultTerms: 
 `All material is guaranteed to be as specified. All work to be completed in a workmanlike manner according to standard practices. Any alteration or deviation from above specifications involving extra costs will be executed only upon written orders, and will become an extra charge over and above the estimate.
-All agreements contingent upon strikes, accidents or delays beyond our control. Owner to carry fire, windstorm and other necessary insurance.
-Nuestros trabajadores están totalmente cubiertos por un seguro de compensación laboral.`,
+All agreements contingent upon strikes, accidents or delays beyond our control. Owner to carry fire, windstorm and other necessary insurance.`,
     defaultPaymentTerms: `PAYMENT TERMS:
 • 50% deposit required to schedule work
 • 25% upon substantial completion

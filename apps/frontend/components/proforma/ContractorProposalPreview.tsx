@@ -98,7 +98,7 @@ const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalP
           
           {/* Row 2: Licensed/Insured */}
           <div className="text-sm mb-2">
-            {isInsured && <span className="font-semibold">Licensed & Insured</span>}
+            {isInsured && <span className="font-semibold">Con licencia</span>}
           </div>
           
           {/* Row 3: Company Info */}
@@ -159,7 +159,7 @@ const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalP
           
           {/* Row 8 */}
           <div>
-            <span className="font-semibold">City, State and Zip Code:</span>
+            <span className="font-semibold">Ciudad / Distrito:</span>
             <div className="border-b border-black mt-1 min-h-[20px]">
               {/* Extract city/state/zip if available in address */}
               ___________
@@ -228,7 +228,7 @@ const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalP
             with the above specifications, for the sum of:
           </p>
           <div className="text-center text-lg font-bold my-2">
-            {formatCurrency(proforma.total)} (${proforma.total.toFixed(2)})
+            {formatCurrency(proforma.total)}
           </div>
         </div>
 
@@ -267,7 +267,6 @@ const ContractorProposalPreview = forwardRef<HTMLDivElement, ContractorProposalP
 
         {/* GENERAL CONDITIONS */}
         <div className="text-xs mb-4 space-y-1 text-justify">
-          <p><strong>Nuestros trabajadores están totalmente cubiertos por un seguro de compensación laboral.</strong></p>
           <p><strong>Todo el trabajo está garantizado por un año desde la fecha de finalización.</strong></p>
           <p>
             Owner to carry fire, tornado, and other necessary insurance upon above work. 

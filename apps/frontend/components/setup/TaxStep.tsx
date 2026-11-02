@@ -36,14 +36,7 @@ function formatearPrevia(monto: number, moneda: string) {
 
 const TAX_PRESETS = [
   { name: 'No Tax', rate: 0 },
-  { name: 'VAT 7%', rate: 7 },
-  { name: 'VAT 10%', rate: 10 },
-  { name: 'Sales Tax 8.25%', rate: 8.25 },
   { name: 'IGV 18%', rate: 18 },
-  { name: 'IVA 16%', rate: 16 },
-  { name: 'IVA 19%', rate: 19 },
-  { name: 'IVA 21%', rate: 21 },
-  { name: 'GST 10%', rate: 10 },
 ];
 
 export default function TaxStep({ data, onUpdate, onNext, onPrev }: TaxStepProps) {
