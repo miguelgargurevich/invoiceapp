@@ -25,6 +25,7 @@ const signaturesPublicRoutes = require('./src/routes/signaturesPublic');
 const preferencesRoutes = require('./src/routes/preferences');
 const notificacionesRoutes = require('./src/routes/notificaciones');
 const adminRoutes = require('./src/routes/admin');
+const sitioRoutes = require('./src/routes/sitio');
 const webhooksRoutes = require('./src/routes/webhooks');
 
 const app = express();
@@ -187,6 +188,9 @@ app.get('/api/subscriptions/plans', limiter, async (req, res) => {
     res.status(500).json({ error: 'Error fetching plans' });
   }
 });
+
+// Datos legales del servicio (públicos, sin sesión: los leen Términos, Privacidad, Contacto y el pie)
+app.use('/api/sitio', limiter, sitioRoutes);
 
 // Protected routes (authentication required)
 app.use('/api/empresas', limiter, authenticateToken, empresaRoutes);

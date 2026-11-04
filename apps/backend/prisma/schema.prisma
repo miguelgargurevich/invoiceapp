@@ -794,3 +794,18 @@ model EnvioSunat {
   @@map("envios_sunat")
 }
 
+
+// 🏛️ Configuración global del sitio (una sola fila, id "global").
+// Datos legales de quien presta el servicio: se muestran en Términos, Privacidad, Contacto y el pie.
+// Vacío (null) = el sitio muestra «por confirmar». Se edita en Admin › Datos legales (SUPER_ADMIN).
+model ConfiguracionSitio {
+  id               String   @id @default("global")
+  legalMarca       String?  @map("legal_marca")
+  legalRazonSocial String?  @map("legal_razon_social")
+  legalRuc         String?  @map("legal_ruc")
+  legalDomicilio   String?  @map("legal_domicilio")
+  legalCorreo      String?  @map("legal_correo")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@map("configuracion_sitio")
+}

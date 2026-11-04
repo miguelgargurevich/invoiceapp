@@ -19,5 +19,8 @@ npx prisma db push --skip-generate
 npx prisma db execute --file prisma/seed_plans.sql --schema prisma/schema.prisma
 npx prisma db execute --file prisma/seed_plans_pe.sql --schema prisma/schema.prisma
 
+# Datos legales del servicio (quien presta el servicio): crea la fila inicial y NUNCA pisa una ya editada (ON CONFLICT DO NOTHING).
+npx prisma db execute --file prisma/seed_sitio.sql --schema prisma/schema.prisma
+
 # `exec`: node pasa a ser el proceso principal y recibe las señales de parada de Docker.
 exec node app.js

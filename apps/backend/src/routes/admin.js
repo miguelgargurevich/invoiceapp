@@ -1,9 +1,31 @@
 const express = require('express');
 const { requireAdmin, requireSuperAdmin } = require('../middleware/adminAuth');
 
+const { normalizarDatosLegales, guardarDatosLegales } = require('../sitio/legal');
+
 const router = express.Router();
 // Cliente compartido (un solo pool para toda la app; ver utils/prisma.js).
 const prisma = require('../utils/prisma');
+
+// ==========================================
+// DATOS LEGALES DEL SERVICIO
+// ==========================================
+
+/**
+ * PUT /api/admin/sitio/legal
+ * Guarda quién presta el servicio (solo SUPER_ADMIN). Valida RUC (dígito verificador), correo y largos;
+ * recorta espacios y pasa los vacíos a null. La lectura pública es GET /api/sitio/legal.
+ */
+router.put('/sitio/legal', requireSuperAdmin, async (req, res) => {
+  const { datos, error } = normalizarDatosLegales(req.body);
+  if (error) return res.status(400).json({ error });
+  try {
+    res.json(await guardarDatosLegales(prisma, datos));
+  } catch (err) {
+    console.error('[Admin] Error al guardar los datos legales:', err);
+    res.status(500).json({ error: 'No se pudieron guardar los datos legales' });
+  }
+});
 
 // ==========================================
 // ADMIN STATISTICS
