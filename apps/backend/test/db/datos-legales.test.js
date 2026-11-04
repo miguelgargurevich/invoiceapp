@@ -110,14 +110,14 @@ test('PUT de ADMIN o USER → 403, y sin sesión → 401; no se guarda nada', as
   assert.equal(await prisma.configuracionSitio.count(), 0);
 });
 
-test('la siembra crea la fila inicial con razón social y correo en null', async () => {
+test('la siembra crea la fila inicial con la razón social y el correo del producto', async () => {
   await prisma.$executeRawUnsafe(SEED);
   const fila = await prisma.configuracionSitio.findUnique({ where: { id: 'global' } });
   assert.equal(fila.legalMarca, 'Ing. Miguel F. Gargurevich');
   assert.equal(fila.legalRuc, '10409241862');
   assert.equal(fila.legalDomicilio, 'Av. Las Gaviotas 2121, Santiago de Surco, Lima, Perú');
-  assert.equal(fila.legalRazonSocial, null);
-  assert.equal(fila.legalCorreo, null);
+  assert.equal(fila.legalRazonSocial, 'MIGUEL ARTURO FERNANDEZ GARGUREVICH');
+  assert.equal(fila.legalCorreo, 'facturo@gargurevich.dev');
 });
 
 test('la siembra NO pisa una fila existente (y es idempotente)', async () => {

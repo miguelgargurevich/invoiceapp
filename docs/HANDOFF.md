@@ -17,6 +17,7 @@
 
 ## Última sesión
 
+- 2026-11-04 (Claude Code con Opus 5.5, revisión e integración de `feat/datos-legales`): la siembra `seed_sitio.sql` ya trae la razón social que confirmó Miguel (MIGUEL ARTURO FERNANDEZ GARGUREVICH) y el correo del producto `facturo@gargurevich.dev`. **El buzón todavía no existe**: Miguel lo creará. Verificado: backend 151/151 y test:db 120/120; frontend 101/101, `tsc` y `next build` en verde. Mutación: sin `requireSuperAdmin` en el PUT, la prueba de 403/401 falla.
 - 2026-11-04 (Claude Code con Sonnet 5.5, worktree `.claude/worktrees/datos-legales`, rama `feat/datos-legales` sobre `main` c257008): **datos legales del servicio en BD** (pedido de Miguel vía Torre: mostrar quién presta el servicio; «nada de variables de entorno, todo en BD»). Sin push.
   - **Modelo** `ConfiguracionSitio` (`configuracion_sitio`, una sola fila, `id = "global"`): `legalMarca`, `legalRazonSocial`, `legalRuc`, `legalDomicilio`, `legalCorreo` (todos `String?`, columnas `legal_*`) y `updatedAt`. Migración `20261104000000_datos_legales`.
   - **Siembra** `prisma/seed_sitio.sql` (`ON CONFLICT (id) DO NOTHING`), llamada en `scripts/arranque-produccion.sh` tras los planes. Valores iniciales: marca «Ing. Miguel F. Gargurevich», RUC 10409241862, domicilio «Av. Las Gaviotas 2121, Santiago de Surco, Lima, Perú». **Si la fila ya existe no se toca.**
