@@ -16,6 +16,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/contexts/ToastContext';
 import { Card, LoadingPage, Badge, Button, Input, ConfirmDialog, PageHeader } from '@/components/common';
+import { DatosLegalesForm } from '@/components/admin/DatosLegalesForm';
 import api from '@/lib/api';
 import { formatDate } from '@/lib/utils';
 
@@ -71,7 +72,7 @@ export default function AdminPage({
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'companies'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'companies' | 'legal'>('overview');
   const [searchUsers, setSearchUsers] = useState('');
   const [searchEmpresas, setSearchEmpresas] = useState('');
   const [userPage, setUserPage] = useState(1);
@@ -236,7 +237,22 @@ export default function AdminPage({
         >
           {t('companies') || 'Companies'}
         </button>
+        {user?.role === 'SUPER_ADMIN' && (
+          <button
+            onClick={() => setActiveTab('legal')}
+            className={`px-4 py-2 font-medium transition-colors border-b-2 ${
+              activeTab === 'legal'
+                ? 'border-primary-600 text-primary-600 dark:text-primary-400'
+                : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+            }`}
+          >
+            {t('datosLegales.tab')}
+          </button>
+        )}
       </div>
+
+      {/* Datos legales del servicio (solo SUPER_ADMIN) */}
+      {activeTab === 'legal' && user?.role === 'SUPER_ADMIN' && <DatosLegalesForm />}
 
       {/* Overview Tab */}
       {activeTab === 'overview' && stats && (

@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { CorreoContacto } from '@/components/common/CorreoContacto';
+import { QuienPresta } from '@/components/legal/QuienPresta';
 
 export default function TermsPage() {
   const t = useTranslations('legal.terms');
@@ -14,6 +15,8 @@ export default function TermsPage() {
       <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
         {t('lastUpdated')}: January 1, 2026
       </p>
+
+      <QuienPresta />
 
       <section className="mb-8">
         <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">

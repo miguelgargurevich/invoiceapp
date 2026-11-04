@@ -1,11 +1,14 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Mail, MapPin, Building2 } from 'lucide-react';
-import { CORREO_CONTACTO } from '@/lib/sitio';
+import { Mail, MapPin, Building2, FileText } from 'lucide-react';
+import { useDatosLegales } from '@/lib/hooks/useDatosLegales';
+import { hayValor, valorOPorConfirmar } from '@/lib/legal';
 
 export default function ContactPage() {
   const t = useTranslations('legal.contactPage');
+  const { datos } = useDatosLegales();
+  const correo = hayValor(datos?.legalCorreo) ? datos.legalCorreo.trim() : '';
 
   return (
     <article className="prose prose-gray dark:prose-invert max-w-none">
@@ -24,15 +27,27 @@ export default function ContactPage() {
           </div>
           <div>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {t('companyName')}
+              {valorOPorConfirmar(datos?.legalMarca)}
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {t('companyType')}
+              {t('ruc')} {valorOPorConfirmar(datos?.legalRuc)}
             </p>
           </div>
         </div>
 
         <div className="space-y-4">
+          <div className="flex items-start gap-3">
+            <FileText className="w-5 h-5 text-gray-400 mt-0.5" />
+            <div>
+              <p className="font-medium text-gray-900 dark:text-white">
+                {t('razonSocial')}
+              </p>
+              <p className="text-gray-600 dark:text-gray-300">
+                {valorOPorConfirmar(datos?.legalRazonSocial)}
+              </p>
+            </div>
+          </div>
+
           <div className="flex items-start gap-3">
             <MapPin className="w-5 h-5 text-gray-400 mt-0.5" />
             <div>
@@ -40,10 +55,7 @@ export default function ContactPage() {
                 {t('address.label')}
               </p>
               <p className="text-gray-600 dark:text-gray-300">
-                {t('address.line1')}
-              </p>
-              <p className="text-gray-600 dark:text-gray-300">
-                {t('address.line2')}
+                {valorOPorConfirmar(datos?.legalDomicilio)}
               </p>
             </div>
           </div>
@@ -54,13 +66,13 @@ export default function ContactPage() {
               <p className="font-medium text-gray-900 dark:text-white">
                 {t('email.label')}
               </p>
-              {CORREO_CONTACTO ? (
-                <a href={`mailto:${CORREO_CONTACTO}`} className="text-primary-600 dark:text-primary-400 hover:underline">
-                  {CORREO_CONTACTO}
+              {correo ? (
+                <a href={`mailto:${correo}`} className="text-primary-600 dark:text-primary-400 hover:underline">
+                  {correo}
                 </a>
               ) : (
                 <p className="text-gray-600 dark:text-gray-300">
-                  Pronto publicaremos nuestro correo de contacto.
+                  {valorOPorConfirmar(null)}
                 </p>
               )}
             </div>

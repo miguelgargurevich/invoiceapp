@@ -1257,7 +1257,22 @@
     "userDeactivatedSuccess": "Usuario desactivado exitosamente",
     "userActivatedSuccess": "Usuario activado exitosamente",
     "cannotChangeOwnStatus": "No puedes cambiar tu propio estado",
-    "errorUpdatingStatus": "Error al actualizar el estado del usuario"
+    "errorUpdatingStatus": "Error al actualizar el estado del usuario",
+    "datosLegales": {
+      "tab": "Datos legales",
+      "titulo": "Datos legales del servicio",
+      "descripcion": "Quién presta el servicio. Se muestra en los Términos, la Privacidad, Contacto y el pie del sitio.",
+      "marca": "Marca o nombre comercial",
+      "razonSocial": "Razón social",
+      "ruc": "RUC",
+      "domicilio": "Domicilio",
+      "correo": "Correo de contacto",
+      "avisoVacio": "Si lo dejas vacío, se muestra \"por confirmar\"",
+      "guardar": "Guardar",
+      "guardado": "Datos legales guardados",
+      "errorCargar": "No se pudieron cargar los datos legales",
+      "errorGuardar": "No se pudieron guardar los datos legales"
+    }
   },
   "signature": {
     "hasRequestedSignature": "ha solicitado tu firma para el siguiente documento:",
@@ -1471,6 +1486,16 @@
     "privacyPolicy": "Política de Privacidad",
     "refundPolicy": "Política de Reembolso",
     "contact": "Contacto",
+    "quienPresta": {
+      "title": "Quién presta el servicio",
+      "intro": "Facturo es un servicio prestado por la persona natural con negocio que figura a continuación.",
+      "marca": "Nombre comercial",
+      "razonSocial": "Razón social",
+      "ruc": "RUC",
+      "domicilio": "Domicilio",
+      "correo": "Correo de contacto",
+      "cargando": "Cargando los datos del servicio…"
+    },
     "terms": {
       "title": "Términos de Servicio",
       "lastUpdated": "Última Actualización",
@@ -1632,12 +1657,10 @@
     "contactPage": {
       "title": "Contáctenos",
       "subtitle": "Estamos aquí para ayudar. Comuníquese con nosotros a través de cualquiera de los canales a continuación.",
-      "companyName": "Miguel F. Gargurevich",
-      "companyType": "RUC 10409241862",
+      "ruc": "RUC",
+      "razonSocial": "Razón social",
       "address": {
-        "label": "Dirección Registrada",
-        "line1": "Av. Las Gaviotas 2121",
-        "line2": "Santiago de Surco, Lima, Perú"
+        "label": "Dirección Registrada"
       },
       "email": {
         "label": "Correos Electrónicos",

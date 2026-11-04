@@ -3,10 +3,14 @@
 import Link from 'next/link';
 import { useTranslations, useLocale } from 'next-intl';
 import { LogoFacturo } from '@/components/marca/LogoFacturo';
+import { useDatosLegales } from '@/lib/hooks/useDatosLegales';
+import { lineaPie } from '@/lib/legal';
 
 export function LandingFooter() {
   const t = useTranslations('landing');
   const locale = useLocale();
+  const { datos } = useDatosLegales();
+  const creditos = lineaPie(datos);
 
   const currentYear = new Date().getFullYear();
 
@@ -108,6 +112,7 @@ export function LandingFooter() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-slate-500 dark:text-slate-400">
               © {currentYear} Facturo. {t('footer.rights')}
+              {creditos && <span className="block md:inline md:ml-3">{creditos}</span>}
             </p>
             <div className="flex items-center gap-4">
               <Link

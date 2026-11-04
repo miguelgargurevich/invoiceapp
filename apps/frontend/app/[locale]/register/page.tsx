@@ -18,6 +18,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button, LoadingSpinner } from '@/components/common';
 import { cn } from '@/lib/utils';
+import { useDatosLegales } from '@/lib/hooks/useDatosLegales';
+import { lineaPie } from '@/lib/legal';
 
 type RegisterForm = {
   name: string;
@@ -39,6 +41,8 @@ export default function RegisterPage({
   params: { locale: string };
 }) {
   const t = useTranslations('auth');
+  const { datos: datosLegales } = useDatosLegales();
+  const creditos = lineaPie(datosLegales);
   const router = useRouter();
   const { signUp, user, loading: authLoading } = useAuth();
   const { theme, toggleTheme } = useTheme();
@@ -473,12 +477,14 @@ export default function RegisterPage({
             </div>
 
             {/* Footer credit */}
-            <div className="mt-4 text-center">
-              <p className="inline-flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
-                <Coffee className="w-3.5 h-3.5" aria-hidden="true" />
-                Desarrollado por <span className="font-medium">Gargurevich Dev</span>
-              </p>
-            </div>
+            {creditos && (
+              <div className="mt-4 text-center">
+                <p className="inline-flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
+                  <Coffee className="w-3.5 h-3.5" aria-hidden="true" />
+                  {creditos}
+                </p>
+              </div>
+            )}
           </motion.div>
         </div>
       </div>
