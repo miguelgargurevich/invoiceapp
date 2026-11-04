@@ -1,5 +1,6 @@
 # Handoff — InvoiceApp
 
+> Actualizado: 2026-11-04 por claude-code (Sonnet 5.5)
 > Actualizado: 2026-11-02 por claude-code (Haiku 5.5)
 > Actualizado: 2026-11-02 por claude-code
 
@@ -16,6 +17,16 @@
 
 ## Última sesión
 
+- 2026-11-04 (Claude Code con Sonnet 5.5, worktree `.claude/worktrees/datos-legales`, rama `feat/datos-legales` sobre `main` c257008): **datos legales del servicio en BD** (pedido de Miguel vía Torre: mostrar quién presta el servicio; «nada de variables de entorno, todo en BD»). Sin push.
+  - **Modelo** `ConfiguracionSitio` (`configuracion_sitio`, una sola fila, `id = "global"`): `legalMarca`, `legalRazonSocial`, `legalRuc`, `legalDomicilio`, `legalCorreo` (todos `String?`, columnas `legal_*`) y `updatedAt`. Migración `20261104000000_datos_legales`.
+  - **Siembra** `prisma/seed_sitio.sql` (`ON CONFLICT (id) DO NOTHING`), llamada en `scripts/arranque-produccion.sh` tras los planes. Valores iniciales: marca «Ing. Miguel F. Gargurevich», RUC 10409241862, domicilio «Av. Las Gaviotas 2121, Santiago de Surco, Lima, Perú». **Si la fila ya existe no se toca.**
+  - **API**: `GET /api/sitio/legal` (pública, solo los 5 campos; `src/routes/sitio.js`) y `PUT /api/admin/sitio/legal` (solo `requireSuperAdmin`, en `src/routes/admin.js`). Valida RUC (11 dígitos + dígito verificador módulo 11, `rucValido` en `src/sitio/legal.js`: el backend no tenía uno), correo y máx. 200 caracteres; recorta espacios y `''` → `null`. 400 con mensaje en español; 403 para ADMIN/USER; 401 sin sesión.
+  - **Dónde se edita**: Admin › pestaña «Datos legales» (solo SUPER_ADMIN), `components/admin/DatosLegalesForm.tsx`.
+  - **Dónde se ve**: `lib/legal.ts` (lógica pura) + hook `lib/hooks/useDatosLegales.ts` (una petición compartida). Bloque «Quién presta el servicio» (`components/legal/QuienPresta.tsx`) en Términos y Privacidad, sin numerar, antes de la sección 1; página de Contacto; `CorreoContacto` (ayuda, FAQ, precios, legal); pie del landing, login y registro («Facturo · por Ing. Miguel F. Gargurevich · RUC 10409241862», reemplaza «Desarrollado por Gargurevich Dev»; si la API falla la línea se oculta).
+  - **Variable retirada**: `NEXT_PUBLIC_CORREO_CONTACTO` / `CORREO_CONTACTO` (`lib/sitio.ts`, `.env.example`) ya no existen; **sustituye la nota «Correo de contacto por variable» de más abajo**. Claves fijas `legal.contactPage.companyName/companyType/address.line1/line2` quitadas de `es.json`.
+  - **Por confirmar (vacío → el sitio muestra «por confirmar»)**: **razón social** (nombre completo exacto de la consulta RUC de SUNAT; no es la marca ni «GARGUREVICH MIGUEL FERNANDO») y **correo de contacto**. Cargarlos en Admin › Datos legales, sin desplegar.
+  - Pruebas: `test/db/datos-legales.test.js` (8: GET público, PUT SUPER_ADMIN normaliza, RUC inválido 400, correo/largo/tipo 400, ADMIN/USER 403 y sin sesión 401, siembra y que no pisa), `test/unit/legal-ruc.test.js` y `lib/legal.test.ts` (frontend).
+  - Gotcha: `*.sql` está en `.gitignore`; la migración y `seed_sitio.sql` se agregaron con `git add -f` (como las anteriores). Producción: `prisma db push` crea la tabla sola y luego corre la siembra.
 - 2026-11-02 (Claude Code con Opus 5.5): la **firma pública** (`routes/signaturesPublic.js`, POST de envío de firma) llamaba a `sendSignatureConfirmationEmail` con parámetros viejos (`to`, `companyName`…) y sin empresa, así que la confirmación fallaba en silencio. Ahora usa `datosConfirmacionFirma(signatureRequest, signature)` (exportada para pruebas): firmante, documento (factura o proforma), empresa (con `logoUrl` y `colorPrimario` en el `select`) y la fecha de firma. Prueba en `test/unit/firma-publica-confirmacion.test.js`. `npm test` 148/148; mutación (sin empresa) en rojo.
 - 2026-11-02 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/correos-firma`, rama `fix/correos-firma` sobre `main` 7f42609): **correos de firma en español y para Perú** (pedido de Miguel: «Sí, tradúcelos»). Sin push.
   - `src/services/emailService.js`: la solicitud (`sendSignatureRequestEmail`) y la confirmación (`sendSignatureConfirmationEmail`) pasan a español neutro con tuteo. Asuntos: «Firma requerida: Proforma P001-3», «Confirmación: firmaste la Proforma P001-3», «Firmado: Proforma P001-3 por <nombre>». Tipo «Factura» o «Proforma». Fechas `es-PE` en `America/Lima`. Plantilla común (`plantillaFirma`, `estilosFirma`). El aviso al dueño arma su propio texto (ya no hace `replace` de frases en inglés).
