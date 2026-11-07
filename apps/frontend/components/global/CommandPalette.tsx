@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { Command } from 'cmdk';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -18,6 +18,8 @@ import {
   Settings,
   Search,
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { claveEtiquetaComando, rutaDeComando, type ComandoPaleta } from '@/lib/paletaComandos';
 
 interface CommandPaletteProps {
   isOpen: boolean;
@@ -26,51 +28,25 @@ interface CommandPaletteProps {
 
 export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations('commandPalette');
+  const { empresa } = useAuth();
+  const esPeru = empresa?.pais === 'PE';
   const [search, setSearch] = useState('');
 
   const handleSelect = useCallback(
-    (action: string) => {
+    (action: ComandoPaleta) => {
       onClose();
       setSearch('');
-
-      switch (action) {
-        case 'dashboard':
-          router.push('/dashboard');
-          break;
-        case 'new-invoice':
-          router.push('/facturas/nueva');
-          break;
-        case 'invoices':
-          router.push('/facturas');
-          break;
-        case 'new-quote':
-          router.push('/proformas/nueva');
-          break;
-        case 'quotes':
-          router.push('/proformas');
-          break;
-        case 'new-client':
-          router.push('/clientes/nuevo');
-          break;
-        case 'clients':
-          router.push('/clientes');
-          break;
-        case 'new-product':
-          router.push('/productos/nuevo');
-          break;
-        case 'products':
-          router.push('/productos');
-          break;
-        case 'reports':
-          router.push('/reportes');
-          break;
-        case 'settings':
-          router.push('/configuracion');
-          break;
-      }
+      router.push(rutaDeComando(action, locale, esPeru));
     },
-    [router, onClose]
+    [router, onClose, locale, esPeru]
+  );
+
+  // Etiqueta traducida del comando (en Perú «factura» pasa a «comprobante»).
+  const etiqueta = useCallback(
+    (comando: ComandoPaleta) => t(claveEtiquetaComando(comando, esPeru)),
+    [t, esPeru]
   );
 
   // Atajos de teclado
@@ -96,22 +72,22 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
     {
       group: t('navigation'),
       items: [
-        { id: 'dashboard', label: t('commands.goToDashboard'), icon: LayoutDashboard },
-        { id: 'invoices', label: t('commands.viewInvoices'), icon: FileText },
-        { id: 'quotes', label: t('commands.viewQuotes'), icon: FileCheck },
-        { id: 'clients', label: t('commands.viewClients'), icon: Users },
-        { id: 'products', label: t('commands.viewProducts'), icon: Package },
-        { id: 'reports', label: t('commands.viewReports'), icon: BarChart3 },
-        { id: 'settings', label: t('commands.openSettings'), icon: Settings },
+        { id: 'dashboard' as const, label: etiqueta('dashboard'), icon: LayoutDashboard },
+        { id: 'invoices' as const, label: etiqueta('invoices'), icon: FileText },
+        { id: 'quotes' as const, label: etiqueta('quotes'), icon: FileCheck },
+        { id: 'clients' as const, label: etiqueta('clients'), icon: Users },
+        { id: 'products' as const, label: etiqueta('products'), icon: Package },
+        { id: 'reports' as const, label: etiqueta('reports'), icon: BarChart3 },
+        { id: 'settings' as const, label: etiqueta('settings'), icon: Settings },
       ],
     },
     {
       group: t('create'),
       items: [
-        { id: 'new-invoice', label: t('commands.newInvoice'), icon: FilePlus },
-        { id: 'new-quote', label: t('commands.newQuote'), icon: FilePlus },
-        { id: 'new-client', label: t('commands.newClient'), icon: UserPlus },
-        { id: 'new-product', label: t('commands.newProduct'), icon: PackagePlus },
+        { id: 'new-invoice' as const, label: etiqueta('new-invoice'), icon: FilePlus },
+        { id: 'new-quote' as const, label: etiqueta('new-quote'), icon: FilePlus },
+        { id: 'new-client' as const, label: etiqueta('new-client'), icon: UserPlus },
+        { id: 'new-product' as const, label: etiqueta('new-product'), icon: PackagePlus },
       ],
     },
   ];

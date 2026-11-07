@@ -928,10 +928,12 @@
     "commands": {
       "goToDashboard": "Go to Dashboard",
       "viewInvoices": "View Invoices",
+      "viewVouchers": "View Vouchers",
       "viewQuotes": "View Proposals",
       "viewClients": "View Clients",
       "viewProducts": "View Products",
       "newInvoice": "New Invoice",
+      "newVoucher": "New Voucher",
       "newQuote": "New Proposal",
       "newClient": "New Client",
       "newProduct": "New Product",

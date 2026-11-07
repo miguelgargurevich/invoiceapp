@@ -1025,10 +1025,12 @@
     "commands": {
       "goToDashboard": "Ir a Dashboard",
       "viewInvoices": "Ver Facturas",
+      "viewVouchers": "Ver comprobantes",
       "viewQuotes": "Ver Proformas",
       "viewClients": "Ver Clientes",
       "viewProducts": "Ver Productos",
       "newInvoice": "Nueva Factura",
+      "newVoucher": "Nuevo comprobante",
       "newQuote": "Nueva Proforma",
       "newClient": "Nuevo Cliente",
       "newProduct": "Nuevo Producto",
