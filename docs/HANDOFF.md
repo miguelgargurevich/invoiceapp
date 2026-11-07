@@ -3,6 +3,14 @@
 > Actualizado: 2026-11-04 por claude-code (Sonnet 5.5)
 > Actualizado: 2026-11-02 por claude-code (Haiku 5.5)
 > Actualizado: 2026-11-02 por claude-code
+> Actualizado: 2026-11-07 por Claude Code (Nemotron 3.5 Super VL)
+
+## Última sesión
+
+- 2026-11-07 (Claude Code con Nemotron 3.5 Super VL, worktree `.claude/worktrees/pendientes-frontend`, rama `fix/pendientes-frontend` sobre `origin/main` 4fee4d2): **pendientes del frontend: estado de error en comprobantes y `next lint`**. Commits de esta rama ya integrados: CommandPalette con prefijo de locale y comprobantes para empresas PE (`e2a75ff`) y notas que no ofrecen notas ni anulación con NC (`ac25e28`).
+  - Punto 3 (estado de error): `nuevo/page.tsx` (ya cargaba error con ErrorState + Reintentar/Volver de la sesión previa, sin commitear) y `editar/page.tsx`: si la carga inicial falla, la pantalla ya no se queda en `<SkeletonFormPage />` para siempre; muestra `ErrorState` (reusa `EmptyState`, ícono de alerta ámbar) con título `sunat.cargaError`, mensaje vía `normalizarError`, botón «Reintentar» (re-carga mediante `intento`) y «Volver» al detalle `/${locale}/comprobantes/{id}` (o al listado desde nuevo). `ErrorState` se exporta desde `components/common/index.ts`. Textos nuevos `cargaError` y `reintentar` en `messages/es.json` y `messages/en.json`.
+  - Punto 4 (`next lint`): causa, `eslint-config-next` ^16 (solo flat config/ESM) junto a ESLint 8 con `.eslintrc.json` → «Converting circular structure to JSON … property 'react' closes the circle»; se alineó a `eslint-config-next@^14.2.35` (misma versión que Next 14.2.35) con `npm install --legacy-peer-deps` (node_modules propio del worktree, sin tocar el checkout principal). `npx next lint` ahora corre y reporta 223 errores y 25 avisos en 51 archivos preexistentes; ninguno de los archivos tocados en este encargo añade problemas nuevos. Por encargo no se corrigió ningún aviso/error de código existente.
+  - Verificación de esta sesión: `npm test` 107/107, `npx tsc --noEmit` exit 0, `npx next build` exit 0, `npx next lint` ejecuta (código 1 solo por problemas preexistentes de código).
 
 ## Estado actual
 
