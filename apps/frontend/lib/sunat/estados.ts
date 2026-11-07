@@ -1,4 +1,4 @@
-import type { EstadoSunat } from './tipos';
+import type { EstadoSunat, TipoComprobante } from './tipos';
 
 export type VarianteEstado = 'neutral' | 'info' | 'warning' | 'success' | 'danger' | 'amber' | 'violet';
 export type AccionComprobante =
@@ -34,8 +34,16 @@ export function colorEstado(estado: EstadoSunat): VarianteEstado {
   return DEFINICIONES[estado]?.variante ?? 'neutral';
 }
 
-export function accionesPermitidas(estado: EstadoSunat): AccionComprobante[] {
-  return [...(DEFINICIONES[estado]?.acciones ?? [])];
+export function accionesPermitidas(estado: EstadoSunat, tipo?: TipoComprobante | null): AccionComprobante[] {
+  const acciones = [...(DEFINICIONES[estado]?.acciones ?? [])];
+  // Una nota de crédito (07) o de débito (08) no se corrige con otra nota.
+  if (esNota(tipo)) return acciones.filter((a) => a !== 'notaCredito' && a !== 'notaDebito');
+  return acciones;
+}
+
+// Notas de crédito (07) y de débito (08): modifican a otro comprobante, no admiten notas sobre ellas.
+export function esNota(tipo: TipoComprobante | null | undefined): boolean {
+  return tipo === '07' || tipo === '08';
 }
 
 export function estaEnProceso(estado: EstadoSunat): boolean {

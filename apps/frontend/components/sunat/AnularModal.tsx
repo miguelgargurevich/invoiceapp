@@ -7,6 +7,7 @@ import { XCircle } from 'lucide-react';
 import { Button, Modal, Textarea } from '@/components/common';
 import { useToast } from '@/contexts/ToastContext';
 import { sunatApi } from '@/lib/sunat/api';
+import { esNota } from '@/lib/sunat/estados';
 import { normalizarError } from '@/lib/sunat/errores';
 import type { Comprobante } from '@/lib/sunat/tipos';
 
@@ -45,6 +46,8 @@ export function AnularModal({ isOpen, onClose, comprobante, locale, onAnulado }:
   };
 
   const irANota = () => router.push(`/${locale}/comprobantes/nuevo?tipo=07&afecta=${comprobante.id}&motivo=01`);
+  // Una nota no se anula con otra nota: solo se ofrece cerrar el aviso.
+  const sinNota = esNota(comprobante.tipoComprobante);
 
   return (
     <Modal
@@ -55,14 +58,20 @@ export function AnularModal({ isOpen, onClose, comprobante, locale, onAnulado }:
       iconColor={fueraDePlazo ? 'warning' : 'danger'}
       size="sm"
       footer={fueraDePlazo ? (
-        <Button onClick={irANota}>{t('anular.emitirNc')}</Button>
+        sinNota
+          ? <Button variant="outline" onClick={cerrar}>{t('volver')}</Button>
+          : <Button onClick={irANota}>{t('anular.emitirNc')}</Button>
       ) : (
         <Button variant="danger" loading={enviando} disabled={!motivo.trim()} onClick={anular}>{t('anular.confirmar')}</Button>
       )}
     >
-      {fueraDePlazo ? (
+      {fueraDePlazo && sinNota && (
+        <p className="text-sm text-gray-600 dark:text-gray-300">{t('anular.fueraPlazoNota')}</p>
+      )}
+      {fueraDePlazo && !sinNota && (
         <p className="text-sm text-gray-600 dark:text-gray-300">{t('anular.fueraPlazo')}</p>
-      ) : (
+      )}
+      {!fueraDePlazo && (
         <Textarea label={t('anular.motivo')} value={motivo} onChange={(e) => setMotivo(e.target.value)} rows={3} maxLength={100} />
       )}
     </Modal>

@@ -27,7 +27,7 @@ export function AccionesComprobante({ comprobante, locale, ruc, onCambio }: Prop
   const [ocupado, setOcupado] = useState<string | null>(null);
   const [confirmar, setConfirmar] = useState<'emitir' | 'eliminar' | null>(null);
   const [anulando, setAnulando] = useState(false);
-  const acciones = accionesPermitidas(comprobante.estadoSunat);
+  const acciones = accionesPermitidas(comprobante.estadoSunat, comprobante.tipoComprobante);
   const base = `/${locale}/comprobantes`;
 
   const ejecutar = async (clave: string, accion: () => Promise<void>) => {

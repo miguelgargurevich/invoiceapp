@@ -2246,6 +2246,7 @@
       "confirmar": "Anular",
       "fueraPlazoTitulo": "El plazo de baja venció",
       "fueraPlazo": "Para anular este comprobante emite una nota de crédito por anulación.",
+      "fueraPlazoNota": "Este comprobante es una nota de crédito o de débito: no se puede anular con otra nota.",
       "emitirNc": "Emitir nota de crédito por anulación",
       "enviado": "Anulación enviada a SUNAT"
     },

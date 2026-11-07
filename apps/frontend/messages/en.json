@@ -2193,6 +2193,7 @@
       "confirmar": "Void",
       "fueraPlazoTitulo": "The voiding deadline has passed",
       "fueraPlazo": "To void this document, issue a credit note for voiding.",
+      "fueraPlazoNota": "This document is a credit or debit note: it can't be voided with another note.",
       "emitirNc": "Issue credit note for voiding",
       "enviado": "Voiding sent to SUNAT"
     },
