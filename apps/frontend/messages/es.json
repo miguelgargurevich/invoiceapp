@@ -2122,6 +2122,8 @@
     "editarSubtitulo": "Corrige los datos antes de enviarlo a SUNAT",
     "borrador": "Borrador",
     "volver": "Volver",
+    "cargaError": "No se pudo cargar el comprobante",
+    "reintentar": "Reintentar",
     "tipos": { "01": "Factura", "03": "Boleta", "07": "Nota de crédito", "08": "Nota de débito" },
     "estados": {
       "BORRADOR": "Borrador",

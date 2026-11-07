@@ -2070,6 +2070,8 @@
     "nuevaNota": "New note",
     "borrador": "Draft",
     "volver": "Back",
+    "cargaError": "Could not load the document",
+    "reintentar": "Retry",
     "tipos": { "01": "Invoice", "03": "Receipt", "07": "Credit note", "08": "Debit note" },
     "estados": {
       "BORRADOR": "Draft",

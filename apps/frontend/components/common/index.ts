@@ -20,6 +20,7 @@ export {
   EmptyProducts,
   EmptySearch,
 } from './EmptyState';
+export { ErrorState } from './ErrorState';
 export {
   LoadingSpinner,
   LoadingOverlay,
