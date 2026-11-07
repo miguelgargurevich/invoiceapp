@@ -1,16 +1,9 @@
 # Handoff — InvoiceApp
 
+> Actualizado: 2026-11-07 por claude-code (Opus 5.5, orquestó; construyeron DeepSeek V4.1 Flash y Nemotron 3.5 Super VL vía OpenCode Zen)
 > Actualizado: 2026-11-04 por claude-code (Sonnet 5.5)
 > Actualizado: 2026-11-02 por claude-code (Haiku 5.5)
 > Actualizado: 2026-11-02 por claude-code
-> Actualizado: 2026-11-07 por Claude Code (Nemotron 3.5 Super VL)
-
-## Última sesión
-
-- 2026-11-07 (Claude Code con Nemotron 3.5 Super VL, worktree `.claude/worktrees/pendientes-frontend`, rama `fix/pendientes-frontend` sobre `origin/main` 4fee4d2): **pendientes del frontend: estado de error en comprobantes y `next lint`**. Commits de esta rama ya integrados: CommandPalette con prefijo de locale y comprobantes para empresas PE (`e2a75ff`) y notas que no ofrecen notas ni anulación con NC (`ac25e28`).
-  - Punto 3 (estado de error): `nuevo/page.tsx` (ya cargaba error con ErrorState + Reintentar/Volver de la sesión previa, sin commitear) y `editar/page.tsx`: si la carga inicial falla, la pantalla ya no se queda en `<SkeletonFormPage />` para siempre; muestra `ErrorState` (reusa `EmptyState`, ícono de alerta ámbar) con título `sunat.cargaError`, mensaje vía `normalizarError`, botón «Reintentar» (re-carga mediante `intento`) y «Volver» al detalle `/${locale}/comprobantes/{id}` (o al listado desde nuevo). `ErrorState` se exporta desde `components/common/index.ts`. Textos nuevos `cargaError` y `reintentar` en `messages/es.json` y `messages/en.json`.
-  - Punto 4 (`next lint`): causa, `eslint-config-next` ^16 (solo flat config/ESM) junto a ESLint 8 con `.eslintrc.json` → «Converting circular structure to JSON … property 'react' closes the circle»; se alineó a `eslint-config-next@^14.2.35` (misma versión que Next 14.2.35) con `npm install --legacy-peer-deps` (node_modules propio del worktree, sin tocar el checkout principal). `npx next lint` ahora corre y reporta 223 errores y 25 avisos en 51 archivos preexistentes; ninguno de los archivos tocados en este encargo añade problemas nuevos. Por encargo no se corrigió ningún aviso/error de código existente.
-  - Verificación de esta sesión: `npm test` 107/107, `npx tsc --noEmit` exit 0, `npx next build` exit 0, `npx next lint` ejecuta (código 1 solo por problemas preexistentes de código).
 
 ## Estado actual
 
@@ -25,6 +18,12 @@
 
 ## Última sesión
 
+- 2026-11-07 (OpenCode: DeepSeek V4.1 Flash hizo los puntos 1 y 2 y se quedó sin cupo gratis; Nemotron 3.5 Super VL terminó el 3 y el 4; revisó e integró Claude Code con Opus 5.5, worktree `.claude/worktrees/pendientes-frontend`, rama `fix/pendientes-frontend` sobre `origin/main` 4fee4d2): **pendientes del frontend: estado de error en comprobantes y `next lint`**. Commits de esta rama ya integrados: CommandPalette con prefijo de locale y comprobantes para empresas PE (`e2a75ff`) y notas que no ofrecen notas ni anulación con NC (`ac25e28`).
+  - Punto 3 (estado de error): `nuevo/page.tsx` (ya cargaba error con ErrorState + Reintentar/Volver de la sesión previa, sin commitear) y `editar/page.tsx`: si la carga inicial falla, la pantalla ya no se queda en `<SkeletonFormPage />` para siempre; muestra `ErrorState` (reusa `EmptyState`, ícono de alerta ámbar) con título `sunat.cargaError`, mensaje vía `normalizarError`, botón «Reintentar» (re-carga mediante `intento`) y «Volver» al detalle `/${locale}/comprobantes/{id}` (o al listado desde nuevo). `ErrorState` se exporta desde `components/common/index.ts`. Textos nuevos `cargaError` y `reintentar` en `messages/es.json` y `messages/en.json`.
+  - Punto 4 (`next lint`): causa, `eslint-config-next` ^16 (solo flat config/ESM) junto a ESLint 8 con `.eslintrc.json` → «Converting circular structure to JSON … property 'react' closes the circle»; se alineó a `eslint-config-next@^14.2.35` (misma versión que Next 14.2.35) con `npm install --legacy-peer-deps` (node_modules propio del worktree, sin tocar el checkout principal). `npx next lint` ahora corre y reporta 223 errores y 25 avisos en 51 archivos preexistentes; ninguno de los archivos tocados en este encargo añade problemas nuevos. Por encargo no se corrigió ningún aviso/error de código existente.
+  - Verificación de esta sesión: `npm test` 107/107, `npx tsc --noEmit` exit 0, `npx next build` exit 0, `npx next lint` ejecuta (código 1 solo por problemas preexistentes de código).
+  - Revisión de Opus (diff completo): tras `npm ci --legacy-peer-deps` limpio con el lockfile nuevo (el del Dockerfile), `npm test` 107/107, `tsc` exit 0, `next build` exit 0, `next lint` corre. Mutaciones: `esNota` → `false` deja 2 pruebas en rojo; quitar la ruta PE de «new-invoice» deja 1 en rojo; restaurado con `cp` + `cmp`. NO verificado: el aspecto en el navegador (paleta en PE, pantalla de error, modal de anular una nota fuera de plazo).
+  - Regla nueva: una nota (07/08) no ofrece «Nota de crédito/débito» y, si venció el plazo de baja, el modal de anular solo avisa que no se anula con otra nota (`esNota` en `lib/sunat/estados.ts`). La paleta (Ctrl+K) usa `lib/paletaComandos.ts`.
 - 2026-11-04 (Claude Code con Opus 5.5, revisión e integración de `feat/datos-legales`): la siembra `seed_sitio.sql` ya trae la razón social que confirmó Miguel (MIGUEL ARTURO FERNANDEZ GARGUREVICH) y el correo del producto `facturo@gargurevich.dev`. **El buzón todavía no existe**: Miguel lo creará. Verificado: backend 151/151 y test:db 120/120; frontend 101/101, `tsc` y `next build` en verde. Mutación: sin `requireSuperAdmin` en el PUT, la prueba de 403/401 falla.
 - 2026-11-04 (Claude Code con Sonnet 5.5, worktree `.claude/worktrees/datos-legales`, rama `feat/datos-legales` sobre `main` c257008): **datos legales del servicio en BD** (pedido de Miguel vía Torre: mostrar quién presta el servicio; «nada de variables de entorno, todo en BD»). Sin push.
   - **Modelo** `ConfiguracionSitio` (`configuracion_sitio`, una sola fila, `id = "global"`): `legalMarca`, `legalRazonSocial`, `legalRuc`, `legalDomicilio`, `legalCorreo` (todos `String?`, columnas `legal_*`) y `updatedAt`. Migración `20261104000000_datos_legales`.
@@ -736,12 +735,12 @@
 - [x] Diseño y plan del frontend para empresas `PE`: `docs/superpowers/specs/2026-11-01-sunat-frontend-design.md` y
   `docs/superpowers/plans/2026-11-01-sunat-frontend.md` (rama `feat/sunat-frontend`, 10 tareas).
 - [x] Ejecutar el plan del frontend (10 tareas; verificado en navegador contra SUNAT beta).
-- [ ] Frontend: la tarjeta «Create Invoice» del dashboard lleva a `/facturas/nueva` también para empresas `PE` (debería ir a `/comprobantes/nuevo`).
-- [ ] Frontend: una nota de crédito o débito ofrece a su vez «Nota de crédito/débito» (las acciones no distinguen notas).
-- [ ] Frontend: en `nuevo?afecta=` y `[id]/editar`, si la carga falla, la pantalla queda en el esqueleto (falta estado de error).
+- [x] Frontend: la tarjeta «Create Invoice» del dashboard lleva a `/facturas/nueva` también para empresas `PE` (debería ir a `/comprobantes/nuevo`).
+- [x] Frontend: una nota de crédito o débito ofrece a su vez «Nota de crédito/débito» (las acciones no distinguen notas).
+- [x] Frontend: en `nuevo?afecta=` y `[id]/editar`, si la carga falla, la pantalla queda en el esqueleto (falta estado de error).
 - [ ] Decidir: «Guardar borrador» con crédito y sin cuotas da 400 (el backend exige ≥ 1 cuota); hoy se muestra el error.
 - [ ] El redondeo con IGV incluido se vio en vivo: precio 100 con IGV → total 100.01 (ver la decisión pendiente de céntimos).
-- [ ] `next lint` está roto en el repo (`.eslintrc.json`: estructura circular); se verificó con `tsc` y `next build`.
+- [x] `next lint` está roto en el repo (`.eslintrc.json`: estructura circular). Arreglado 2026-11-07 (`eslint-config-next` ^14); quedan 223 errores y 25 avisos de código previos por limpiar.
 - [ ] Despliegue según `docs/sunat/DESPLIEGUE.md` (con OK de Miguel; `prisma migrate status` contra producción primero).
 - [ ] Diseñar subproyectos 3 (guía de remisión), 4 (retención/percepción) y 5 (SaaS/PSE).
 
