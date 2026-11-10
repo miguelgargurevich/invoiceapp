@@ -1,5 +1,6 @@
 # Handoff — InvoiceApp
 
+> Actualizado: 2026-11-10 por claude-code (Haiku 5.5, worktree `.claude/worktrees/app-movil`, rama `feat/app-movil` sobre `main` 48d9973)
 > Actualizado: 2026-11-07 por claude-code (Opus 5.5, orquestó; construyeron DeepSeek V4.1 Flash y Nemotron 3.5 Super VL vía OpenCode Zen)
 > Actualizado: 2026-11-04 por claude-code (Sonnet 5.5)
 > Actualizado: 2026-11-02 por claude-code (Haiku 5.5)
@@ -18,6 +19,14 @@
 
 ## Última sesión
 
+- 2026-11-10 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/app-movil`, rama `feat/app-movil` sobre `main` 48d9973, sin push): **app móvil fase 1 (iOS y Android) con Capacitor 8.6** (pedido de Miguel: «así como lo está haciendo Torre»). Guía completa en `docs/APP-MOVIL.md`.
+  - Proyecto `mobile/` (appId `pe.facturo.app`): envuelve `https://facturo.gargurevich.dev` con `server.url`. `FACTURO_URL` solo para pruebas (http solo en localhost); `npm run verificar` falla si el build no es de producción. Navegación limitada a facturo; lo demás sale al navegador o app del sistema. Botón Atrás en `MainActivity.java`; pantalla «Sin conexión» con `errorPath`; vertical; zona segura con `SystemBars`.
+  - Descargas en la app: `apps/frontend/lib/descargas.ts` (Filesystem + Share dentro de la app; navegador sin cambios). Sitios cambiados: SUNAT `guardarArchivo`, CSV de clientes/productos/facturas, PDF de vistas previas y de detalle de factura y proforma. `npm test` 121/121, `tsc` exit 0, mutación en rojo y restaurada.
+  - Android: `./gradlew assembleDebug` OK (APK en `mobile/android/app/build/outputs/apk/debug/app-debug.apk`), instalado en el emulador compartido `emulator-5556`. Pendiente: capturas, Atrás, sin conexión y selector de archivos en el dispositivo (el emulador estaba ocupado por otra app).
+  - iOS: proyecto generado (SPM, sin CocoaPods). **Sin compilar** (no hay Xcode). `Info.plist`: vertical y claves de cámara y fotos en español (la cámara por el selector de «Tomar foto»; decisión pendiente de Miguel).
+  - Permisos Android: ninguno extra. Notificaciones push: NO construidas (plan de fase 2 en la guía).
+  - Gotcha: `npm run sync` reescribe `www/sin-conexion.html` con la URL del build; el archivo versionado debe quedar con la URL de producción.
+  - Gotcha: el emulador es compartido con otra sesión (Torre). No se cierra; se reusa el que esté en línea. Nunca dos a la vez.
 - 2026-11-07 (OpenCode: DeepSeek V4.1 Flash hizo los puntos 1 y 2 y se quedó sin cupo gratis; Nemotron 3.5 Super VL terminó el 3 y el 4; revisó e integró Claude Code con Opus 5.5, worktree `.claude/worktrees/pendientes-frontend`, rama `fix/pendientes-frontend` sobre `origin/main` 4fee4d2): **pendientes del frontend: estado de error en comprobantes y `next lint`**. Commits de esta rama ya integrados: CommandPalette con prefijo de locale y comprobantes para empresas PE (`e2a75ff`) y notas que no ofrecen notas ni anulación con NC (`ac25e28`).
   - Punto 3 (estado de error): `nuevo/page.tsx` (ya cargaba error con ErrorState + Reintentar/Volver de la sesión previa, sin commitear) y `editar/page.tsx`: si la carga inicial falla, la pantalla ya no se queda en `<SkeletonFormPage />` para siempre; muestra `ErrorState` (reusa `EmptyState`, ícono de alerta ámbar) con título `sunat.cargaError`, mensaje vía `normalizarError`, botón «Reintentar» (re-carga mediante `intento`) y «Volver» al detalle `/${locale}/comprobantes/{id}` (o al listado desde nuevo). `ErrorState` se exporta desde `components/common/index.ts`. Textos nuevos `cargaError` y `reintentar` en `messages/es.json` y `messages/en.json`.
   - Punto 4 (`next lint`): causa, `eslint-config-next` ^16 (solo flat config/ESM) junto a ESLint 8 con `.eslintrc.json` → «Converting circular structure to JSON … property 'react' closes the circle»; se alineó a `eslint-config-next@^14.2.35` (misma versión que Next 14.2.35) con `npm install --legacy-peer-deps` (node_modules propio del worktree, sin tocar el checkout principal). `npx next lint` ahora corre y reporta 223 errores y 25 avisos en 51 archivos preexistentes; ninguno de los archivos tocados en este encargo añade problemas nuevos. Por encargo no se corrigió ningún aviso/error de código existente.

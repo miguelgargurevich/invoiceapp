@@ -69,3 +69,23 @@ next-env.d.ts
 *.pem
 .cache
 apps/sunat-engine/vendor/
+
+# App móvil (mobile/, Capacitor). Lo generado por `npm run sync` no se versiona;
+# las firmas y certificados NUNCA entran al repo (ver docs/APP-MOVIL.md).
+mobile/node_modules/
+mobile/android/app/build/
+mobile/android/build/
+mobile/android/.gradle/
+mobile/android/local.properties
+mobile/android/app/release/
+mobile/android/app/src/main/assets/
+mobile/ios/App/build/
+mobile/ios/App/Pods/
+mobile/ios/App/DerivedData/
+mobile/ios/App/App/public/
+mobile/ios/App/App/capacitor.config.json
+*.jks
+*.keystore
+keystore.properties
+*.pfx
+*.p12

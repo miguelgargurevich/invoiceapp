@@ -1,0 +1,33 @@
+{
+  "name": "facturo-mobile",
+  "version": "1.0.0",
+  "description": "Facturo en iOS y Android (Capacitor envolviendo la web de producción)",
+  "scripts": {
+    "sync": "node scripts/preparar-www.mjs && cap sync",
+    "verificar": "node scripts/verificar-produccion.mjs",
+    "apk": "npm run sync && npm run verificar && cd android && ./gradlew assembleDebug",
+    "apk:prueba": "npm run sync && cd android && ./gradlew assembleDebug",
+    "assets": "capacitor-assets generate --android --ios --iconBackgroundColor \"#FFFFFF\" --iconBackgroundColorDark \"#FFFFFF\" --splashBackgroundColor \"#6B2C6E\" --splashBackgroundColorDark \"#6B2C6E\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/ios": "^8.6.0",
+    "@capacitor/share": "^8.0.3",
+    "@capacitor/splash-screen": "^8.0.2"
+  },
+  "devDependencies": {
+    "@capacitor/assets": "^4.0.0",
+    "@capacitor/cli": "^8.6.0",
+    "typescript": "^5.9.3"
+  }
+}
