@@ -58,6 +58,7 @@ import { useCurrency, useProposalStatus } from '@/lib/hooks';
 import api from '@/lib/api';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { descargarArchivo } from '@/lib/descargas';
 
 interface DetalleProforma {
   id: string;
@@ -288,7 +289,7 @@ export default function ProformaDetailPage({
         imgHeight * ratio
       );
 
-      pdf.save(`Proforma-${proforma.serie}-${proforma.numero}.pdf`);
+      await descargarArchivo(pdf.output('blob'), `Proforma-${proforma.serie}-${proforma.numero}.pdf`);
     } catch (error) {
       console.error('Error generating PDF:', error);
     } finally {

@@ -1,4 +1,5 @@
 import api from '@/lib/api';
+import { descargarArchivo } from '@/lib/descargas';
 import type {
   AlertasSunat, CatalogosSunat, Comprobante, ComprobantePayload, EmisorPayload, EmisorVista, Serie, VistaPrevia,
 } from './tipos';
@@ -28,12 +29,5 @@ export const sunatApi = {
 
 export async function guardarArchivo(id: string, tipo: 'pdf' | 'xml' | 'cdr', nombre: string): Promise<void> {
   const blob = await sunatApi.descargar(id, tipo);
-  const url = URL.createObjectURL(blob);
-  const enlace = document.createElement('a');
-  enlace.href = url;
-  enlace.download = nombre;
-  document.body.appendChild(enlace);
-  enlace.click();
-  enlace.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  await descargarArchivo(blob, nombre);
 }

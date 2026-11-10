@@ -8,6 +8,7 @@ import { useToast } from '@/contexts/ToastContext';
 import ProformaPreview from './ProformaPreview';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { descargarArchivo, esAplicacionFacturo } from '@/lib/descargas';
 
 interface DetalleProforma {
   id: string;
@@ -200,7 +201,7 @@ export default function ProformaPrintPreviewModal({
       const pdf = await generatePDF();
       if (pdf) {
         //console.log('[ProformaPDF] PDF generated successfully, saving...');
-        pdf.save(`${t('title')}-${proforma.serie}-${proforma.numero}.pdf`);
+        await descargarArchivo(pdf.output('blob'), `${t('title')}-${proforma.serie}-${proforma.numero}.pdf`);
       } else {
         //console.error('[ProformaPDF] PDF generation returned null');
         showError('Error al generar el PDF. Intenta de nuevo.');
@@ -232,7 +233,8 @@ export default function ProformaPrintPreviewModal({
         //   canShare: navigator.canShare ? navigator.canShare({ files: [file] }) : false
         // });
 
-        if (navigator.share && navigator.canShare({ files: [file] })) {
+        // Dentro de la app la hoja de compartir sale por descargarArchivo (plugin Share).
+        if (!esAplicacionFacturo() && navigator.share && navigator.canShare({ files: [file] })) {
           //console.log('[ProformaPDF] Sharing via Web Share API...');
           await navigator.share({
             files: [file],
@@ -243,7 +245,7 @@ export default function ProformaPrintPreviewModal({
         } else {
           //console.log('[ProformaPDF] Web Share API not available, falling back to download');
           // Fallback: download the file
-          pdf.save(`${t('title')}-${proforma.serie}-${proforma.numero}.pdf`);
+          await descargarArchivo(pdf.output('blob'), `${t('title')}-${proforma.serie}-${proforma.numero}.pdf`);
         }
       } else {
         //console.error('[ProformaPDF] PDF generation returned null');

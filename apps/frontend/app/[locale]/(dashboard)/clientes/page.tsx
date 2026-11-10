@@ -17,6 +17,7 @@ import {
 } from '@/components/common';
 import { UsageLimitModal, UsageLimitWarning } from '@/components/common/UpgradePrompt';
 import api from '@/lib/api';
+import { descargarArchivo } from '@/lib/descargas';
 
 interface Cliente {
   id: string;
@@ -112,7 +113,7 @@ export default function ClientesPage() {
     }
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     try {
       const headers = [
         t('documentType'),
@@ -138,14 +139,7 @@ export default function ClientesPage() {
       ].join('\n');
 
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `clientes_${new Date().toISOString().split('T')[0]}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      await descargarArchivo(blob, `clientes_${new Date().toISOString().split('T')[0]}.csv`);
     } catch (error) {
       console.error('Error exporting clientes:', error);
     }

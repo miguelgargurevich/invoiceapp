@@ -18,6 +18,7 @@ import {
 } from '@/components/common';
 import { useCurrency } from '@/lib/hooks/useCurrency';
 import api from '@/lib/api';
+import { descargarArchivo } from '@/lib/descargas';
 
 interface Producto {
   id: string;
@@ -127,14 +128,8 @@ export default function ProductosPage({
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `productos_${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    descargarArchivo(blob, `productos_${new Date().toISOString().split('T')[0]}.csv`)
+      .catch((error) => console.error('Error exporting productos:', error));
   };
 
   const columns: Column<Producto>[] = [

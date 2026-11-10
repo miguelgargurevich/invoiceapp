@@ -7,6 +7,7 @@ import { Button, Modal } from '@/components/common';
 import InvoicePreview from './InvoicePreview';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { descargarArchivo, esAplicacionFacturo } from '@/lib/descargas';
 
 interface DetalleFactura {
   id: string;
@@ -173,7 +174,7 @@ export default function PrintPreviewModal({
       setDownloading(true);
       const pdf = await generatePDF();
       if (pdf) {
-        pdf.save(`Factura-${factura.serie}-${factura.numero}.pdf`);
+        await descargarArchivo(pdf.output('blob'), `Factura-${factura.serie}-${factura.numero}.pdf`);
       }
     } catch (error) {
       console.error('Error generating PDF:', error);
@@ -194,7 +195,8 @@ export default function PrintPreviewModal({
           { type: 'application/pdf' }
         );
 
-        if (navigator.share && navigator.canShare({ files: [file] })) {
+        // Dentro de la app la hoja de compartir sale por descargarArchivo (plugin Share).
+        if (!esAplicacionFacturo() && navigator.share && navigator.canShare({ files: [file] })) {
           await navigator.share({
             files: [file],
             title: `Factura ${factura.serie}-${factura.numero}`,

@@ -22,6 +22,7 @@ import { UsageLimitModal, UsageLimitWarning } from '@/components/common/UpgradeP
 import { formatDate } from '@/lib/utils';
 import { useCurrency, getInvoiceStatusInfo, type InvoiceDocument } from '@/lib/hooks';
 import api from '@/lib/api';
+import { descargarArchivo } from '@/lib/descargas';
 
 interface Factura {
   id: string;
@@ -291,7 +292,7 @@ export default function FacturasPage({
     router.push(`/${locale}/facturas/${factura.id}`);
   };
 
-  const handleExport = () => {
+  const handleExport = async () => {
     try {
       // Prepare CSV data
       const headers = [
@@ -328,14 +329,7 @@ export default function FacturasPage({
 
       // Create blob and download
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(blob);
-      link.setAttribute('href', url);
-      link.setAttribute('download', `facturas_${new Date().toISOString().split('T')[0]}.csv`);
-      link.style.visibility = 'hidden';
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      await descargarArchivo(blob, `facturas_${new Date().toISOString().split('T')[0]}.csv`);
     } catch (error) {
       console.error('Error exporting facturas:', error);
     }
