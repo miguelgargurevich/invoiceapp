@@ -107,7 +107,7 @@ Las fuentes están en `mobile/resources/`: `icon-only.png` (1024, fondo blanco),
 
 - Compilar en Xcode (`npx cap open ios`), con el equipo de Apple Developer configurado.
 - El ícono ya va sin canal alfa (RGB), como exige App Store.
-- «Sin conexión» en iOS: funciona con la configuración actual (`errorPath`). Probado en el simulador con una copia de la app que apunta a un host inexistente (captura `mobile/capturas/ios-sin-conexion.png`). Pendiente: tocar «Reintentar» en el simulador (no hubo forma de tocar la pantalla sin mover el puntero de la Mac).
+- «Sin conexión» en iOS: funciona con la configuración actual (`errorPath`). Probado en el simulador con una copia de la app que apunta a un host inexistente (captura `mobile/capturas/ios-sin-conexion.png`). «Reintentar» probado: vuelve a cargar la portada de producción (captura `mobile/capturas/ios-reintentar.png`).
 
 ### Probar sin conexión en el simulador
 
