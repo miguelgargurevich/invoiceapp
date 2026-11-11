@@ -4,6 +4,7 @@ import { forwardRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { Building2 } from 'lucide-react';
 import { formatCurrency as baseFormatCurrency, formatDate } from '@/lib/utils';
+import { MarcaAguaDemo } from '@/components/demo/MarcaAguaDemo';
 
 interface DetalleFactura {
   id: string;
@@ -88,9 +89,10 @@ const InvoicePreview = forwardRef<HTMLDivElement, InvoicePreviewProps>(
     return (
       <div
         ref={ref}
-        className="bg-white text-black p-8 mx-auto"
+        className="relative bg-white text-black p-8 mx-auto"
         style={{ fontFamily: 'Arial, sans-serif', maxWidth: '850px' }}
       >
+        <MarcaAguaDemo />
         {/* Header Section */}
         <div className="grid grid-cols-12 gap-4 items-start mb-4 border-b-2 border-gray-800 pb-3">
           {/* Left Side - Receipt Number & Dates */}
