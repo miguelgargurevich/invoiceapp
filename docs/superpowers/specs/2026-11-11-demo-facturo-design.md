@@ -141,3 +141,27 @@ Un documento corto en `docs/demo/ENVIAR-DEMO.md` que también se publica como re
 ## Pendiente de Miguel
 - **WhatsApp:** el número que irá en la franja (o dejarlo vacío por ahora).
 - **Presupuesto:** confirmar un segundo Postgres en el mismo VPS de Coolify.
+
+---
+
+## Anexo: contrato entre backend y frontend (fijado el 11-nov para las fases A y C)
+
+- **Cuentas de demo:** `emprendedor@demo.facturo.example` y `servicios@demo.facturo.example`. Las crea la fase B; las pruebas de A crean las suyas.
+- **`GET /api/demo/estado`**, público:
+  - sin `MODO_DEMO=si` → **404**;
+  - con él → **200** con:
+    ```
+    { activa: true, whatsapp: string|null, limiteDiario: 30,
+      perfiles: [ { id: 'emprendedor', nombre, descripcion },
+                  { id: 'servicios', nombre, descripcion },
+                  { id: 'cliente', nombre, descripcion, enlaceFirma: '/es/sign/<token>'|null } ] }
+    ```
+  - `enlaceFirma` es la solicitud de firma PENDIENTE más reciente de la empresa de «servicios».
+  - `whatsapp` sale de la columna nueva `ConfiguracionSitio.demoWhatsapp` (null = no se muestra).
+- **`POST /api/demo/entrar { perfil: 'emprendedor'|'servicios' }`**, público y con límite de peticiones:
+  - devuelve **lo mismo que `/api/auth/login`**: `{ user, session: { access_token, token_type } }`;
+  - perfil inválido → 400; sin `MODO_DEMO` → 404; cuenta de demo inexistente → 503.
+- **Bloqueos del candado:** **403** `{ error: '<mensaje en español>', codigo: 'DEMO_BLOQUEADO' }`.
+- **Límite diario de comprobantes:** **429** `{ error, codigo: 'DEMO_LIMITE' }`.
+- **PDF de comprobantes** (backend, `sunat/pdf/representacion.js`): marca de agua «DEMOSTRACIÓN». Los PDF que arma el navegador (proforma, factura antigua) los marca el frontend.
+- **`PUT /api/admin/sitio/legal`:** acepta además `demoWhatsapp` (formato de celular peruano o vacío).
