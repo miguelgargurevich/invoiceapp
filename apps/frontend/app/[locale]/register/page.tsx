@@ -20,6 +20,8 @@ import { Button, LoadingSpinner } from '@/components/common';
 import { cn } from '@/lib/utils';
 import { useDatosLegales } from '@/lib/hooks/useDatosLegales';
 import { lineaPie } from '@/lib/legal';
+import { useModoDemo } from '@/lib/hooks/useModoDemo';
+import { TEXTO_NO_DISPONIBLE_DEMO } from '@/lib/demo';
 
 type RegisterForm = {
   name: string;
@@ -51,6 +53,7 @@ export default function RegisterPage({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const { esDemo } = useModoDemo();
 
   const registerSchema = z.object({
     name: z.string().min(1, t('nameRequired')),
@@ -105,6 +108,26 @@ export default function RegisterPage({
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
         <LoadingSpinner size="xl" />
+      </div>
+    );
+  }
+
+  // En la demo no se crean cuentas: se muestra el aviso y el camino de vuelta a /demo.
+  if (esDemo) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4 dark:bg-slate-900">
+        <div className="max-w-md w-full rounded-xl border border-gray-200 bg-white p-8 text-center shadow-sm dark:border-gray-800 dark:bg-gray-900">
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{TEXTO_NO_DISPONIBLE_DEMO}</h1>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            En la demo no se crean cuentas. Prueba Facturo con uno de sus perfiles.
+          </p>
+          <Link
+            href={`/${locale}/demo`}
+            className="mt-6 inline-flex items-center justify-center rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700"
+          >
+            Volver a la demo
+          </Link>
+        </div>
       </div>
     );
   }

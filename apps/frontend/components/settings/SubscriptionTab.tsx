@@ -27,6 +27,8 @@ import { cn } from '@/lib/utils';
 import ContratarCulqiModal from '@/components/settings/ContratarCulqiModal';
 import { intervaloCulqi, leerContratarDeUrl, type IntervaloCulqi } from '@/lib/culqi';
 import { planMostrado } from '@/lib/planCobro';
+import { useModoDemo } from '@/lib/hooks/useModoDemo';
+import { TEXTO_NO_DISPONIBLE_DEMO } from '@/lib/demo';
 import {
   getPlans,
   getCurrentSubscription,
@@ -57,6 +59,8 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
   const { refreshSubscription } = useSubscription();
   const { user, empresa, loading: authLoading } = useAuth();
   const esPeru = empresa?.pais === 'PE';
+  // En la demo no se cambia de plan ni se paga: se muestra el plan actual y nada más (ver más abajo).
+  const { esDemo } = useModoDemo();
 
   const [plans, setPlans] = useState<Plan[]>([]);
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -355,6 +359,22 @@ export default function SubscriptionTab({ locale }: { locale: string }) {
     const monthlyTotal = plan.priceMonthly * 12;
     return Math.round(((monthlyTotal - plan.priceYearly) / monthlyTotal) * 100);
   };
+
+  if (esDemo) {
+    return (
+      <Card className="shadow-sm">
+        <div className="flex flex-col gap-3">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Plan</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Plan de la demo: <span className="font-medium">{vigente?.plan.name ?? 'Demo'}</span>
+          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {TEXTO_NO_DISPONIBLE_DEMO}: cambiar de plan y los pagos.
+          </p>
+        </div>
+      </Card>
+    );
+  }
 
   if (loading) {
     return (

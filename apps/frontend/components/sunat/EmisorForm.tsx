@@ -9,6 +9,8 @@ import { sunatApi } from '@/lib/sunat/api';
 import { normalizarError } from '@/lib/sunat/errores';
 import { fechaCorta } from '@/lib/sunat/formato';
 import type { EmisorPayload, EmisorVista } from '@/lib/sunat/tipos';
+import { useModoDemo } from '@/lib/hooks/useModoDemo';
+import { TEXTO_NO_DISPONIBLE_DEMO } from '@/lib/demo';
 
 interface Props {
   ruc: string;
@@ -38,6 +40,8 @@ export function EmisorForm({ ruc, onGuardado }: Props) {
   const [datos, setDatos] = useState(VACIO);
   const [solClave, setSolClave] = useState('');
   const [cambiandoClave, setCambiandoClave] = useState(false);
+  // En la demo: solo ambiente BETA, sin clave SOL ni certificado propios (el candado de la API lo impide).
+  const { esDemo } = useModoDemo();
   const [archivo, setArchivo] = useState<File | null>(null);
   const [claveCertificado, setClaveCertificado] = useState('');
   const [confirmacion, setConfirmacion] = useState('');
@@ -124,7 +128,9 @@ export function EmisorForm({ ruc, onGuardado }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Select
             label={t('ambiente')}
-            options={[{ value: 'BETA', label: t('beta') }, { value: 'PRODUCCION', label: t('produccion') }]}
+            options={esDemo
+              ? [{ value: 'BETA', label: t('beta') }]
+              : [{ value: 'BETA', label: t('beta') }, { value: 'PRODUCCION', label: t('produccion') }]}
             value={datos.ambiente}
             onChange={(e) => cambiar({ ambiente: e.target.value as 'BETA' | 'PRODUCCION' })}
           />
@@ -132,7 +138,12 @@ export function EmisorForm({ ruc, onGuardado }: Props) {
             <Input label={t('confirmarProduccion', { ruc })} value={confirmacion} onChange={(e) => setConfirmacion(e.target.value)} />
           ) : <div />}
           <Input label={t('solUsuario')} value={datos.solUsuario} autoComplete="off" onChange={(e) => cambiar({ solUsuario: e.target.value })} />
-          {emisor?.tieneClaveSol && !cambiandoClave ? (
+          {esDemo ? (
+            <div>
+              <p className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('solClave')}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{TEXTO_NO_DISPONIBLE_DEMO}</p>
+            </div>
+          ) : emisor?.tieneClaveSol && !cambiandoClave ? (
             <div>
               <p className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('solClave')}</p>
               <div className="flex items-center gap-3 text-sm text-emerald-700 dark:text-emerald-400">
@@ -145,7 +156,11 @@ export function EmisorForm({ ruc, onGuardado }: Props) {
           )}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{t('certificado')}</label>
-            <input type="file" accept=".pfx,.p12" onChange={(e) => setArchivo(e.target.files?.[0] ?? null)} className="text-sm" />
+            {esDemo ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400">{TEXTO_NO_DISPONIBLE_DEMO}</p>
+            ) : (
+              <input type="file" accept=".pfx,.p12" onChange={(e) => setArchivo(e.target.files?.[0] ?? null)} className="text-sm" />
+            )}
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {emisor?.tieneCertificado && emisor.certificadoVence ? t('certificadoVence', { fecha: fechaCorta(emisor.certificadoVence) }) : t('sinCertificado')}
             </p>
