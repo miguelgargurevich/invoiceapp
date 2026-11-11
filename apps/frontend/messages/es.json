@@ -2054,7 +2054,7 @@
       "ios": {
         "ver": "Ver cómo instalarla",
         "ocultar": "Ocultar los pasos",
-        "paso1": "Toca el botón Compartir de Safari (el cuadrado con una flecha hacia arriba).",
+        "paso1": "Toca Compartir (el cuadrado con una flecha hacia arriba). En iOS 26 está dentro del menú «•••» de Safari.",
         "paso2": "Elige «Agregar a pantalla de inicio» y confirma."
       }
     },
