@@ -1,5 +1,6 @@
 # Handoff — InvoiceApp
 
+> Actualizado: 2026-11-11 por claude-code (Haiku 5.5, worktree `.claude/worktrees/demo-front`, rama `feat/demo-front`, fase C de la demo)
 > Actualizado: 2026-11-10 por claude-code (Haiku 5.5, worktree `.claude/worktrees/videos`, rama `feat/videos` sobre `main` cd65ec3)
 > Actualizado: 2026-11-10 por claude-code (Haiku 5.5, worktree `.claude/worktrees/instalar-web`, rama `feat/instalar-web` sobre `main` 4f91050)
 > Actualizado: 2026-11-10 por claude-code (Haiku 5.5, worktree `.claude/worktrees/app-movil`, rama `feat/app-movil` sobre `main` 48d9973)
@@ -20,6 +21,18 @@
   Suites: backend 104/104 y 47/47; frontend 35/35, `tsc` y `next build` en verde. Falta: despliegue y verificar parámetros contra la norma.
 
 ## Última sesión
+
+- 2026-11-11 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/demo-front`, rama `feat/demo-front`, sin push): **fase C de la demo de Facturo** (frontend). Diseño y contrato con el backend: `docs/superpowers/specs/2026-11-11-demo-facturo-design.md` (punto 3, 4 y anexo). Brief de Miguel: lógica pura probada, página `/demo`, franja, panel «Qué probar», candado y marca «DEMOSTRACIÓN».
+  - Commits (sin push): `e90028a` lógica pura y pruebas; `4be1f7d` hook, `entrarDemo`, aviso del candado y página `/demo`; `dc2f45e` franja y panel; `e01dac7` controles ocultos; `8ca59f5` marca de agua; `63fd77b` WhatsApp de la demo en Datos legales; `daccf40` compuerta del panel.
+  - Lógica en `lib/demo.ts` (+ `lib/demo.test.ts`, 20 pruebas). Hook `lib/hooks/useModoDemo.ts`: una petición a `/api/demo/estado` por carga; 404 o red = no es demo. `AuthContext.entrarDemo` reusa `guardarSesion` (el mismo código que `signIn`).
+  - Candado: `lib/api.ts` emite `facturo:demo-bloqueo` cuando el error trae `DEMO_BLOQUEADO` o `DEMO_LIMITE`; `ToastContext` lo muestra con `showWarning`. Un solo sitio.
+  - Ocultos con «No disponible en la demo»: registro (la página vuelve a `/demo`), cambiar contraseña, logo, cambiar de plan y pagos (queda el plan actual), clave SOL, certificado y ambiente PRODUCCION en Configuración › SUNAT. El correo ya estaba deshabilitado. La firma de la empresa (`firmaEmpresa`) NO se bloqueó: no está en la lista del diseño.
+  - Pasos de «Qué probar» en `pasosDemo`. Cliente: los dos primeros llevan al enlace de firma; el tercero lleva a `/demo`.
+  - Verificación: `npx tsc --noEmit` exit 0; `npm test` 151/151. Mutación: quitar la caché de `crearCargaEstado` (base de `useModoDemo`) deja 1 prueba en rojo; quitar `DEMO_BLOQUEADO` de `detectarBloqueoDemo` deja 2 en rojo. Restaurado con `cp` y `cmp`.
+  - Gotcha: el `Header` recibe `enDemo` para bajar a `top-10` bajo la franja; el panel de escritorio ocupa `md:mr-80` de la columna.
+  - Gotcha: el GET público `/sitio/legal` debe devolver `demoWhatsapp` para que el campo del admin se rellene al recargar. El frontend lo lee si viene; el contrato solo fija el PUT.
+  - NO verificado: `next build` (lo corre Opus), el aspecto en el navegador, y los 403/429 reales contra el backend de la fase A.
+  - Próximos pasos: Opus prueba `/demo` y el candado contra el backend; decidir si la firma de la empresa también se bloquea; confirmar que el GET de sitio legal trae `demoWhatsapp`.
 
 - 2026-11-10 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/videos`, rama `feat/videos` sobre `main` cd65ec3, sin push): **videos de marketing de Facturo** (f1, f2 y f3), hechos como los de Torre. Pedido de Miguel: «haz los videos para promocionar Facturo así como hicimos los videos para Torre». Guion y cómo se arma: `docs/marketing/guiones-videos.md`.
   - Resultado, fuera del repo (`.claude/videos/`): `f1/facturo-f1-escritorio.mp4` y `f1/facturo-f1-celular.mp4` (38 s), `f2/facturo-f2-escritorio.mp4` y `f2/facturo-f2-celular.mp4` (40 s), `f3/facturo-f3-celular.mp4` (19 s). Hojas de contacto: `<f>/hoja-<formato>.png`. OCR sin coincidencias de datos prohibidos.
