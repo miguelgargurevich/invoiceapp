@@ -10,6 +10,8 @@ import SignatureCanvas from '@/components/signature/SignatureCanvas';
 import { FranjaDemo } from '@/components/demo/FranjaDemo';
 import { InvoicePreview } from '@/components/invoice';
 import api from '@/lib/api';
+import { formatCurrency } from '@/lib/utils';
+import { etiquetaTipoDocumento } from '@/lib/tiposDocumento';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
@@ -33,6 +35,7 @@ interface SignatureRequestData {
     subtotal: number;
     igv: number;
     total: number;
+    moneda?: string;
     cliente: {
       razonSocial: string;
       numeroDocumento: string;
@@ -49,6 +52,7 @@ interface SignatureRequestData {
       subtotal: number;
       igv: number;
       total: number;
+    moneda?: string;
       producto?: {
         codigo: string;
         nombre: string;
@@ -63,6 +67,7 @@ interface SignatureRequestData {
     subtotal: number;
     igv: number;
     total: number;
+    moneda?: string;
     cliente: {
       razonSocial: string;
       numeroDocumento: string;
@@ -79,6 +84,7 @@ interface SignatureRequestData {
       subtotal: number;
       igv: number;
       total: number;
+    moneda?: string;
       producto?: {
         codigo: string;
         nombre: string;
@@ -222,7 +228,7 @@ export default function SignDocumentPage() {
         signatureDataUrl: signatureData,
         signedPdfDataUrl: signedPdfBase64,
         consentGiven,
-        consentText: 'Acepto firmar este documento electrónicamente y entiendo que mi firma tiene validez legal.',
+        consentText: t('consentText'),
         ipAddress: ip,
         userAgent: navigator.userAgent,
         deviceType: /Mobile|Android|iPhone|iPad/i.test(navigator.userAgent) ? 'mobile' : 'desktop'
@@ -346,7 +352,7 @@ export default function SignDocumentPage() {
                       {(data.factura || data.proforma)?.cliente.razonSocial}
                     </span>
                     <div className="text-gray-600 dark:text-gray-400 mt-0.5">
-                      {(data.factura || data.proforma)?.cliente.tipoDocumento}: {(data.factura || data.proforma)?.cliente.numeroDocumento}
+                      {etiquetaTipoDocumento((data.factura || data.proforma)?.cliente.tipoDocumento)} {(data.factura || data.proforma)?.cliente.numeroDocumento}
                       {(data.factura || data.proforma)?.cliente.direccion && (
                         <div className="mt-0.5">{(data.factura || data.proforma)?.cliente.direccion}</div>
                       )}
@@ -359,7 +365,7 @@ export default function SignDocumentPage() {
                   <div className="text-xs">
                     <div className="text-gray-600 dark:text-gray-400">{t('amount')}</div>
                     <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                      ${Number((data.factura || data.proforma)?.total).toFixed(2)}
+                      {formatCurrency((data.factura || data.proforma)?.total, (data.factura || data.proforma)?.moneda || 'PEN')}
                     </div>
                   </div>
                   <div className="text-xs">

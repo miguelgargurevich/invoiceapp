@@ -24,3 +24,20 @@ export function opcionTipoDocumentoHeredado(
   if ((TIPOS_DOCUMENTO_PERU as readonly string[]).includes(codigo)) return null;
   return { valor: codigo, etiqueta: ETIQUETAS_HEREDADAS[codigo] ?? codigo };
 }
+
+// Código SUNAT del tipo de documento de identidad (catálogo 06) → etiqueta para mostrar.
+// Los clientes guardan a veces el código («6») y a veces la sigla («RUC»): ambos salen igual.
+const ETIQUETAS_SUNAT: Record<string, string> = {
+  '0': 'Doc.',
+  '1': 'DNI',
+  '4': 'CE',
+  '6': 'RUC',
+  '7': 'Pasaporte',
+  A: 'Cédula diplomática',
+};
+
+export function etiquetaTipoDocumento(tipo: string | null | undefined): string {
+  const t = String(tipo ?? '').trim();
+  if (!t) return '';
+  return ETIQUETAS_SUNAT[t] ?? (t.toUpperCase() === 'PASAPORTE' ? 'Pasaporte' : t.toUpperCase());
+}

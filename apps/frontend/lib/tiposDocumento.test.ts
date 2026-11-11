@@ -19,3 +19,12 @@ test('un código desconocido se muestra tal cual y vacío no genera nada', () =>
   assert.equal(opcionTipoDocumentoHeredado(''), null);
   assert.equal(opcionTipoDocumentoHeredado(undefined), null);
 });
+
+test('etiquetaTipoDocumento muestra la sigla del código SUNAT', async () => {
+  const { etiquetaTipoDocumento } = await import('./tiposDocumento.ts');
+  assert.equal(etiquetaTipoDocumento('6'), 'RUC');
+  assert.equal(etiquetaTipoDocumento('1'), 'DNI');
+  assert.equal(etiquetaTipoDocumento('RUC'), 'RUC');
+  assert.equal(etiquetaTipoDocumento('pasaporte'), 'Pasaporte');
+  assert.equal(etiquetaTipoDocumento(''), '');
+});
