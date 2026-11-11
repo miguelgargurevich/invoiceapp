@@ -1273,7 +1273,9 @@
       "guardar": "Guardar",
       "guardado": "Datos legales guardados",
       "errorCargar": "No se pudieron cargar los datos legales",
-      "errorGuardar": "No se pudieron guardar los datos legales"
+      "errorGuardar": "No se pudieron guardar los datos legales",
+      "whatsappDemo": "WhatsApp de la demo",
+      "whatsappDemoAviso": "Celular peruano de 9 dígitos. Si lo dejas vacío, la demo no muestra el botón de WhatsApp."
     }
   },
   "signature": {
