@@ -4,6 +4,7 @@ const { authenticateToken, getEmpresaFromUser } = require('../middleware/auth');
 const prisma = require('../utils/prisma');
 const { planGratisDe } = require('../planes/catalogo');
 const { getOrCreateSubscription } = require('../middleware/subscription');
+const { bloquearEnDemo, MENSAJES } = require('../demo/candado');
 
 // Initialize Stripe with your secret key
 // Remember to switch to your live secret key in production
@@ -59,7 +60,7 @@ router.get('/current', authenticateToken, getEmpresaFromUser, async (req, res) =
 // ==========================================
 // CREATE CHECKOUT SESSION
 // ==========================================
-router.post('/create-checkout-session', authenticateToken, getEmpresaFromUser, async (req, res) => {
+router.post('/create-checkout-session', authenticateToken, getEmpresaFromUser, bloquearEnDemo(MENSAJES.cobros), async (req, res) => {
   try {
     const { planId, billingInterval = 'monthly', locale = 'en' } = req.body;
 
@@ -154,7 +155,7 @@ router.post('/create-checkout-session', authenticateToken, getEmpresaFromUser, a
 // ==========================================
 // SYNC SUBSCRIPTION FROM CHECKOUT SESSION
 // ==========================================
-router.post('/sync-from-session', authenticateToken, getEmpresaFromUser, async (req, res) => {
+router.post('/sync-from-session', authenticateToken, getEmpresaFromUser, bloquearEnDemo(MENSAJES.cobros), async (req, res) => {
   try {
     const { sessionId } = req.body;
 
@@ -251,7 +252,7 @@ router.post('/sync-from-session', authenticateToken, getEmpresaFromUser, async (
 // ==========================================
 // CREATE CUSTOMER PORTAL SESSION
 // ==========================================
-router.post('/create-portal-session', authenticateToken, getEmpresaFromUser, async (req, res) => {
+router.post('/create-portal-session', authenticateToken, getEmpresaFromUser, bloquearEnDemo(MENSAJES.cobros), async (req, res) => {
   try {
     const { locale = 'en' } = req.body;
     
@@ -283,7 +284,7 @@ router.post('/create-portal-session', authenticateToken, getEmpresaFromUser, asy
 // ==========================================
 // CANCEL SUBSCRIPTION
 // ==========================================
-router.post('/cancel', authenticateToken, getEmpresaFromUser, async (req, res) => {
+router.post('/cancel', authenticateToken, getEmpresaFromUser, bloquearEnDemo(MENSAJES.plan), async (req, res) => {
   try {
     const subscription = await prisma.subscription.findUnique({
       where: { empresaId: req.empresa.id }
@@ -330,7 +331,7 @@ router.post('/cancel', authenticateToken, getEmpresaFromUser, async (req, res) =
 // ==========================================
 // REACTIVATE SUBSCRIPTION
 // ==========================================
-router.post('/reactivate', authenticateToken, getEmpresaFromUser, async (req, res) => {
+router.post('/reactivate', authenticateToken, getEmpresaFromUser, bloquearEnDemo(MENSAJES.plan), async (req, res) => {
   try {
     const subscription = await prisma.subscription.findUnique({
       where: { empresaId: req.empresa.id }
@@ -372,7 +373,7 @@ router.post('/reactivate', authenticateToken, getEmpresaFromUser, async (req, re
 // ==========================================
 // SWITCH TO FREE PLAN
 // ==========================================
-router.post('/switch-to-free', authenticateToken, getEmpresaFromUser, async (req, res) => {
+router.post('/switch-to-free', authenticateToken, getEmpresaFromUser, bloquearEnDemo(MENSAJES.plan), async (req, res) => {
   try {
     const subscription = await prisma.subscription.findUnique({
       where: { empresaId: req.empresa.id },

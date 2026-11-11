@@ -4,6 +4,7 @@ const { z } = require('zod');
 const { authenticateToken, getEmpresaFromUser } = require('../middleware/auth');
 const { ErrorCulqi } = require('../pagos/culqi/cliente');
 const { ErrorContratacion } = require('../pagos/culqi/suscripciones');
+const { bloquearEnDemo, MENSAJES } = require('../demo/candado');
 
 const tresDS = z.object({
   eci: z.string(), xid: z.string(), cavv: z.string(), protocolVersion: z.string(), directoryServerTransactionId: z.string(),
@@ -26,7 +27,8 @@ const tarjetaSchema = z.object({ tokenId: z.string().regex(/^tkn_(test|live)_/),
 
 function crearRouterCulqi({ prisma, obtenerServicio, auth = [authenticateToken, getEmpresaFromUser] }) {
   const router = express.Router();
-  router.use(...auth, (req, res, next) => (req.empresa?.pais === 'PE'
+  // Demo: sin cobros (ni contratar ni cambiar la tarjeta). Va antes del chequeo de país.
+  router.use(...auth, bloquearEnDemo(MENSAJES.cobros), (req, res, next) => (req.empresa?.pais === 'PE'
     ? next()
     : res.status(403).json({ error: 'El pago con Culqi solo está disponible para empresas de Perú' })));
 

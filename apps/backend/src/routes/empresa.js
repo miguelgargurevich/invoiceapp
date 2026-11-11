@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const { authenticateToken } = require('../middleware/auth');
+const { bloquearEnDemo, MENSAJES } = require('../demo/candado');
 const prisma = require('../utils/prisma');
 const { getOrCreateSubscription } = require('../middleware/subscription');
 const { uploadFile, deleteFile, getStorageProvider } = require('../utils/storage');
@@ -223,7 +224,7 @@ router.put('/mi-empresa/config', authenticateToken, async (req, res) => {
 });
 
 // POST /api/empresas/logo - Subir logo
-router.post('/logo', authenticateToken, upload.single('logo'), async (req, res) => {
+router.post('/logo', authenticateToken, bloquearEnDemo(MENSAJES.archivos), upload.single('logo'), async (req, res) => {
   try {
     console.log('[LOGO] Starting upload process...');
     console.log('[LOGO] User ID:', req.user.id);

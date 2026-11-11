@@ -7,6 +7,7 @@ const { responderError, soloPeru } = require('../sunat/http');
 const { ErrorEstado } = require('../sunat/errores');
 const { generarPdf } = require('../sunat/pdf/representacion');
 const { nombreBase } = require('../sunat/engine/mapper');
+const { crearLimiteDiario } = require('../demo/limite');
 
 function crearRouterComprobantes({
   prisma,
@@ -14,6 +15,7 @@ function crearRouterComprobantes({
   auth = [authenticateToken, getEmpresaFromUser],
   // El cupo del plan se cobra al EMITIR (planes/cupo.js), no al crear el borrador.
   limites = { verificar: (_req, _res, next) => next(), incrementar: async () => {} },
+  ahora = () => new Date(),
 }) {
   const router = express.Router();
   router.use(...auth, soloPeru);
@@ -80,7 +82,8 @@ function crearRouterComprobantes({
     return res.status(204).end();
   }));
 
-  router.post('/:id/emitir', manejar(async (req, res) => {
+  // Demo: máximo 30 comprobantes emitidos por empresa y por día (no hace nada fuera de la demo).
+  router.post('/:id/emitir', crearLimiteDiario({ prisma, ahora }), manejar(async (req, res) => {
     const sunat = await servicios(res);
     if (!sunat) return;
     res.json(await sunat.servicioEmision.emitir(req.params.id, req.empresa.id));

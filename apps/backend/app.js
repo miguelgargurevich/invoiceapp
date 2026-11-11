@@ -27,6 +27,7 @@ const notificacionesRoutes = require('./src/routes/notificaciones');
 const adminRoutes = require('./src/routes/admin');
 const sitioRoutes = require('./src/routes/sitio');
 const webhooksRoutes = require('./src/routes/webhooks');
+const { crearRouterDemo } = require('./src/demo/rutas');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -188,6 +189,9 @@ app.get('/api/subscriptions/plans', limiter, async (req, res) => {
     res.status(500).json({ error: 'Error fetching plans' });
   }
 });
+
+// Demo pública de Facturo: existe solo con MODO_DEMO=si (sin la variable responde 404 como cualquier ruta inexistente)
+app.use('/api/demo', limiter, crearRouterDemo({ prisma: require('./src/utils/prisma') }));
 
 // Datos legales del servicio (públicos, sin sesión: los leen Términos, Privacidad, Contacto y el pie)
 app.use('/api/sitio', limiter, sitioRoutes);

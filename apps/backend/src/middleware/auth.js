@@ -20,6 +20,17 @@ function generateAccessToken(user) {
   );
 }
 
+// Lo que el API devuelve de un usuario al iniciar sesión (login y entrada a la demo): nunca el hash.
+function sanitizeUser(user) {
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    isActive: user.isActive,
+  };
+}
+
 const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -92,4 +103,4 @@ const getEmpresaFromUser = async (req, res, next) => {
   }
 };
 
-module.exports = { authenticateToken, getEmpresaFromUser, generateAccessToken };
+module.exports = { authenticateToken, getEmpresaFromUser, generateAccessToken, sanitizeUser };

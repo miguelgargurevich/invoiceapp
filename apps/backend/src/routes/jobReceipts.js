@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const { authenticateToken } = require('../middleware/auth');
+const { bloquearEnDemo, MENSAJES } = require('../demo/candado');
 const prisma = require('../utils/prisma');
 const { uploadFile, deleteFile, extractStorageKeyFromUrl } = require('../utils/storage');
 
@@ -80,7 +81,7 @@ router.get('/proforma/:proformaId', authenticateToken, async (req, res) => {
 });
 
 // Crear un recibo (con o sin archivo)
-router.post('/', authenticateToken, upload.single('file'), async (req, res) => {
+router.post('/', authenticateToken, bloquearEnDemo(MENSAJES.archivos), upload.single('file'), async (req, res) => {
   try {
     const { facturaId, proformaId, fecha, descripcion, monto, categoria, proveedor, numeroRecibo } = req.body;
 

@@ -805,6 +805,8 @@ model ConfiguracionSitio {
   legalRuc         String?  @map("legal_ruc")
   legalDomicilio   String?  @map("legal_domicilio")
   legalCorreo      String?  @map("legal_correo")
+  // Solo la demo: celular de WhatsApp de la franja («+51» y 9 dígitos). Lo devuelve GET /api/demo/estado, no el público.
+  demoWhatsapp     String?  @map("demo_whatsapp")
   updatedAt        DateTime @updatedAt @map("updated_at")
 
   @@map("configuracion_sitio")

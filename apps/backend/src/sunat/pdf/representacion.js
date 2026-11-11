@@ -1,9 +1,12 @@
-const { PDFDocument, StandardFonts, rgb } = require('pdf-lib');
+const { PDFDocument, StandardFonts, rgb, degrees } = require('pdf-lib');
 const QRCode = require('qrcode');
 const { fechaLima } = require('../fechas');
 const { dos, aDecimal } = require('../numeros');
 const { codigoDocIdentidad } = require('../catalogos');
 const { colorDeMarca, colorParaTextoBlanco, hexARgb01 } = require('../../planes/marca');
+const { esDemo } = require('../../demo/modo');
+
+const MARCA_DE_AGUA = 'DEMOSTRACIÓN';
 
 const NOMBRES_COMPROBANTE = Object.freeze({
   '01': 'FACTURA ELECTRÓNICA',
@@ -29,7 +32,24 @@ async function generarPdf(f) {
   const ANCHO = 595.28;
   const ALTO = 841.89;
   const IZQ = 40;
-  let pagina = pdf.addPage([ANCHO, ALTO]);
+  const demo = esDemo();
+
+  // Demo: «DEMOSTRACIÓN» en diagonal, gris muy claro. Se dibuja ANTES del contenido de cada página para quedar detrás.
+  const marcarDemo = (p) => {
+    if (!demo) return;
+    const tamano = 78;
+    const ancho = negrita.widthOfTextAtSize(MARCA_DE_AGUA, tamano);
+    const angulo = 45;
+    const rad = (angulo * Math.PI) / 180;
+    p.drawText(MARCA_DE_AGUA, {
+      x: ANCHO / 2 - (ancho / 2) * Math.cos(rad) + (tamano * 0.35) * Math.sin(rad),
+      y: ALTO / 2 - (ancho / 2) * Math.sin(rad) - (tamano * 0.35) * Math.cos(rad),
+      size: tamano, font: negrita, color: rgb(0.9, 0.9, 0.9), rotate: degrees(angulo),
+    });
+  };
+  const nuevaPagina = () => { const p = pdf.addPage([ANCHO, ALTO]); marcarDemo(p); return p; };
+
+  let pagina = nuevaPagina();
   let y = ALTO - 40;
 
   // Color de marca de la empresa, legible también como texto sobre blanco (ver planes/marca.js).
@@ -42,7 +62,7 @@ async function generarPdf(f) {
   });
   const bajar = (n = 12) => {
     y -= n;
-    if (y < 180) { pagina = pdf.addPage([ANCHO, ALTO]); y = ALTO - 40; }
+    if (y < 180) { pagina = nuevaPagina(); y = ALTO - 40; }
   };
 
   // Cabecera: emisor a la izquierda, recuadro del comprobante a la derecha.

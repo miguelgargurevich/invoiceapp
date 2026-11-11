@@ -3,6 +3,8 @@ const { z } = require('zod');
 const { authenticateToken, getEmpresaFromUser } = require('../middleware/auth');
 const { responderError, soloPeru } = require('../sunat/http');
 const { getOrCreateSubscription } = require('../middleware/subscription');
+const { esDemo } = require('../demo/modo');
+const { responderBloqueo, MENSAJES } = require('../demo/candado');
 const { cifrar } = require('../sunat/seguridad/cifrado');
 const { parametro } = require('../sunat/catalogos/parametros');
 const { diasDesdeEmision } = require('../sunat/emision/plazos');
@@ -96,6 +98,15 @@ function crearRouterSunat({ prisma, obtenerSunat, auth = [authenticateToken, get
   // Configurar el emisor es lo que convierte a la empresa en "PE": no lleva soloPeru.
   router.put('/emisor', manejar(async (req, res) => {
     const d = emisorSchema.parse(req.body);
+    if (esDemo()) {
+      // Demo: solo BETA, y sin tocar certificado, su clave ni la clave SOL. Lo demás (dirección, ubigeo…) sí se edita.
+      if (d.ambiente === 'PRODUCCION') return responderBloqueo(res, MENSAJES.produccion);
+      if (d.certificado || d.solClave) return responderBloqueo(res, MENSAJES.credenciales);
+      if (d.solUsuario) {
+        const actual = await prisma.emisorSunat.findUnique({ where: { empresaId: req.empresa.id }, select: { solUsuario: true } });
+        if (d.solUsuario !== actual?.solUsuario) return responderBloqueo(res, MENSAJES.credenciales);
+      }
+    }
     if (d.ambiente === 'PRODUCCION' && d.confirmarProduccion !== true) {
       return res.status(400).json({ error: 'Para pasar a producción confirma explícitamente (confirmarProduccion: true)' });
     }

@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const { authenticateToken } = require('../middleware/auth');
+const { bloquearEnDemo, MENSAJES } = require('../demo/candado');
 const prisma = require('../utils/prisma');
 const { uploadFile, deleteFile, extractStorageKeyFromUrl } = require('../utils/storage');
 
@@ -80,7 +81,7 @@ router.get('/proforma/:proformaId', authenticateToken, async (req, res) => {
 });
 
 // Subir una foto
-router.post('/', authenticateToken, (req, res, next) => {
+router.post('/', authenticateToken, bloquearEnDemo(MENSAJES.archivos), (req, res, next) => {
   upload.single('photo')(req, res, (err) => {
     if (err) {
       if (err instanceof multer.MulterError) {

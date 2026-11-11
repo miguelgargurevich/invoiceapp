@@ -2,19 +2,14 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
 const prisma = require('../utils/prisma');
-const { authenticateToken, generateAccessToken } = require('../middleware/auth');
+const { authenticateToken, generateAccessToken, sanitizeUser } = require('../middleware/auth');
+const { bloquearAuthEnDemo } = require('../demo/candado');
 
 const SUPER_ADMIN_EMAIL = 'miguel.gargurevich@gmail.com';
 
-function sanitizeUser(user) {
-  return {
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    role: user.role,
-    isActive: user.isActive,
-  };
-}
+// Demo: solo iniciar/cerrar sesión y /me; el resto de /api/auth (registro, contraseña, correo) queda cerrado,
+// incluido /register (ver bloquearAuthEnDemo).
+router.use(bloquearAuthEnDemo);
 
 // POST /api/auth/login
 router.post('/login', async (req, res) => {

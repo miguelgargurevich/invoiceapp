@@ -1,8 +1,19 @@
 const { Resend } = require('resend');
 const { colorDeMarca, colorParaTextoBlanco, tintar } = require('../planes/marca');
+const { esDemo } = require('../demo/modo');
 
 // Initialize Resend client
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+// ÚNICA salida de correo hacia Resend. En la demo (MODO_DEMO=si) no sale ninguno, aunque haya clave de Resend:
+// se responde como si hubiera salido, con la misma forma que Resend ({ data, error }).
+async function enviarPorResend(datos) {
+  if (esDemo()) {
+    console.log('[DEMO] Correo no enviado (modo demo):', datos.subject);
+    return { data: { id: 'demo-sin-envio' }, error: null };
+  }
+  return resend.emails.send(datos);
+}
 
 const fromEmail = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
 const fromName = process.env.RESEND_FROM_NAME || 'Facturo';
@@ -83,7 +94,7 @@ async function sendEmail({ to, subject, text, html, attachments = [] }) {
     }
 
     console.log('📨 Sending via Resend API...');
-    const response = await resend.emails.send(emailData);
+    const response = await enviarPorResend(emailData);
     
     console.log('✅ Email sent successfully:', response);
     return response;
@@ -593,7 +604,7 @@ async function sendSignatureRequestEmail({
             </p>`;
 
   try {
-    const result = await resend.emails.send({
+    const result = await enviarPorResend({
       from: `${fromName} <${fromEmail}>`,
       to: signerEmail,
       subject: `Firma requerida: ${tipo} ${numero}`,
@@ -686,7 +697,7 @@ async function sendSignatureConfirmationEmail({
 
   try {
     // Al firmante
-    const signerResult = await resend.emails.send({
+    const signerResult = await enviarPorResend({
       from: `${fromName} <${fromEmail}>`,
       to: signerEmail,
       subject: `Confirmación: firmaste la ${tipo} ${numero}`,
@@ -698,7 +709,7 @@ async function sendSignatureConfirmationEmail({
 
     // Aviso al dueño
     if (empresa.email) {
-      const ownerResult = await resend.emails.send({
+      const ownerResult = await enviarPorResend({
         from: `${fromName} <${fromEmail}>`,
         to: empresa.email,
         subject: `Firmado: ${tipo} ${numero} por ${nombreFirmante}`,

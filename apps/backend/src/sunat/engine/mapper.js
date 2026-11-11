@@ -1,6 +1,7 @@
 const { aDecimal, dos } = require('../numeros');
 const { isoLima, fechaLima } = require('../fechas');
 const { codigoDocIdentidad, LEYENDAS, TEXTO_LEYENDA_DETRACCION } = require('../catalogos');
+const { esDemo } = require('../../demo/modo');
 
 // Factura (Prisma) → JSON que entiende apps/sunat-engine. Usa los montos guardados: no recalcula.
 
@@ -18,7 +19,8 @@ function armarEmisor(empresa, emisor, descifrar) {
       direccion: emisor.direccionFiscal,
       codLocal: emisor.codigoEstablecimiento,
     },
-    ambiente: emisor.ambiente,
+    // En la demo el motor SIEMPRE usa BETA, aunque el emisor guardado diga otra cosa.
+    ambiente: esDemo() ? 'BETA' : emisor.ambiente,
     solUsuario: emisor.solUsuario,
     solClave: descifrar(emisor.solClaveCifrada).toString('utf8'),
     certificadoPfxBase64: descifrar(emisor.certificadoCifrado).toString('base64'),
