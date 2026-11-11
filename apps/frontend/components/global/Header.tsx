@@ -22,9 +22,11 @@ import { cn, getInitials } from '@/lib/utils';
 interface HeaderProps {
   onMenuClick: () => void;
   onCommandPaletteOpen: () => void;
+  /** Con la franja de la demo encima, el encabezado se pega debajo de ella (top-10). */
+  enDemo?: boolean;
 }
 
-export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
+export function Header({ onMenuClick, onCommandPaletteOpen, enDemo = false }: HeaderProps) {
   const { user, empresa, signOut } = useAuth();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const { subscription } = useSubscription();
@@ -60,7 +62,7 @@ export function Header({ onMenuClick, onCommandPaletteOpen }: HeaderProps) {
   };
 
   return (
-    <header className="sticky top-0 z-30 h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+    <header className={cn('sticky z-30 h-16 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800', enDemo ? 'top-10' : 'top-0')}>
       <div className="flex items-center justify-between h-full px-4">
         {/* Izquierda: Menu hamburguesa y búsqueda */}
         <div className="flex items-center gap-4">

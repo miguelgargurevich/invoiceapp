@@ -7,6 +7,7 @@ import { CheckCircle, AlertCircle, Clock, FileText, Building2 } from 'lucide-rea
 import { Button, Card, LoadingPage } from '@/components/common';
 import { useToast } from '@/contexts/ToastContext';
 import SignatureCanvas from '@/components/signature/SignatureCanvas';
+import { FranjaDemo } from '@/components/demo/FranjaDemo';
 import { InvoicePreview } from '@/components/invoice';
 import api from '@/lib/api';
 import html2canvas from 'html2canvas';
@@ -298,6 +299,8 @@ export default function SignDocumentPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-4 px-4">
+      {/* Franja de la demo (solo con MODO_DEMO) */}
+      <FranjaDemo />
       <div className="max-w-4xl mx-auto space-y-4">
         {/* Header */}
         <Card className="p-4">

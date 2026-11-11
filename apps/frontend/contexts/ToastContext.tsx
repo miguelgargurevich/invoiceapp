@@ -1,7 +1,8 @@
 'use client';
 
-import { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, ReactNode, useCallback, useEffect } from 'react';
 import Toast, { ToastType } from '@/components/common/Toast';
+import { EVENTO_BLOQUEO_DEMO, type BloqueoDemo } from '@/lib/demo';
 
 interface ToastContextType {
   showToast: (message: string, type?: ToastType, duration?: number) => void;
@@ -39,6 +40,16 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const showInfo = useCallback((message: string) => {
     showToast(message, 'info');
   }, [showToast]);
+
+  // Bloqueos de la demo (DEMO_BLOQUEADO / DEMO_LIMITE): el cliente de API los avisa aquí, con su mensaje.
+  useEffect(() => {
+    const alBloquear = (e: Event) => {
+      const bloqueo = (e as CustomEvent<BloqueoDemo>).detail;
+      if (bloqueo?.mensaje) showWarning(bloqueo.mensaje);
+    };
+    window.addEventListener(EVENTO_BLOQUEO_DEMO, alBloquear);
+    return () => window.removeEventListener(EVENTO_BLOQUEO_DEMO, alBloquear);
+  }, [showWarning]);
 
   return (
     <ToastContext.Provider value={{ showToast, showSuccess, showError, showWarning, showInfo }}>

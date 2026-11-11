@@ -7,6 +7,7 @@ import { Card, Button, Input, LoadingSpinner } from '@/components/common';
 import { useToast } from '@/contexts/ToastContext';
 import api from '@/lib/api';
 import { datosLegalesDesdeRespuesta, type DatosLegales } from '@/lib/legal';
+import { validarWhatsappDemo } from '@/lib/demo';
 
 type Campo = keyof DatosLegales;
 
@@ -22,12 +23,17 @@ export function DatosLegalesForm() {
   const [cargando, setCargando] = useState(true);
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // WhatsApp de la franja de la demo (ConfiguracionSitio.demoWhatsapp). Vacío = la franja no lo muestra.
+  const [whatsappDemo, setWhatsappDemo] = useState('');
+  const [errorWhatsapp, setErrorWhatsapp] = useState<string | null>(null);
 
   useEffect(() => {
     let vivo = true;
     api.get('/sitio/legal')
       .then((r) => {
         const d = datosLegalesDesdeRespuesta(r);
+        const wa = (r as { demoWhatsapp?: unknown } | null)?.demoWhatsapp;
+        if (vivo && typeof wa === 'string') setWhatsappDemo(wa);
         if (vivo && d) setValores({ ...VACIO, ...Object.fromEntries(Object.entries(d).map(([k, v]) => [k, v ?? ''])) });
       })
       .catch(() => { if (vivo) setError(t('errorCargar')); })
@@ -40,10 +46,13 @@ export function DatosLegalesForm() {
 
   const guardar = async (e: FormEvent) => {
     e.preventDefault();
+    const avisoWhatsapp = validarWhatsappDemo(whatsappDemo);
+    setErrorWhatsapp(avisoWhatsapp);
+    if (avisoWhatsapp) return;
     setGuardando(true);
     setError(null);
     try {
-      const guardado = datosLegalesDesdeRespuesta(await api.put('/admin/sitio/legal', valores));
+      const guardado = datosLegalesDesdeRespuesta(await api.put('/admin/sitio/legal', { ...valores, demoWhatsapp: whatsappDemo.trim() }));
       if (guardado) setValores({ ...VACIO, ...Object.fromEntries(Object.entries(guardado).map(([k, v]) => [k, v ?? ''])) });
       showToast(t('guardado'), 'success');
     } catch (err: any) {
@@ -90,6 +99,19 @@ export function DatosLegalesForm() {
           maxLength={200}
           hint={t('avisoVacio')}
         />
+
+        <div className="border-t border-gray-200 pt-5 dark:border-gray-800">
+          <Input
+            label={t('whatsappDemo')}
+            type="tel"
+            inputMode="tel"
+            value={whatsappDemo}
+            onChange={(e) => { setWhatsappDemo(e.target.value); setErrorWhatsapp(null); }}
+            maxLength={20}
+            error={errorWhatsapp ?? undefined}
+            hint={t('whatsappDemoAviso')}
+          />
+        </div>
 
         {error && <p className="text-sm text-red-600 dark:text-red-400" role="alert">{error}</p>}
 

@@ -11,6 +11,8 @@ import { cn } from '@/lib/utils';
 import api, { ApiError } from '@/lib/api';
 import SignatureCanvas from '@/components/signature/SignatureCanvas';
 import SubscriptionTab from '@/components/settings/SubscriptionTab';
+import { useModoDemo } from '@/lib/hooks/useModoDemo';
+import { TEXTO_NO_DISPONIBLE_DEMO } from '@/lib/demo';
 import { ColorMarca } from '@/components/settings/ColorMarca';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { SunatTab } from '@/components/sunat/SunatTab';
@@ -45,6 +47,8 @@ export default function ConfiguracionPage({
   const { user, empresa, refreshEmpresa } = useAuth();
   const { theme, setTheme, fontSize, setFontSize } = useTheme();
   const { plan, loading: cargandoPlan } = useSubscription();
+  // En la demo no se suben archivos, no se cambia la contraseña ni el correo (la API lo bloquea).
+  const { esDemo } = useModoDemo();
 
   const [activeTab, setActiveTab] = useState<Tab>('empresa');
   const [saving, setSaving] = useState(false);
@@ -553,7 +557,9 @@ export default function ConfiguracionPage({
                     className="hidden"
                   />
                   
-                  {logoPreview ? (
+                  {esDemo ? (
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{TEXTO_NO_DISPONIBLE_DEMO}</p>
+                  ) : logoPreview ? (
                     <div className="relative inline-block">
                       <div className="relative w-32 h-32 border-2 border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
                         <Image
@@ -769,6 +775,12 @@ export default function ConfiguracionPage({
                         </p>
                       </div>
                     </div>
+                  </div>
+                ) : esDemo ? (
+                  <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {TEXTO_NO_DISPONIBLE_DEMO}: el cambio de contraseña y de correo.
+                    </p>
                   </div>
                 ) : (
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-6">

@@ -8,6 +8,10 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { CommandPalette } from './CommandPalette';
 import { cn } from '@/lib/utils';
+import { useModoDemo } from '@/lib/hooks/useModoDemo';
+import { perfilParaPanel } from '@/lib/demo';
+import { FranjaDemo } from '@/components/demo/FranjaDemo';
+import { PanelQueProbar } from '@/components/demo/PanelQueProbar';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -30,6 +34,16 @@ export function AppLayout({ children }: AppLayoutProps) {
     return !colapsado;
   });
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+
+  // Demo (MODO_DEMO): franja arriba y panel «Qué probar». Sin demo, ni se pinta ni cambia el diseño.
+  const { esDemo, estado } = useModoDemo();
+  const perfilDemo = perfilParaPanel(estado, user?.email);
+  // Abierto por defecto en escritorio; en el celular empieza cerrado para no tapar la pantalla.
+  const [panelAbierto, setPanelAbierto] = useState(false);
+  useEffect(() => {
+    if (window.matchMedia('(min-width: 768px)').matches) setPanelAbierto(true);
+  }, []);
+  const panelVisible = perfilDemo !== null && panelAbierto;
 
   // Redirigir si no está autenticado
   useEffect(() => {
@@ -83,13 +97,18 @@ export function AppLayout({ children }: AppLayoutProps) {
       <div
         className={cn(
           'flex flex-col min-h-screen transition-all duration-300',
-          sidebarCollapsed ? 'md:ml-16' : 'md:ml-64'
+          sidebarCollapsed ? 'md:ml-16' : 'md:ml-64',
+          panelVisible && 'md:mr-80'
         )}
       >
+        {/* Franja de la demo (solo con MODO_DEMO) */}
+        {esDemo && <FranjaDemo />}
+
         {/* Header */}
         <Header
           onMenuClick={() => setSidebarOpen(true)}
           onCommandPaletteOpen={() => setCommandPaletteOpen(true)}
+          enDemo={esDemo}
         />
 
         {/* Main content */}
@@ -97,6 +116,16 @@ export function AppLayout({ children }: AppLayoutProps) {
           {children}
         </main>
       </div>
+
+      {/* Panel «Qué probar» (solo en las cuentas de demo) */}
+      {perfilDemo && (
+        <PanelQueProbar
+          perfil={perfilDemo}
+          abierto={panelAbierto}
+          onAbrir={() => setPanelAbierto(true)}
+          onCerrar={() => setPanelAbierto(false)}
+        />
+      )}
 
       {/* Command Palette */}
       <CommandPalette
