@@ -54,8 +54,11 @@ services:
       - DATABASE_URL=postgresql://facturo:${SERVICE_PASSWORD_POSTGRES}@postgres:5432/facturo
       - DIRECT_URL=postgresql://facturo:${SERVICE_PASSWORD_POSTGRES}@postgres:5432/facturo
       - JWT_SECRET=${SERVICE_PASSWORD_64_JWT}
-      - FRONTEND_URL=https://facturo.gargurevich.dev
-      - PUBLIC_BACKEND_URL=https://api.facturo.gargurevich.dev
+      # Direcciones públicas: los valores por defecto son los de producción. El recurso facturo-demo pone las suyas.
+      - FRONTEND_URL=${FRONTEND_URL:-https://facturo.gargurevich.dev}
+      - PUBLIC_BACKEND_URL=${PUBLIC_BACKEND_URL:-https://api.facturo.gargurevich.dev}
+      # Demo pública: MODO_DEMO=si SOLO en el recurso facturo-demo (ver docs/superpowers/specs/2026-11-11-demo-facturo-design.md).
+      - MODO_DEMO=${MODO_DEMO:-}
       # SUNAT: motor interno (sin dominio) y llave maestra. SUNAT_MASTER_SECRET NO se debe regenerar nunca:
       # con otro valor los certificados y claves SOL ya cifrados dejan de poder abrirse.
       - SUNAT_ENGINE_URL=http://sunat-engine
@@ -88,8 +91,8 @@ services:
       context: ./apps/frontend
       args:
         # Next incrusta las NEXT_PUBLIC_* al compilar. La API va sin /api (el cliente lo agrega).
-        - NEXT_PUBLIC_API_URL=https://api.facturo.gargurevich.dev
-        - NEXT_PUBLIC_SITE_URL=https://facturo.gargurevich.dev
+        - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-https://api.facturo.gargurevich.dev}
+        - NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL:-https://facturo.gargurevich.dev}
         - NEXT_PUBLIC_CULQI_PUBLIC_KEY=${NEXT_PUBLIC_CULQI_PUBLIC_KEY:-}
     restart: unless-stopped
     environment:
