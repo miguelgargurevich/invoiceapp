@@ -89,3 +89,8 @@ mobile/ios/App/App/capacitor.config.json
 keystore.properties
 *.pfx
 *.p12
+
+# Videos de marketing (MP4, clips, cuadros, sesiones y certificados de prueba): nunca en el repo
+.claude/videos/
+# Enlace local a node_modules de otro worktree (no es del repo)
+apps/backend/node_modules

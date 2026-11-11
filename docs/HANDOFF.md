@@ -1,5 +1,6 @@
 # Handoff — InvoiceApp
 
+> Actualizado: 2026-11-10 por claude-code (Haiku 5.5, worktree `.claude/worktrees/videos`, rama `feat/videos` sobre `main` cd65ec3)
 > Actualizado: 2026-11-10 por claude-code (Haiku 5.5, worktree `.claude/worktrees/instalar-web`, rama `feat/instalar-web` sobre `main` 4f91050)
 > Actualizado: 2026-11-10 por claude-code (Haiku 5.5, worktree `.claude/worktrees/app-movil`, rama `feat/app-movil` sobre `main` 48d9973)
 > Actualizado: 2026-11-07 por claude-code (Opus 5.5, orquestó; construyeron DeepSeek V4.1 Flash y Nemotron 3.5 Super VL vía OpenCode Zen)
@@ -19,6 +20,21 @@
   Suites: backend 104/104 y 47/47; frontend 35/35, `tsc` y `next build` en verde. Falta: despliegue y verificar parámetros contra la norma.
 
 ## Última sesión
+
+- 2026-11-10 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/videos`, rama `feat/videos` sobre `main` cd65ec3, sin push): **videos de marketing de Facturo** (f1, f2 y f3), hechos como los de Torre. Pedido de Miguel: «haz los videos para promocionar Facturo así como hicimos los videos para Torre». Guion y cómo se arma: `docs/marketing/guiones-videos.md`.
+  - Resultado, fuera del repo (`.claude/videos/`): `f1/facturo-f1-escritorio.mp4` y `f1/facturo-f1-celular.mp4` (38 s), `f2/facturo-f2-escritorio.mp4` y `f2/facturo-f2-celular.mp4` (40 s), `f3/facturo-f3-celular.mp4` (19 s). Hojas de contacto: `<f>/hoja-<formato>.png`. OCR sin coincidencias de datos prohibidos.
+  - Scripts nuevos en `scripts/marketing/`: `entorno-videos.sh` (exporta todo; claves falsas para correo, Stripe, Culqi y R2), `preparar-base-videos.sh`, `arrancar-facturo.sh` (backend 4001, frontend 3000, `estado`, `parar`), `sembrar-videos.js` (idempotente, por la API), `grabar-video.mjs`, `montar-video.sh`, `revisar-video.py` (cuadros, hoja y OCR con `tesseract -l spa`).
+  - Base APARTE `invoiceapp_videos` en el mismo Postgres (5435). `invoiceapp` (datos de Miguel) no se toca. El RUC de pruebas `20000000001` ya existía en `invoiceapp`, por eso no se usó esa base. Se usa `prisma db push`: `migrate deploy` falla en una base vacía (la primera migración supone la tabla `empresas`). No se carga `seed_sitio.sql` (datos legales reales).
+  - Datos: empresa «Comercial Ejemplo S.A.C.» (RUC 20000000001, emisor BETA con MODDATOS y certificado autofirmado de prueba fuera del repo), plan `pe-negocio`, series F001/B001/FC01/FD01/BC01, 6 clientes, 5 productos, 1 proforma aceptada, y 8 comprobantes ACEPTADOS por SUNAT beta (5 del seed, 3 de las grabaciones de f2). Segundo usuario `nuevo@facturo.example` sin configurar, para el asistente.
+  - Gotcha: `next build` falla en este worktree al pre-generar páginas («Cannot read properties of null (reading 'useContext')»; `node_modules` enlazado a `marca-frontend`). Por eso se graba con `next dev`.
+  - Gotcha: el cliente de Prisma generado en `marca-backend` es anterior al esquema (no tiene `configuracionSitio`): `GET /api/sitio/legal` responde 500 y el footer lo oculta. No se regeneró porque ese `node_modules` está compartido.
+  - Gotcha: sin `SUNAT_ALMACEN_DIR` (o `R2_PRIVATE_BUCKET`) el módulo SUNAT no arranca. Con la clave de Resend falsa, el envío de correo de la emisión llega a Resend y se rechaza (`invalid_token`): no sale ningún correo.
+  - Gotcha: el cierre salió en blanco una vez (el clip duraba 1 s): la escena ahora espera a que la tarjeta esté pintada. Se comprobó que el último segundo de los 5 MP4 es morado.
+  - Gotcha: el backend exige `telefono` en cada cliente, aunque la ficha de Perú no lo marque. Los productos usan `tipo` en mayúsculas (`PRODUCTO` / `SERVICIO`).
+  - Gotcha: la emisión queda en `PENDIENTE_ENVIO` y pasa a `ACEPTADO` en varios segundos. Por eso la escena de emisión (f2, escena 7) emite antes, fuera de cámara.
+  - Diferencia guion/pantalla: el botón de la proforma dice «Convertir a Factura»; el guion dice «Convertir en comprobante». La voz no se tocó.
+  - Verificado: seed idempotente (segunda corrida sin duplicados ni reenvíos); OCR limpio en los 5 MP4; cada hoja revisada a ojo en los 5 videos. NO verificado: audio (no se escuchó), iPhone real (solo Android simulado), y el build de producción (`next build`).
+  - Próximos pasos: Opus revisa las 5 hojas y los MP4 antes de subir nada; decidir si se publican y dónde; `prisma generate` en `marca-backend` cuando se toque ese checkout; probar `next build` en un checkout limpio con `npm ci`.
 
 - 2026-11-10 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/instalar-web`, rama `feat/instalar-web` sobre `main` 4f91050, sin push): **«Instalar en tu celular» desde el landing (PWA, sin tiendas)**. Pedido de Miguel: «que se puedan descargar desde la landing»; eligió instalar la web, no la app de tienda.
   - Lógica pura `lib/instalar.ts` (`decidirInstalacion`): con evento `beforeinstallprompt` → botón que llama a `prompt()` (Android, Chrome, Edge); iPhone o iPad con Safari → pasos «Compartir → Agregar a pantalla de inicio»; iPhone con Chrome, Firefox o Edge → «abre esta página en Safari»; instalada, app nativa (`FacturoApp`) o escritorio sin evento → nada. Pruebas en `lib/instalar.test.ts` (10). Mutación: quitar `aplicacionNativa` deja 1 prueba en rojo; restaurado con `cp` + `cmp`.
