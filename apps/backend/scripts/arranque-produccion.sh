@@ -22,5 +22,11 @@ npx prisma db execute --file prisma/seed_plans_pe.sql --schema prisma/schema.pri
 # Datos legales del servicio (quien presta el servicio): crea la fila inicial y NUNCA pisa una ya editada (ON CONFLICT DO NOTHING).
 npx prisma db execute --file prisma/seed_sitio.sql --schema prisma/schema.prisma
 
+# Demo pública (solo en el recurso facturo-demo, con MODO_DEMO=si): siembra las cuentas de demo si faltan.
+# Sin la variable no pasa nada. Si la siembra falla, la API arranca igual: el reinicio nocturno lo vuelve a intentar.
+if [ "${MODO_DEMO:-}" = "si" ]; then
+  node scripts/demo/sembrar-demo.js --si-falta || echo "[DEMO] La siembra falló: la demo arranca sin datos hasta el reinicio nocturno."
+fi
+
 # `exec`: node pasa a ser el proceso principal y recibe las señales de parada de Docker.
 exec node app.js

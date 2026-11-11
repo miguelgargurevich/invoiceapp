@@ -10,7 +10,9 @@
     "postinstall": "prisma generate",
     "deploy": "prisma migrate deploy && node app.js",
     "test": "node --test \"test/unit/**/*.test.js\"",
-    "test:db": "node --test --test-concurrency=1 \"test/db/**/*.test.js\""
+    "test:db": "node --test --test-concurrency=1 \"test/db/**/*.test.js\"",
+    "demo:sembrar": "node scripts/demo/sembrar-demo.js",
+    "demo:reiniciar": "node scripts/demo/reiniciar-demo.js"
   },
   "keywords": [],
   "author": "",
