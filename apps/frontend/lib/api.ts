@@ -1,3 +1,5 @@
+import { detectarBloqueoDemo, EVENTO_BLOQUEO_DEMO } from './demo';
+
 // Ensure API_URL ends with /api
 const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 const API_URL = baseUrl.endsWith('/api') ? baseUrl : `${baseUrl}/api`;
@@ -47,6 +49,11 @@ class ApiClient {
     } catch (e) {
       // If response is not JSON, use status text
       errorMessage = response.statusText || errorMessage;
+    }
+    // Candado de la demo: un solo sitio avisa con toast (ToastProvider escucha el evento). El error sigue su curso.
+    const bloqueo = detectarBloqueoDemo(body);
+    if (bloqueo && typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent(EVENTO_BLOQUEO_DEMO, { detail: bloqueo }));
     }
     throw new ApiError(errorMessage, response.status, body);
   }

@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { apiClient } from '@/lib/api';
+import type { PerfilEntrar } from '@/lib/demo';
 
 export interface UserWithRole {
   id: string;
@@ -55,6 +56,7 @@ interface AuthContextType {
   loading: boolean;
   empresa: Empresa | null;
   signIn: (email: string, password: string) => Promise<void>;
+  entrarDemo: (perfil: PerfilEntrar) => Promise<void>;
   signUp: (email: string, password: string, name: string) => Promise<void>;
   signOut: () => Promise<void>;
   refreshEmpresa: () => Promise<void>;
@@ -147,8 +149,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const signIn = async (email: string, password: string) => {
-    const response: any = await apiClient.post('/auth/login', { email, password });
+  // Guarda la sesión que devuelve la API (login o demo) y carga la empresa. Es el único camino para entrar.
+  const guardarSesion = async (response: any) => {
     const token = response?.session?.access_token;
 
     if (!token) {
@@ -176,6 +178,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     await loadEmpresa();
+  };
+
+  const signIn = async (email: string, password: string) => {
+    const response: any = await apiClient.post('/auth/login', { email, password });
+    await guardarSesion(response);
+  };
+
+  // Entra a una cuenta de demo sin contraseña (POST /api/demo/entrar). Misma sesión que signIn.
+  const entrarDemo = async (perfil: PerfilEntrar) => {
+    const response: any = await apiClient.post('/demo/entrar', { perfil });
+    await guardarSesion(response);
   };
 
   const signUp = async (email: string, password: string, name: string, empresaData?: any) => {
@@ -232,6 +245,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         empresa,
         signIn,
+        entrarDemo,
         signUp,
         signOut,
         refreshEmpresa,
