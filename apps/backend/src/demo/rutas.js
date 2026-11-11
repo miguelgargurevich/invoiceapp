@@ -3,14 +3,14 @@
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const { generateAccessToken, sanitizeUser } = require('../middleware/auth');
-const { esDemo, LIMITE_DIARIO } = require('./modo');
+const { esDemo, LIMITE_DIARIO, limitesPeticiones } = require('./modo');
 const { PERFILES, PERFIL_CLIENTE, CORREOS_DEMO } = require('./perfiles');
 
 // Entrar sin contraseña es lo más delicado de la demo: límite propio y más estricto que el general.
 function crearLimitadorEntrar() {
   return rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: process.env.NODE_ENV === 'development' ? 200 : 30,
+    max: limitesPeticiones().entrarDemo,
     message: { error: 'Demasiados intentos de entrar a la demo, intenta más tarde' },
     standardHeaders: true,
     legacyHeaders: false,

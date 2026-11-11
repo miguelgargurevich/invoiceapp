@@ -6,4 +6,13 @@ const LIMITE_DIARIO = 30; // comprobantes emitidos por empresa y por día (hora 
 
 const esDemo = () => process.env.MODO_DEMO === 'si';
 
-module.exports = { esDemo, LIMITE_DIARIO };
+// Peticiones permitidas por IP cada 15 minutos. Producción y desarrollo quedan como antes.
+// En la demo pública se suben: muchos visitantes llegan desde la misma red (una oficina, un evento) y
+// cada página nueva consulta /api/auth/me; con 50 por IP, un grupo probando a la vez se quedaba sin cupo.
+function limitesPeticiones(env = process.env) {
+  if (env.MODO_DEMO === 'si') return { general: 3000, auth: 500, entrarDemo: 150 };
+  if (env.NODE_ENV === 'development') return { general: 1000, auth: 200, entrarDemo: 200 };
+  return { general: 300, auth: 50, entrarDemo: 30 };
+}
+
+module.exports = { esDemo, LIMITE_DIARIO, limitesPeticiones };

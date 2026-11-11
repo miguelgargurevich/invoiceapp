@@ -28,6 +28,7 @@ const adminRoutes = require('./src/routes/admin');
 const sitioRoutes = require('./src/routes/sitio');
 const webhooksRoutes = require('./src/routes/webhooks');
 const { crearRouterDemo } = require('./src/demo/rutas');
+const { limitesPeticiones } = require('./src/demo/modo');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -38,7 +39,7 @@ app.set('trust proxy', 1);
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: process.env.NODE_ENV === 'development' ? 1000 : 300, // 1000 para dev, 300 para producción
+  max: limitesPeticiones().general, // producción 300, desarrollo 1000, demo pública 3000 (src/demo/modo.js)
   message: { error: 'Demasiadas peticiones, intente más tarde' },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
@@ -47,7 +48,7 @@ const limiter = rateLimit({
 // Separate rate limiter for auth endpoints (more permissive)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: process.env.NODE_ENV === 'development' ? 200 : 50, // 200 para dev, 50 para producción
+  max: limitesPeticiones().auth, // producción 50, desarrollo 200, demo pública 500 (src/demo/modo.js)
   message: { error: 'Demasiadas peticiones de autenticación, intente más tarde' },
   standardHeaders: true,
   legacyHeaders: false,
