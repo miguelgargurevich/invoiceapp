@@ -19,6 +19,12 @@
 
 ## Última sesión
 
+- 2026-11-10 (Claude Code con Opus 5.5, revisión de `feat/app-movil`): **app probada en Android e iOS**.
+  - Android (emulador propio, API 34): portada, menú, login, botón Atrás y pantalla «Sin conexión» con modo avión. Arreglado: el logo de esa pantalla (ruta relativa con `server.url` no carga sin red; ahora el SVG va en línea).
+  - iOS: instalado Xcode 26.6 y el simulador iOS 26.5; `xcodebuild` OK y probado en un iPhone 17 Pro (portada, menú, login). El texto con degradado del landing se ve bien; en el WebView 113 del emulador Android sale como franja sólida.
+  - Gotcha: la primera carga tarda 10–20 s con la pantalla en blanco (carga la web de producción sin caché).
+  - Gotcha (Mac): `simctl runtime delete` de runtimes «duplicados» borra la imagen compartida; no hacerlo.
+  - Falta: sesión iniciada, descargas reales (Filesystem/Share), selector de archivos y decidir la clave de cámara en iOS.
 - 2026-11-10 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/app-movil`, rama `feat/app-movil` sobre `main` 48d9973, sin push): **app móvil fase 1 (iOS y Android) con Capacitor 8.6** (pedido de Miguel: «así como lo está haciendo Torre»). Guía completa en `docs/APP-MOVIL.md`.
   - Proyecto `mobile/` (appId `pe.facturo.app`): envuelve `https://facturo.gargurevich.dev` con `server.url`. `FACTURO_URL` solo para pruebas (http solo en localhost); `npm run verificar` falla si el build no es de producción. Navegación limitada a facturo; lo demás sale al navegador o app del sistema. Botón Atrás en `MainActivity.java`; pantalla «Sin conexión» con `errorPath`; vertical; zona segura con `SystemBars`.
   - Descargas en la app: `apps/frontend/lib/descargas.ts` (Filesystem + Share dentro de la app; navegador sin cambios). Sitios cambiados: SUNAT `guardarArchivo`, CSV de clientes/productos/facturas, PDF de vistas previas y de detalle de factura y proforma. `npm test` 121/121, `tsc` exit 0, mutación en rojo y restaurada.
