@@ -1,6 +1,6 @@
 # Demo de Facturo para clientes: diseño
 
-Fecha: 2026-11-11. Estado: **propuesta para aprobar** (Miguel). Se arma en paralelo con la demo de Torre y con el mismo esquema, adaptado a Facturo.
+Fecha: 2026-11-11. Estado: **aprobado**; **fase A (backend) hecha** el 11-nov en la rama `feat/demo` (ver `docs/HANDOFF.md`). Se arma en paralelo con la demo de Torre y con el mismo esquema, adaptado a Facturo.
 
 ## Pedido
 «Necesito crear una demo para enviarle a los clientes. Esa demo debe considerar todo: un video, los roles, la información, la guía… Lo mismo para Facturo.»
@@ -124,7 +124,7 @@ Un documento corto en `docs/demo/ENVIAR-DEMO.md` que también se publica como re
 
 | Fase | Qué | Ejecutor | Riesgo |
 |---|---|---|---|
-| A | Modo demo en el backend: `MODO_DEMO`, el candado completo, `POST /api/demo/entrar` y el límite diario, con pruebas por cada bloqueo | Sonnet | alto, delicado (auth sin contraseña) |
+| A | Modo demo en el backend: `MODO_DEMO`, el candado completo, `POST /api/demo/entrar` y el límite diario, con pruebas por cada bloqueo | Sonnet (**hecha**, 11-nov) | alto, delicado (auth sin contraseña) |
 | B | Siembra relativa a hoy de los 3 perfiles, y el reinicio (script más botón del superadmin) | Haiku | alto, no delicado |
 | C | Frontend: página `/demo`, franja, panel «Qué probar» y marca «DEMOSTRACIÓN» en el PDF | Haiku | medio |
 | D | Recurso `facturo-demo` en Coolify: dominios, base, variable y tarea nocturna | Opus, con el OK de Miguel | producción |
