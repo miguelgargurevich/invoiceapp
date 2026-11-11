@@ -85,7 +85,7 @@ async function crearPerfil(ctx, def) {
   const empresa = await prisma.empresa.create({
     data: {
       nombre: e.nombre, razonSocial: e.razonSocial, nombreComercial: e.nombre, ruc: e.ruc,
-      direccion: 'Jr. Ejemplo 10, Lima', telefono: ficticios.celularFicticio(ctx.siguiente()),
+      direccion: 'Jr. Huallaga 410, Cercado de Lima', telefono: ficticios.celularFicticio(ctx.siguiente()),
       email: ficticios.CORREO_EJEMPLO(`contacto-${def.id}`, e.dominio),
       moneda: 'PEN', currency: 'PEN', locale: 'es', taxRate: 18, taxName: 'IGV',
       serieFactura: 'F001', serieProforma: 'P001', setupCompleted: true, pais: 'PE',
@@ -96,7 +96,7 @@ async function crearPerfil(ctx, def) {
   await prisma.emisorSunat.create({
     data: {
       empresaId: empresa.id, ubigeo: '150101', departamento: 'LIMA', provincia: 'LIMA', distrito: 'LIMA',
-      direccionFiscal: 'Jr. Ejemplo 10, Lima', ambiente: 'BETA',
+      direccionFiscal: 'Jr. Huallaga 410, Cercado de Lima', ambiente: 'BETA',
       solUsuario: 'MODDATOS', solClaveCifrada: cifrar('moddatos'),
       certificadoCifrado: cifradoCert.pfx, certificadoClaveCifrada: cifradoCert.clave, certificadoVence: cifradoCert.vence,
       cuentaDetracciones: e.detracciones,
@@ -123,7 +123,7 @@ async function crearCliente(ctx, perfil, { tipoDocumento, numeroDocumento, razon
       empresaId: perfil.empresa.id, tipoDocumento, numeroDocumento, razonSocial,
       email: ficticios.CORREO_EJEMPLO(`cliente${n}`, dominio),
       telefono: ficticios.celularFicticio(n),
-      direccion: 'Av. Ejemplo 100, Lima',
+      direccion: 'Av. Brasil 1550, Jesús María',
     },
   });
 }

@@ -67,12 +67,12 @@ function sumarDias(diaYmd, dias) {
 const CORREO_EJEMPLO = (usuario, dominio) => `${usuario}@${dominio}.example`;
 
 const CLIENTES_BOLETA = [
-  { nombre: 'Rosa Ejemplo Huamán', dni: '47100001' },
-  { nombre: 'Carlos Muestra Quispe', dni: '47100002' },
-  { nombre: 'Lucía Prueba Ramírez', dni: '47100003' },
-  { nombre: 'Jorge Modelo Torres', dni: '47100004' },
-  { nombre: 'Ana Demo Vásquez', dni: '47100005' },
-  { nombre: 'Luis Ficticio Mendoza', dni: '47100006' },
+  { nombre: 'Rosa Huamán Celis', dni: '47100001' },
+  { nombre: 'Carlos Quispe Arana', dni: '47100002' },
+  { nombre: 'Lucía Ramírez Tello', dni: '47100003' },
+  { nombre: 'Jorge Torres Ocampo', dni: '47100004' },
+  { nombre: 'Ana Vásquez Rojas', dni: '47100005' },
+  { nombre: 'Luis Mendoza Paredes', dni: '47100006' },
 ];
 
 const PRODUCTOS_BODEGA = [
@@ -93,13 +93,13 @@ const PRODUCTOS_SERVICIOS = [
 ];
 
 const CLIENTES_EMPRESA = [
-  { ruc: rucFicticio('20', 51234001), razonSocial: 'Minera Ejemplo Norte S.A.C.', dominio: 'minera-ejemplo', direccion: 'Av. Ejemplo 100, San Isidro' },
-  { ruc: rucFicticio('20', 51234002), razonSocial: 'Constructora Demo Sur E.I.R.L.', dominio: 'constructora-demo', direccion: 'Jr. Muestra 245, Miraflores' },
-  { ruc: rucFicticio('20', 51234003), razonSocial: 'Agro Prueba Oriente S.A.C.', dominio: 'agro-prueba', direccion: 'Calle Modelo 12, La Molina' },
-  { ruc: rucFicticio('20', 51234004), razonSocial: 'Clínica Modelo Costa S.A.C.', dominio: 'clinica-modelo', direccion: 'Av. Ficticia 890, Surco' },
+  { ruc: rucFicticio('20', 51234001), razonSocial: 'Minera Cerro Alto S.A.C.', dominio: 'cerroalto', direccion: 'Av. Los Laureles 120, San Isidro' },
+  { ruc: rucFicticio('20', 51234002), razonSocial: 'Constructora Pacífico Sur E.I.R.L.', dominio: 'pacificosur', direccion: 'Jr. Las Begonias 245, Miraflores' },
+  { ruc: rucFicticio('20', 51234003), razonSocial: 'Agroindustrias Valle Verde S.A.C.', dominio: 'valleverde', direccion: 'Calle Los Pinos 12, La Molina' },
+  { ruc: rucFicticio('20', 51234004), razonSocial: 'Clínica Santa Rosa del Sur S.A.C.', dominio: 'santarosasur', direccion: 'Av. Primavera 890, Surco' },
 ];
 
-const CLIENTE_EMPRESA_ERRONEO = { ruc: '20512340049', razonSocial: 'Transportes Muestra Central S.R.L.' };
+const CLIENTE_EMPRESA_ERRONEO = { ruc: '20512340049', razonSocial: 'Transportes Ruta Central S.R.L.' };
 
 module.exports = {
   digitoVerificadorRuc,
