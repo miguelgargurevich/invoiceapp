@@ -4,6 +4,7 @@ export { HeroSection } from './HeroSection';
 export { FeaturesSection } from './FeaturesSection';
 export { HowItWorksSection } from './HowItWorksSection';
 export { PricingSection } from './PricingSection';
+export { InstalarSection } from './InstalarSection';
 export { FAQSection } from './FAQSection';
 export { CTASection } from './CTASection';
 export { LandingFooter } from './LandingFooter';

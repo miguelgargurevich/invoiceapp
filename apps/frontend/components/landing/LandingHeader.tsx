@@ -9,6 +9,7 @@ import { LogoFacturo } from '@/components/marca/LogoFacturo';
 
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useInstalacion } from '@/lib/hooks/useInstalacion';
 
 export function LandingHeader() {
   const t = useTranslations('landing');
@@ -17,6 +18,8 @@ export function LandingHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
+  // El ítem «Instalar app» aparece con la misma decisión que la sección (#instalar) y solo en el menú móvil.
+  const { instalacion } = useInstalacion();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -144,6 +147,15 @@ export function LandingHeader() {
                       {item.label}
                     </a>
                   ))}
+                  {instalacion.tipo !== 'nada' && (
+                    <a
+                      href="#instalar"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-4 py-3 text-base font-medium text-slate-700 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                    >
+                      {t('nav.instalar')}
+                    </a>
+                  )}
                 </nav>
 
                 <div className="space-y-3 pt-6 border-t border-slate-200 dark:border-slate-700">

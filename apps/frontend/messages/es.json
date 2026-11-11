@@ -1907,6 +1907,7 @@
       "features": "Funciones",
       "pricing": "Precios",
       "faq": "Preguntas",
+      "instalar": "Instalar app",
       "login": "Iniciar sesión",
       "getStarted": "Empieza gratis"
     },
@@ -2042,6 +2043,19 @@
         "business": {
           "description": "Solución para empresas con alto volumen"
         }
+      }
+    },
+    "instalar": {
+      "badge": "Sin tienda de apps",
+      "title": "Lleva Facturo en tu celular",
+      "subtitle": "Instálala desde el navegador, sin buscarla en una tienda. Se abre en pantalla completa, como cualquier app.",
+      "boton": "Instalar en tu celular",
+      "abrirEnSafari": "Para instalarla en tu iPhone, abre esta página en Safari y sigue los pasos de Compartir.",
+      "ios": {
+        "ver": "Ver cómo instalarla",
+        "ocultar": "Ocultar los pasos",
+        "paso1": "Toca el botón Compartir de Safari (el cuadrado con una flecha hacia arriba).",
+        "paso2": "Elige «Agregar a pantalla de inicio» y confirma."
       }
     },
     "faq": {
