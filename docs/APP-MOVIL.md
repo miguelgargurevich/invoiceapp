@@ -23,7 +23,7 @@ Una app nativa de Capacitor que muestra la web de producción dentro de un WebVi
 | `mobile/www/sin-conexion.html` | Pantalla «Sin conexión» con «Reintentar». Capacitor la carga si no hay red. |
 | `mobile/resources/` | Fuentes de ícono y splash (SVG y PNG). `npm run assets` genera los recursos nativos. |
 | `mobile/android/` | Proyecto Android generado (con cambios en `MainActivity.java` y el manifiesto). |
-| `mobile/ios/` | Proyecto iOS generado (con `Info.plist` ajustado). Sin compilar: falta Xcode. |
+| `mobile/ios/` | Proyecto iOS generado (con `Info.plist` ajustado). Compila en el simulador con Xcode 26.6 (ver «Probar sin conexión en el simulador»). |
 | `mobile/capturas/` | Capturas de la app (landing, login y Términos). |
 | `apps/frontend/lib/descargas.ts` | Helper de descargas: navegador (igual que antes) o app (Filesystem + Share). |
 
@@ -69,7 +69,7 @@ Las fuentes están en `mobile/resources/`: `icon-only.png` (1024, fondo blanco),
 
 - **Navegación:** solo `facturo.gargurevich.dev` (la lista `allowNavigation`). Lo demás (SUNAT, WhatsApp, mailto, tel, otros dominios) lo abre el sistema fuera de la app.
 - **Botón Atrás (Android):** vuelve en el historial de la web. En la primera pantalla cierra la app (`MainActivity.java`).
-- **Sin conexión:** si la carga principal falla, Capacitor muestra `sin-conexion.html`. «Reintentar» vuelve a la web. Limitación: si la red se cae con la app ya abierta, no hay pantalla propia; la web muestra sus propios errores.
+- **Sin conexión:** si la carga principal falla, Capacitor muestra `sin-conexion.html` (`server.errorPath`), en Android y en iOS. «Reintentar» vuelve a la web. Limitación: si la red se cae con la app ya abierta, no hay pantalla propia; la web muestra sus propios errores. En iOS no hace falta código nativo: `CAPBridgeViewController` y `WebViewDelegationHandler` ya usan `errorPath` en `didFail` y `didFailProvisionalNavigation`. Cómo probarlo: ver «Probar sin conexión en el simulador».
 - **Zona segura y barra de estado:** `SystemBars` con `insetsHandling: css` reserva el espacio del notch y de la barra. El estilo `DEFAULT` deja que el sistema elija el color de los íconos (claro u oscuro).
 - **Orientación:** vertical. En Android, `screenOrientation="portrait"`. En iOS, iPhone solo vertical; iPad vertical con pantalla completa.
 - **Descargas:** PDF, CSV, XML y CDR se guardan en la caché de la app (Filesystem) y se entregan a la hoja de compartir (Share). En el navegador no cambia nada. Lógica en `apps/frontend/lib/descargas.ts`, con pruebas en `lib/descargas.test.ts` (`npm test` en `apps/frontend`).
@@ -107,7 +107,26 @@ Las fuentes están en `mobile/resources/`: `icon-only.png` (1024, fondo blanco),
 
 - Compilar en Xcode (`npx cap open ios`), con el equipo de Apple Developer configurado.
 - El ícono ya va sin canal alfa (RGB), como exige App Store.
-- Pendiente de verificar: la pantalla «Sin conexión» no está implementada en iOS (el `errorPath` de Capacitor sí aplica a WKWebView, pero no se probó).
+- «Sin conexión» en iOS: funciona con la configuración actual (`errorPath`). Probado en el simulador con una copia de la app que apunta a un host inexistente (captura `mobile/capturas/ios-sin-conexion.png`). Pendiente: tocar «Reintentar» en el simulador (no hubo forma de tocar la pantalla sin mover el puntero de la Mac).
+
+### Probar sin conexión en el simulador
+
+No apagar el Wi-Fi de la Mac (la Mac es el puente de otros servicios). En su lugar, una copia de la app con un host que no existe:
+
+```bash
+cd mobile
+npm run sync && npm run verificar                 # build de producción, para dejarla al final
+# Compilar (ver abajo) y copiar App.app a una carpeta temporal fuera del repo.
+# En la copia, cambiar server.url de capacitor.config.json:
+#   "url": "https://facturo-sin-red.invalid"
+xcrun simctl install <udid> <copia>/App.app
+xcrun simctl launch <udid> pe.facturo.app         # debe mostrar «Sin conexión»
+# Al terminar, reinstalar la build de producción (la original de ios/App/build/...)
+```
+
+- Compilación: `xcodebuild` con `-clonedSourcePackagesDirPath build/SourcePackages -disableAutomaticPackageResolution`, o normal. Si Xcode falla con «fatal: cannot use bare repository» (`safe.bareRepository=explicit` en el git global), se resolvió reutilizando los paquetes ya resueltos en DerivedData; NO se cambió la configuración global de git.
+- La primera carga de la web tarda 10–20 s en blanco. No es un fallo.
+- Lo que NO prueba esto: perder la red con la app ya abierta (no hay pantalla propia para ese caso).
 
 ### Fichas de tienda
 

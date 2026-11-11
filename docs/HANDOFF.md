@@ -31,6 +31,11 @@
   - Verificación: `npm test` 131/131, `npx tsc --noEmit` exit 0. NO verificado: el aspecto en el navegador, la instalación real en Android y en el simulador de iPhone, y `next build` (lo corre Opus).
   - Gotcha: `Share` de lucide-react existe (el ícono de Compartir de iOS); `Share2` es otro.
 
+- 2026-11-10 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/ios-sin-conexion`, rama `fix/ios-sin-conexion` sobre `main` 4f91050, sin push): **«Sin conexión» en iOS**.
+  - Sin cambios de código nativo: iOS ya usa `server.errorPath` (`WebViewDelegationHandler`, `didFail` y `didFailProvisionalNavigation`). Probado en el simulador «Facturo iPhone 17 Pro» con una copia de la app que apunta a `https://facturo-sin-red.invalid`: aparece la pantalla. Captura `mobile/capturas/ios-sin-conexion.png`. Build de producción: `mobile/capturas/ios-prueba-produccion.png`.
+  - Pendiente: tocar «Reintentar» en el simulador (no hubo forma de tocar la pantalla sin mover el puntero de la Mac).
+  - Gotcha (Xcode): `xcodebuild` falla con «fatal: cannot use bare repository» si el git global tiene `safe.bareRepository=explicit`. Se resolvió con `-clonedSourcePackagesDirPath build/SourcePackages -disableAutomaticPackageResolution` (paquetes ya resueltos en DerivedData). No se cambió la configuración de git.
+  - Gotcha: el simulador de Torre también está encendido; no se tocó.
 - 2026-11-10 (Claude Code con Opus 5.5, revisión de `feat/app-movil`): **app probada en Android e iOS**.
   - Android (emulador propio, API 34): portada, menú, login, botón Atrás y pantalla «Sin conexión» con modo avión. Arreglado: el logo de esa pantalla (ruta relativa con `server.url` no carga sin red; ahora el SVG va en línea).
   - iOS: instalado Xcode 26.6 y el simulador iOS 26.5; `xcodebuild` OK y probado en un iPhone 17 Pro (portada, menú, login). El texto con degradado del landing se ve bien; en el WebView 113 del emulador Android sale como franja sólida.
