@@ -50,6 +50,32 @@ Reglas de los textos:
 | 4 | Detalle de la boleta aceptada | Y tu cliente recibe un comprobante válido ante SUNAT. |
 | 5 | Cierre | Facturo. Tus comprobantes electrónicos, en minutos. |
 
+## f4. Recorrido de la demo (≈ 2:06, escritorio y celular)
+
+Se graba contra la **demo pública** (https://demo.facturo.gargurevich.dev), no contra la app local. Voz «Dora», una por escena (`.claude/videos/f4/voz/e<N>.wav`).
+
+| # | En pantalla | Voz |
+|---|---|---|
+| 1 | `/demo`: título y las tres tarjetas | Esta es la demo de Facturo. Puedes probarla sin registrarte: solo elige cómo quieres entrar. |
+| 2 | El cursor recorre las tres tarjetas | Hay tres perfiles: un emprendedor que emite boletas, una empresa de servicios que factura con detracción, y el cliente que recibe y firma una proforma. |
+| 3 | Entrar como emprendedor: el dashboard con la franja de demo | Empecemos como emprendedor. Arriba ves que estás en la demo: los datos son de ejemplo y se borran cada noche. |
+| 4 | Tarjetas del dashboard (comprobantes, ventas, requieren atención) | En el dashboard están los comprobantes del mes, las ventas aceptadas por SUNAT y lo que requiere tu atención. |
+| 5 | Panel «Qué probar» | A la derecha tienes la guía Qué probar, con los pasos que te recomendamos para este perfil. |
+| 6 | Nueva boleta: cliente con DNI y un producto; los totales con IGV | Emitir una boleta es simple: eliges a tu cliente con su DNI, agregas el producto, y el IGV se calcula solo. |
+| 7 | Se emite y queda «Aceptado» | Al emitirla, Facturo la firma y la envía a SUNAT. En la demo usamos el ambiente de pruebas de SUNAT, así que no tiene valor legal. |
+| 8 | Detalle: botones PDF, XML y CDR; el PDF con la marca DEMOSTRACIÓN | Desde el detalle descargas el PDF, el XML y la constancia de SUNAT. En la demo, el PDF lleva la marca Demostración. |
+| 9 | Productos: la lista | Tus productos quedan guardados con su precio, para que no tengas que escribirlos cada vez. |
+| 10 | «Cambiar de perfil» → Empresa de servicios: el panel con su color | Ahora cambiamos de perfil a una empresa de servicios. Fíjate que el panel usa el color de su marca. |
+| 11 | «Requieren atención» → la factura rechazada con su motivo | Aquí hay un comprobante que requiere atención. Facturo te muestra el motivo, para que sepas qué corregir. |
+| 12 | Nueva factura: operación con detracción y forma de pago a crédito | También emites facturas con detracción o a crédito en cuotas, como las piden las empresas grandes. |
+| 13 | Proformas: la lista con sus estados | Las proformas te ayudan a cotizar: ves cuáles están pendientes, aceptadas, rechazadas o vencidas. |
+| 14 | Proforma aceptada → «Convertir a Factura» | Cuando tu cliente acepta una proforma, la conviertes en factura con un clic. |
+| 15 | Configuración › Empresa › Color de tu marca | Y en la configuración eliges el color de tu marca. Sale en tu panel, en el PDF y en los correos. |
+| 16 | `/demo` → «Tu cliente»: la página de firma | Por último, el lado de tu cliente. Recibe un enlace, revisa la proforma, y no necesita crear una cuenta. |
+| 17 | Se dibuja una firma y se marca el consentimiento. **No se envía** | Firma con el dedo o con el mouse, y la proforma queda aceptada del lado de la empresa. |
+| 18 | `/demo` con la dirección demo.facturo.gargurevich.dev visible | Pruébala tú mismo con el enlace que ves en pantalla. Y cuando quieras, crea tu cuenta gratis. |
+| 19 | Cierre | Facturo. Tus comprobantes electrónicos, en minutos. |
+
 ---
 
 ## Cómo se arma (para regrabar)
