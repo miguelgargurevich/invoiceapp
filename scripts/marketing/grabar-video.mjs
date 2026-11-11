@@ -1,6 +1,8 @@
-// Graba las escenas de un video de marketing de Facturo con Playwright sobre la app LOCAL (base invoiceapp_videos; datos ficticios).
-// Uso: node scripts/marketing/grabar-video.mjs <f1|f2|f3> <escritorio|celular>
+// Graba las escenas de un video de marketing de Facturo con Playwright. f1-f3: la app LOCAL (base invoiceapp_videos; datos ficticios).
+// f4: la DEMO PÚBLICA (demo.facturo.gargurevich.dev; datos de ejemplo, se reinician cada noche). Nunca producción.
+// Uso: node scripts/marketing/grabar-video.mjs <f1|f2|f3|f4> <escritorio|celular>
 //   f3 es solo celular. Tema claro, cursor berenjena (#6B2C6E).
+//   SIN_EMISION=1 (solo f4): no emite la boleta de la escena 7; usa una ya aceptada (para ensayar sin gastar cupo de la demo).
 // Lee la voz de cada escena en .claude/videos/<f>/voz/e<N>.wav (la duración de la escena la manda su audio) y deja un clip por escena
 // en .claude/videos/<f>/<formato>/e<N>.webm más recortes.json (en qué segundo del clip la pantalla ya estaba lista).
 // El montaje (voz + clips + cierre) lo hace scripts/marketing/montar-video.sh.
@@ -15,10 +17,14 @@ import { join } from 'node:path';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.PLAYWRIGHT ?? '/opt/homebrew/lib/node_modules/playwright');
 
-const APP = process.env.APP_URL ?? 'http://localhost:3000';
-const API = process.env.API_URL ?? 'http://localhost:4001';
 const RAIZ = process.cwd();
 const [video = 'f1', formato = 'escritorio'] = process.argv.slice(2);
+// f4 va contra la demo pública por defecto; APP_URL/API_URL pueden cambiarse, pero f4 solo acepta esas dos direcciones.
+const DEMO_APP = 'https://demo.facturo.gargurevich.dev';
+const DEMO_API = 'https://api.demo.facturo.gargurevich.dev';
+const APP = process.env.APP_URL ?? (video === 'f4' ? DEMO_APP : 'http://localhost:3000');
+const API = process.env.API_URL ?? (video === 'f4' ? DEMO_API : 'http://localhost:4001');
+const SIN_EMISION = process.env.SIN_EMISION === '1';
 const BASE = join(RAIZ, '.claude/videos', video);
 const SALIDA = join(BASE, formato);
 const pausa = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -33,9 +39,10 @@ const FORMATOS = {
   },
 };
 
-if (!['f1', 'f2', 'f3'].includes(video)) throw new Error(`Video desconocido: ${video}`);
+if (!['f1', 'f2', 'f3', 'f4'].includes(video)) throw new Error(`Video desconocido: ${video}`);
 if (!FORMATOS[formato]) throw new Error(`Formato desconocido: ${formato}`);
 if (video === 'f3' && formato !== 'celular') throw new Error('f3 es solo celular');
+if (video === 'f4' && (!APP.startsWith(DEMO_APP) || !API.startsWith(DEMO_API))) throw new Error('f4 solo se graba contra la demo pública');
 
 const duracion = (n) => {
   const f = join(BASE, 'voz', `e${n}.wav`);
@@ -46,14 +53,26 @@ const duracion = (n) => {
 const CUENTAS = { demo: 'demo@facturo.example', nuevo: 'nuevo@facturo.example' };
 const CLAVE = 'Facturo2026';
 const CARPETA_SESIONES = join(RAIZ, '.claude/videos/sesiones');
-async function tokenDe(rol) {
-  const archivo = join(CARPETA_SESIONES, `${rol}.json`);
+// Perfiles de la demo pública: entran SIN contraseña (POST /api/demo/entrar), como el botón «Entrar» de /es/demo.
+const PERFILES_DEMO = ['emprendedor', 'servicios'];
+// Un token por rol y por corrida: la demo limita a 30 entradas cada 15 min por IP (y el límite general cuenta /auth/me).
+const TOKENS = new Map();
+function tokenDe(rol) {
+  if (!TOKENS.has(rol)) TOKENS.set(rol, obtenerToken(rol).catch((e) => { TOKENS.delete(rol); throw e; }));
+  return TOKENS.get(rol);
+}
+async function obtenerToken(rol) {
+  const demo = PERFILES_DEMO.includes(rol);
+  const archivo = join(CARPETA_SESIONES, `${demo ? 'demo-' : ''}${rol}.json`);
   if (existsSync(archivo)) {
     const { token } = JSON.parse(readFileSync(archivo, 'utf8'));
-    if ((await fetch(`${API}/api/auth/me`, { headers: { authorization: `Bearer ${token}` } })).ok) return token;
+    const v = await fetch(`${API}/api/auth/me`, { headers: { authorization: `Bearer ${token}` } });
+    // 429: el límite de peticiones, no un token malo. Se reutiliza para no gastar entradas.
+    if (v.ok || v.status === 429) return token;
   }
-  const r = await fetch(`${API}/api/auth/login`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: CUENTAS[rol], password: CLAVE }) });
-  if (!r.ok) throw new Error(`login ${rol}: ${r.status}`);
+  const cuerpo = demo ? { perfil: rol } : { email: CUENTAS[rol], password: CLAVE };
+  const r = await fetch(`${API}${demo ? '/api/demo/entrar' : '/api/auth/login'}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(cuerpo) });
+  if (!r.ok) throw new Error(`${demo ? 'entrar a la demo' : 'login'} ${rol}: ${r.status}`);
   const { session } = await r.json();
   mkdirSync(CARPETA_SESIONES, { recursive: true, mode: 0o700 });
   writeFileSync(archivo, JSON.stringify({ token: session.access_token }), { mode: 0o600 });
@@ -62,11 +81,27 @@ async function tokenDe(rol) {
 const apiGet = async (token, ruta) => (await fetch(`${API}${ruta}`, { headers: { authorization: `Bearer ${token}` } })).json();
 
 /** Id del comprobante más reciente aceptado por SUNAT de una serie (para abrir su detalle en la escena). */
-async function comprobanteAceptado(serie) {
-  const lista = await apiGet(await tokenDe('demo'), '/api/comprobantes');
+async function comprobanteAceptado(serie, rol = 'demo') {
+  const lista = await apiGet(await tokenDe(rol), '/api/comprobantes');
   const c = (Array.isArray(lista) ? lista : []).find((x) => x.serie === serie && x.estadoSunat === 'ACEPTADO');
   if (!c) throw new Error(`no hay comprobante aceptado de la serie ${serie}`);
   return c.id;
+}
+
+/** Id de un comprobante rechazado por SUNAT (en la demo, el de muestra de «servicios»). */
+async function comprobanteRechazado(rol) {
+  const lista = await apiGet(await tokenDe(rol), '/api/comprobantes');
+  const c = (Array.isArray(lista) ? lista : []).find((x) => x.estadoSunat === 'RECHAZADO');
+  if (!c) throw new Error(`no hay comprobante rechazado para ${rol}`);
+  return c.id;
+}
+
+/** Enlace de firma de la proforma pendiente de «Tu cliente» (lo da /api/demo/estado). Solo se LEE: la firma no se envía. */
+async function enlaceFirmaDemo() {
+  const estado = await (await fetch(`${API}/api/demo/estado`)).json();
+  const cliente = estado.perfiles.find((x) => x.id === 'cliente');
+  if (!cliente?.enlaceFirma) throw new Error('la demo no tiene proforma pendiente de firma');
+  return cliente.enlaceFirma;
 }
 
 /** Emite una factura NUEVA ante SUNAT beta, fuera de cámara (tarda ~15 s). Devuelve su id cuando SUNAT la acepta. */
@@ -159,6 +194,30 @@ async function elegirCliente(page, nombre, opts = {}) {
   await pausa(opts.rapido ? 150 : 350);
   if (opts.rapido) await pausa(100); else await asentar(page);
 }
+/** Elige una opción por su texto, en el select que la contiene (no depende del orden de los selects de la pantalla). */
+async function elegirEnSelect(page, texto, opts = {}) {
+  const select = page.locator('select').filter({ has: page.locator('option', { hasText: texto }) }).first();
+  await tocar(page, select, { ...opts, soloSenalar: true });
+  // Se elige por el valor de la opción: la etiqueta de la detracción es «037 · descripción (%)», no solo «037».
+  const valor = await select.locator('option', { hasText: texto }).first().getAttribute('value').catch(() => null);
+  if (valor === null) console.warn(`  opción «${texto}»: no está en ningún select`);
+  else await select.selectOption(valor).catch((e) => console.warn(`  opción «${texto}»: ${e.message.split('\n')[0]}`));
+  await pausa(opts.rapido ? 150 : 350);
+}
+/** Cambia de perfil desde la franja de la demo: en escritorio el botón está a la vista; en celular, dentro de «Menú». */
+async function cambiarPerfil(page) {
+  // Hay dos botones con ese nombre (la barra de escritorio, oculta en celular, y el menú): solo cuenta el visible.
+  // Se espera a que la franja esté montada antes de tocar nada (en celular, el menú se abre con un clic).
+  const cambiar = () => page.locator('button:visible', { hasText: 'Cambiar de perfil' }).first();
+  const menu = () => page.locator('button:visible', { hasText: 'Menú' }).first();
+  await menu().or(cambiar()).first().waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
+  if (!(await cambiar().isVisible().catch(() => false))) {
+    await tocar(page, menu(), { rapido: true });
+    await cambiar().waitFor({ state: 'visible', timeout: 8000 }).catch(() => {});
+  }
+  await tocar(page, cambiar(), { rapido: true });
+}
+
 /** Elige un producto en la primera línea (el select 5 de la pantalla, después del tipo, la serie, la operación y la moneda). */
 async function elegirProducto(page, nombre, opts = {}) {
   await tocar(page, page.locator('select').nth(4), { ...opts, soloSenalar: true });
@@ -270,10 +329,151 @@ const ESCENAS = {
     } },
     { rol: null, url: null, cierre: true },
   ],
+  // f4: recorrido de la demo pública (guion, sección f4). Escenas 1-19; la 19 es el cierre.
+  // Emprendedor = 'emprendedor' (Bodega Don Lucho); empresa de servicios = 'servicios' (Soluciones Andinas S.A.C.).
+  // Nada se envía: la firma (17), la factura con detracción (12) y la conversión de proforma (14) se muestran, no se confirman.
+  f4: [
+    // 1. /demo: título y tarjetas
+    { rol: null, url: '/es/demo', accion: async (p) => { await pausa(900); await tocar(p, p.locator('h1').first(), { soloSenalar: true }); await pausa(300); } },
+    // 2. El cursor recorre las tres tarjetas
+    { rol: null, url: '/es/demo', accion: async (p) => {
+      await pausa(300);
+      for (const nombre of [/Emprendedor con boletas/, /Empresa de servicios/, /Tu cliente/]) await tocar(p, p.getByRole('button', { name: nombre }), { soloSenalar: true, rapido: true });
+      await pausa(300);
+    } },
+    // 3. Entrar como emprendedor (por la tarjeta, como lo haría el visitante): dashboard con la franja de demo
+    { rol: null, url: '/es/demo', accion: async (p) => {
+      await pausa(300);
+      await tocar(p, p.getByRole('button', { name: /Emprendedor con boletas/ }), { rapido: true });
+      await p.waitForURL(/\/dashboard/, { timeout: 15000 }).catch(() => {});
+      await asentar(p);
+      await tocar(p, p.getByRole('region', { name: 'Demostración de Facturo' }), { soloSenalar: true });
+      await pausa(500);
+    } },
+    // 4. Tarjetas del dashboard
+    { rol: 'emprendedor', url: '/es/dashboard', accion: async (p) => {
+      await pausa(500);
+      await tocar(p, p.getByText('Requieren atención').first(), { soloSenalar: true });
+      await pausa(300);
+      await tocar(p, p.getByText('Últimos comprobantes').first(), { soloSenalar: true });
+      await pausa(300);
+    } },
+    // 5. Panel «Qué probar» (en celular, la hoja se cierra al final: no tapa las escenas siguientes)
+    { rol: 'emprendedor', url: '/es/dashboard', accion: async (p) => {
+      await pausa(400);
+      await tocar(p, p.getByRole('button', { name: /Qué probar/ }));
+      await pausa(1500);
+      if (formato === 'celular') { await tocar(p, p.getByRole('button', { name: 'Cerrar Qué probar' }), { rapido: true }); await pausa(300); }
+    } },
+    // 6. Nueva boleta: cliente con DNI, un producto, totales con IGV (no se emite en esta escena)
+    { rol: 'emprendedor', url: '/es/comprobantes/nuevo', accion: async (p) => {
+      await elegirEnSelect(p, 'Boleta', { rapido: true });
+      await elegirEnSelect(p, 'B001', { rapido: true });
+      await elegirCliente(p, 'Rosa Huamán Celis', { rapido: true });
+      await elegirProducto(p, 'Pan francés (unidad)', { rapido: true });
+      await pausa(300); await tocar(p, p.getByText('Totales').first(), { soloSenalar: true, rapido: true });
+    } },
+    // 7. Se emite (fuera de cámara, en `antes`) y el clip muestra el comprobante «Aceptado». UNA boleta por toma.
+    { rol: 'emprendedor',
+      antes: async () => {
+        globalThis.__f4 = SIN_EMISION ? null : await emitirAntes('emprendedor', [['Pan francés (unidad)', 2]], { tipo: '03', serie: 'B001', cliente: 'Rosa Huamán Celis' });
+      },
+      url: async () => `/es/comprobantes/${globalThis.__f4 ?? await comprobanteAceptado('B001', 'emprendedor')}`,
+      accion: async (p) => {
+        await pausa(400); await tocar(p, p.getByText('Aceptado').first(), { soloSenalar: true }); await pausa(700);
+        await tocar(p, p.getByText('Historial de envíos').first(), { soloSenalar: true }); await pausa(600);
+      } },
+    // 8. Detalle: PDF, XML y CDR
+    { rol: 'emprendedor', url: async () => `/es/comprobantes/${globalThis.__f4 ?? await comprobanteAceptado('B001', 'emprendedor')}`, accion: async (p) => {
+      await pausa(300); await tocar(p, p.getByRole('button', { name: /^pdf$/i }), { soloSenalar: true }); await pausa(300);
+      await tocar(p, p.getByRole('button', { name: /^xml$/i }), { soloSenalar: true }); await pausa(300);
+      await tocar(p, p.getByRole('button', { name: /^cdr$/i }), { soloSenalar: true });
+    } },
+    // 9. Productos
+    { rol: 'emprendedor', url: '/es/productos', accion: async (p) => {
+      await pausa(400); await tocar(p, p.getByText('Aceite vegetal 1 L').first(), { soloSenalar: true }); await pausa(300);
+      await desplazar(p, 200, 1000);
+    } },
+    // 10. Cambiar de perfil → empresa de servicios: su panel con el color de su marca
+    { rol: 'emprendedor', url: '/es/dashboard', accion: async (p) => {
+      await pausa(300);
+      await cambiarPerfil(p);
+      await p.waitForURL(/\/demo/, { timeout: 15000 }).catch(() => {});
+      await asentar(p);
+      // La tarjeta aparece cuando /demo termina de cargar su estado: sin esperarla, el clic llega antes.
+      await p.getByRole('button', { name: /Empresa de servicios/ }).first().waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
+      await tocar(p, p.getByRole('button', { name: /Empresa de servicios/ }), { rapido: true });
+      await p.waitForURL(/\/dashboard/, { timeout: 15000 }).catch(() => {});
+      await asentar(p);
+      await tocar(p, p.getByText(/Hola, /).first(), { soloSenalar: true });
+      await pausa(400);
+    } },
+    // 11. Comprobante que requiere atención: la factura rechazada de muestra, con su motivo
+    { rol: 'servicios', url: async () => `/es/comprobantes/${await comprobanteRechazado('servicios')}`, accion: async (p) => {
+      await pausa(400); await tocar(p, p.getByText(/rechazad/i).first(), { soloSenalar: true }); await pausa(500);
+      await tocar(p, p.getByText(/Rechazo de ejemplo/).first(), { soloSenalar: true }); await pausa(400);
+    } },
+    // 12. Nueva factura con operación de detracción y forma de pago a crédito. NO se envía.
+    { rol: 'servicios', url: '/es/comprobantes/nuevo', accion: async (p) => {
+      await elegirEnSelect(p, 'Factura', { rapido: true });
+      await elegirCliente(p, 'Minera Cerro Alto S.A.C.', { rapido: true });
+      await elegirProducto(p, 'Consultoría de sistemas (hora)', { rapido: true });
+      await elegirEnSelect(p, 'Operación sujeta a detracción', { rapido: true });
+      await elegirEnSelect(p, '037', { rapido: true });
+      await elegirEnSelect(p, 'Crédito', { rapido: true });
+    } },
+    // 13. Proformas: estados
+    { rol: 'servicios', url: '/es/proformas', accion: async (p) => {
+      await pausa(400);
+      for (const estado of [/Aceptada/, /Rechazada/, /Vencida/]) await tocar(p, p.getByText(estado).first(), { soloSenalar: true, rapido: true });
+      await pausa(300);
+    } },
+    // 14. Proforma aceptada: se señala «Convertir a Factura», NO se pulsa
+    { rol: 'servicios', url: async () => `/es/proformas/${await proformaAceptada('servicios')}`, accion: async (p) => {
+      await pausa(500); await tocar(p, p.getByText('Totales').first(), { soloSenalar: true }); await pausa(400);
+      await tocar(p, p.getByRole('button', { name: /convertir a factura/i }), { soloSenalar: true }); await pausa(500);
+    } },
+    // 15. Color de tu marca (Configuración › Empresa). Solo se señala el bloque: no se elige ni se guarda color.
+    { rol: 'servicios', url: '/es/configuracion', accion: async (p) => {
+      await pausa(300);
+      await tocar(p, p.getByRole('button', { name: 'Empresa', exact: true }), { rapido: true }); await asentar(p);
+      await p.getByText('Color de tu marca').first().scrollIntoViewIfNeeded().catch(() => {}); await asentar(p);
+      await tocar(p, p.getByText('Color de tu marca').first(), { soloSenalar: true }); await pausa(600);
+    } },
+    // 16. «Tu cliente»: la página de firma (sin crear cuenta)
+    { rol: null, url: '/es/demo', accion: async (p) => {
+      await pausa(400);
+      await tocar(p, p.getByRole('button', { name: /Tu cliente/ }), { rapido: true });
+      await p.waitForURL(/\/sign\//, { timeout: 15000 }).catch(() => {});
+      await asentar(p); await pausa(400);
+    } },
+    // 17. Se dibuja una firma y se marca el consentimiento. NO se envía («Enviar Firma» no se pulsa).
+    { rol: null, url: async () => enlaceFirmaDemo(), accion: async (p) => {
+      await pausa(400);
+      const lienzo = p.locator('canvas').first();
+      await lienzo.scrollIntoViewIfNeeded().catch(() => {});
+      const b = await lienzo.boundingBox();
+      if (b) {
+        await ir(p, b.x + b.width * 0.15, b.y + b.height * 0.6, 500);
+        await p.mouse.down();
+        await ir(p, b.x + b.width * 0.3, b.y + b.height * 0.25, 350);
+        await ir(p, b.x + b.width * 0.45, b.y + b.height * 0.7, 350);
+        await ir(p, b.x + b.width * 0.7, b.y + b.height * 0.3, 350);
+        await ir(p, b.x + b.width * 0.85, b.y + b.height * 0.65, 300);
+        await p.mouse.up();
+      }
+      await pausa(300);
+      await tocar(p, p.getByRole('checkbox').first(), { rapido: true }); await pausa(400);
+    } },
+    // 18. /demo: el enlace (la dirección no sale en pantalla: el navegador de la grabación no muestra barra de direcciones)
+    { rol: null, url: '/es/demo', accion: async (p) => { await pausa(800); } },
+    // 19. Cierre
+    { rol: null, url: null, cierre: true },
+  ],
 };
 
-async function proformaAceptada() {
-  const lista = await apiGet(await tokenDe('demo'), '/api/proformas');
+async function proformaAceptada(rol = 'demo') {
+  const lista = await apiGet(await tokenDe(rol), '/api/proformas');
   const p = (Array.isArray(lista) ? lista : (lista.data ?? [])).find((x) => x.estado === 'aceptada');
   if (!p) throw new Error('no hay proforma aceptada');
   return p.id;
