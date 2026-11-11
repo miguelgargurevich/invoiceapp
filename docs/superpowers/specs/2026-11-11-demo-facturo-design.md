@@ -125,12 +125,20 @@ Un documento corto en `docs/demo/ENVIAR-DEMO.md` que también se publica como re
 | Fase | Qué | Ejecutor | Riesgo |
 |---|---|---|---|
 | A | Modo demo en el backend: `MODO_DEMO`, el candado completo, `POST /api/demo/entrar` y el límite diario, con pruebas por cada bloqueo | Sonnet (**hecha**, 11-nov) | alto, delicado (auth sin contraseña) |
-| B | Siembra relativa a hoy de los 3 perfiles, y el reinicio (script más botón del superadmin) | Haiku | alto, no delicado |
+| B | Siembra relativa a hoy de los 3 perfiles, y el reinicio (script más botón del superadmin) | Haiku (**hecha**, 11-nov; el botón del superadmin queda fuera) | alto, no delicado |
 | C | Frontend: página `/demo`, franja, panel «Qué probar» y marca «DEMOSTRACIÓN» en el PDF | Haiku | medio |
 | D | Recurso `facturo-demo` en Coolify: dominios, base, variable y tarea nocturna | Opus, con el OK de Miguel | producción |
 | E | Video de 2:30: guion, voces (Opus) y grabación (Haiku) | Opus y Haiku | medio |
 | F | Guía para enviar | Opus | bajo |
 
+- **Fase B (hecha el 11-nov, Haiku 5.5). Lo que cambió respecto al texto de arriba:**
+  - Los scripts viven en `apps/backend/scripts/demo/` (`sembrar-demo.js`, `reiniciar-demo.js`, `entorno-demo.sh`). La lógica, en `apps/backend/src/demo/` (`siembra.js`, `borrado.js`, `datos-ficticios.js`, `guardas.js`, `certificado.js`, `ejecutar.js`).
+  - **Beta acepta fechas pasadas** (probado con comprobantes de hace 60 y 118 días, y con una fecha futura). Por eso TODOS los comprobantes se envían de verdad a SUNAT beta y tienen CDR real. No hace falta el texto «No disponible en la demo» para el CDR. Hay 115 comprobantes aceptados por beta.
+  - **La factura rechazada es de muestra**: beta no rechazó nada de lo que se le mandó, así que el estado `RECHAZADO` se pone a mano y el mensaje lo dice. Decidir si se mantiene.
+  - Ningún comprobante sembrado cae HOY (así no gasta el límite diario). Por eso las fechas van de hace 2 a hace 118 días, en vez de «hoy».
+  - El emisor de «emprendedor» usa su RUC 10 ficticio: beta acepta MODDATOS con él. Solo «servicios» necesita `20000000001`.
+  - Los correlativos empiezan en otro millar cada día (`correlativoBase`), para no chocar con números que beta ya registró (código 1033).
+  - La demo no trae logo: queda pendiente. Lo demás de la sección 2 sí está.
 - **Paralelo:** A y C van juntas, porque tocan archivos distintos y se ponen de acuerdo por el contrato del API. B va después de A. D, cuando A, B y C estén integradas. E y F van al final.
 - **Verificación (Opus):**
   - leer cada diff;

@@ -1,5 +1,6 @@
 # Handoff — InvoiceApp
 
+> Actualizado: 2026-11-11 por claude-code (Haiku 5.5, worktree `.claude/worktrees/demo`, rama `feat/demo`, fase B de la demo: datos de ejemplo y reinicio)
 > Actualizado: 2026-11-11 por claude-code (Sonnet 5.5, worktree `.claude/worktrees/demo`, rama `feat/demo` sobre `main` cd65ec3)
 > Actualizado: 2026-11-11 por claude-code (Haiku 5.5, worktree `.claude/worktrees/demo-front`, rama `feat/demo-front`, fase C de la demo)
 > Actualizado: 2026-11-10 por claude-code (Haiku 5.5, worktree `.claude/worktrees/videos`, rama `feat/videos` sobre `main` cd65ec3)
@@ -22,6 +23,26 @@
   Suites: backend 104/104 y 47/47; frontend 35/35, `tsc` y `next build` en verde. Falta: despliegue y verificar parámetros contra la norma.
 
 ## Última sesión
+
+- 2026-11-11 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/demo`, rama `feat/demo`, sin push): **demo pública de Facturo, fase B (datos de ejemplo y reinicio)**. Diseño: `docs/superpowers/specs/2026-11-11-demo-facturo-design.md` (puntos 1 y 2, y Anexo).
+  - **Siembra** (`src/demo/siembra.js`, con `scripts/demo/sembrar-demo.js`): dos cuentas, `emprendedor@demo.facturo.example` («Bodega Don Lucho», RUC 10 ficticio, plan `pe-emprendedor`) y `servicios@demo.facturo.example` («Soluciones Andinas S.A.C.», RUC `20000000001`, plan `pe-negocio`, color `#0F766E`). Emisores BETA con MODDATOS y un certificado de prueba autofirmado que se genera al sembrar con openssl (`src/demo/certificado.js`), en una carpeta temporal que se borra: nada de llaves en el repo ni en la base en claro. La contraseña de las cuentas es aleatoria y no se imprime (entra por `/api/demo/entrar`).
+  - **Conteos de la siembra real** (11-nov, SUNAT beta): «emprendedor» 8 clientes, 7 productos, 0 proformas, 79 comprobantes (73 boletas, 5 facturas, 1 nota de crédito). «servicios» 5 clientes, 4 productos, 4 proformas (pendiente, aceptada, rechazada, vencida), 37 comprobantes (34 facturas, 1 rechazada de muestra, 1 nota de crédito, 1 nota de débito); incluye una factura con detracción (`037`) y otra a crédito en dos cuotas. Hay una solicitud de firma PENDIENTE y vigente sobre la proforma pendiente.
+  - **SUNAT beta: todo se envía de verdad.** 115 comprobantes aceptados (79 + 36), cada uno con XML y CDR reales. Probé que beta acepta fechas de hace 60 y 118 días, así que no hizo falta marcar nada como «histórico de ejemplo». Las fechas van de hace 118 a hace 2 días en hora de Lima; nada cae hoy, así que no gasta el límite diario de 30.
+  - **Reinicio**: `src/demo/borrado.js` borra solo las dos cuentas y sus empresas, en orden de claves foráneas; no toca planes, `configuracion_sitio` ni otras cuentas. `scripts/demo/reiniciar-demo.js` (`npm run demo:reiniciar`) = borrar + sembrar. Idempotente: la prueba corre dos reinicios y compara conteos.
+  - **Arranque**: `scripts/arranque-produccion.sh` corre `sembrar-demo.js --si-falta` solo con `MODO_DEMO=si`, después de planes y datos legales. Si la siembra falla, la API arranca igual y el reinicio nocturno lo reintenta. «Demo completa» = las dos cuentas + la solicitud pendiente (así una siembra cortada a medias se rehace).
+  - **Guardas** (`src/demo/guardas.js`): sin `MODO_DEMO=si` la siembra aborta. En local (`NODE_ENV` distinto de `production`) la base debe empezar con `invoiceapp_demo` o `invoiceapp_test`.
+  - **Entorno local**: `scripts/demo/entorno-demo.sh` (`source` desde `apps/backend`): base `invoiceapp_demo` en el Postgres del compose (5435), secretos generados en `.claude/demo/entorno.env` (ignorado por git). No se tocó `invoiceapp` ni `invoiceapp_videos`.
+  - Suites: `npm test` 175/175 (eran 165); `npm run test:db` 157/157 con `TEST_DATABASE_URL=…/invoiceapp_test_demo` (eran 147). Mutación: quitar la guarda de `MODO_DEMO` en `sembrarDemo` → fallan las 2 pruebas de aborto; restaurado con `cp` + `cmp`.
+  - **Decisiones y gotchas**:
+    - La factura **rechazada** es de MUESTRA, no un rechazo real de SUNAT. Beta aceptó todo lo que probé: un cliente con RUC de dígito verificador incorrecto, una nota de crédito sobre un comprobante que SUNAT no conoce y una factura con fecha futura. Por eso se marca `RECHAZADO` a mano, con código `2800` (el mismo que usan las pruebas de estados) y un mensaje que dice «de ejemplo de la demostración». Decidir si se mantiene.
+    - **Correlativos**: cada día de siembra empieza en otro millar (`correlativoBase`: días desde 2026-01-01 × 1000; hoy 314000). Así una siembra en otro día no repite números que beta ya registró para el mismo RUC (código 1033).
+    - **RUC 10 en beta**: el emisor de «emprendedor» NO necesita `20000000001`; beta aceptó sus boletas con MODDATOS.
+    - **Experimentos**: en beta quedaron facturas de prueba con serie `F001` (números 36 a 39) y `FC01-2` del RUC `20000000001`. Son de pruebas, sin valor legal.
+    - **Logo**: la demo NO trae logo (subirlo sería guardar un archivo de terceros). Queda pendiente.
+    - **Dockerfile**: ya instala openssl; no se cambió.
+    - El botón «Reiniciar demo» del superadmin queda fuera de esta fase. La tarea nocturna de Coolify (fase D) correrá `npm run demo:reiniciar`.
+  - **NO verificado**: el contenedor de la demo (no se levantó Docker con `MODO_DEMO=si`); el arranque con la siembra dentro del contenedor; el reinicio nocturno real; `GET /api/demo/estado` por HTTP con estos datos (la prueba consulta la misma lógica, pero no pasa por HTTP); el aspecto en el navegador.
+  - Próximos pasos: fase D (recurso `facturo-demo` en Coolify, dominios, base, `MODO_DEMO=si` y la tarea nocturna `npm run demo:reiniciar`) con OK de Miguel. Antes: decidir la factura de muestra y el logo.
 
 - 2026-11-11 (Claude Code con Sonnet 5.5, worktree `.claude/worktrees/demo`, rama `feat/demo`, sin push): **demo pública de Facturo, fase A (backend)**. Diseño y contrato con el frontend: `docs/superpowers/specs/2026-11-11-demo-facturo-design.md` (Anexo). El frontend (fase C) va en otro worktree; esta sesión no tocó `apps/frontend`.
   - **Interruptor:** `src/demo/modo.js` → `esDemo()` lee `process.env.MODO_DEMO === 'si'` en cada llamada. Sin la variable no existe ninguna ruta nueva (404) ni se aplica ningún bloqueo; hay pruebas explícitas (registro, emisor en producción, certificado, cambio de plan, Culqi, subidas y límite diario siguen igual).
