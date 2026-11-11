@@ -9,7 +9,7 @@ import { Header } from './Header';
 import { CommandPalette } from './CommandPalette';
 import { cn } from '@/lib/utils';
 import { useModoDemo } from '@/lib/hooks/useModoDemo';
-import { perfilDeCuenta } from '@/lib/demo';
+import { perfilParaPanel } from '@/lib/demo';
 import { FranjaDemo } from '@/components/demo/FranjaDemo';
 import { PanelQueProbar } from '@/components/demo/PanelQueProbar';
 
@@ -36,8 +36,8 @@ export function AppLayout({ children }: AppLayoutProps) {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
 
   // Demo (MODO_DEMO): franja arriba y panel «Qué probar». Sin demo, ni se pinta ni cambia el diseño.
-  const { esDemo } = useModoDemo();
-  const perfilDemo = esDemo ? perfilDeCuenta(user?.email) : null;
+  const { esDemo, estado } = useModoDemo();
+  const perfilDemo = perfilParaPanel(estado, user?.email);
   // Abierto por defecto en escritorio; en el celular empieza cerrado para no tapar la pantalla.
   const [panelAbierto, setPanelAbierto] = useState(false);
   useEffect(() => {

@@ -13,6 +13,7 @@ import {
   validarWhatsappDemo,
   esDemo,
   mensajeEntrarDemo,
+  perfilParaPanel,
   type AlmacenLocal,
 } from './demo.ts';
 
@@ -196,4 +197,11 @@ test('mensajeEntrarDemo: 503 y 429 en español, otro error con mensaje genérico
   assert.match(mensajeEntrarDemo(503), /no está disponible/);
   assert.match(mensajeEntrarDemo(429), /demasiados intentos/);
   assert.match(mensajeEntrarDemo(500), /No pudimos abrir la demo/);
+});
+
+test('sin MODO_DEMO no hay panel ni perfil, aunque el correo sea de una cuenta de demo', () => {
+  const correo = 'emprendedor@demo.facturo.example';
+  assert.equal(perfilParaPanel(null, correo), null);
+  assert.equal(perfilParaPanel(interpretarEstado(estadoValido), correo), 'emprendedor');
+  assert.equal(perfilParaPanel(interpretarEstado(estadoValido), 'otro@gmail.com'), null);
 });

@@ -94,6 +94,12 @@ export function detectarBloqueoDemo(cuerpo: unknown): BloqueoDemo | null {
   return { codigo: CODIGO_BLOQUEADO, mensaje: mensajeDelServidor ?? 'Esta función no está disponible en la demo.' };
 }
 
+/** Perfil del panel «Qué probar»: solo con demo activa y una cuenta de demo. Sin demo, nunca hay panel. */
+export function perfilParaPanel(estado: EstadoDemo | null, email: string | null | undefined): PerfilEntrar | null {
+  if (!esDemo(estado)) return null;
+  return perfilDeCuenta(email);
+}
+
 /** Mensaje de la pantalla /demo cuando no se puede entrar. */
 export function mensajeEntrarDemo(estado: number): string {
   if (estado === 503) return 'La demo no está disponible en este momento. Vuelve a intentarlo en unos minutos.';
