@@ -1,5 +1,6 @@
 # Handoff — InvoiceApp
 
+> Actualizado: 2026-11-10 por claude-code (Haiku 5.5, worktree `.claude/worktrees/instalar-web`, rama `feat/instalar-web` sobre `main` 4f91050)
 > Actualizado: 2026-11-10 por claude-code (Haiku 5.5, worktree `.claude/worktrees/app-movil`, rama `feat/app-movil` sobre `main` 48d9973)
 > Actualizado: 2026-11-07 por claude-code (Opus 5.5, orquestó; construyeron DeepSeek V4.1 Flash y Nemotron 3.5 Super VL vía OpenCode Zen)
 > Actualizado: 2026-11-04 por claude-code (Sonnet 5.5)
@@ -18,6 +19,17 @@
   Suites: backend 104/104 y 47/47; frontend 35/35, `tsc` y `next build` en verde. Falta: despliegue y verificar parámetros contra la norma.
 
 ## Última sesión
+
+- 2026-11-10 (Claude Code con Haiku 5.5, worktree `.claude/worktrees/instalar-web`, rama `feat/instalar-web` sobre `main` 4f91050, sin push): **«Instalar en tu celular» desde el landing (PWA, sin tiendas)**. Pedido de Miguel: «que se puedan descargar desde la landing»; eligió instalar la web, no la app de tienda.
+  - Lógica pura `lib/instalar.ts` (`decidirInstalacion`): con evento `beforeinstallprompt` → botón que llama a `prompt()` (Android, Chrome, Edge); iPhone o iPad con Safari → pasos «Compartir → Agregar a pantalla de inicio»; iPhone con Chrome, Firefox o Edge → «abre esta página en Safari»; instalada, app nativa (`FacturoApp`) o escritorio sin evento → nada. Pruebas en `lib/instalar.test.ts` (10). Mutación: quitar `aplicacionNativa` deja 1 prueba en rojo; restaurado con `cp` + `cmp`.
+  - Hook `lib/hooks/useInstalacion.ts`: captura el evento una vez por carga (módulo compartido) y decide después de montar. El servidor y el primer render no muestran nada.
+  - Sección `#instalar` (`components/landing/InstalarSection.tsx`), entre Precios y Preguntas: va después de los planes porque instalar sirve sobre todo a quien ya tiene cuenta. Ítem «Instalar app» solo en el menú móvil (`LandingHeader`), con la misma decisión; apunta a `#instalar`.
+  - Service worker mínimo `public/sw.js`: un handler de `fetch` que pasa cada petición a la red (no cachea nada, no toca navegaciones). Hace falta porque Chrome sigue exigiendo un `fetch` real para `beforeinstallprompt` (los handlers vacíos no cuentan; fuente: blog de Chrome «Revisiting Chrome's installability criteria»). Se registra en `/sw.js` solo en el navegador y fuera de la app nativa.
+  - Manifest: `start_url` pasa de `/` a `/es/dashboard`. Razón: quien instala ya tiene cuenta; el dashboard lo deja entrar y sin sesión lo manda a login. Antes `/` pasaba por dos redirecciones (`/` → `/es` → `/es/landing`). Ícono `purpose: maskable` nuevo `public/marca/icon-maskable-512.png`: `icon-512.png` llega casi a los bordes y se recortaría con la máscara; la versión nueva pone el mismo logo al 52 % sobre `#6B2C6E`.
+  - Textos en `messages/es.json` (`landing.instalar`, `landing.nav.instalar`), con tuteo.
+  - iPhone con Chrome: la prensa de 2023 dice que iOS 16.4 y posteriores permiten «Agregar a inicio» también desde Chrome y Edge. No es documentación oficial de Apple, así que las instrucciones siguen mandando a Safari. Confirmar antes de cambiarlo.
+  - Verificación: `npm test` 131/131, `npx tsc --noEmit` exit 0. NO verificado: el aspecto en el navegador, la instalación real en Android y en el simulador de iPhone, y `next build` (lo corre Opus).
+  - Gotcha: `Share` de lucide-react existe (el ícono de Compartir de iOS); `Share2` es otro.
 
 - 2026-11-10 (Claude Code con Opus 5.5, revisión de `feat/app-movil`): **app probada en Android e iOS**.
   - Android (emulador propio, API 34): portada, menú, login, botón Atrás y pantalla «Sin conexión» con modo avión. Arreglado: el logo de esa pantalla (ruta relativa con `server.url` no carga sin red; ahora el SVG va en línea).
