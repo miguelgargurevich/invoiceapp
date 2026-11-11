@@ -50,7 +50,7 @@ Reglas de los textos:
 | 4 | Detalle de la boleta aceptada | Y tu cliente recibe un comprobante válido ante SUNAT. |
 | 5 | Cierre | Facturo. Tus comprobantes electrónicos, en minutos. |
 
-## f4. Recorrido de la demo (≈ 2:06, escritorio y celular)
+## f4. Recorrido de la demo (2:06 real: montaje de 126,3 s, escritorio y celular)
 
 Se graba contra la **demo pública** (https://demo.facturo.gargurevich.dev), no contra la app local. Voz «Dora», una por escena (`.claude/videos/f4/voz/e<N>.wav`).
 
@@ -87,7 +87,10 @@ Todo local, sobre la base de videos (`invoiceapp_videos`); nada de producción. 
 3. **Servicios.** `scripts/marketing/arrancar-facturo.sh backend` (API en 4001) y `scripts/marketing/arrancar-facturo.sh frontend` (Next en modo desarrollo, 3000). `estado` y `parar` para revisar o cerrar. `next build` falla al pre-generar páginas en este worktree («Cannot read properties of null (reading 'useContext')»), por eso se graba en desarrollo.
 4. **Datos.** `node scripts/marketing/sembrar-videos.js`: idempotente. Entra por la API (registro, emisor con certificado de prueba cifrado por el backend, clientes, productos, comprobantes) y envía los comprobantes a SUNAT beta (usuario MODDATOS). Cuentas, solo local: `demo@facturo.example` (empresa «Comercial Ejemplo S.A.C.», plan pe-negocio, configurada) y `nuevo@facturo.example` (sin configurar, para el asistente de f2). Clave de prueba en el script, dominio `.example`.
 5. **Voces.** `.claude/videos/<f>/voz/e<N>.wav`, una por escena (voz «Dora», Kokoro `ef_dora`). La duración de cada escena la manda su audio. No se regeneran ni se cambian los textos.
-6. **Grabación.** `node scripts/marketing/grabar-video.mjs <f1|f2|f3> <escritorio|celular>` (Playwright, un navegador a la vez; f3 es solo celular). Ventanas 1600×900 y 540×960, tema claro, cursor berenjena `#6B2C6E`. Cada escena empieza cuando la pantalla ya está lista (`recortes.json`); las acciones que tardan van en `antes`, fuera de cámara.
+6. **Grabación.** `node scripts/marketing/grabar-video.mjs <f1|f2|f3|f4> <escritorio|celular>` (Playwright, un navegador a la vez; f3 es solo celular).
+   - **f4 se graba contra la demo pública** (`https://demo.facturo.gargurevich.dev`, API `https://api.demo.facturo.gargurevich.dev`), no contra la app local. El script se niega a correr f4 contra otra dirección. Entra con `POST /api/demo/entrar` (sin contraseña) y guarda el token en `.claude/videos/sesiones/demo-<perfil>.json`.
+   - **Límites de la demo al grabar.** La API limita por IP: 300 peticiones cada 15 min en general y 50 en `/api/auth/me` (el navegador la llama al cargar cada página). Una corrida completa de f4 gasta casi todo el cupo de `auth/me`: graba **una corrida por ventana de 15 min**, nunca dos seguidas. Si aparece un 429, espera la ventana antes de reintentar.
+   - **Emisión (f4, escena 7).** Una boleta por toma, emitida fuera de cámara. `SIN_EMISION=1` no emite: ensayo sin gastar cupo de la demo (usa una boleta ya aceptada). Ventanas 1600×900 y 540×960, tema claro, cursor berenjena `#6B2C6E`. Cada escena empieza cuando la pantalla ya está lista (`recortes.json`); las acciones que tardan van en `antes`, fuera de cámara.
 7. **Montaje.** `scripts/marketing/montar-video.sh <f> <formato>` (ffmpeg, H.264 + AAC) → `.claude/videos/<f>/facturo-<f>-<formato>.mp4`, 1920×1080 o 1080×1920. Cierre: logo de Facturo sobre berenjena, «facturo.gargurevich.dev».
 8. **Revisión.** `python3 scripts/marketing/revisar-video.py <f> <formato>`: cuadros a 1 por segundo, hoja de contacto `.claude/videos/<f>/hoja-<formato>.png` y OCR con `tesseract -l spa`. Sale con código 1 si aparece `gargurevich`, `miguel`, `10409241862` o `gmail`. El dominio del cierre (`facturo.gargurevich.dev`) se quita del texto antes de buscar: lo pide el guion.
 
@@ -101,3 +104,14 @@ Todo local, sobre la base de videos (`invoiceapp_videos`); nada de producción. 
 - **Cifras de la portada.** La landing trae cifras de ejemplo en su vista previa («126», «S/ 18,450.00», «98 %») que no salen de la base de videos.
 - **Asistente oscuro.** La pantalla «¡Bienvenido…!» de `/es/setup` es oscura por diseño de la app; no sigue el tema claro de la grabación.
 - **Numeración.** Cada grabación de f2 (escena 7) manda una factura nueva a SUNAT beta; por eso la serie F001 sigue avanzando. Las facturas de prueba son ficticias, pero quedan registradas en SUNAT beta.
+
+### Decisiones y límites de f4 (11-nov-2026)
+
+- **Lo que no sale como dice el guion.**
+  - Escena 18: la dirección `demo.facturo.gargurevich.dev` no aparece en pantalla (la grabación no muestra barra de direcciones y la página no la imprime). La voz dice «el enlace que ves en pantalla».
+  - Escena 11: va directo al comprobante rechazado de muestra, no pasa por el botón «Requieren atención».
+  - Escena 17: se dibuja la firma y se marca el consentimiento; «Enviar Firma» NO se pulsa. La voz dice «la proforma queda aceptada», y el clip no lo muestra.
+  - Escenas 7 y 8: el PDF se abre en otra pestaña, que la grabación no captura.
+- **Lo que no se toca en la demo.** Escena 12 (factura con detracción y crédito): se elige, no se envía. Escena 14: se señala «Convertir a Factura», no se pulsa. Escena 15: se señala el bloque «Color de tu marca», no se elige color ni se guarda.
+- **Demo compartida.** Una boleta por formato (escena 7). Los datos se reinician cada noche a las 3:00 (Lima); puede haber otras personas usándola.
+- **Panel «Qué probar».** En celular se cierra al final de la escena 5. En escritorio, la app lo muestra abierto también en la escena 7: es comportamiento de la app, no de la grabación.
