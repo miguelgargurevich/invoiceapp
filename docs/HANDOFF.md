@@ -1,3 +1,9 @@
+## 2026-11-12 — Sin auto-zoom de iOS al escribir en un campo (Claude Code, Opus 5.5) — push: NO (commit local)
+
+**Qué (Miguel, desde las apps del iPhone: «se hace zoom al escribir en un input pero no se regresa a la vista normal»):** iOS (Safari y el WebView de la app) acerca la vista al enfocar un campo con letra < 16 px y no la devuelve. Regla en el CSS global: `@media (hover: none) and (pointer: coarse)` → `input` (salvo casillas, radio, rango, color, archivo), `textarea`, `select` y `[contenteditable]` a `font-size: max(16px, 1em) !important`. La computadora no cambia; NO se usa `maximum-scale` (el pellizco sigue). Mismo cambio en My Workspace, Torre, Facturo y el Portal de dealers. Llega a las apps al desplegar la web, sin reinstalar.
+
+**Pruebas:** prueba de fuente que fija la regla (y que el viewport no bloquea el zoom), en rojo al cambiar la regla a 14 px. **Sin verificar:** en un iPhone real después del deploy; cómo se ve cada formulario con la letra a 16 px en el teléfono.
+
 # Handoff — InvoiceApp
 
 > Actualizado: 2026-11-11 por claude-code (Haiku 5.5, worktree `.claude/worktrees/demo`, rama `feat/demo`, fase B de la demo: datos de ejemplo y reinicio)

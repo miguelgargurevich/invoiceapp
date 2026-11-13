@@ -150,3 +150,16 @@ body {
     @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors;
   }
 }
+
+/* Sin auto-zoom de iOS al escribir (2026-11-12, Miguel: «se hace zoom al escribir en un input pero no se regresa a la vista normal»).
+   iOS (Safari y el WebView de la app) acerca la vista al enfocar un campo con letra menor a 16 px y no la devuelve. En pantallas
+   TÁCTILES los campos van a 16 px como mínimo; la computadora no cambia y el pellizco para acercar sigue funcionando (no se usa
+   `maximum-scale`). `!important` porque las clases de tamaño de los componentes (p. ej. `text-sm`) ganarían a un selector de etiqueta. */
+@media (hover: none) and (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]),
+  textarea,
+  select,
+  [contenteditable="true"] {
+    font-size: max(16px, 1em) !important;
+  }
+}
