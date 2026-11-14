@@ -1,3 +1,9 @@
+## 2026-11-14 — Login sin desplazamiento: publicado (Claude Code, Opus 5.5)
+
+- Subido (fdcfbf7) y desplegado en Coolify (app «facturo»). Verificado en `https://facturo.gargurevich.dev/es/login` con 360×590: el documento mide lo mismo que la ventana, el último control termina en 545 y ya no aparece «Bienvenido de nuevo». La entrada de abajo lleva la fecha 13-nov por el reloj del entorno.
+- **Sin verificar:** el teléfono en horizontal (las reglas son `max-sm:`, < 640 px de ancho).
+- Comparación hecha el mismo día: los logins de My Workspace, Torre y el Portal ya entraban sin desplazarse con 360×590.
+
 ## 2026-11-13 — Login de Facturo sin desplazamiento en el celular (Claude Code, Haiku 5.5, worktree `.claude/worktrees/login-sin-scroll`, rama `fix/login-sin-scroll` sobre `main` c5db014) — push: NO (commit local)
 
 **Qué (Miguel: «en el login de facturo ... hay que hacer scroll ... quita el texto de bienvenido ... no hacer scroll en el login»):** se quitaron «Bienvenido de nuevo 👋» y «Ingresa tus credenciales para acceder al sistema» (en todas las pantallas) y sus claves en `messages/es.json` y `en.json`. En el celular (`max-sm:`, menos de 640 px de ancho) el login se compacta: logo de 56 px, bajada «Gestiona tus facturas…» oculta, menos relleno en la barra, la tarjeta, los campos, el botón y el pie; alto `min-h-dvh` (no 100vh, que en Safari deja una franja de más). Los campos siguen en 16 px. No se usó `overflow-hidden`. En la computadora solo cambia la bienvenida.
