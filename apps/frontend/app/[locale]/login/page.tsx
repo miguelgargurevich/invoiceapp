@@ -11,7 +11,7 @@ import { motion } from 'framer-motion';
 import { 
   Eye, EyeOff, Mail, Lock, Moon, Sun,
   ArrowLeft, FileText, Calculator, FileCheck, KeyRound, CheckCircle2,
-  Hand, Coffee
+  Coffee
 } from 'lucide-react';
 import { IconoFacturo } from '@/components/marca/LogoFacturo';
 import { useAuth } from '@/contexts/AuthContext';
@@ -100,7 +100,7 @@ export default function LoginPage({
   }
 
   return (
-    <div className="min-h-screen flex bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen max-sm:min-h-dvh flex bg-slate-50 dark:bg-slate-900">
       {/* Left side - Enhanced Branding */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         {/* Gradient Background */}
@@ -177,7 +177,7 @@ export default function LoginPage({
       {/* Right side - Login form */}
       <div className="flex-1 flex flex-col">
         {/* Top bar */}
-        <div className="p-4 flex items-center justify-between">
+        <div className="p-4 max-sm:py-2 flex items-center justify-between">
           <Link
             href={`/${locale}`}
             className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors group"
@@ -203,7 +203,7 @@ export default function LoginPage({
         </div>
 
         {/* Form container */}
-        <div className="flex-1 flex items-center justify-center p-6 sm:p-8">
+        <div className="flex-1 flex items-center justify-center p-6 max-sm:px-4 max-sm:py-2 sm:p-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -211,32 +211,22 @@ export default function LoginPage({
             className="w-full max-w-md"
           >
             {/* Mobile branding */}
-            <div className="lg:hidden text-center mb-8">
+            <div className="lg:hidden text-center mb-8 max-sm:mb-4">
               <Link href={`/${locale}`} className="inline-flex flex-col items-center">
-                <div className="w-16 h-16 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg flex items-center justify-center p-2.5 mb-3">
+                <div className="w-16 h-16 max-sm:w-14 max-sm:h-14 max-sm:p-1 max-sm:mb-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg flex items-center justify-center p-2.5 mb-3">
                   <IconoFacturo tamano={48} />
                 </div>
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+                <h1 className="text-2xl max-sm:text-xl font-bold text-slate-900 dark:text-white">
                   Facturo
                 </h1>
               </Link>
-              <p className="text-slate-500 dark:text-slate-400 mt-1">
+              <p className="max-sm:hidden text-slate-500 dark:text-slate-400 mt-1">
                 {t('tagline')}
               </p>
             </div>
 
             {/* Card */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-700 p-8">
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                  {t('welcomeBack')}
-                  <Hand className="w-7 h-7 text-primary-500" />
-                </h2>
-                <p className="mt-2 text-slate-500 dark:text-slate-400">
-                  {t('signInDescription')}
-                </p>
-              </div>
-
+            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-700 p-8 max-sm:p-5">
               {error && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
@@ -250,7 +240,7 @@ export default function LoginPage({
                 </motion.div>
               )}
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 max-sm:space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                     {t('email')}
@@ -262,7 +252,7 @@ export default function LoginPage({
                       type="email"
                       placeholder={t('emailPlaceholder')}
                       className={cn(
-                        'w-full pl-12 pr-4 py-3.5 rounded-xl border-2 transition-all',
+                        'w-full pl-12 pr-4 py-3.5 max-sm:py-3 rounded-xl border-2 transition-all',
                         'bg-slate-50 dark:bg-slate-900',
                         'text-slate-900 dark:text-white',
                         'placeholder-slate-400 dark:placeholder-slate-500',
@@ -292,7 +282,7 @@ export default function LoginPage({
                       type={showPassword ? 'text' : 'password'}
                       placeholder={t('passwordPlaceholder')}
                       className={cn(
-                        'w-full pl-12 pr-12 py-3.5 rounded-xl border-2 transition-all',
+                        'w-full pl-12 pr-12 py-3.5 max-sm:py-3 rounded-xl border-2 transition-all',
                         'bg-slate-50 dark:bg-slate-900',
                         'text-slate-900 dark:text-white',
                         'placeholder-slate-400 dark:placeholder-slate-500',
@@ -342,7 +332,7 @@ export default function LoginPage({
 
                 <Button
                   type="submit"
-                  className="w-full py-3.5 text-base font-semibold rounded-xl shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all"
+                  className="w-full py-3.5 max-sm:py-3 text-base font-semibold rounded-xl shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 transition-all"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -359,7 +349,7 @@ export default function LoginPage({
                 </Button>
               </form>
 
-              <div className="mt-6 text-center">
+              <div className="mt-6 max-sm:mt-4 text-center">
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                   {t('noAccount')}{' '}
                   <Link
@@ -373,7 +363,7 @@ export default function LoginPage({
             </div>
 
             {/* Legal Links */}
-            <div className="mt-6 flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-slate-400 dark:text-slate-500">
+            <div className="mt-6 max-sm:mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-slate-400 dark:text-slate-500">
               <Link href={`/${locale}/terms`} className="hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
                 Términos
               </Link>
@@ -387,7 +377,7 @@ export default function LoginPage({
 
             {/* Footer credit */}
             {creditos && (
-              <div className="mt-4 text-center">
+              <div className="mt-4 max-sm:mt-2 text-center">
                 <p className="inline-flex items-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
                   <Coffee className="w-3.5 h-3.5" aria-hidden="true" />
                   {creditos}

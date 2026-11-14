@@ -1,3 +1,19 @@
+## 2026-11-13 — Login de Facturo sin desplazamiento en el celular (Claude Code, Haiku 5.5, worktree `.claude/worktrees/login-sin-scroll`, rama `fix/login-sin-scroll` sobre `main` c5db014) — push: NO (commit local)
+
+**Qué (Miguel: «en el login de facturo ... hay que hacer scroll ... quita el texto de bienvenido ... no hacer scroll en el login»):** se quitaron «Bienvenido de nuevo 👋» y «Ingresa tus credenciales para acceder al sistema» (en todas las pantallas) y sus claves en `messages/es.json` y `en.json`. En el celular (`max-sm:`, menos de 640 px de ancho) el login se compacta: logo de 56 px, bajada «Gestiona tus facturas…» oculta, menos relleno en la barra, la tarjeta, los campos, el botón y el pie; alto `min-h-dvh` (no 100vh, que en Safari deja una franja de más). Los campos siguen en 16 px. No se usó `overflow-hidden`. En la computadora solo cambia la bienvenida.
+
+**Medido** (`next start` de producción, Chrome headless con emulación móvil, `scripts` fuera del repo): 360×590 → documento de 590 px = ventana, último contenido (pie legal) en 539 px, «Registrarse» en 491. 393×759 → 759 = ventana, contenido en 624. 320×568 → 528. 360×740 → 614. Antes (servidor de desarrollo, misma medición): 779 px de alto con ventana de 590 y «Registrarse» en 693. La línea base de producción (814/821 px) la midió Opus antes; no la repetí en este entorno.
+
+**Pruebas:** `lib/loginCompacto.test.ts` (4 pruebas: sin bienvenida en la página, claves fuera de los mensajes, reglas `max-sm:` de cada pieza, sin `overflow-hidden` en la raíz ni en la zona del formulario). `npm test` 158/158; `npx tsc --noEmit` sin errores; `npx next build` compila. Mutaciones en rojo: bienvenida de vuelta en la página (comillas dobles), clave `welcomeBack` en `es.json`, `overflow-hidden` en la zona del formulario; cada una restaurada con `cp` + `cmp`.
+
+**Decisiones:** la compactación va con variantes de Tailwind dentro de `page.tsx` y no en `globals.css` (fuera de los archivos permitidos). Solo cubre ancho menor de 640 px: el celular en horizontal (p. ej. 844×390) no está cubierto y puede volver a desplazarse.
+
+**Gotchas:** `scrollHeight` nunca baja de la altura de la ventana, así que no sirve para saber si el contenido cabe: hay que medir el borde inferior de los textos y controles.
+
+**NO verificado:** en un iPhone o Android real (la barra de Safari y `dvh`); cómo se ve dentro de la app Capacitor (`mobile/`); la línea base de producción con este mismo entorno.
+
+**Próximos pasos:** Miguel revisa en el teléfono. Con su OK, push de `fix/login-sin-scroll`. Las otras apps no se tocaron (ya entraban sin desplazarse).
+
 ## 2026-11-12 — Sin auto-zoom de iOS al escribir en un campo (Claude Code, Opus 5.5) — push: NO (commit local)
 
 **Qué (Miguel, desde las apps del iPhone: «se hace zoom al escribir en un input pero no se regresa a la vista normal»):** iOS (Safari y el WebView de la app) acerca la vista al enfocar un campo con letra < 16 px y no la devuelve. Regla en el CSS global: `@media (hover: none) and (pointer: coarse)` → `input` (salvo casillas, radio, rango, color, archivo), `textarea`, `select` y `[contenteditable]` a `font-size: max(16px, 1em) !important`. La computadora no cambia; NO se usa `maximum-scale` (el pellizco sigue). Mismo cambio en My Workspace, Torre, Facturo y el Portal de dealers. Llega a las apps al desplegar la web, sin reinstalar.
