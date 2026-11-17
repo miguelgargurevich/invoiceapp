@@ -58,6 +58,8 @@ model UserProfile {
   updatedAt    DateTime  @updatedAt @map("updated_at")
 
   empresa      Empresa?
+  dispositivosPush   DispositivoPush[]
+  avisosPushEnviados AvisoPushEnviado[]
 
   @@map("user_profiles")
 }
@@ -100,6 +102,7 @@ model Empresa {
   subscription    Subscription?
   emisorSunat     EmisorSunat?
   procesosSunat   ProcesoSunat[]
+  dispositivosPush DispositivoPush[]
   
   @@index([userId], map: "idx_empresa_user_id")
   @@map("empresas")
@@ -810,4 +813,45 @@ model ConfiguracionSitio {
   updatedAt        DateTime @updatedAt @map("updated_at")
 
   @@map("configuracion_sitio")
+}
+
+// 🔔 Avisos push (FCM para la app de Android/iPhone, Web Push para el navegador). Ver docs/push/README.md.
+// Un token (o la URL de la suscripción web) pertenece a UN dispositivo y a la última sesión que lo registró:
+// registrar el mismo token con otro usuario lo reasigna. Si se borra el usuario o la empresa, se borran sus dispositivos.
+model DispositivoPush {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  empresaId   String   @map("empresa_id")
+  // 'fcm' (app nativa) o 'webpush' (navegador).
+  tipo        String
+  // 'android', 'ios' o 'web'.
+  plataforma  String
+  // fcm: el token de registro de Firebase. webpush: la URL (endpoint) de la suscripción. Es un dato de acceso: nunca a un log.
+  token       String   @unique
+  // Solo webpush: las claves públicas de la suscripción.
+  p256dh      String?
+  auth        String?
+  creadoAt    DateTime @default(now()) @map("creado_at")
+  ultimoUsoAt DateTime @default(now()) @map("ultimo_uso_at")
+
+  user        UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+  empresa     Empresa     @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+
+  @@index([userId], map: "idx_dispositivo_push_user_id")
+  @@index([empresaId], map: "idx_dispositivo_push_empresa_id")
+  @@map("dispositivos_push")
+}
+
+// Un aviso ya enviado (o reservado para enviarse) a un usuario: la clave única (usuario + clave) evita repetirlo.
+model AvisoPushEnviado {
+  id       String   @id @default(uuid())
+  userId   String   @map("user_id")
+  // p. ej. «firma:<solicitud>», «sunat-rechazo:<comprobante>», «vencidas:<empresa>:2026-11-17».
+  clave    String
+  creadoAt DateTime @default(now()) @map("creado_at")
+
+  user     UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, clave], map: "uq_aviso_push_usuario_clave")
+  @@map("avisos_push_enviados")
 }
