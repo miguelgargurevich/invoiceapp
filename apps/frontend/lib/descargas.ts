@@ -23,7 +23,14 @@ declare global {
   interface Window {
     Capacitor?: {
       isNativePlatform?: () => boolean;
+      /** `android` | `ios` | `web`. */
+      getPlatform?: () => string;
       Plugins?: Record<string, unknown>;
+      /** Del puente nativo que inyecta la app: llamar a un plugin por nombre sin empaquetar `@capacitor/core` (ver lib/push/app.ts). */
+      nativePromise?: (plugin: string, metodo: string, opciones?: unknown) => Promise<unknown>;
+      addListener?: (plugin: string, evento: string, fn: (datos: any) => void) => unknown;
+      /** Los plugins nativos que trae esta app. */
+      PluginHeaders?: { name: string }[];
     };
   }
 }

@@ -9,6 +9,7 @@ import { LoadingPage } from '@/components/common';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import api, { ApiError } from '@/lib/api';
+import PushIniciador from '@/components/push/PushIniciador';
 
 interface EmpresaResponse {
   setupCompleted?: boolean;
@@ -64,6 +65,7 @@ export default function DashboardLayout({
   return (
     <SubscriptionProvider>
       <TemaMarca />
+      <PushIniciador />
       <AppLayout>{children}</AppLayout>
     </SubscriptionProvider>
   );

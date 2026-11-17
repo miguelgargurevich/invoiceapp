@@ -2255,5 +2255,14 @@
       "agenteRetencion": "Withholding agent",
       "tiposDoc": { "RUC": "RUC", "DNI": "DNI", "CE": "Foreigner ID (CE)", "PASAPORTE": "Passport", "OTHER": "No document / foreign" }
     }
+  },
+  "push": {
+    "titulo": "Alerts on your device",
+    "recibirEnNavegador": "Get alerts in this browser",
+    "descripcion": "We alert you when a client signs, SUNAT rejects a document, or you have overdue invoices.",
+    "bloqueado": "Alerts are blocked in this browser. Allow them from the padlock next to the address and try again.",
+    "activado": "Done: you will get alerts in this browser.",
+    "desactivado": "You will no longer get alerts in this browser.",
+    "error": "The option could not be changed. Try again."
   }
 }

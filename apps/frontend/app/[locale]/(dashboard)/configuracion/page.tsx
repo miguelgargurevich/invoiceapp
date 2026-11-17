@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils';
 import api, { ApiError } from '@/lib/api';
 import SignatureCanvas from '@/components/signature/SignatureCanvas';
 import SubscriptionTab from '@/components/settings/SubscriptionTab';
+import AvisosPush from '@/components/settings/AvisosPush';
 import { useModoDemo } from '@/lib/hooks/useModoDemo';
 import { TEXTO_NO_DISPONIBLE_DEMO } from '@/lib/demo';
 import { ColorMarca } from '@/components/settings/ColorMarca';
@@ -1037,6 +1038,9 @@ export default function ConfiguracionPage({
               </div>
 
               <div className="space-y-6 mt-6">
+                {/* Avisos push en este navegador (no aparece dentro de la app ni donde el navegador no puede) */}
+                <AvisosPush />
+
                 {/* Email Notifications */}
                 <div>
                   <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">

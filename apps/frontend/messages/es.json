@@ -2324,5 +2324,14 @@
       "agenteRetencion": "Agente de retención",
       "tiposDoc": { "RUC": "RUC", "DNI": "DNI", "CE": "Carné de extranjería", "PASAPORTE": "Pasaporte", "OTHER": "Sin documento / del exterior" }
     }
+  },
+  "push": {
+    "titulo": "Avisos en tu dispositivo",
+    "recibirEnNavegador": "Recibir avisos en este navegador",
+    "descripcion": "Te avisamos cuando un cliente firma, SUNAT rechaza un comprobante o tienes facturas vencidas.",
+    "bloqueado": "Los avisos están bloqueados en este navegador. Actívalos desde el candado junto a la dirección y vuelve a intentarlo.",
+    "activado": "Listo: recibirás los avisos en este navegador.",
+    "desactivado": "Ya no recibirás avisos en este navegador.",
+    "error": "No se pudo cambiar la opción. Inténtalo de nuevo."
   }
 }

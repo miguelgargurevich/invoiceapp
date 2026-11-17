@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { apiClient } from '@/lib/api';
 import type { PerfilEntrar } from '@/lib/demo';
+import { bajaDePush } from '@/lib/push/instancias';
 
 export interface UserWithRole {
   id: string;
@@ -221,6 +222,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    // Primero los avisos push (teléfono y navegador): se dan de baja con el token de la sesión todavía puesto, para que quien entre
+    // después en este dispositivo no reciba los avisos de esta persona. Nunca lanza ni se queda esperando (tiene su propio tope).
+    await bajaDePush();
     try {
       await apiClient.post('/auth/logout');
     } catch {
