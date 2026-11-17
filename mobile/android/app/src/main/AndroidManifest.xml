@@ -33,4 +33,6 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Avisos push: desde Android 13 hay que declararlo para que el sistema deje pedir el permiso (docs/push/README.md). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 </manifest>

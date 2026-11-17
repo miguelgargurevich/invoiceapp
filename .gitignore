@@ -77,6 +77,9 @@ mobile/android/app/build/
 mobile/android/build/
 mobile/android/.gradle/
 mobile/android/local.properties
+# La config de Firebase de Miguel (avisos push): se copia a mano, no se versiona (docs/push/README.md)
+mobile/android/app/google-services.json
+mobile/ios/App/App/GoogleService-Info.plist
 mobile/android/app/release/
 mobile/android/app/src/main/assets/
 mobile/ios/App/build/
