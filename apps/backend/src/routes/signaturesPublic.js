@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { sendSignatureConfirmationEmail } = require('../services/emailService');
 const { uploadFile } = require('../utils/storage');
+const { avisarSinEsperar } = require('../push/registro');
 
 console.log('🔐 signaturesPublic.js loaded - version 2');
 
@@ -234,6 +235,9 @@ router.post('/submit', async (req, res) => {
       console.log('[SIGNATURE] ⚠️ NOT updating document - type:', signatureRequest.documentType, 
         'proformaId:', signatureRequest.proformaId, 'facturaId:', signatureRequest.facturaId);
     }
+
+    // Aviso push al dueño (sin esperarlo: si falla, la firma ya está guardada)
+    avisarSinEsperar('firmaRecibida', signatureRequest);
 
     // Send confirmation email
     try {

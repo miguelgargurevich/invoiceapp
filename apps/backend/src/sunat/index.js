@@ -25,7 +25,7 @@ function crearAlmacen(env = process.env) {
 }
 
 // Arranca el módulo SUNAT solo si está configurado. Sin SUNAT_ENGINE_URL, InvoiceApp sigue igual que hoy.
-async function iniciarSunat({ prisma }) {
+async function iniciarSunat({ prisma, avisos }) {
   if (!process.env.SUNAT_ENGINE_URL) {
     console.log('[SUNAT] SUNAT_ENGINE_URL no definido: módulo SUNAT desactivado');
     return null;
@@ -47,6 +47,7 @@ async function iniciarSunat({ prisma }) {
     notificador,
     encolarEnvio: cola.encolarEnvio,
     encolarTicket: cola.encolarTicket,
+    avisos, // avisos push (opcional)
   }));
   console.log('[SUNAT] Módulo SUNAT iniciado');
   return { engine, almacen, servicioEmision, servicioAnulacion };

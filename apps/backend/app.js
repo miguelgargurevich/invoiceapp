@@ -28,7 +28,9 @@ const adminRoutes = require('./src/routes/admin');
 const sitioRoutes = require('./src/routes/sitio');
 const webhooksRoutes = require('./src/routes/webhooks');
 const { crearRouterDemo } = require('./src/demo/rutas');
-const { limitesPeticiones } = require('./src/demo/modo');
+const { limitesPeticiones, esDemo } = require('./src/demo/modo');
+const { iniciarPush } = require('./src/push');
+const { establecerAvisos } = require('./src/push/registro');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -212,6 +214,12 @@ app.use('/api/signatures', limiter, authenticateToken, signaturesRoutes);
 app.use('/api/preferences', limiter, authenticateToken, preferencesRoutes);
 app.use('/api/notificaciones', limiter, authenticateToken, notificacionesRoutes);
 app.use('/api/admin', limiter, authenticateToken, adminRoutes);
+// 🔔 Avisos push (app de Android/iPhone con FCM y navegador con Web Push). Sin variables PUSH_* se apaga solo, con un aviso en el log.
+// Ver docs/push/README.md.
+const push = iniciarPush({ prisma: require('./src/utils/prisma'), auth: authenticateToken, esDemo });
+establecerAvisos(push.avisos);
+app.use('/api/push', limiter, push.router);
+
 // Pagos de Perú con Culqi (el servicio se crea al usarse: sin CULQI_SECRET_KEY la app arranca igual)
 const { crearRouterCulqi } = require('./src/routes/subscriptionsCulqi');
 const { obtenerServicioCulqi } = require('./src/pagos/culqi');
@@ -224,7 +232,7 @@ const { iniciarSunat } = require('./src/sunat');
 const { crearRouterComprobantes } = require('./src/routes/comprobantes');
 const { crearRouterSunat } = require('./src/routes/sunat');
 
-const sunatListo = iniciarSunat({ prisma: prismaSunat }).catch((error) => {
+const sunatListo = iniciarSunat({ prisma: prismaSunat, avisos: push.avisos }).catch((error) => {
   console.error('[SUNAT] No se pudo iniciar el módulo:', error.message);
   return null;
 });
