@@ -76,6 +76,12 @@ services:
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY:-sk_test_desactivado}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
       - CULQI_SECRET_KEY=${CULQI_SECRET_KEY:-}
+      # Avisos push (docs/push/README.md). Vacíos = apagado (el backend arranca igual y avisa una vez en el log).
+      - PUSH_FCM_PROJECT_ID=${PUSH_FCM_PROJECT_ID:-}
+      - PUSH_FCM_CUENTA_BASE64=${PUSH_FCM_CUENTA_BASE64:-}
+      - PUSH_VAPID_PUBLIC_KEY=${PUSH_VAPID_PUBLIC_KEY:-}
+      - PUSH_VAPID_PRIVATE_KEY=${PUSH_VAPID_PRIVATE_KEY:-}
+      - PUSH_VAPID_SUBJECT=${PUSH_VAPID_SUBJECT:-}
     volumes:
       - backend-data:/data
     healthcheck:
