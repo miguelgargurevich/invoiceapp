@@ -99,3 +99,22 @@ test('el service worker conserva lo que ya hacía: un handler de fetch que no ca
   manejadores.fetch({ request: { mode: 'cors' }, respondWith: () => { respondio = true; } });
   assert.equal(respondio, true);
 });
+
+test('el service worker nuevo toma el control de inmediato (los navegadores con el viejo, solo fetch, si no no recibirían los push)', async () => {
+  const llamadas: string[] = [];
+  const manejadores: Record<string, (e: any) => void> = {};
+  const self: any = {
+    location: { origin: ORIGEN },
+    addEventListener: (nombre: string, fn: (e: any) => void) => { manejadores[nombre] = fn; },
+    skipWaiting: () => { llamadas.push('skipWaiting'); return Promise.resolve(); },
+    clients: { claim: () => { llamadas.push('claim'); return Promise.resolve(); } },
+  };
+  vm.runInNewContext(CODIGO, { self, URL, fetch: async () => ({}) });
+  assert.equal(typeof manejadores.install, 'function');
+  assert.equal(typeof manejadores.activate, 'function');
+  manejadores.install({});
+  let trabajo: Promise<unknown> = Promise.resolve();
+  manejadores.activate({ waitUntil: (p: Promise<unknown>) => { trabajo = p; } });
+  await trabajo;
+  assert.deepEqual(llamadas, ['skipWaiting', 'claim']);
+});

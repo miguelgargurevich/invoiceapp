@@ -19,6 +19,14 @@ test('al cerrar sesión, los avisos se dan de baja ANTES de quitar el token de l
   assert.match(fuente, /import \{ bajaDePush \} from '@\/lib\/push\/instancias'/);
 });
 
+test('si la sesión no se puede restaurar (venció sin «Cerrar sesión»), también se cancela la suscripción de avisos del navegador', () => {
+  const fuente = leer('contexts/AuthContext.tsx');
+  const inicio = fuente.indexOf('const bootstrapAuth = async () => {');
+  const catchBloque = fuente.slice(fuente.indexOf('} catch {', inicio), fuente.indexOf('} finally {', inicio));
+  assert.match(catchBloque, /void bajaDePush\(\)/);
+  assert.ok(catchBloque.indexOf('bajaDePush') < catchBloque.indexOf('apiClient.clearToken()'));
+});
+
 test('el panel monta el iniciador de avisos y Configuración › Notificaciones tiene el interruptor del navegador', () => {
   assert.match(leer('app/[locale]/(dashboard)/layout.tsx'), /<PushIniciador \/>/);
   const config = leer('app/[locale]/(dashboard)/configuracion/page.tsx');
@@ -26,9 +34,9 @@ test('el panel monta el iniciador de avisos y Configuración › Notificaciones 
   assert.match(config, /<AvisosPush \/>/);
 });
 
-test('el service worker de la web es UNO: el de siempre, con fetch, push y notificationclick', () => {
+test('el service worker de la web es UNO: el de siempre, con fetch, install/activate, push y notificationclick', () => {
   const sw = leer('public/sw.js');
-  for (const evento of ['fetch', 'push', 'notificationclick']) assert.match(sw, new RegExp(`addEventListener\\('${evento}'`), evento);
+  for (const evento of ['install', 'activate', 'fetch', 'push', 'notificationclick']) assert.match(sw, new RegExp(`addEventListener\\('${evento}'`), evento);
 });
 
 test('los textos del interruptor existen en español y en inglés', () => {

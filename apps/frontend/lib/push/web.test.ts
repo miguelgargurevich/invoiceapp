@@ -62,21 +62,23 @@ function montar(o: Opciones = {}) {
 
 test('dentro de la app, o en un navegador sin Web Push, no se ofrece', async () => {
   assert.equal(webPushSoportado(montar({ userAgent: UA_APP }).win), false);
-  assert.equal(await montar({ userAgent: UA_APP }).push.estado(), 'no-soportado');
-  assert.equal(await montar({ conPushManager: false }).push.estado(), 'no-soportado');
+  assert.equal(await montar({ userAgent: UA_APP }).push.estado('u1'), 'no-soportado');
+  assert.equal(await montar({ conPushManager: false }).push.estado('u1'), 'no-soportado');
   assert.equal(webPushSoportado(undefined), false);
 });
 
 test('el estado: no disponible en el servidor, bloqueado, inactivo o activo', async () => {
-  assert.equal(await montar({ web: { disponible: false, publicKey: null } }).push.estado(), 'no-disponible');
-  assert.equal(await montar({ web: { disponible: true, publicKey: null } }).push.estado(), 'no-disponible');
-  assert.equal(await montar({ permiso: 'denied' }).push.estado(), 'bloqueado');
-  assert.equal(await montar({ permiso: 'default' }).push.estado(), 'inactivo');
-  assert.equal(await montar({ permiso: 'granted', suscrito: false }).push.estado(), 'inactivo');
-  assert.equal(await montar({ permiso: 'granted', suscrito: true }).push.estado(), 'activo');
+  assert.equal(await montar({ web: { disponible: false, publicKey: null } }).push.estado('u1'), 'no-disponible');
+  assert.equal(await montar({ web: { disponible: true, publicKey: null } }).push.estado('u1'), 'no-disponible');
+  assert.equal(await montar({ permiso: 'denied' }).push.estado('u1'), 'bloqueado');
+  assert.equal(await montar({ permiso: 'default' }).push.estado('u1'), 'inactivo');
+  assert.equal(await montar({ permiso: 'granted', suscrito: false }).push.estado('u1'), 'inactivo');
+  const quiere = montar({ permiso: 'granted', suscrito: true });
+  quiere.almacen.set('facturo.push.web.u1', '1');
+  assert.equal(await quiere.push.estado('u1'), 'activo');
   const sinRed = montar();
   sinRed.cambiarApi({ get: async () => { throw new Error('sin red'); } });
-  assert.equal(await sinRed.push.estado(), 'no-disponible');
+  assert.equal(await sinRed.push.estado('u1'), 'no-disponible');
 });
 
 test('activar pide el permiso, se suscribe con la clave del servidor y la registra con endpoint y claves', async () => {
@@ -170,4 +172,24 @@ test('la baja del cierre de sesión nunca bloquea: sin suscripción, con error o
   const t0 = Date.now();
   await colgada.push.darDeBaja();
   assert.ok(Date.now() - t0 < 1000);
+});
+
+test('una suscripción que dejó OTRA persona (su sesión venció sin cerrar) no se le muestra como activa y se cancela al entrar', async () => {
+  const m = montar({ permiso: 'granted', suscrito: true });
+  m.almacen.set('facturo.push.web.u1', '1'); // la persona anterior la había activado; u2 no
+  assert.equal(await m.push.estado('u2'), 'inactivo', 'el interruptor de u2 no aparece encendido');
+  assert.equal(await m.push.estado('u1'), 'activo', 'el de u1 sí');
+  await m.push.reanudar('u2');
+  assert.deepEqual(m.posts, [], 'no registra nada en nombre de u2');
+  assert.ok(m.eventos.includes('unsubscribe'), 'cancela la suscripción ajena en este navegador');
+  assert.equal(m.suscripcion(), null);
+  assert.equal(m.almacen.get('facturo.push.web.u1'), '1', 'u1 sigue queriendo sus avisos: se reanudan cuando vuelva');
+});
+
+test('reanudar de la persona que sí los quería NO cancela su suscripción', async () => {
+  const m = montar({ permiso: 'granted', suscrito: true });
+  m.almacen.set('facturo.push.web.u1', '1');
+  await m.push.reanudar('u1');
+  assert.ok(!m.eventos.includes('unsubscribe'));
+  assert.equal(m.posts.length, 1);
 });

@@ -93,14 +93,18 @@ export function crearPushWeb(deps: DependenciasPushWeb) {
   }
 
   return {
-    /** En qué está este navegador, para pintar el interruptor. Nunca lanza. */
-    async estado(): Promise<EstadoWebPush> {
+    /**
+     * En qué está este navegador PARA ESTA PERSONA, para pintar el interruptor. Nunca lanza.
+     * «Activo» exige una suscripción, el permiso concedido Y que esta persona los haya activado aquí: una suscripción que dejó otra
+     * persona (su sesión venció sin cerrar) no es de quien está mirando.
+     */
+    async estado(userId: string): Promise<EstadoWebPush> {
       if (!webPushSoportado(win)) return 'no-soportado';
       try {
         if (!(await configuracion()).disponible) return 'no-disponible';
         if (win.Notification.permission === 'denied') return 'bloqueado';
         const sub = await suscripcionActual();
-        return sub && win.Notification.permission === 'granted' ? 'activo' : 'inactivo';
+        return sub && win.Notification.permission === 'granted' && recuerdo(win, userId) ? 'activo' : 'inactivo';
       } catch {
         return 'inactivo';
       }
@@ -141,10 +145,19 @@ export function crearPushWeb(deps: DependenciasPushWeb) {
     /**
      * Al iniciar sesión: si ESTA persona dijo que quería los avisos y el permiso sigue concedido, se vuelve a suscribir sin preguntar
      * (el cierre de sesión anterior canceló la suscripción). Con el permiso en «preguntar» o bloqueado no hace nada. Nunca lanza.
+     *
+     * Si en el navegador hay una suscripción y esta persona NO la había activado, es de otra (su sesión venció sin pasar por «Cerrar
+     * sesión»): se cancela aquí. El servicio de push contestará 410 al próximo envío y el servidor borrará esa fila.
      */
     async reanudar(userId: string): Promise<void> {
       try {
-        if (!webPushSoportado(win) || !recuerdo(win, userId) || win.Notification.permission !== 'granted') return;
+        if (!webPushSoportado(win)) return;
+        if (!recuerdo(win, userId)) {
+          const ajena = await suscripcionActual();
+          if (ajena) await ajena.unsubscribe().catch(() => false);
+          return;
+        }
+        if (win.Notification.permission !== 'granted') return;
         const { disponible, publicKey } = await configuracion();
         if (!disponible || !publicKey) return;
         await registrarEnElServidor(await suscribir(publicKey));

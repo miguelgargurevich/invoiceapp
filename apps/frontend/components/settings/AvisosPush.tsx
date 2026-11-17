@@ -19,7 +19,8 @@ export default function AvisosPush() {
   const [estado, setEstado] = useState<EstadoWebPush | 'cargando'>('cargando');
   const [ocupado, setOcupado] = useState(false);
 
-  const leer = useCallback(async () => setEstado(await pushWeb.estado()), []);
+  const userId = user?.id ?? '';
+  const leer = useCallback(async () => setEstado(await pushWeb.estado(userId)), [userId]);
   useEffect(() => { void leer(); }, [leer]);
 
   if (estado === 'cargando' || estado === 'no-soportado' || estado === 'no-disponible' || !user?.id) return null;

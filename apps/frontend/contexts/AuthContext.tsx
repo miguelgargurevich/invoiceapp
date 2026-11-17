@@ -127,6 +127,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         await loadEmpresa();
       } catch {
+        // La sesión venció o no se pudo restaurar sin pasar por «Cerrar sesión»: se cancela la suscripción de avisos de este navegador
+        // (la baja en el servidor fallará con 401 y se ignora). Sin esto, quien entre después recibiría los avisos de la persona anterior.
+        void bajaDePush();
         apiClient.clearToken();
         if (typeof window !== 'undefined') {
           localStorage.removeItem(AUTH_TOKEN_KEY);

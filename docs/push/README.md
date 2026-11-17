@@ -46,6 +46,7 @@ los muestra a cualquiera. Una prueba fija que el aviso tiene exactamente esas tr
 - **SSRF:** el servidor le hace POST a la dirección de la suscripción web, así que solo acepta `https` y los servicios de push conocidos
   (`fcm.googleapis.com`, `*.push.services.mozilla.com`, `*.push.apple.com`, `*.notify.windows.com`), sin puerto raro ni usuario:clave.
 - **Cerrar sesión:** da de baja el teléfono y cancela la suscripción del navegador **antes** de quitar el token. Si no, quien entre después en ese dispositivo recibiría los avisos de la persona anterior.
+  Lo mismo si la sesión **vence** sin pasar por «Cerrar sesión» (al recargar la web se cancela la suscripción), y el interruptor solo aparece «activado» para la persona que lo activó en ese navegador.
 - **Resumen diario:** un temporizador dentro del backend (`unref`, cada hora) en `src/push/avisos.js`. No usa pg-boss porque ese solo arranca con `SUNAT_ENGINE_URL`. Si hay dos instancias, la clave única evita el doble envío.
 
 ## Pasos para Miguel
@@ -114,7 +115,7 @@ Para ver el navegador de punta a punta: genera claves VAPID, arranca el backend 
 ## Gotchas
 
 - `NEXT_PUBLIC_*` se fija al **compilar**: por eso la clave VAPID pública no va como variable del frontend, el frontend la pide a `GET /api/push/config` y basta redesplegar el backend.
-- Hay **un solo service worker** por origen (`public/sw.js`): lleva el `fetch` de siempre (para poder instalar la app) más `push` y `notificationclick`. Si lo cambias, no registres otro.
+- Hay **un solo service worker** por origen (`public/sw.js`): lleva el `fetch` de siempre (para poder instalar la app) más `push` y `notificationclick`, y `install`/`activate` con `skipWaiting` + `clients.claim` para que los navegadores que ya tenían el viejo pasen al nuevo de inmediato (si no, los push llegarían al viejo, que no sabe dibujarlos). Si lo cambias, no registres otro y no le agregues caché sin revisar eso.
 - `GET /api/notificaciones` (la campana) filtra por `estado` en **MAYÚSCULAS** (`EMITIDA`, `PENDIENTE`), pero las facturas se guardan en minúsculas (`emitida`). El resumen diario usa la definición del dashboard (minúsculas). Esa ruta no se tocó.
 - En la demo pública (`MODO_DEMO=si`) no se registra ningún dispositivo y no hay temporizador: las cuentas se comparten entre visitantes.
 - Android 13+ exige declarar `POST_NOTIFICATIONS` en el manifiesto (ya está) y pedir el permiso en ejecución (lo pide la web al entrar con la sesión iniciada; si lo niegan no se insiste en esa sesión).
@@ -126,5 +127,6 @@ Para ver el navegador de punta a punta: genera claves VAPID, arranca el backend 
 - **El plugin en un teléfono o emulador:** el APK compila (`assembleDebug`, con el plugin y sin `google-services.json`), pero no se instaló ni se ejecutó (no había emulador en línea). **Sin verificar** qué hace `register()` en un APK sin `google-services.json` (el plugin de Google no se aplica; podría fallar al registrar). Por eso: no distribuyas un APK con push sin ese archivo.
 - **El puente de Capacitor** (`nativePromise` / `addListener` desde la web remota): se leyó en `native-bridge.js` de Capacitor 8 y se probó con un puente falso, no en un dispositivo.
 - **iPhone:** nada, ni código nativo (ver arriba).
+- **Un navegador que ya tenía el `sw.js` viejo con una pestaña abierta:** la actualización (`skipWaiting` + `claim`) se probó con el código, no con un navegador real (la prueba en Chrome usó un perfil nuevo).
 - **Safari y Firefox** (Web Push): solo se probó en Chrome. El servicio de Mozilla y el de Apple están en la lista permitida pero no se llamaron.
 - **Los cuatro avisos en producción:** probados con la base de pruebas y emisores falsos, y la firma por la ruta HTTP real; SUNAT contra la cola con dobles. Falta verlos con un comprobante real rechazado por SUNAT beta.

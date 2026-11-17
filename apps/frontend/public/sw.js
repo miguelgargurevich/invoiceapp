@@ -4,6 +4,12 @@
 //  2. Avisos push (Web Push): dibuja el aviso que manda el servidor ({ titulo, cuerpo, ruta }) y, al tocarlo, abre esa ruta.
 // Solo hay UN service worker por origen: los dos van aquí. Ver docs/push/README.md.
 
+// Los navegadores que ya tienen el service worker anterior (solo fetch) deben pasar al nuevo YA: sin esto el nuevo espera a que se cierren
+// todas las pestañas, y mientras tanto los push llegarían al viejo, que no sabe dibujarlos (Chrome muestra «el sitio se actualizó» y Safari
+// puede revocar una suscripción que recibe push sin mostrar nada). Es seguro porque este worker no cachea nada.
+self.addEventListener('install', () => { self.skipWaiting(); });
+self.addEventListener('activate', (event) => { event.waitUntil(self.clients.claim()); });
+
 self.addEventListener('fetch', (event) => {
   if (event.request.mode === 'navigate') return;
   event.respondWith(fetch(event.request));
